@@ -1,0 +1,27 @@
+Source: bell-scheduler
+Section: python
+Priority: optional
+Maintainer: Equipo LliureX <lliurex@gva.es> 
+Build-Depends: debhelper (>=9),
+               dh-python,
+               python3-setuptools,
+               python3-all,
+               python3-poinstaller,
+               llxsrchelper
+Standards-Version: 3.9.7
+Homepage: http://lliurex.net
+Vcs-Browser: https://svn.lliurex.net/xenial/bell-scheduler
+
+Package: bell-scheduler
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, n4d-bellscheduler (= ${binary:Version}),youtube-dl, python3-n4dgtklogin (>=0.4), python3-holidaymanager 
+Description:Bell Schededuler GUI package
+  Provides the gui to program alarms
+
+
+Package: n4d-bellscheduler
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends},n4d-taskscheduler-server (>=1.0.5), n4d-taskscheduler-client (>=1.0.5)
+Description: Bell Scheduler plugin
+  Plugins supporting bell-scheduler functionality  
+
