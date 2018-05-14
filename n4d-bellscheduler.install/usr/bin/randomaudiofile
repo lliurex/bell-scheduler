@@ -1,0 +1,19 @@
+#!/bin/bash
+MUSICPATH=$1
+TEMPATH=$(mktemp)
+TEMPATH2=$(mktemp)
+find "$MUSICPATH" -type f > $TEMPATH
+while read musicfile ;  do
+	mimetype=$(file -i "$musicfile" | awk -F ':' '{ if ( $2 ~ /audio/ || $2 ~ /video/ ) print "audio" ; else if ($2 ~ /octet-stream/ ) print "check" }')
+	if [ "$mimetype" = "audio" ]; then
+		echo $musicfile >> $TEMPATH2
+	elif [ "$mimetype" = "check" ]; then
+		mimetype=$(mimetype $musicfile | awk -F ':' '{if ( $2 ~ /audio/ || $2 ~ /video/) print "audio"}')
+		if [ $mimetype = "audio" ]; then
+			echo $musicfile >> $TEMPATH2
+		fi
+	fi
+	
+done < $TEMPATH
+echo $(cat $TEMPATH2 | shuf -n 1)
+rm $TEMPATH $TEMPATH2

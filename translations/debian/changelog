@@ -1,0 +1,51 @@
+bell-scheduler (0.2.6) xenial; urgency=high
+
+  * Fixed bug in search function
+  * Improved feedback when alarms have errors
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 20 Mar 2018 07:59:11 +0100
+
+bell-scheduler (0.2.5) xenial; urgency=medium
+
+  * Fix bug that prevents creating more than 10 alarms
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 15 Mar 2018 11:56:45 +0100
+
+bell-scheduler (0.2.4) xenial; urgency=medium
+
+  * Fix control
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 14 Mar 2018 13:27:36 +0100
+
+bell-scheduler (0.2.3) xenial; urgency=medium
+
+  * Added metainfo
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 14 Mar 2018 10:41:18 +0100
+
+bell-scheduler (0.2.2) xenial; urgency=medium
+
+  * Add depend n4d-taskscheduler-client
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 13 Mar 2018 12:53:48 +0100
+
+bell-scheduler (0.2.1) xenial; urgency=medium
+
+  * Clean code in  EditBox.py and BellSchedulerManager.py
+  * Fix postinst of n4d plugin
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 05 Mar 2018 09:22:47 +0100
+
+bell-scheduler (0.2) xenial; urgency=medium
+
+  * Added valencian translations
+  * Added check of file or url to play
+  * Improve function to get random file to play 
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 02 Mar 2018 12:21:16 +0100
+
+bell-scheduler (0.1) xenial; urgency=medium
+
+  * Initial release.
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 19 Feb 2018 13:47:05 +0100
