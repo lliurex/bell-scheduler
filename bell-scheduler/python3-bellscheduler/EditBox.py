@@ -47,7 +47,6 @@ class EditBox(Gtk.VBox):
 		builder.add_from_file(ui_path)
 
 		self.css_file=self.core.rsrc_dir+"bell-scheduler.css"
-
 		self.main_box=builder.get_object("bell_edit_box")
 		self.cron_frame=builder.get_object("cron_frame")
 		self.hour_spinbutton=builder.get_object("hour_spinbutton")
@@ -66,13 +65,18 @@ class EditBox(Gtk.VBox):
 		self.custom_rb=builder.get_object("custom_radiobutton")
 		self.image_fc=builder.get_object("image_filechosser")
 		self.sound_label=builder.get_object("sound_label")
-		self.random_rb=builder.get_object("random_radiobutton")
+		self.directory_rb=builder.get_object("directory_radiobutton")
 		self.file_rb=builder.get_object("file_radiobutton")
 		self.url_rb=builder.get_object("url_radiobutton")
+		self.urlslist_rb=builder.get_object("urlslist_radiobutton")
 		self.sound_dc=builder.get_object("sound_folderchosser")
 		self.sound_fc=builder.get_object("sound_filechosser")
 		self.sound_url=builder.get_object("url_entry")
+		self.sound_urlslist=builder.get_object("urlslist_filechosser")
 
+		self.play_label=builder.get_object("play_label")
+		self.start_time_label=builder.get_object("start_time_label")
+		self.start_time_entry=builder.get_object("start_time_entry")
 		self.duration_label=builder.get_object("duration_label")
 		self.duration_entry=builder.get_object("duration_entry")
 		self.note_label=builder.get_object("note_label")
@@ -83,11 +87,11 @@ class EditBox(Gtk.VBox):
 		self.weekdays.append(self.wednesday_tb)
 		self.weekdays.append(self.thursday_tb)
 		self.weekdays.append(self.friday_tb)
-		
+
 		self.image_cb=builder.get_object("image_combobox")
 		self.image_store=Gtk.ListStore(GdkPixbuf.Pixbuf,str)
 		
-		for x in glob.glob(BANNERS_PATH+"*.png"):
+		for x in sorted(glob.glob(BANNERS_PATH+"*.png")):
 			f_name=x.replace(BANNERS_PATH,"").split(".png")[0]
 			image=Gtk.Image()
 			image.set_from_file(x)
@@ -122,7 +126,7 @@ class EditBox(Gtk.VBox):
 		self.name_label.set_name("EDIT_LABEL")
 		self.image_label.set_name("EDIT_LABEL")
 		self.sound_label.set_name("EDIT_LABEL")
-		self.duration_label.set_name("EDIT_LABEL")
+		self.play_label.set_name("EDIT_LABEL")
 		self.note_label.set_name("NOTE_LABEL")
 	
 	#def set-css_info
@@ -131,9 +135,10 @@ class EditBox(Gtk.VBox):
 
 		self.stock_rb.connect("toggled",self.image_toggled_button,"stock")
 		self.custom_rb.connect("toggled",self.image_toggled_button,"custom")
-		self.random_rb.connect("toggled",self.sound_toggled_button,"random")
+		self.directory_rb.connect("toggled",self.sound_toggled_button,"directory")
 		self.file_rb.connect("toggled",self.sound_toggled_button,"file")
 		self.url_rb.connect("toggled",self.sound_toggled_button,"url")
+		self.urlslist_rb.connect("toggled",self.sound_toggled_button,"urlslist")
 		self.image_fc.connect("file-set",self.check_mimetype_image)
 		self.sound_fc.connect("file-set",self.check_mimetype_sound)
 
@@ -142,11 +147,7 @@ class EditBox(Gtk.VBox):
 	def init_threads(self):
 
 		self.checking_data_t=threading.Thread(target=self.checking_data)
-
 		self.checking_data_t.daemon=True
-
-		self.checking_data_t.launched=False
-
 		GObject.threads_init()
 		
 	#def init_threads	
@@ -154,10 +155,13 @@ class EditBox(Gtk.VBox):
 	def init_data_form(self):
 
 		self.image_op="stock"
+		self.image_cb.set_active(1)
 		self.image_fc.set_sensitive(False)
 		self.sound_op="file"
 		self.sound_dc.set_sensitive(False)
 		self.sound_url.set_sensitive(False)
+		self.sound_urlslist.set_sensitive(False)
+		self.start_time_entry.set_value(0)
 		self.duration_entry.set_value(30)
 		self.init_threads()
 
@@ -183,23 +187,30 @@ class EditBox(Gtk.VBox):
 	def sound_toggled_button(self,button,name):
 
 		if button.get_active():
-			if name=="random":
+			if name=="directory":
 				self.sound_dc.set_sensitive(True)
 				self.sound_fc.set_sensitive(False)
 				self.sound_url.set_sensitive(False)
-				self.sound_op="random"
-
-			else:
-				if name=="file":
-					self.sound_dc.set_sensitive(False)
-					self.sound_fc.set_sensitive(True)
-					self.sound_url.set_sensitive(False)
-					self.sound_op="file"
-				else:
-					self.sound_dc.set_sensitive(False)
-					self.sound_fc.set_sensitive(False)
-					self.sound_url.set_sensitive(True)	
-					self.sound_op="url"	
+				self.sound_urlslist.set_sensitive(False)
+				self.sound_op="directory"
+			elif name=="file":
+				self.sound_dc.set_sensitive(False)
+				self.sound_fc.set_sensitive(True)
+				self.sound_url.set_sensitive(False)
+				self.sound_urlslist.set_sensitive(False)
+				self.sound_op="file"
+			elif name=="url":
+				self.sound_dc.set_sensitive(False)
+				self.sound_fc.set_sensitive(False)
+				self.sound_url.set_sensitive(True)
+				self.sound_urlslist.set_sensitive(False)	
+				self.sound_op="url"
+			elif name=="urlslist":
+				self.sound_dc.set_sensitive(False)
+				self.sound_fc.set_sensitive(False)
+				self.sound_url.set_sensitive(False)
+				self.sound_urlslist.set_sensitive(True)	
+				self.sound_op="urlslist"		
 
 	#def sound_toggled_button 					
 	
@@ -242,19 +253,27 @@ class EditBox(Gtk.VBox):
 
 		sound_op=bell_to_edit["sound"]["option"]
 
-		if sound_op=="random":
-			self.random_rb.set_active(True)
+		if sound_op=="directory":
+			self.directory_rb.set_active(True)
 			if os.path.exists(bell_to_edit["sound"]["path"]):
 				self.sound_dc.set_filename(bell_to_edit["sound"]["path"])
 		elif sound_op=="file":
 			self.file_rb.set_active(True)
 			if os.path.exists(bell_to_edit["sound"]["path"]):
 				self.sound_fc.set_filename(bell_to_edit["sound"]["path"])	
-		else:
+		elif sound_op=="url":
 			self.url_rb.set_active(True)
 			self.sound_url.set_text(bell_to_edit["sound"]["path"])
+		elif sound_op=="urlslist":
+			self.urlslist_rb.set_active(True)
+			if os.path.exists(bell_to_edit["sound"]["path"]):
+				self.sound_urlslist.set_filename(bell_to_edit["sound"]["path"])		
 
 		self.duration_entry.set_value(bell_to_edit["play"]["duration"])
+		try:
+			self.start_time_entry.set_value(bell_to_edit["play"]["start"])
+		except:
+			pass	
 		
 		self.edit=True
 		self.bell_to_edit=bell
@@ -264,30 +283,40 @@ class EditBox(Gtk.VBox):
 	
 	def gather_values(self,widget):
 
-		self.files_tocheck={}
-		self.files_tocheck["sound"]=""
-		self.files_tocheck["image"]=""
-		self.files_tocheck["url"]=None
-		self.files_tocheck["directory"]=""
+		self.core.mainWindow.msg_label.set_text("")
+		self.data_tocheck={}
+		self.data_tocheck["name"]=self.name_entry.get_text()
+		self.data_tocheck["image"]={}
+		self.data_tocheck["image"]["option"]=self.image_op
+		self.data_tocheck["sound"]={}
+		self.data_tocheck["sound"]["option"]=self.sound_op
+
+		self.core.mainWindow.save_button.set_sensitive(False)
+		self.core.mainWindow.cancel_button.set_sensitive(False)
+		self.manage_form_control(False)
 
 		
 		if self.image_op=="stock":
 			self.image_path=BANNERS_PATH+self.image_store[self.image_cb.get_active()][1]+".png"
 		else:
 			self.image_path=self.image_fc.get_filename()
-			self.files_tocheck["image"]=self.image_path
+			self.data_tocheck["image"]["file"]=self.image_path
 
-		if self.sound_op=="random":
+		if self.sound_op=="directory":
 			self.sound_path=self.sound_dc.get_filename()
-			self.files_tocheck["directory"]=self.sound_path
+			self.data_tocheck["sound"]["file"]=self.sound_path
 		elif self.sound_op=="file":
 			self.sound_path=self.sound_fc.get_filename()
-			self.files_tocheck["sound"]=self.sound_path
-		else:	
-			self.sound_path=self.sound_url.get_text()
-			self.files_tocheck["url"]=self.sound_path
+			self.data_tocheck["sound"]["file"]=self.sound_path
+		elif self.sound_op=="url":	
+			self.sound_path=self.sound_url.get_text().split('\n')[0]
+			self.data_tocheck["sound"]["file"]=self.sound_path
+		elif self.sound_op=="urlslist":
+			self.sound_path=self.sound_urlslist.get_filename()
+			self.data_tocheck["sound"]["file"]=self.sound_path	
 			
 		self.duration=self.duration_entry.get_value_as_int()
+		self.start_time=self.start_time_entry.get_value_as_int()
 		
 		self.core.mainWindow.waiting_label.set_text(self.core.mainWindow.get_msg(30))			
 		self.core.mainWindow.waiting_window.show_all()
@@ -305,8 +334,12 @@ class EditBox(Gtk.VBox):
 			
 		else:
 			self.core.mainWindow.waiting_window.hide()
+			
 			if not self.check["result"]:
-				self.core.mainWindow.manage_message(True,self.check["code"])
+				self.core.mainWindow.save_button.set_sensitive(True)
+				self.core.mainWindow.cancel_button.set_sensitive(True)
+				self.manage_form_control(True)
+				self.core.mainWindow.manage_message(True,self.check["code"],self.check["data"])
 			else:	
 				self.save_values()
 		
@@ -316,12 +349,18 @@ class EditBox(Gtk.VBox):
 		
 	def checking_data(self):
 		
-		self.check=self.core.bellmanager.check_data(self.name_entry.get_text(),self.files_tocheck)
+		self.check=self.core.bellmanager.check_data(self.data_tocheck)
 	
 	#def checking_data
 		
 	def save_values(self):		
 		
+		'''
+		Result code:
+			-15: edited successfully
+			-18: created successfully
+		'''
+
 		bell=self.core.mainWindow.bells_info.copy()
 		order_keys=[]
 	
@@ -402,6 +441,7 @@ class EditBox(Gtk.VBox):
 
 		bell[order]["play"]={}
 		bell[order]["play"]["duration"]=self.duration
+		bell[order]["play"]["start"]=self.start_time
 
 
 		bell[order]["active"]=active_bell
@@ -434,7 +474,7 @@ class EditBox(Gtk.VBox):
 			else:
 				self.core.mainWindow.manage_message(True,result['code'])	
 		else:
-			self.core.mainWindow.manage_message(True,result['code'])		
+			self.core.mainWindow.manage_message(True,result_copy['code'])		
 
 
 	#def save_values		
@@ -446,7 +486,7 @@ class EditBox(Gtk.VBox):
 		if check !=None:
 			self.core.mainWindow.manage_message(True,check["code"])
 		else:
-			self.core.mainWindow.msg_label.hide()
+			self.core.mainWindow.msg_label.set_text("")
 
 	#def check_mimetype_image		
 	
@@ -456,11 +496,47 @@ class EditBox(Gtk.VBox):
 		if check !=None:
 			self.core.mainWindow.manage_message(True,check["code"])
 		else:
-			self.core.mainWindow.msg_label.hide()
+			self.core.mainWindow.msg_label.set_text("")
 
 	#def check_mimetype_sound		
 
 
+	def manage_form_control(self,sensitive):
+
+		self.hour_spinbutton.set_sensitive(sensitive)
+		self.minute_spinbutton.set_sensitive(sensitive)
+		
+		for item in self.weekdays:
+			item.set_sensitive(sensitive)
+
+		self.name_entry.set_sensitive(sensitive)	
+
+		self.stock_rb.set_sensitive(sensitive)
+		self.custom_rb.set_sensitive(sensitive)
+
+		self.file_rb.set_sensitive(sensitive)
+		self.directory_rb.set_sensitive(sensitive)
+		self.url_rb.set_sensitive(sensitive)
+		self.urlslist_rb.set_sensitive(sensitive)
+
+		if self.image_op=="stock":
+			self.image_cb.set_sensitive(sensitive)
+		else:
+			self.image_fc.set_sensitive(sensitive)
+
+		if self.sound_op=="file":
+			self.sound_fc.set_sensitive(sensitive)
+		elif self.sound_op=="directory":
+			self.sound_dc.set_sensitive(sensitive)
+		elif self.sound_op=="url":
+			self.sound_url.set_sensitive(sensitive)			
+		elif self.sound_op=="urlslist":
+			self.sound_urlslist.set_sensitive(sensitive)		
+
+		self.duration_entry.set_sensitive(sensitive)
+		self.start_time_entry.set_sensitive(sensitive)
+
+	#def manage_form_control	
 	
 #class EditBox
 

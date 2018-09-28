@@ -1,0 +1,35 @@
+#!/bin/bash
+
+ACTION=$1
+BELLID=$2
+
+TOKEN_FOLDER="/tmp/.BellScheduler/"
+TOKEN_FILE="bellscheduler-token"
+
+case $ACTION in
+
+	create_token)
+
+		if [ ! -d "$TOKEN_FOLDER" ]; then
+			mkdir -p  "$TOKEN_FOLDER"
+
+		fi
+		
+		echo $BELLID  >>"$TOKEN_FOLDER""$TOKEN_FILE"
+	
+	;;
+
+	remove_token)
+		
+		if [ -f  "$TOKEN_FOLDER""$TOKEN_FILE" ]; then
+			rm -f "$TOKEN_FOLDER""$TOKEN_FILE"
+		fi
+	;;
+
+esac
+
+exit 0
+	
+
+
+

@@ -1,0 +1,442 @@
+#! /usr/bin/python3
+
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, Pango, GdkPixbuf, Gdk, Gio, GObject, GLib
+gi.require_version('AppIndicator3', '0.1')
+from gi.repository import AppIndicator3 as appindicator
+
+import os
+import subprocess
+import sys
+import time
+import threading
+import xmlrpc.client as n4dclient
+import ssl
+gi.require_version('Notify', '0.7')
+from gi.repository import Notify
+
+
+import pyinotify
+from pyinotify import WatchManager, Notifier, ThreadedNotifier, EventsCodes, ProcessEvent
+
+import signal
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+
+import gettext
+gettext.textdomain('bell-scheduler')
+_ = gettext.gettext
+
+
+
+class BellSchedulerIndicator:
+
+	ID="net.lliurex.BellScheduler"
+	WATCH_DIR=os.path.expanduser("/tmp/.BellScheduler")
+	TARGET_FILE="/tmp/.BellScheduler/bellscheduler-token"
+	FRECUENCY=2
+
+	def __init__(self,icon_name):
+
+		
+		server='localhost'
+
+		context=ssl._create_unverified_context()
+		self.n4d = n4dclient.ServerProxy("https://"+server+":9779",context=context,allow_none=True)
+		
+		self.is_working=False
+		self.bell_info=[]
+		if not os.path.exists(BellSchedulerIndicator.WATCH_DIR):
+			os.mkdir(BellSchedulerIndicator.WATCH_DIR)
+
+		if os.path.exists(BellSchedulerIndicator.TARGET_FILE):
+			self.BellScheduler_running=True
+		else:
+			self.BellScheduler_running=False
+
+			
+		self.app_indicator=appindicator.Indicator.new(BellSchedulerIndicator.ID,icon_name,appindicator.IndicatorCategory.APPLICATION_STATUS)
+		self.app_indicator.set_status(appindicator.IndicatorStatus.PASSIVE)
+		
+		self.menu = Gtk.Menu()
+		self.menu.add_events(Gdk.EventMask.ALL_EVENTS_MASK)
+		self.app_indicator.set_menu(self.menu)
+		
+		Notify.init(BellSchedulerIndicator.ID)
+
+		self.populate_menu()
+		self.start_inotify()
+		
+		GLib.timeout_add_seconds(BellSchedulerIndicator.FRECUENCY, self.worker)
+		
+
+	#def __init__	
+			
+
+	def worker(self):
+		
+		if not self.is_working:
+			if self.BellScheduler_running:
+				self.get_bell_info()
+				self.is_alive()
+					
+		return True	
+
+	#def worker	
+		
+					
+	def populate_menu(self):
+	
+		item=Gtk.ImageMenuItem()
+		label_item=_("Stop the bell now")
+		item.set_label(label_item)
+		img=Gtk.Image()
+		img.set_from_icon_name("media-playback-stop",Gtk.IconSize.MENU)
+		item.set_image(img)
+		item.set_always_show_image(True)
+		item.connect("activate",self.stop_bell)
+		self.menu.insert(item,0)
+
+		
+	#def populate_menu	
+
+	def stop_bell(self,widget):
+
+		tasks=self.n4d.stop_bell("",'BellSchedulerManager')
+
+
+	#def stop_bell	
+
+	def start_inotify(self):
+
+		t=threading.Thread(target=self._inotify)
+		t.daemon=True
+		t.start()		
+
+	#def start_inotify	
+
+	def _inotify(self):
+		
+		
+		wm=WatchManager()
+		mask=pyinotify.IN_CREATE | pyinotify.IN_MODIFY
+			
+		class Process_handler(ProcessEvent):
+				
+			def __init__(self,main):
+				
+				self.main=main
+				
+			def process_IN_CREATE(self,event):
+
+				tmp=os.path.expanduser(event.pathname)
+				try:
+					if tmp==BellSchedulerIndicator.TARGET_FILE:
+						self.main.BellScheduler_running=True
+				except Exception as e:
+					print (e)
+
+			def process_IN_MODIFY(self,event):
+
+				tmp=os.path.expanduser(event.pathname)
+				try:
+					if tmp==BellSchedulerIndicator.TARGET_FILE:
+						if self.main.is_working:
+							self.main.get_bell_info()
+				except Exception as e:
+					print (e)					
+
+			
+		notifier=Notifier(wm,Process_handler(self))
+		wdd=wm.add_watch(BellSchedulerIndicator.WATCH_DIR,mask,rec=True)
+			
+		while True:
+			try:
+					
+				notifier.process_events()
+				if notifier.check_events():
+					notifier.read_events()
+				
+			except Exception as e:
+				notifier.stop()
+					
+		return False	
+
+	#def _inotify	
+
+	def is_alive(self):
+
+		self.is_working=True
+		self.menu.show_all()
+		self.app_indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
+		self.bell_token=False
+		GLib.timeout_add_seconds(1,self.check_status)	
+				
+		return
+
+	#def is_alive	
+		
+	def check_status(self):
+
+		if os.path.exists(BellSchedulerIndicator.TARGET_FILE):
+			if not self.bell_token:
+				self.bell_token=True
+		else:
+			if self.are_bells_live():
+				self.bell_token=True
+			else:	
+				self.bell_token=False
+		
+		if self.bell_token:
+			self.link_bell_pid()
+			return True
+			
+		else:
+			try:
+				self.notify.close()
+			except:
+				pass	
+				
+			self.app_indicator.set_status(appindicator.IndicatorStatus.PASSIVE)
+			self.BellScheduler_running=False
+			self.is_working=False
+			for i in range(len(self.bell_info)):
+				self.show_message("end",i)
+			time.sleep(3)
+			self.bell_info=[]
+			try:
+				self.notify.close()
+			except:
+				pass	
+			
+			return False		
+
+	#def check_status	
+	
+	def show_message(self,type,index=None):
+
+		duration_label=_("Duration: ")
+
+		if type=="start":
+			message=_("Playing the scheduled bell:")
+		elif type=="end":
+			message=_("The scheduled bell has ended:")
+
+		try:
+			message=message+'\n'+"- "+self.bell_info[index]["hour"]+" "+self.bell_info[index]["name"]+"\n- "+duration_label+str(self.bell_info[index]["duration"])	
+			self.notify=Notify.Notification.new("Bell Scheduler",message, "bell-scheduler")
+			self.notify.set_hint("transient", GLib.Variant.new_boolean(True))
+			self.notify.set_timeout(10000)
+			self.notify.show()
+			
+		except:
+			pass
+
+
+	#def show_message	
+
+	def get_bell_info(self):
+
+		tmp=self._read_token()
+
+		bellsId=[]
+		for item in self.bell_info:
+			bellsId.append(item["bellId"])
+
+		for i in range(len(tmp)-1,-1,-1):
+			if tmp[i]["bellId"] not in bellsId:
+				self.bell_info.append(tmp[i])
+				self.show_message("start",len(self.bell_info)-1)
+
+	#def get_bell_info			
+
+
+	def _read_token(self):
+
+		tmp=[]
+
+		seconds_label=_(" seconds")
+		error=True
+
+		if os.path.exists(BellSchedulerIndicator.TARGET_FILE):
+			f=open(BellSchedulerIndicator.TARGET_FILE,'r')
+			content=f.readlines()
+			f.close()
+
+		try:
+			bell_info=self.n4d.read_conf("",'BellSchedulerManager')
+
+			if bell_info["status"]:		
+				if len(bell_info["data"])>0:
+					for line in content:
+						bellId=line.split('\n')[0]
+						try:
+							info={}
+							info["name"]=bell_info["data"][bellId]["name"]
+							hour=bell_info["data"][bellId]["hour"]
+							minute=bell_info["data"][bellId]["minute"]
+							format_hour=self._format_hour(hour,minute)
+							info["hour"]=format_hour
+							duration=bell_info["data"][bellId]["play"]["duration"]
+							if duration==0:
+								duration=_("Full reproduction")
+							else:
+								duration=str(duration)+""+seconds_label	
+							info["duration"]=duration
+							info["bellPID"]=""	
+							info["bellId"]=bellId
+							error=False
+							tmp.append(info)
+						except:
+							pass
+		except:
+			pass				
+
+		if error:
+			tmp=[]
+			msg_error=_("Error. Not available")
+			
+			for line in content:
+				info={}
+				bellId=line.split('\n')[0]
+				info["bellId"]=bellId
+				info["bellPID"]=""
+				info["name"]=msg_error
+				info["hour"]=msg_error
+				info["duration"]=msg_error
+				tmp.append(info)
+
+		return tmp	
+				
+
+	#def _read_token	
+
+	def _format_hour(self,hour,minute):
+	
+		if hour<10:
+			hour='0'+str(hour)
+
+		if minute<10:
+			minute='0'+str(minute)
+
+		format_hour=str(hour)+":"+str(minute)
+
+		return format_hour	
+
+	#def _format_hour	
+
+	def are_bells_live(self):
+
+		are_bells_live=False
+		bells_pid=[]
+		bells_pid=self._get_bell_pid()[1]
+	
+		if len(bells_pid)>0:
+			for i in range(len(self.bell_info)-1,-1,-1):
+				if self.bell_info[i]["bellPID"]!="":
+					if not self.bell_info[i]["bellPID"] in bells_pid:
+						self.show_message("end",i)
+						self.bell_info.pop(i)
+						time.sleep(3)
+						try:
+							self.notify.close()
+						except:
+							pass		
+			are_bells_live=True
+		
+		return are_bells_live			
+
+	#def are_bells_live
+
+	def link_bell_pid(self):
+	
+		cont=0
+		pid_info=[]
+
+		for item in self.bell_info:
+			if item["bellPID"]=="":
+				cont+=1	
+
+		if cont>0:
+			pid_info=self._get_bell_pid()[0]
+			if len(pid_info)>0:
+				for i in range(len(pid_info)):
+					try:
+						for j in range(len(self.bell_info)):
+							if self.bell_info[j]["bellPID"]=="":
+								if self.bell_info[j]["bellId"]==pid_info[i]["bellId"]:
+									self.bell_info[j]["bellPID"]=pid_info[i]["bellPID"]
+					except:
+						pass		
+
+	#def link_bell_pid	
+
+	def _get_bell_pid(self):
+	
+		
+		info=[]
+		pid_info=[]
+		bell_pid=[]
+
+		cmd='ps -ef | grep "ffplay -nodisp -autoexit" | grep -v "grep"'
+		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+		output=p.communicate()[0]
+		
+		if type(output) is bytes:
+			output=output.decode()
+
+		lst=output.split("\n")
+		
+		if len(lst)>0:
+			for item in lst:
+				processed_line=item.split(" ")
+				tmp_list=[]
+				tmp_pid={}
+				cont=0
+				
+				if len(processed_line) >= 10:
+					for object in processed_line:
+						if object!="":
+							tmp_list.append(object)
+					processed_line=tmp_list
+					
+					if str(processed_line[7])=='/bin/bash':
+						if 'check_holidays' in str(processed_line[9]):
+							tmp_pid["bellId"]=str(processed_line[13])
+						else:
+							tmp_pid["bellId"]=str(processed_line[11])
+						tmp_pid["PidParent"]=processed_line[1]
+						tmp_pid["bellPID"]=""
+						for item in pid_info:
+							if item["bellId"]==tmp_pid["bellId"]:
+								cont+=1
+						if cont==0:		
+							pid_info.append(tmp_pid)
+					else:
+						for item in pid_info:
+							if item["PidParent"]==processed_line[2]:
+								item["bellPID"]=processed_line[1]
+							bell_pid.append(processed_line[1])
+		
+		info.append(pid_info)
+		info.append(bell_pid)
+
+		return info
+
+	#def _get_bell_pid						
+		
+	def quit(self):
+
+		Gtk.main_quit()	
+
+	#def quit	
+	
+#class BellSchedulerIndicator
+
+if __name__=="__main__":
+
+
+	BellSchedulerIndicator=BellSchedulerIndicator("bell-scheduler")
+	GObject.threads_init()
+	Gtk.main()

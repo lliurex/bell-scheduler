@@ -11,19 +11,19 @@
 
 	#TIME_LABEL{
 		color: #3366cc;
-		font: Roboto Bold 40;
+		font: Roboto Bold 44;
 
 
 	}
 	#DAY_LABEL_ON{
 		color: #3366cc;
-		font: Roboto Bold 16;
+		font: Roboto Bold 18;
 
 	}
 
 	#DAY_LABEL_OFF{
 		color: #A0A0A0;
-		font: Roboto 16;
+		font: Roboto 18;
 
 	}
 
@@ -172,6 +172,23 @@
 			color: #A0A0A0;
 			font: Roboto 14;
 		}
+
+	#POPOVER_OFF .label {
+		color: #707070;
+
+	}	
+
+	#POPOVER_ON .label{
+
+		color: #3366cc;
+
+	}
+
+	#POPOVER_SEPARATOR{
+
+		color: #b3b3b3;
+
+	}
 
 	#ITEM_LIST {
 		background-image:-gtk-gradient (linear,	0 0, 0 1, 

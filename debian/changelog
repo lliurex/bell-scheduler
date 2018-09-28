@@ -1,3 +1,83 @@
+bell-scheduler (0.3.8) xenial; urgency=medium
+
+  * Added replaces and conflict
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Wed, 26 Sep 2018 12:29:04 +0000
+
+bell-scheduler (0.3.7) xenial; urgency=medium
+
+  * Fixed rules 
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 11 Sep 2018 13:51:11 +0200
+
+bell-scheduler (0.3.6) xenial; urgency=medium
+
+  * Added new dependencies
+  * Created new package to install the zomando
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 11 Sep 2018 13:14:17 +0200
+
+bell-scheduler (0.3.5) xenial; urgency=medium
+
+  * Added new functions for global management of alarms: activation, deactivation and deletion
+  * Added link to the help of the LliureX wiki
+  * Added support for randomly playing url of youtube from a plain text file
+  * Added option to indicate the second where to start playing the audio
+  * Improved the operation of the menu bar indicator
+  * New banner design for the zero-center
+  * Improved the general operation of the application
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 07 Sep 2018 09:05:29 +0200
+
+bell-scheduler (0.3.4) xenial; urgency=medium
+
+  * Fixed import function
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 04 Jul 2018 14:08:18 +0200
+
+bell-scheduler (0.3.3) xenial; urgency=medium
+
+  * Updated the function to import bells list to use menu bar indicator
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 29 Jun 2018 12:47:29 +0200
+
+bell-scheduler (0.3.2) xenial; urgency=medium
+
+  * Added zomando to launch the application
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 29 Jun 2018 10:35:17 +0200
+
+bell-scheduler (0.3.1) xenial; urgency=medium
+
+  * Fixed control file. Added python3-pyinotify dependence
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 27 Jun 2018 09:41:32 +0200
+
+bell-scheduler (0.3) xenial; urgency=medium
+
+  * Added error handling to menu bar indicator
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 26 Jun 2018 14:22:04 +0200
+
+bell-scheduler (0.2.9) xenial; urgency=medium
+
+  * Added indicator to menu bar for stop alarm
+  * Added possibility to resize the window
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 25 Jun 2018 14:30:22 +0200
+
+bell-scheduler (0.2.8) xenial; urgency=medium
+
+  * Updated valencian translations
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 21 May 2018 09:12:20 +0200
+
+bell-scheduler (0.2.7) xenial; urgency=medium
+
+  * Integraded holiday-manager module
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 03 May 2018 13:38:59 +0200
+
 bell-scheduler (0.2.6) xenial; urgency=high
 
   * Fixed bug in search function

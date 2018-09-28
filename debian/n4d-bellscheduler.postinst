@@ -6,6 +6,13 @@ case "$1" in
    
 	n4d-modules enable-plugin /etc/n4d/conf.d/BellSchedulerManager || true
 	
+	if dpkg --compare-versions "$2" lt 0.3.5; then
+		echo "Copying script to update bell file to use indicator"
+		cp /usr/share/bell-scheduler/one-shots/update-indicator-token.sh /etc/n4d/one-shot/
+		echo "Copying script to update bell config file"
+		cp /usr/share/bell-scheduler/one-shots/update-bell-list.sh /etc/n4d/one-shot/
+		deb-systemd-invoke restart n4d || true
+	fi
    ;;
 
    abort-upgrade|abort-remove|abort-deconfigure)
