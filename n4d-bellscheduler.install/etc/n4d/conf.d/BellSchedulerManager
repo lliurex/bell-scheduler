@@ -5,8 +5,13 @@ class=BellSchedulerManager
 [METHODS]
 sync_with_cron=adm,admins,teachers
 save_changes=adm,admins,teachers
-read_conf=adm,admins,teachers
+read_conf=*,anonymous
 copy_media_files=adm,admins,teachers
 export_bells_conf=adm,admins,teachers
 import_bells_conf=adm,admins,teachers
 enable_holiday_control=adm,admins,teachers
+update_indicator_token=adm,admins,teachers
+stop_bell=*,anonymous
+update_config_file=adm,admins,teachers
+change_activation_status=adm,admins,teachers
+remove_all_bells=adm,admins,teachers

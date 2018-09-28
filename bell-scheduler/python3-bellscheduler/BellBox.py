@@ -375,6 +375,14 @@ class BellBox(Gtk.VBox):
 
 	#def on_switch_activaded	
 
+	def manage_bells_buttons(self,sensitive):
+	
+		for item in self.bell_list_box:
+			item.get_children()[3].set_sensitive(sensitive)
+			item.get_children()[4].set_sensitive(sensitive)
+			item.get_children()[5].set_sensitive(sensitive)
+
+	#def manage_bells_buttons
 			
 
 #class BellBox

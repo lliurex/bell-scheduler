@@ -2,18 +2,43 @@
 MUSICPATH=$1
 TEMPATH=$(mktemp)
 TEMPATH2=$(mktemp)
-find "$MUSICPATH" -type f > $TEMPATH
-while read musicfile ;  do
-	mimetype=$(file -i "$musicfile" | awk -F ':' '{ if ( $2 ~ /audio/ || $2 ~ /video/ ) print "audio" ; else if ($2 ~ /octet-stream/ ) print "check" }')
-	if [ "$mimetype" = "audio" ]; then
-		echo $musicfile >> $TEMPATH2
-	elif [ "$mimetype" = "check" ]; then
-		mimetype=$(mimetype $musicfile | awk -F ':' '{if ( $2 ~ /audio/ || $2 ~ /video/) print "audio"}')
-		if [ $mimetype = "audio" ]; then
-			echo $musicfile >> $TEMPATH2
+
+if [ -d $MUSICPATH ];then
+	TYPE="directory"
+elif [ -f $MUSICPATH ];then
+	TYPE="list"
+fi
+
+case $TYPE in
+
+	directory)	
+		#statements	
+		find "$MUSICPATH" -type f > $TEMPATH
+		while read musicfile ;  do
+			mimetype=$(file -i "$musicfile" | awk -F ':' '{ if ( $2 ~ /audio/ || $2 ~ /video/ ) print "audio" ; else if ($2 ~ /octet-stream/ ) print "check" }')
+			if [ "$mimetype" = "audio" ]; then
+				echo $musicfile >> $TEMPATH2
+			elif [ "$mimetype" = "check" ]; then
+				mimetype=$(mimetype $musicfile | awk -F ':' '{if ( $2 ~ /audio/ || $2 ~ /video/) print "audio"}')
+				if [ $mimetype = "audio" ]; then
+					echo $musicfile >> $TEMPATH2
+				fi
+			fi
+			
+		done < $TEMPATH
+		echo $(cat $TEMPATH2 | shuf -n 1)
+		rm $TEMPATH $TEMPATH2
+	;;
+
+	list)	
+		if [ -f $MUSICPATH ]; then
+			echo $(grep . $MUSICPATH | shuf -n 1 )	| sed -e 's,%,\%,g'
+
 		fi
-	fi
+	;;
+
+	*)
+
+	;;	
 	
-done < $TEMPATH
-echo $(cat $TEMPATH2 | shuf -n 1)
-rm $TEMPATH $TEMPATH2
+esac			

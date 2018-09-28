@@ -17,6 +17,11 @@
     <property name="step_increment">5</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkAdjustment" id="adjustment4">
+    <property name="upper">600</property>
+    <property name="step_increment">5</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkBox" id="bell_edit_box">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -371,7 +376,8 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="margin_top">5</property>
+                                <property name="margin_top">7</property>
+                                <property name="margin_bottom">5</property>
                                 <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">file_radiobutton</property>
@@ -385,40 +391,13 @@
                               <object class="GtkEntry" id="url_entry">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="margin_top">5</property>
+                                <property name="margin_top">7</property>
+                                <property name="margin_bottom">5</property>
                                 <property name="input_purpose">url</property>
                               </object>
                               <packing>
                                 <property name="left_attach">2</property>
                                 <property name="top_attach">3</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="duration_label">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="margin_top">7</property>
-                                <property name="label" translatable="yes">Max. duration (in seconds)</property>
-                                <property name="xalign">0</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">4</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkSpinButton" id="duration_entry">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="halign">end</property>
-                                <property name="margin_top">7</property>
-                                <property name="adjustment">adjustment3</property>
-                                <property name="wrap">True</property>
-                                <property name="value">0.01</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">2</property>
-                                <property name="top_attach">4</property>
                               </packing>
                             </child>
                             <child>
@@ -452,7 +431,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkRadioButton" id="random_radiobutton">
+                              <object class="GtkRadioButton" id="directory_radiobutton">
                                 <property name="label" translatable="yes">Random from directory</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
@@ -482,6 +461,113 @@
                                 <property name="left_attach">2</property>
                                 <property name="top_attach">2</property>
                               </packing>
+                            </child>
+                            <child>
+                              <object class="GtkRadioButton" id="urlslist_radiobutton">
+                                <property name="label" translatable="yes">Random from urls list</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="margin_top">7</property>
+                                <property name="margin_bottom">5</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                                <property name="group">file_radiobutton</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkFileChooserButton" id="urlslist_filechosser">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="margin_top">7</property>
+                                <property name="margin_bottom">5</property>
+                                <property name="create_folders">False</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="top_attach">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="play_label">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="margin_top">7</property>
+                                <property name="label" translatable="yes">Play options</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">5</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="duration_label">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="margin_left">2</property>
+                                <property name="margin_top">7</property>
+                                <property name="margin_bottom">5</property>
+                                <property name="label" translatable="yes">Max. duration (in seconds)</property>
+                                <property name="xalign">0</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">6</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="duration_entry">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="halign">end</property>
+                                <property name="margin_top">7</property>
+                                <property name="margin_bottom">5</property>
+                                <property name="adjustment">adjustment3</property>
+                                <property name="wrap">True</property>
+                                <property name="value">0.01</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="top_attach">6</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="start_time_label">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="margin_left">2</property>
+                                <property name="margin_top">7</property>
+                                <property name="label" translatable="yes">Start in second</property>
+                                <property name="xalign">0</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">5</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="start_time_entry">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="halign">end</property>
+                                <property name="margin_top">7</property>
+                                <property name="adjustment">adjustment4</property>
+                                <property name="wrap">True</property>
+                                <property name="value">0.01</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="top_attach">5</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <placeholder/>
                             </child>
                             <child>
                               <placeholder/>
@@ -593,17 +679,28 @@
     </child>
   </object>
   <object class="GtkWindow" id="main_window">
-    <property name="width_request">925</property>
-    <property name="height_request">685</property>
     <property name="can_focus">False</property>
     <property name="window_position">center</property>
     <child>
-      <object class="GtkBox" id="main_box">
+      <object class="GtkScrolledWindow" id="scrolledwindow1">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
+        <property name="can_focus">True</property>
+        <property name="shadow_type">in</property>
         <child>
-          <placeholder/>
+          <object class="GtkViewport" id="viewport1">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkBox" id="main_box">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+            </child>
+          </object>
         </child>
       </object>
     </child>
@@ -666,12 +763,40 @@
               </packing>
             </child>
             <child>
+              <object class="GtkToolButton" id="manage_bells_button">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Global alarm management</property>
+                <property name="margin_right">10</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-execute</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkToolButton" id="manage_holiday_button">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Manage holiday</property>
+                <property name="margin_right">10</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-index</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="help_button">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Help</property>
+                <property name="use_underline">True</property>
+                <property name="stock_id">gtk-help</property>
               </object>
               <packing>
                 <property name="expand">False</property>

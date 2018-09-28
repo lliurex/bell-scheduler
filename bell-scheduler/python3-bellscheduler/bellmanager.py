@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GObject, GLib
 import os
 import json
 import codecs
@@ -10,6 +13,10 @@ import ssl
 import tempfile
 import shutil
 import subprocess
+import threading
+import glob
+import random
+import urllib.request
 
 
 
@@ -67,73 +74,123 @@ class BellManager(object):
 
 	#def save_conf		
 
-	def check_data(self,name,files):
+	def check_data(self,data):
+
+		'''
+		Result code:
+			-1: Missing bell name
+			-3: Missing sound file
+			-5: Missing image file
+			-6: Missing url
+			-7: Missing sound directory
+			-39: Missing list url
+			-42: Failed internet connection 
+
+		'''	
 		
 		check_image=None
 		check_sound=None
-		if name=="":
-			return {"result":False,"code":1}
+
+		if data["name"]=="":
+			return {"result":False,"code":1,"data":""}
 			
 
-		if len(files)>0:
-									
-			if files["image"]!="":
-				if files["image"]!=None:
-					check_image=self.check_mimetypes(files["image"],"image")
-					
-				else:
-					return {"result":False,"code":5}
-			
-			if check_image==None:
-				if files["sound"]!="":
-					if files["sound"]!=None:
-						check_sound=self.check_mimetypes(files["sound"],"audio")
-						if check_sound==None:
-							return self.check_audiofile(files["sound"],"file")
-						else:
-							return check_sound
-					else:
-						return {"result":False,"code":3}
+						
+		if data["image"]["option"]=="custom":						
+			if data["image"]["file"]!=None:
+				check_image=self.check_mimetypes(data["image"]["file"],"image")
 				
-				if files["url"]!=None:
-					if files["url"]=="":
-						return {"result":False,"code":6}
-					else:
-						return self.check_audiofile(files["url"],"url")
-
-				if files["directory"]!="":
-					if files["directory"]==None:
-						return {"result":False,"code":7}
-					else:
-						return {"result":True,"code":0}		
 			else:
-				return check_image			
-		'''
-		if duration==0:
-			return {"result":False,"code":8}			
-		'''
-		return {"result":True,"code":0}			
+				return {"result":False,"code":5,"data":""}
+		
+		if check_image==None:
+			if data["sound"]["option"]=="file":
+				if data["sound"]["file"]!=None:
+					check_sound=self.check_mimetypes(data["sound"]["file"],"audio")
+					
+					if check_sound==None:
+						return self.check_audiofile(data["sound"]["file"],"file")
+					else:
+						return check_sound
+				else:
+					return {"result":False,"code":3,"data":""}
+
+			elif data["sound"]["option"]=="directory":
+				if data["sound"]["file"]==None:
+					return {"result":False,"code":7,"data":""}
+				else:
+					self.correct_files=0
+					return self.check_directory(data["sound"]["file"])	
+
+			elif data["sound"]["option"]=="url":			
+				if data["sound"]["file"]=="":
+					return {"result":False,"code":6,"data":""}
+				else:
+					check_connection=self.check_connection()
+					if check_connection:
+						return self.check_audiofile(data["sound"]["file"],"url")
+					else:
+						return {"result":False,"code":42,"data":""}	
+
+			elif data["sound"]["option"]=="urlslist":				
+				if data["sound"]["file"]!=None:
+					check_connection=self.check_connection()
+					if check_connection:
+						return self.check_list(data["sound"]["file"])
+					else:
+						return {"result":False,"code":42,"data":""}	
+				else:		
+					return {"result":False,"code":39,"data":""}
+			
+						
+		else:
+			return check_image			
+				
 	
 	#def check_data
 	
 	def check_mimetypes(self,file,check):
+
+		'''
+		Result code:
+			-2: Invalid sound file
+			-4: Invalid image file
+		
+		'''	
 	
 		mime = MimeTypes()
-		mime_type = mime.guess_type(file)
+		file_mime_type= mime.guess_type(file)
+		error=False
 		
 		if check=="audio":
-			sound_mime=mime.guess_type(file)
-			if not 'audio' in sound_mime[0] and not 'video' in sound_mime[0]:
-				return {"result":False,"code":2}
-				
+			if file_mime_type[0]!=None:
+				if not 'audio' in file_mime_type[0] and not 'video' in file_mime_type[0]:
+					error=True
+			else:
+				error=True
 		else:
-			image_mime=mime.guess_type(file)
-			if not 'image' in image_mime[0]: 
-				return {"result":False,"code":4}
+			if file_mime_type[0]!=None:
+				if not 'image' in file_mime_type[0]: 
+					error=True
+			else:
+				error=True
+
+		if error:
+			if check=="audio":
+				return {"result":False,"code":2,"data":""}
+			else:
+				return {"result":False,"code":4,"data":""}				
 		
 	#def check_mimetypes			
 				
 	def check_audiofile(self,file,type):
+
+		'''
+		Result code:
+			-0: All correct
+			-8: Sound file or ulr not valid
+		
+		'''	
 		
 		params=' -show_entries stream=codec_type,duration -of compact=p=0:nk=1'
 		
@@ -147,12 +204,172 @@ class BellManager(object):
 		poutput=p.communicate()[0]
 		
 		if len(poutput)==0:
-			return {"result":False, "code":8}	
+			return {"result":False,"code":8,"data":""}	
 		else:
-			return {"result":True,"code":0}
+			return {"result":True,"code":0,"data":""}
 	
 	
-	#def check_audiofile		
+	#def check_audiofile	
+
+	def check_directory(self,directory):
+
+		'''
+		Result code:
+			-0: All correct
+			-38: Not correct files in directory
+		
+		'''	
+
+		
+		path=directory+"/*"
+		content_directory=glob.glob(path)
+		for item in content_directory:
+			if os.path.isfile(item):
+				check_file=self.check_mimetypes(item,"audio")
+				if check_file==None:
+					check_run=self.check_audiofile(item,'file')
+					if check_run["result"]:
+						self.correct_files+=1
+			else:
+				if os.path.isdir(item):
+					self.check_directory(item)			
+		
+		if self.correct_files>0:
+			return {"result":True,"code":0,"data":""}
+		else:
+			return {"result":False,"code":38,"data":""}
+
+	#def check_directory		
+
+	def check_list(self,url_list):
+
+		'''
+		Result code:
+			-0: All correct
+			-40: Url list with errors
+			-41: time out validation
+			-43: File not valid 
+		
+		'''	
+		result=True
+		data=""
+		code=0
+		self.url_invalid=[]
+		self.error_lines=[]
+		self.file=url_list
+		self.sync_threads={}
+		self.read_list()
+		self.max_timeout=300
+		self.current_timeout=0
+
+		while self.worker():
+			import time
+			time.sleep(1)
+
+		if self.worker_ret==0:	
+			if len(self.sync_threads)>0:
+				if len(self.url_invalid)>0 or len(self.error_lines):
+					data=self.order_error_lines()
+					result=False
+					code=40
+			else:
+				result=False
+				code=43
+							
+		else:
+			result=False
+			code=41
+
+		return {"result":result,"code":code,"data":data}					
+
+	#def check_list		
+	
+	def worker(self):
+
+		self.current_timeout+=1
+		self.worker_ret=1
+		if self.current_timeout > self.max_timeout:
+			self.worker_ret=-1
+			return False
+
+		for i in range(len(self.threads_alive)-1,-1,-1):
+			if not self.threads_alive[i].is_alive():
+				self.threads_alive.pop(i)
+
+		if len(self.threads_alive)>0:
+			return True
+
+		self.worker_ret=0
+		return False
+
+	#def worker
+
+
+	def generate_url_threads(self,item,line_num):
+		
+		id=int(random.random()*1000)		
+		t=threading.Thread(target=self.check_url,args=(id,item,line_num))
+		t.daemon=True
+		t.start()
+		self.sync_threads[id]={}
+		self.sync_threads[id]["thread"]=t
+		return t	
+
+	#def generate_url_threads	
+
+	def read_list(self):
+
+		try:
+			content=open(self.file,'r')
+			self.threads_alive=[]
+			line_num=1
+			if os.stat(self.file).st_size>0:
+				for line in content.readlines():
+					if line!="\n":
+						if line.startswith("http:") or line.startswith("https:"):
+							t=self.generate_url_threads(line,line_num)
+							self.threads_alive.append(t)
+						else:
+							self.error_lines.append(line_num)	
+					line_num+=1
+		except:
+			pass			
+		
+	#def read_list		
+
+	def	check_url(self,id,line,line_num):
+
+		params=' -show_entries stream=codec_type,duration -of compact=p=0:nk=1'
+		cmd='ffprobe -i $(youtube-dl -g "'+line+'" |sed -n 2p) '+params
+		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
+		poutput=p.communicate()[0]
+		if len(poutput)==0:
+			self.url_invalid.append(line_num)
+	
+	#def check_url	
+
+	def order_error_lines(self):
+
+		errors=""
+		
+		error_lines=sorted(self.url_invalid+self.error_lines)	
+		for item in  error_lines:
+			errors=errors+","+str(item)
+
+		return errors[1:]
+
+	#def get_lines_error	
+
+	def check_connection(self):
+	
+		try:
+			res=urllib.request.urlopen("http://lliurex.net")
+			return True
+			
+		except:
+			return False	
+
+	#def check_connection		
 			
 	def get_order_bell(self,info=None):
 	
@@ -244,5 +461,23 @@ class BellManager(object):
 		return result
 
 	#def enable_holiday	
+
+
+	def change_activation_status(self,action):
+
+		result=self.n4d.change_activation_status(self.credentials,'BellSchedulerManager',action)
+		self._debug("Activation/Deactivation process: ",result)	
+		return result
+
+	#def change_activation_status	
+
+	def remove_all_bells(self):
+
+		result=self.n4d.remove_all_bells(self.credentials,'BellSchedulerManager')
+		self._debug("Remove all bells process: ",result)	
+		return result
+
+	#def remove_all_bells			
+							
 
 #class BellManager 		
