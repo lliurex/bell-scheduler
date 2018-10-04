@@ -2,13 +2,13 @@ Source: bell-scheduler
 Section: python
 Priority: optional
 Maintainer: Equipo LliureX <lliurex@gva.es> 
-Build-Depends: debhelper (>=9),
+Build-Depends: debhelper (>=10),
                dh-python,
                python3-setuptools,
                python3-all,
                python3-poinstaller,
                llxsrchelper  
-Standards-Version: 3.9.7
+Standards-Version: 4.1.2
 Homepage: http://lliurex.net
 Vcs-Browser: https://svn.lliurex.net/xenial/bell-scheduler
 
