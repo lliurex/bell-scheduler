@@ -1,47 +1,47 @@
 
 	GtkLabel {
-		font: Roboto;
+		font: 12pt Roboto;
 	}
 	
 	#OPTION_LABEL {
 		color: #707070;
-		font: Roboto Light;
+		font: 12pt Roboto Light;
 
 	}
 
 	#TIME_LABEL{
 		color: #3366cc;
-		font: Roboto Bold 44;
+		font: 44pt Roboto Bold;
 
 
 	}
 	#DAY_LABEL_ON{
 		color: #3366cc;
-		font: Roboto Bold 18;
+		font: 18pt Roboto Bold;
 
 	}
 
 	#DAY_LABEL_OFF{
 		color: #A0A0A0;
-		font: Roboto 18;
+		font: 18pt Roboto;
 
 	}
 
 	#BELL_DESCRIPTION{
 		color: #000;
-		font: Roboto 18;
+		font: 18pt Roboto;
 
 	}
 
 	#BELL_ERROR_SOUND{
 		color: #CC0000;
-		font: Roboto Italic 10;
+		font: 10pt Roboto Italic;
 
 	}
 	
 	#BELL_SOUND{
 		color: #3366cc;
-		font: Roboto Italic 11;
+		font: 11pt Roboto Italic;
 
 	}
 	
@@ -86,33 +86,33 @@
 	#WAITING_LABEL{
 
 		color: #3366cc;
-		font: Roboto Bold 11;
+		font: 11pt Roboto Bold;
 			
 	}	
 
 	#EDIT_LABEL{
 
 		color: #3366cc;
-		font: Roboto Bold 12;
+		font: 12pt Roboto Bold;
 			
 	}
 	
 	#NOTE_LABEL{
 
 		color: #3366cc;
-		font: Roboto Bold 9;
+		font: 9pt Roboto Bold;
 			
 	}
 
 	#MSG_ERROR_LABEL {
 
 		color: #CC0000;
-		font: Roboto Bold 11; 
+		font: 11pt Roboto Bold; 
 	}
 	
 	#MSG_CORRECT_LABEL {
 			color: #43a047;
-			font: Roboto Bold 11;
+			font: 11pt Roboto Bold;
 
 	}
 		
@@ -164,13 +164,13 @@
 	#TITLE {
 		
 			color:#3366cc;
-			font: Roboto 18;
+			font: 18pt Roboto;
 		}
 	
 		
 	#ROBOTO_MEDIUM_GRAY{
 			color: #A0A0A0;
-			font: Roboto 14;
+			font: 14pt Roboto;
 		}
 
 	#POPOVER_OFF .label {
