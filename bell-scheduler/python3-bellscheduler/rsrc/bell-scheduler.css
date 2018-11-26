@@ -1,3 +1,11 @@
+	@define-color arc-blue #0062f5;
+	@define-color arc-blue-light #4accf5;
+	@define-color arc-black #2d323d;
+	@define-color arc-red #000000;
+	@define-color arc-blue-hover #629de2;
+	@define-color arc-blue-active #3aa3e2;
+	@define-color default-grey #666666;
+
 
 	GtkLabel {
 		font: 12pt Roboto;
@@ -9,8 +17,21 @@
 
 	}
 
+	#SOUND_PATH_LABEL {
+		color: #707070;
+		font: 11pt Roboto Light;
+
+	}
+
 	#TIME_LABEL{
 		color: #3366cc;
+		font: 44pt Roboto Bold;
+
+
+	}
+
+	#TIME_LABEL_ON{
+		color: @arc-blue-light;
 		font: 44pt Roboto Bold;
 
 
@@ -92,14 +113,16 @@
 
 	#EDIT_LABEL{
 
-		color: #3366cc;
+		color: @arc-blue;
+		/*color: #3366cc;*/
 		font: 12pt Roboto Bold;
 			
 	}
 	
 	#NOTE_LABEL{
 
-		color: #3366cc;
+		/*color: #3366cc;*/
+		color: @arc-blue;
 		font: 9pt Roboto Bold;
 			
 	}
@@ -173,12 +196,12 @@
 			font: 14pt Roboto;
 		}
 
-	#POPOVER_OFF .label {
+	#POPOVER_OFF {
 		color: #707070;
 
 	}	
 
-	#POPOVER_ON .label{
+	#POPOVER_ON{
 
 		color: #3366cc;
 
@@ -204,4 +227,100 @@
 				
 				color-stop(1, rgba(255,255,255,1))
 			);
+	}
+
+	#CARD-ITEM
+	{
+		background-color: #ffffff;
+		/*background-color: rgba(255,120,120,1);*/
+		border: 0px;
+		/*border-radius: 0;*/
+		box-shadow: 0px 1px 2px #666666;
+	}
+
+	#CARD-ITEM:hover
+	{	
+		
+		box-shadow: 0px 2px 3px #666666;
+	}
+
+	#CARD-ITEM:active
+	{	
+		
+		background-color: @arc-blue;
+	}
+
+	#CARD-ITEM:active .label
+	{
+		
+		color: white;
+	}
+
+
+	#CUSTOM-ENTRY
+	{
+		color: @default-grey;
+		border: none;
+		/*border-radius: 5px;*/
+		/*background-color: @arc-blue;*/
+		border-bottom: 1px solid #aaaaaa;
+		padding: 4px;
+		/*background: #eeeeee;*/
+		
+		/*border-bottom: 2px solid transparent;*/
+	
+	}
+
+	#CUSTOM-ENTRY:focus
+	{
+		color: @arc-blue;
+		border-bottom: 1px solid @arc-blue-light;
+		/*border-bottom: 2px solid rgba(0,0,0,0);*/
+		/*background-color: transparent;*/
+		
+	
+	}
+	#CUSTOM-ENTRY:selected
+	{
+		color: white;
+	}
+
+	#CUSTOM-ENTRY:disabled
+	{
+		background-color: #bbbbbb;
+		border-bottom: 1px solid transparent;
+		color: #999999;
+	}
+
+
+
+	#IMAGE_BOX {
+		/* t r b l*/
+		border-color: red;
+		margin: 6px;
+		border-top: 6px;
+		border-bottom: 6px;
+
+		border-radius: 0px;
+		border: none;
+		box-shadow: none;
+
+		background-color: #ffffff;
+
+	}
+
+
+	#IMAGE_BOX_HOVER {
+		/*padding: 6px 6px 6px 6px;*/
+		
+		margin-left:6px;
+		margin-right:6px;
+		border-radius: 0px;
+		
+		border-color:transparent;
+		background-color: #ffffff;
+		/*box-shadow: -1px 0px -1px 8px @arc-blue;*/
+		/*box-shadow: 0px 0px 10px @arc-blue;*/
+		box-shadow: 0px 0px 10px @arc-blue;
+		
 	}

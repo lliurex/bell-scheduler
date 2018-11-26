@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-09 09:30+0200\n"
+"POT-Creation-Date: 2018-11-26 09:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,406 +40,462 @@ msgstr ""
 msgid "Remove all bells"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:304
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:143
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1415
+msgid "Manage holiday"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:296
+msgid "Disable holiday control"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:299
+msgid "Enable holiday control"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:343
 msgid "Please choose a file to save bells list"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:357
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:396
 msgid ""
 "New bells configuration will be loaded and replace the existing "
 "configutarion. Do you want to continue?"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:361
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:400
 msgid "Please choose a file to load bells list"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:505
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:121
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:544
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:167
 msgid "Monday"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:506
-#: bell-scheduler/python3-bellscheduler/BellBox.py:105
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:545
+#: bell-scheduler/python3-bellscheduler/BellBox.py:106
 msgid "M"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:507
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:546
 msgid "Mon"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:509
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:134
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:548
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:180
 msgid "Tuesday"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:510
-#: bell-scheduler/python3-bellscheduler/BellBox.py:115
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:549
+#: bell-scheduler/python3-bellscheduler/BellBox.py:116
 msgid "T"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:511
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:550
 msgid "Tue"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:513
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:147
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:552
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:193
 msgid "Wednesday"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:514
-#: bell-scheduler/python3-bellscheduler/BellBox.py:125
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:553
+#: bell-scheduler/python3-bellscheduler/BellBox.py:126
 msgid "W"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:515
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:554
 msgid "Wed"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:517
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:160
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:556
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:206
 msgid "Thursday"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:518
-#: bell-scheduler/python3-bellscheduler/BellBox.py:135
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:557
+#: bell-scheduler/python3-bellscheduler/BellBox.py:136
 msgid "R"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:519
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:558
 msgid "Thu"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:521
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:173
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:560
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:219
 msgid "Friday"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:522
-#: bell-scheduler/python3-bellscheduler/BellBox.py:145
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:561
+#: bell-scheduler/python3-bellscheduler/BellBox.py:146
 msgid "F"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:523
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:562
 msgid "Fri"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:608
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:647
 msgid "You must indicate a name for the alarm"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:610
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:649
 msgid "Sound file is not correct"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:612
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:651
 msgid "You must indicate sound file"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:614
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:653
 msgid "Image file is not correct"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:616
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:655
 msgid "You must indicate a image file"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:618
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:657
 msgid "You must indicate a url"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:620
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:659
 msgid "You must indicate a directory"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:622
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:661
 msgid "The sound file or url indicated is not reproducible"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:624
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:663
 msgid "File has errors. Unabled to load it"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:626
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:665
 msgid "File loaded succesfully"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:628
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:667
 msgid "File saved succcesfully"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:630
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:669
 msgid "Unable to save file"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:632
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:671
 msgid "File loaded with errors"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:634
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:673
 msgid "Bell deleted successfully"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:636
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:675
 msgid "Bell edited successfully"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:638
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:677
 msgid "Bell activated successfully"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:640
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:679
 msgid "Bell deactivated successfully"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:642
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:681
 msgid "Bell created successfully"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:644
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:683
 msgid "Unabled to edit the Bell due to problems with cron sync"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:646
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:685
 msgid "Unabled to create the Bell due to problems with cron sync"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:648
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:687
 msgid "Unabled to delete the Bell due to problems with cron sync"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:650
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:689
 msgid "Unabled to activate the Bell due to problems with cron sync"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:652
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:691
 msgid "Unabled to deactivate the Bell due to problems with cron sync"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:654
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:693
 msgid "Unabled to copy image and/or sound file to work directory"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:656
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:695
 msgid "Unabled to read bells configuration file"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:658
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:697
 msgid "Exporting bells configuration. Wait a moment..."
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:660
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:699
 msgid "Importing bells configuration. Wait a moment..."
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:662
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:701
 msgid "Revovering previous bells configuration. Wait a moment..."
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:664
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:703
 msgid "ERROR: File or directory not available"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:666
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:705
 msgid "Validating the data entered..."
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:668
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:707
 msgid "Detected alarms with errors"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:670
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:709
 msgid "Activating holiday control.Wait a moment..."
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:672
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:711
 msgid "Deactivating holiday control.Wait a moment..."
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:674
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:713
 msgid "Holiday control deactivated successfully"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:676
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:715
 msgid "Holiday control activated successfully"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:678
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:717
 msgid "Unabled to apply changes due to problems with cron sync"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:680
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:719
 msgid "Unabled to load bell list due to problems with cron sync"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:682
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:721
 msgid "The specified folder does not contain playable files"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:684
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:723
 msgid "You must indicate a urls list file"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:686
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:725
 msgid "The specified urls list has not valid urls. Errors in lines: "
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:688
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:727
 msgid "Unabled to validated the data"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:690
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:729
 msgid "Unabled to validated the data. Internet connection not detected"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:692
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:731
 msgid "The specified urls list is not valid"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:694
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:733
 msgid "Activating all bells. Wait a moment..."
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:696
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:735
 msgid "Deactivating all bells. Wait a moment..."
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:698
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:737
 msgid "The bells have been activated successfully"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:700
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:739
 msgid "The bells have been deactivated successfully"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:702
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:741
 msgid "It is not possible to activate all bells"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:704
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:743
 msgid "It is not possible to deactivate all bells"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:706
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:745
 msgid "Removing all bells. Wait a moment..."
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:708
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:747
 msgid "The bells have been removed successfully"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:710
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:749
 msgid "It is not possible to remove all bells"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/MainWindow.py:890
+#: bell-scheduler/python3-bellscheduler/MainWindow.py:941
 msgid "Do you want delete all bell?"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/BellBox.py:205
-msgid "Delete bell"
+#: bell-scheduler/python3-bellscheduler/BellBox.py:225
+msgid "Manage bell"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/BellBox.py:213
+#: bell-scheduler/python3-bellscheduler/BellBox.py:239
 msgid "Edit bell"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/BellBox.py:218
+#: bell-scheduler/python3-bellscheduler/BellBox.py:252
+msgid "Delete bell"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/BellBox.py:268
 msgid "Activate or deactivate bell"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/BellBox.py:323
+#: bell-scheduler/python3-bellscheduler/BellBox.py:375
 msgid "Do you want delete the bell?"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:244
-msgid "Name"
+#: bell-scheduler/python3-bellscheduler/EditBox.py:885
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:424
+msgid "<specify the file/url for the sound>"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:258
-msgid "Image"
-msgstr ""
-
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:277
-msgid "From stock"
-msgstr ""
-
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:328
-msgid "Custom image"
-msgstr ""
-
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:365
-msgid "Sound"
-msgstr ""
-
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:374
-msgid "YouTube url"
-msgstr ""
-
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:405
+#: bell-scheduler/python3-bellscheduler/EditBox.py:937
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1045
 msgid "Sound file"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:435
+#: bell-scheduler/python3-bellscheduler/EditBox.py:939
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1062
 msgid "Random from directory"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:467
+#: bell-scheduler/python3-bellscheduler/EditBox.py:941
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1093
+msgid "YouTube url"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/EditBox.py:943
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1124
 msgid "Random from urls list"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:502
+#: bell-scheduler/python3-bellscheduler/EditBox.py:1043
+#: bell-scheduler-indicator.install/usr/bin/bell-scheduler-indicator:283
+msgid "Full reproduction"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:98
+msgid "Click to change the hour"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:108
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:132
+msgid "00"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:120
+msgid ":"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:277
+msgid "Name"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:320
+msgid "Click to change the image"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:376
+msgid "Sound"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:394
+msgid "Established option:"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:488
 msgid "Play options"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:516
-msgid "Max. duration (in seconds)"
-msgstr ""
-
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:546
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:506
 msgid "Start in second"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:602
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:526
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:706
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:785
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:813
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1252
+msgid "0"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:579
+msgid "Max. duration"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:599
+msgid "30"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:612
+msgid "seconds"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:666
 msgid ""
 "(!) If the indicated duration is 0, the sound will be reproduced in its "
 "entirety"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:727
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:898
+msgid "From stock"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:916
+msgid "Custom image"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1359
 msgid "Add new bell"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:741
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1373
 msgid "Export bell to file"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:755
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1387
 msgid "Load file with bells"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:769
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1401
 msgid "Global alarm management"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:783
-msgid "Manage holiday"
-msgstr ""
-
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:797
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1429
 msgid "Help"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:820
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1452
 msgid "Search by hour, day and description"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:822
+#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1454
 msgid "Search..."
-msgstr ""
-
-#: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:871
-msgid "Do not run the alarms on holidays set"
 msgstr ""
 
 #: bell-scheduler-indicator.install/usr/bin/bell-scheduler-indicator:92
@@ -460,10 +516,6 @@ msgstr ""
 
 #: bell-scheduler-indicator.install/usr/bin/bell-scheduler-indicator:259
 msgid " seconds"
-msgstr ""
-
-#: bell-scheduler-indicator.install/usr/bin/bell-scheduler-indicator:283
-msgid "Full reproduction"
 msgstr ""
 
 #: bell-scheduler-indicator.install/usr/bin/bell-scheduler-indicator:298

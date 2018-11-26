@@ -57,7 +57,7 @@ class MainWindow:
 		
 		self.main_window=builder.get_object("main_window")
 		self.main_window.set_title("Bell Scheduler")
-		self.main_window.resize(930,770)
+		self.main_window.resize(930,710)
 		self.main_box=builder.get_object("main_box")
 		self.login=N4dGtkLogin()
 		self.login.set_allowed_groups(['adm','teachers'])
@@ -74,7 +74,7 @@ class MainWindow:
 		self.import_button=builder.get_object("import_button")
 		self.manage_bells_button=builder.get_object("manage_bells_button")
 
-		self.popover = Gtk.Popover()
+		self.manage_popover = Gtk.Popover()
 		vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 		activate_box=Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 		activate_box.set_margin_left(10)
@@ -123,13 +123,49 @@ class MainWindow:
 		remove_box.add(remove_eb)
 		vbox.pack_start(remove_box, True, True,8)
 
-		self.popover.add(vbox)
-		self.popover.set_position(Gtk.PositionType.BOTTOM)
-		self.popover.set_relative_to(self.manage_bells_button)
+		self.manage_popover.add(vbox)
+		self.manage_popover.set_position(Gtk.PositionType.BOTTOM)
+		self.manage_popover.set_relative_to(self.manage_bells_button)
 
 		self.manage_holiday_button=builder.get_object("manage_holiday_button")
+
+		self.holiday_popover = Gtk.Popover()
+		vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+		edit_holiday_box=Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+		edit_holiday_box.set_margin_left(10)
+		edit_holiday_box.set_margin_right(10)
+		edit_holiday_eb=Gtk.EventBox()
+		edit_holiday_eb.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK)
+		edit_holiday_eb.connect("button-press-event", self.manage_holiday)
+		edit_holiday_eb.connect("motion-notify-event", self.mouse_over_popover)
+		edit_holiday_eb.connect("leave-notify-event", self.mouse_exit_popover)
+		edit_holiday_label=Gtk.Label()
+		edit_holiday_label.set_text(_("Manage holiday"))
+		edit_holiday_eb.add(edit_holiday_label)
+		edit_holiday_box.add(edit_holiday_eb)
+		vbox.pack_start(edit_holiday_box, True, True,8)
+
+		enable_holiday_box=Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+		enable_holiday_box.set_margin_left(10)
+		enable_holiday_box.set_margin_right(10)
+		enable_holiday_eb=Gtk.EventBox()
+		enable_holiday_eb.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK)
+		enable_holiday_eb.connect("button-press-event", self.enable_holiday_switch_clicked)
+		enable_holiday_eb.connect("motion-notify-event", self.mouse_over_popover)
+		enable_holiday_eb.connect("leave-notify-event", self.mouse_exit_popover)
+		
+		self.enable_holiday_label=Gtk.Label()
+		#enable_holiday_label.set_text(_("Deactivate all bells"))
+		enable_holiday_eb.add(self.enable_holiday_label)
+		enable_holiday_box.add(enable_holiday_eb)
+		vbox.pack_start(enable_holiday_box, True, True,8)
+
+		self.holiday_popover.add(vbox)
+		self.holiday_popover.set_position(Gtk.PositionType.BOTTOM)
+		self.holiday_popover.set_relative_to(self.manage_holiday_button)
+
 		self.help_button=builder.get_object("help_button")
-		self.enable_holiday_label=builder.get_object("enable_holiday_label")
+		#self.enable_holiday_label=builder.get_object("enable_holiday_label")
 		self.enable_holiday_switch=builder.get_object("enable_holiday_switch")
 		self.search_entry=builder.get_object("search_entry")
 		self.msg_label=builder.get_object("msg_label")
@@ -222,9 +258,9 @@ class MainWindow:
 		self.import_button.connect("clicked",self.import_clicked)
 		self.search_entry.connect("changed",self.search_entry_changed)
 		self.manage_bells_button.connect("clicked",self.manage_bells_button_clicked)
-		self.manage_holiday_button.connect("clicked",self.manage_holiday_button_clicked)
+		self.manage_holiday_button.connect("clicked",self.manage_holiday_button_cliked)
 		self.return_button.connect("clicked",self.return_button_clicked)
-		self.enable_holiday_switch.connect("notify::active",self.enable_holiday_switch_clicked)
+		#self.enable_holiday_switch.connect("notify::active",self.enable_holiday_switch_clicked)
 		self.help_button.connect("clicked",self.help_clicked)
 
 	#def connect_signals	
@@ -251,14 +287,17 @@ class MainWindow:
 
 	#def _signin
 
-	def _init_holiday_switch(self):
+	def _init_holiday_switch(self,init=None):
 
-		self.holiday_control=False
+		if init !=False:
+			self.holiday_control=False
 
 		if os.path.exists(self.holiday_token):
-			self.enable_holiday_switch.set_active(True)
+			self.enable_holiday_label.set_text(_("Disable holiday control"))
+			#self.enable_holiday_switch.set_active(True)
 		else:
-			self.enable_holiday_switch.set_active(False)
+			self.enable_holiday_label.set_text(_("Enable holiday control"))
+			#self.enable_holiday_switch.set_active(False)
 
 	#def _init_holiday_switch
 	
@@ -558,7 +597,7 @@ class MainWindow:
 		self.search_entry.set_sensitive(sensitive)
 		self.manage_bells_button.set_sensitive(sensitive)
 		self.manage_holiday_button.set_sensitive(sensitive)
-		self.enable_holiday_switch.set_sensitive(sensitive)
+		#self.enable_holiday_switch.set_sensitive(sensitive)
 		
 
 	#def manage_menubar		
@@ -572,14 +611,14 @@ class MainWindow:
 			self.save_button.show()
 			self.save_button.set_sensitive(True)
 			self.msg_label.set_text("")
-			self.enable_holiday_switch.hide()
-			self.enable_holiday_label.hide()
+			#self.enable_holiday_switch.hide()
+			#self.enable_holiday_label.hide()
 		else:
 			self.cancel_button.hide()
 			self.save_button.hide()
 			self.msg_label.set_text("")
-			self.enable_holiday_switch.show()
-			self.enable_holiday_label.show()
+			#self.enable_holiday_switch.show()
+			#self.enable_holiday_label.show()
 
 
 	#def manage_down_buttons					
@@ -712,13 +751,13 @@ class MainWindow:
 
 	#def get_msg	
 			
-	def manage_holiday_button_clicked(self,widget):
+	def manage_holiday(self,widget,event=None):
 
 		self.core.holidayBox.start_api_connect()
 		self.msg_label.set_text("")
 		self.manage_menubar(False)
-		self.enable_holiday_switch.hide()
-		self.enable_holiday_label.hide()
+		#self.enable_holiday_switch.hide()
+		#self.enable_holiday_label.hide()
 		self.stack_opt.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
 		self.stack_opt.set_visible_child_name("holidayBox")
 		self.return_button.show()
@@ -732,14 +771,15 @@ class MainWindow:
 		self.stack_opt.set_transition_type(Gtk.StackTransitionType.SLIDE_RIGHT)
 		self.stack_opt.set_visible_child_name("bellBox")
 		self.return_button.hide()
-		self.enable_holiday_switch.show()
-		self.enable_holiday_label.show()
+		#self.enable_holiday_switch.show()
+		#self.enable_holiday_label.show()
 
 
 	#def return_button_clicked
 
-	def enable_holiday_switch_clicked(self,switch,gparam):
+	def enable_holiday_switch_clicked(self,widget,event=None):
 
+		'''
 		if switch.get_active():
 			if not os.path.exists(self.holiday_token):
 				self.holiday_control=True
@@ -749,8 +789,17 @@ class MainWindow:
 			if os.path.exists(self.holiday_token):
 				self.holiday_control=True
 				self.holiday_action="disable"
+		'''
+		if os.path.exists(self.holiday_token):
+			self.holiday_control=True
+			self.holiday_action="disable"
+		else:
+			self.holiday_control=True
+			self.holiday_action="enable"
+
 
 		if self.holiday_control:
+			self.holiday_popover.hide()
 			self.manage_menubar(False)
 			self.msg_label.set_text("")
 			self.core.bellBox.manage_bells_buttons(False)
@@ -779,6 +828,8 @@ class MainWindow:
 			else:
 				self.manage_message(True,self.enable_holiday_result['code'])
 
+			self._init_holiday_switch(False)
+
 		return False
 
 	#def pulsate_enable_holiday_control	
@@ -804,7 +855,7 @@ class MainWindow:
 				
 	def manage_bells_button_clicked(self,widget):
 
-		self.popover.show_all()
+		self.manage_popover.show_all()
 
 	#def manage_bells_button_clicked	
 
@@ -838,7 +889,7 @@ class MainWindow:
 
 	def change_bell_status(self,code):
 
-		self.popover.hide()
+		self.manage_popover.hide()
 		self.manage_menubar(False)
 		self.core.bellBox.manage_bells_buttons(False)
 		self.msg_label.set_text("")
@@ -885,7 +936,7 @@ class MainWindow:
 
 		
 		if len(self.bells_info)>0:
-			self.popover.hide()
+			self.manage_popover.hide()
 			dialog = Gtk.MessageDialog(None,0,Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, "BELL SCHEDULER")
 			dialog.format_secondary_text(_("Do you want delete all bell?"))
 			response=dialog.run()
@@ -930,6 +981,10 @@ class MainWindow:
 		self.remove_all_process_result=self.core.bellmanager.remove_all_bells()
 
 	#def remove_all_process	
+
+	def manage_holiday_button_cliked(self,widget):
+
+		self.holiday_popover.show_all()
 
 	def mouse_over_popover(self,widget,event=None):
 

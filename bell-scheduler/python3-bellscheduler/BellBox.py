@@ -29,6 +29,7 @@ class BellBox(Gtk.VBox):
 
 		self.css_file=self.core.rsrc_dir+"bell-scheduler.css"
 		self.edit_image=self.core.rsrc_dir+"edit.svg"
+		self.manage_bell_image=self.core.rsrc_dir+"manage_bell.svg"
 		self.delete_image=self.core.rsrc_dir+"trash.svg"
 		self.main_box=builder.get_object("bell_data_box")
 		self.bell_box=builder.get_object("bell_box")
@@ -175,7 +176,7 @@ class BellBox(Gtk.VBox):
 		description.set_width_chars(20)
 		description.set_max_width_chars(20)
 		description.set_xalign(-1)
-		description.set_ellipsize(Pango.EllipsizeMode.START)
+		description.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
 		description.set_name("BELL_DESCRIPTION")
 		description.set_valign(Gtk.Align.START)
 
@@ -188,12 +189,13 @@ class BellBox(Gtk.VBox):
 		sound.set_width_chars(40)
 		sound.set_max_width_chars(40)
 		sound.set_xalign(-1)
-		sound.set_ellipsize(Pango.EllipsizeMode.START)
+		sound.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
 		
 		sound.set_valign(Gtk.Align.START)
 		hbox_description.pack_start(description,False,False,15)
 		hbox_description.pack_start(sound,False,False,1)
 
+		'''
 		delete=Gtk.Button()
 		delete_image=Gtk.Image.new_from_file(self.delete_image)
 		delete.add(delete_image)
@@ -211,6 +213,54 @@ class BellBox(Gtk.VBox):
 		edit.set_name("EDIT_ITEM_BUTTON")
 		edit.connect("clicked",self.edit_bell_clicked,hbox)
 		edit.set_tooltip_text(_("Edit bell"))
+		'''
+		manage_bell=Gtk.Button()
+		manage_bell_image=Gtk.Image.new_from_file(self.manage_bell_image)
+		manage_bell.add(manage_bell_image)
+		manage_bell.set_margin_right(15)
+		manage_bell.set_halign(Gtk.Align.CENTER)
+		manage_bell.set_valign(Gtk.Align.CENTER)
+		manage_bell.set_name("EDIT_ITEM_BUTTON")
+		manage_bell.connect("clicked",self.manage_bell_options,hbox)
+		manage_bell.set_tooltip_text(_("Manage bell"))
+
+		popover = Gtk.Popover()
+		manage_bell.popover=popover
+		vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+		edit_box=Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+		edit_box.set_margin_left(10)
+		edit_box.set_margin_right(10)
+		edit_eb=Gtk.EventBox()
+		edit_eb.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK)
+		edit_eb.connect("button-press-event", self.edit_bell_clicked,hbox)
+		edit_eb.connect("motion-notify-event", self.mouse_over_popover)
+		edit_eb.connect("leave-notify-event", self.mouse_exit_popover)
+		edit_label=Gtk.Label()
+		edit_label.set_text(_("Edit bell"))
+		edit_eb.add(edit_label)
+		edit_box.add(edit_eb)
+		
+		delete_box=Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+		delete_box.set_margin_left(10)
+		delete_box.set_margin_right(10)
+		delete_eb=Gtk.EventBox()
+		delete_eb.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK)
+		delete_eb.connect("button-press-event", self.delete_bell_clicked,hbox)
+		delete_eb.connect("motion-notify-event", self.mouse_over_popover)
+		delete_eb.connect("leave-notify-event", self.mouse_exit_popover)
+		delete_label=Gtk.Label()
+		delete_label.set_text(_("Delete bell"))
+		delete_eb.add(delete_label)
+		delete_box.add(delete_eb)
+
+		vbox.pack_start(edit_box, True, True,8)
+		vbox.pack_start(delete_box, True, True,8)
+		
+		vbox.show_all()
+		popover.add(vbox)
+		popover.set_position(Gtk.PositionType.BOTTOM)
+		popover.set_relative_to(manage_bell)
+
 
 		switch_button=Gtk.Switch()
 		switch_button.set_halign(Gtk.Align.CENTER)
@@ -242,8 +292,10 @@ class BellBox(Gtk.VBox):
 		hbox.pack_start(hbox_cron,False,False,5)
 		hbox.pack_start(image,False,False,5)
 		hbox.pack_start(hbox_description,False,False,5)
-		hbox.pack_end(delete,False,False,5)
-		hbox.pack_end(edit,False,False,5)
+		hbox.pack_end(manage_bell,False,False,5)
+		#hbox.pack_end(delete,False,False,5)
+		#hbox.pack_end(edit,False,False,5)
+		
 		hbox.pack_end(switch_button,False,False,5)
 		hbox.show_all()
 
@@ -316,9 +368,9 @@ class BellBox(Gtk.VBox):
 	#def format_image_size	
 
 
-	def delete_bell_clicked(self,button,hbox):
+	def delete_bell_clicked(self,widget,event,hbox):
 
-		
+		popover=hbox.get_children()[4].popover.hide()
 		dialog = Gtk.MessageDialog(None,0,Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, "BELL SCHEDULER")
 		dialog.format_secondary_text(_("Do you want delete the bell?"))
 		response=dialog.run()
@@ -337,8 +389,9 @@ class BellBox(Gtk.VBox):
 	#def delete_bell_clicked		
 			
 		
-	def edit_bell_clicked(self,button,hbox):
+	def edit_bell_clicked(self,widget,event,hbox):
 
+		popover=hbox.get_children()[4].popover.hide()
 		bell_to_edit=hbox		
 		bell_to_edit=bell_to_edit.get_children()[0].get_children()[0].id
 		self.core.editBox.init_form()
@@ -380,10 +433,26 @@ class BellBox(Gtk.VBox):
 		for item in self.bell_list_box:
 			item.get_children()[3].set_sensitive(sensitive)
 			item.get_children()[4].set_sensitive(sensitive)
-			item.get_children()[5].set_sensitive(sensitive)
+			#item.get_children()[5].set_sensitive(sensitive)
 
 	#def manage_bells_buttons
-			
+	
+	def manage_bell_options(self,button,hbox,event=None):
+	
+		button.popover.show()
+
+	#def manage_bell_options	
+
+	def mouse_over_popover(self,widget,event=None):
+
+		widget.set_name("POPOVER_ON")
+
+	#def mouser_over_popover	
+
+	def mouse_exit_popover(self,widget,event=None):
+
+		widget.set_name("POPOVER_OFF")		
+	
 
 #class BellBox
 
