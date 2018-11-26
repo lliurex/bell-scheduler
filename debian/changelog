@@ -1,3 +1,9 @@
+bell-scheduler (0.3.19) bionic; urgency=medium
+
+  * Applied new style to the graphical interface
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 26 Nov 2018 12:29:07 +0100
+
 bell-scheduler (0.3.18) bionic; urgency=medium
 
   * Initial release for bionic
