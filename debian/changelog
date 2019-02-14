@@ -1,3 +1,9 @@
+bell-scheduler (0.3.21) bionic; urgency=medium
+
+  * Adding sudo group to n4d plugin
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 14 Feb 2019 08:56:08 +0100
+
 bell-scheduler (0.3.20) bionic; urgency=medium
 
   * Fixed glade file
