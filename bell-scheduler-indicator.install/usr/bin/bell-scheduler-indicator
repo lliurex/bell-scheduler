@@ -58,7 +58,7 @@ class BellSchedulerIndicator:
 			
 		self.app_indicator=appindicator.Indicator.new(BellSchedulerIndicator.ID,icon_name,appindicator.IndicatorCategory.APPLICATION_STATUS)
 		self.app_indicator.set_status(appindicator.IndicatorStatus.PASSIVE)
-		self.app_indicator.set_text("Bell Scheduler")
+		self.app_indicator.set_title("Bell Scheduler")
 		
 		self.menu = Gtk.Menu()
 		self.menu.add_events(Gdk.EventMask.ALL_EVENTS_MASK)
