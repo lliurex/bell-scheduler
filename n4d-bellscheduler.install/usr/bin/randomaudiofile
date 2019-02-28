@@ -2,38 +2,109 @@
 MUSICPATH=$1
 TEMPATH=$(mktemp)
 TEMPATH2=$(mktemp)
+URLPLAYED="/etc/bellScheduler/list_url_played"
+FILEPLAYED="/etc/bellScheduler/list_file_played"
+MULTI=2
 
 if [ -d $MUSICPATH ];then
 	TYPE="directory"
+	if [ ! -f $FILEPLAYED ];then
+		touch $FILEPLAYED
+	fi
 elif [ -f $MUSICPATH ];then
 	TYPE="list"
+	if [ ! -f $URLPLAYED ];then
+		touch $URLPLAYED
+	fi
 fi
+
+	
 
 case $TYPE in
 
 	directory)	
 		#statements	
+		num_files=0
 		find "$MUSICPATH" -type f > $TEMPATH
 		while read musicfile ;  do
 			mimetype=$(file -i "$musicfile" | awk -F ':' '{ if ( $2 ~ /audio/ || $2 ~ /video/ ) print "audio" ; else if ($2 ~ /octet-stream/ ) print "check" }')
 			if [ "$mimetype" = "audio" ]; then
+				let num_files=num_files+1
 				echo $musicfile >> $TEMPATH2
 			elif [ "$mimetype" = "check" ]; then
 				mimetype=$(mimetype $musicfile | awk -F ':' '{if ( $2 ~ /audio/ || $2 ~ /video/) print "audio"}')
 				if [ $mimetype = "audio" ]; then
+					let num_files=num_files+1
 					echo $musicfile >> $TEMPATH2
 				fi
 			fi
 			
 		done < $TEMPATH
-		echo $(cat $TEMPATH2 | shuf -n 1)
+		lines_fileplayed=$(wc -l $FILEPLAYED)
+		lines_fileplayed=($lines_fileplayed%%: *)
+		full_list=0
+		if [ $lines_fileplayed -ge $num_files ]; then
+			let full_list=full_list+1
+		fi
+		if [ $full_list -eq 1 ];then
+				rm -f $FILEPLAYED
+				touch $FILEPLAYED
+		fi	
+		match=0
+		cont=0
+		time_out=$(expr $num_files '*' $MULTI)
+		while [ $match -eq 0 ];do
+			file_select=$(echo $(cat $TEMPATH2 | shuf -n 1))
+			if [ $cont -lt $time_out ];then
+				if ! egrep "$(basename "$file_select")" $FILEPLAYED
+				then	
+					let match=match+1	
+					echo  "$(basename "$file_select")" >> $FILEPLAYED
+				fi
+			else
+				break
+			fi	
+				let cont=cont+1		
+		done
+		#echo $(cat $TEMPATH2 | shuf -n 1)
+		echo $file_select
 		rm $TEMPATH $TEMPATH2
 	;;
 
 	list)	
-		if [ -f $MUSICPATH ]; then
-			echo $(grep . $MUSICPATH | shuf -n 1 )	| sed -e 's,%,\%,g'
+		if [ -f $MUSICPATH ];then
+			lines_musicpath=$(wc -l $MUSICPATH)
+			lines_musicpath=($lines_musicpath%%: *)
+			lines_urlplayed=$(wc -l $URLPLAYED)
+			lines_urlplayed=($lines_urlplayed%%: *)
 
+			full_list=0
+			if [ $lines_urlplayed -ge $lines_musicpath ]; then
+				 let full_list=full_list+1
+			fi		 
+			if [ $full_list -eq 1 ];then
+				rm -f $URLPLAYED
+				touch $URLPLAYED
+			fi		 
+			match=0
+			cont=0
+			time_out=$(expr $lines_musicpath '*' $MULTI)
+			while [ $match -eq 0 ];do
+				url_select=$(echo $(grep . $MUSICPATH | shuf -n 1 ) | sed -e 's,%,\%,g')
+				if [ $cont -lt $time_out ];then
+					if ! grep -Fxq "$url_select" $URLPLAYED
+					then	
+						let match=match+1	
+						echo $url_select >> $URLPLAYED
+					fi
+				else
+					break
+				fi	
+				let cont=cont+1		
+			done	
+			#echo $(grep . $MUSICPATH | shuf -n 1 )	| sed -e 's,%,\%,g'
+			echo $url_select
+				
 		fi
 	;;
 
