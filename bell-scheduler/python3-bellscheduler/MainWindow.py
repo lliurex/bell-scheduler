@@ -57,7 +57,7 @@ class MainWindow:
 		
 		self.main_window=builder.get_object("main_window")
 		self.main_window.set_title("Bell Scheduler")
-		self.main_window.resize(930,710)
+		self.main_window.resize(930,780)
 		self.main_box=builder.get_object("main_box")
 		self.login=N4dGtkLogin()
 		self.login.set_allowed_groups(['adm','teachers'])
@@ -203,6 +203,7 @@ class MainWindow:
 		self.manage_menubar(True,True)
 		self.manage_down_buttons(False)
 		self.cont=0
+		self.main_window.connect("key-press-event",self.on_key_press_event)
 		self.main_window.show()
 		self.stack_window.set_transition_type(Gtk.StackTransitionType.NONE)
 		self.stack_window.set_visible_child_name("login")
@@ -302,6 +303,15 @@ class MainWindow:
 	#def _init_holiday_switch
 	
 
+
+	def on_key_press_event(self,window,event):
+		
+		ctrl=(event.state | Gdk.ModifierType.CONTROL_MASK)
+		if ctrl and event.keyval == Gdk.KEY_f:
+			self.search_entry.grab_focus()
+		
+	#def on_key_press_event
+
 	def load_info(self):
 	
 		self.read_conf=self.core.bellmanager.read_conf()
@@ -340,6 +350,33 @@ class MainWindow:
 
 	def export_clicked(self,widget):
 
+		random_directory=False
+		random_urllist=False
+		info_dialog=False
+
+		for item in self.bells_info:
+			print (self.bells_info[item]["sound"]["option"])
+			if self.bells_info[item]["sound"]["option"]=="directory":
+				random_directory=True
+			if self.bells_info[item]["sound"]["option"]=="urlslist":
+				random_urllist=True
+		
+		if random_directory and not random_urllist:
+			msg_dialog=_("Alarms have been detected with random selection of sound files from a folder.\nRemember that this folder will not be included in the export made.\nIf the folder is not saved manually, when the export is restored, the alarms that use it will be deactivated")
+			info_dialog=True
+		elif not random_directory and random_urllist:
+			msg_dialog=_("Alarms have been detected with random selection of url from a list.\nRemember that this list will not be included in the export made.\nIf the list is not saved manually, when the export is restored, the alarms that use it will be deactivated")
+			info_dialog=True
+		elif random_directory and random_urllist:
+			msg_dialog=_("Alarms have been detected with random selection of sound files from a folder and url from a list.\nRemember that this folder and list will not be included in the export made.\nIf the folder and the list ar not saved manually, when the export is restored, the alarms that use them will be deactivated")
+			info_dialog=True
+
+		if info_dialog:
+			dialog = Gtk.MessageDialog(None,0,Gtk.MessageType.INFO, Gtk.ButtonsType.OK, "BELL SCHEDULER")
+			dialog.format_secondary_text(msg_dialog)
+			dialog.run()
+			dialog.destroy()
+		
 		dialog = Gtk.FileChooserDialog(_("Please choose a file to save bells list"), None,
 		Gtk.FileChooserAction.SAVE,(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
 		Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
