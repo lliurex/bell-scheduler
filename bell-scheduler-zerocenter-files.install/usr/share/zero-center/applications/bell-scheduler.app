@@ -10,4 +10,4 @@ Comment[ca_ES.UTF-8@valencia]=Aplicació per a programar les alarmes dels centre
 Icon=bell-scheduler
 Category=Software
 ScriptPath=bell-scheduler.zmd
-Groups=adm;admins,teachers
+Groups=sudo;admins,teachers
