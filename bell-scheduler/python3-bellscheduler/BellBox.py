@@ -195,25 +195,6 @@ class BellBox(Gtk.VBox):
 		hbox_description.pack_start(description,False,False,15)
 		hbox_description.pack_start(sound,False,False,1)
 
-		'''
-		delete=Gtk.Button()
-		delete_image=Gtk.Image.new_from_file(self.delete_image)
-		delete.add(delete_image)
-		delete.set_margin_right(15)
-		delete.set_halign(Gtk.Align.CENTER)
-		delete.set_valign(Gtk.Align.CENTER)
-		delete.set_name("DELETE_ITEM_BUTTON")
-		delete.connect("clicked",self.delete_bell_clicked,hbox)
-		delete.set_tooltip_text(_("Delete bell"))
-		edit=Gtk.Button()
-		edit_image=Gtk.Image.new_from_file(self.edit_image)
-		edit.add(edit_image)
-		edit.set_halign(Gtk.Align.CENTER)
-		edit.set_valign(Gtk.Align.CENTER)
-		edit.set_name("EDIT_ITEM_BUTTON")
-		edit.connect("clicked",self.edit_bell_clicked,hbox)
-		edit.set_tooltip_text(_("Edit bell"))
-		'''
 		manage_bell=Gtk.Button()
 		manage_bell_image=Gtk.Image.new_from_file(self.manage_bell_image)
 		manage_bell.add(manage_bell_image)
@@ -238,6 +219,7 @@ class BellBox(Gtk.VBox):
 		edit_label=Gtk.Label()
 		edit_label.set_text(_("Edit bell"))
 		edit_eb.add(edit_label)
+		edit_eb.set_name("POPOVER_OFF")
 		edit_box.add(edit_eb)
 		
 		delete_box=Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -251,6 +233,7 @@ class BellBox(Gtk.VBox):
 		delete_label=Gtk.Label()
 		delete_label.set_text(_("Delete bell"))
 		delete_eb.add(delete_label)
+		delete_eb.set_name("POPOVER_OFF")
 		delete_box.add(delete_eb)
 
 		vbox.pack_start(edit_box, True, True,8)
@@ -293,8 +276,6 @@ class BellBox(Gtk.VBox):
 		hbox.pack_start(image,False,False,5)
 		hbox.pack_start(hbox_description,False,False,5)
 		hbox.pack_end(manage_bell,False,False,5)
-		#hbox.pack_end(delete,False,False,5)
-		#hbox.pack_end(edit,False,False,5)
 		
 		hbox.pack_end(switch_button,False,False,5)
 		hbox.show_all()
@@ -433,7 +414,6 @@ class BellBox(Gtk.VBox):
 		for item in self.bell_list_box:
 			item.get_children()[3].set_sensitive(sensitive)
 			item.get_children()[4].set_sensitive(sensitive)
-			#item.get_children()[5].set_sensitive(sensitive)
 
 	#def manage_bells_buttons
 	

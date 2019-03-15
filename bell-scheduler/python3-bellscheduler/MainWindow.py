@@ -306,7 +306,7 @@ class MainWindow:
 
 	def on_key_press_event(self,window,event):
 		
-		ctrl=(event.state | Gdk.ModifierType.CONTROL_MASK)
+		ctrl=(event.state & Gdk.ModifierType.CONTROL_MASK)
 		if ctrl and event.keyval == Gdk.KEY_f:
 			self.search_entry.grab_focus()
 		
@@ -488,25 +488,15 @@ class MainWindow:
 					except:
 						self.manage_menubar(False)
 						self.recovery=True
-						'''
-						self.backup=False
-						self.orig=self.import_result['data']+".zip"
-						self.init_threads()
-						self.recovery_bells_t.start()
-						self.waiting_label.set_text(self.get_msg(28))
-						GLib.timeout_add(100,self.pulsate_recovery_bells)
-						return False
-						'''	
+						
 				else:
 					self.manage_message(True,self.read_conf['code'])	
 					self.cont=0
 					return False
 
 			else:
-				#self.manage_message(True,self.import_result['code'])	
 				self.cont=0
 				self.recovery=True
-				#return False
 
 			if self.recovery:
 				self.backup=False
@@ -634,7 +624,6 @@ class MainWindow:
 		self.search_entry.set_sensitive(sensitive)
 		self.manage_bells_button.set_sensitive(sensitive)
 		self.manage_holiday_button.set_sensitive(sensitive)
-		#self.enable_holiday_switch.set_sensitive(sensitive)
 		
 
 	#def manage_menubar		
@@ -648,14 +637,12 @@ class MainWindow:
 			self.save_button.show()
 			self.save_button.set_sensitive(True)
 			self.msg_label.set_text("")
-			#self.enable_holiday_switch.hide()
-			#self.enable_holiday_label.hide()
+		
 		else:
 			self.cancel_button.hide()
 			self.save_button.hide()
 			self.msg_label.set_text("")
-			#self.enable_holiday_switch.show()
-			#self.enable_holiday_label.show()
+			
 
 
 	#def manage_down_buttons					
@@ -793,8 +780,6 @@ class MainWindow:
 		self.core.holidayBox.start_api_connect()
 		self.msg_label.set_text("")
 		self.manage_menubar(False)
-		#self.enable_holiday_switch.hide()
-		#self.enable_holiday_label.hide()
 		self.stack_opt.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
 		self.stack_opt.set_visible_child_name("holidayBox")
 		self.return_button.show()
@@ -808,25 +793,12 @@ class MainWindow:
 		self.stack_opt.set_transition_type(Gtk.StackTransitionType.SLIDE_RIGHT)
 		self.stack_opt.set_visible_child_name("bellBox")
 		self.return_button.hide()
-		#self.enable_holiday_switch.show()
-		#self.enable_holiday_label.show()
 
 
 	#def return_button_clicked
 
 	def enable_holiday_switch_clicked(self,widget,event=None):
 
-		'''
-		if switch.get_active():
-			if not os.path.exists(self.holiday_token):
-				self.holiday_control=True
-				self.holiday_action="enable"
-
-		else:
-			if os.path.exists(self.holiday_token):
-				self.holiday_control=True
-				self.holiday_action="disable"
-		'''
 		if os.path.exists(self.holiday_token):
 			self.holiday_control=True
 			self.holiday_action="disable"
