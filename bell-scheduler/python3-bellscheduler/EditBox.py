@@ -68,7 +68,6 @@ class EditBox(Gtk.VBox):
 		self.data_box=builder.get_object("data_box")
 		self.name_label=builder.get_object("name_label")
 		self.name_entry=builder.get_object("name_entry")
-		#self.image_label=builder.get_object("image_label")
 		self.image_popover=builder.get_object("image_popover")
 		self.image_popover_msg=builder.get_object("image_popover_msg")
 		self.image_popover_cancel_bt=builder.get_object("image_popover_cancel_bt")
@@ -184,7 +183,6 @@ class EditBox(Gtk.VBox):
 		self.data_box.set_name("CARD-ITEM")
 		self.name_label.set_name("EDIT_LABEL")
 		self.name_entry.set_name("CUSTOM-ENTRY")
-		#self.image_label.set_name("EDIT_LABEL")
 		self.sound_label.set_name("EDIT_LABEL")
 		self.sound_path_label.set_name("SOUND_PATH_LABEL")
 		self.play_label.set_name("EDIT_LABEL")
@@ -213,7 +211,6 @@ class EditBox(Gtk.VBox):
 		self.urlslist_rb.connect("toggled",self.sound_toggled_button,"urlslist")
 		self.image_fc.connect("file-set",self.check_mimetype_image)
 		self.sound_fc.connect("file-set",self.check_mimetype_sound)
-		#self.button_test.connect("clicked",self.sound_popover_show)
 		self.image_eb.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK)
 		self.image_eb.connect("button-press-event", self.edit_image_clicked)
 		self.image_eb.connect("motion-notify-event", self.mouse_over_image)
@@ -436,20 +433,6 @@ class EditBox(Gtk.VBox):
 			self.image_path=self.image_fc.get_filename()
 			self.data_tocheck["image"]["file"]=self.image_path
 
-		'''
-		if self.sound_op=="directory":
-			self.sound_path=self.sound_dc.get_filename()
-			self.data_tocheck["sound"]["file"]=self.sound_path
-		elif self.sound_op=="file":
-			self.sound_path=self.sound_fc.get_filename()
-			self.data_tocheck["sound"]["file"]=self.sound_path
-		elif self.sound_op=="url":	
-			self.sound_path=self.sound_url.get_text().split('\n')[0]
-			self.data_tocheck["sound"]["file"]=self.sound_path
-		elif self.sound_op=="urlslist":
-			self.sound_path=self.sound_urlslist.get_filename()
-			self.data_tocheck["sound"]["file"]=self.sound_path	
-		'''
 		self.sound_path=self.get_sound_path(self.sound_op,False)
 		self.data_tocheck["sound"]["file"]=self.sound_path	
 			
@@ -626,7 +609,6 @@ class EditBox(Gtk.VBox):
 			msg=self.core.mainWindow.get_msg(check["code"])
 			self.image_popover_msg.set_text(msg)
 			self.image_popover_apply_bt.set_sensitive(False)
-			#self.core.mainWindow.manage_message(True,check["code"])
 		else:
 			self.image_popover_msg.set_text("")
 			self.image_popover_apply_bt.set_sensitive(True)
@@ -637,14 +619,12 @@ class EditBox(Gtk.VBox):
 
 		check=self.core.bellmanager.check_mimetypes(self.sound_fc.get_filename(),"audio")
 		if check !=None:
-			#self.core.mainWindow.manage_message(True,check["code"]).
 			msg=self.core.mainWindow.get_msg(check["code"])
 			self.sound_popover_msg.set_text(msg)
 			self.sound_popover_apply_bt.set_sensitive(False)
 		else:
 			self.sound_popover_msg.set_text("")
 			self.sound_popover_apply_bt.set_sensitive(True)
-			#self.core.mainWindow.msg_label.set_text("")
 
 	#def check_mimetype_sound		
 
@@ -659,39 +639,12 @@ class EditBox(Gtk.VBox):
 
 		self.name_entry.set_sensitive(sensitive)	
 
-		'''
-		self.stock_rb.set_sensitive(sensitive)
-		self.custom_rb.set_sensitive(sensitive)
-
-		self.file_rb.set_sensitive(sensitive)
-		self.directory_rb.set_sensitive(sensitive)
-		self.url_rb.set_sensitive(sensitive)
-		self.urlslist_rb.set_sensitive(sensitive)
-
-		if self.image_op=="stock":
-			self.image_cb.set_sensitive(sensitive)
-		else:
-			self.image_fc.set_sensitive(sensitive)
-
-		if self.sound_op=="file":
-			self.sound_fc.set_sensitive(sensitive)
-		elif self.sound_op=="directory":
-			self.sound_dc.set_sensitive(sensitive)
-		elif self.sound_op=="url":
-			self.sound_url.set_sensitive(sensitive)			
-		elif self.sound_op=="urlslist":
-			self.sound_urlslist.set_sensitive(sensitive)		
-		'''
 		self.hour_eb.set_sensitive(sensitive)
 		self.sound_edit_button.set_sensitive(sensitive)
 		self.image_eb.set_sensitive(sensitive)
 		self.duration_edit_bt.set_sensitive(sensitive)
 		self.start_edit_bt.set_sensitive(sensitive)
-		'''
-		self.duration_spinbutton.set_sensitive(sensitive)
-		self.start_time_spinbutton.set_sensitive(sensitive)
-		'''
-
+	
 	#def manage_form_control	
 
 	def edit_hour_bell(self,widget,event=None):
@@ -840,7 +793,9 @@ class EditBox(Gtk.VBox):
 				self.stock_rb.set_active(True)
 				self.image_cb.set_active(self.previous_image_cb)
 			else:
-				self.custom_rb.set_active(True)	
+				self.custom_rb.set_active(True)
+				self.image_fc.set_filename(self.previous_image_path)
+
 
 			self.image_path=self.previous_image_path
 
