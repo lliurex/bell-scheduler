@@ -226,7 +226,7 @@ class BellSchedulerIndicator:
 
 		try:
 			message=message+'\n'+"- "+self.bell_info[index]["hour"]+" "+self.bell_info[index]["name"]+"\n- "+duration_label+str(self.bell_info[index]["duration"])	
-			self.notify=Notify.Notification.new("Bell Scheduler",message, "bell-scheduler")
+			self.notify=Notify.Notification.new("Bell Scheduler",message, "bell-scheduler-indicator")
 			self.notify.set_hint("transient", GLib.Variant.new_boolean(True))
 			self.notify.set_timeout(10000)
 			self.notify.show()
@@ -438,6 +438,6 @@ class BellSchedulerIndicator:
 if __name__=="__main__":
 
 
-	BellSchedulerIndicator=BellSchedulerIndicator("bell-scheduler")
+	BellSchedulerIndicator=BellSchedulerIndicator("bell-scheduler-indicator")
 	GObject.threads_init()
 	Gtk.main()
