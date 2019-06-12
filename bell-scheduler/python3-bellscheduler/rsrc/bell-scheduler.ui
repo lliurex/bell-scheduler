@@ -1403,7 +1403,7 @@
                 <property name="tooltip_text" translatable="yes">Global alarm management</property>
                 <property name="margin_right">10</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-execute</property>
+                <property name="stock_id">gtk-preferences</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -1417,7 +1417,7 @@
                 <property name="tooltip_text" translatable="yes">Manage holiday</property>
                 <property name="margin_right">10</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-index</property>
+                <property name="stock_id">gtk-justify-fill</property>
               </object>
               <packing>
                 <property name="expand">False</property>

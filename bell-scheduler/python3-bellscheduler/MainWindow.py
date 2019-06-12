@@ -243,6 +243,7 @@ class MainWindow:
 		Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),self.style_provider,Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 		self.main_window.set_name("WINDOW")
 		self.waiting_label.set_name("WAITING_LABEL")
+		self.search_entry.set_name("CUSTOM-ENTRY")
 
 		#self.banner_box.set_name("BANNER_BOX")
 
