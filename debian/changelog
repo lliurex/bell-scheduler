@@ -1,3 +1,9 @@
+bell-scheduler (0.3.22) bionic; urgency=medium
+
+  * Chanded app and indicator icon
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 13 Jun 2019 09:04:05 +0200
+
 bell-scheduler (0.3.21) bionic; urgency=medium
 
   * Adding sudo group to n4d plugin
