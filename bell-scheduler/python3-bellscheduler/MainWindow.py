@@ -855,9 +855,9 @@ class MainWindow:
 		lang=os.environ["LANG"]
 
 		if 'ca_ES' in lang:
-			cmd='xdg-open http://wiki.lliurex.net/tiki-index.php?page=Bell+Scheduler_va'
+			cmd='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Bell-Scheduler-en-Bionic_va'
 		else:
-			cmd='xdg-open http://wiki.lliurex.net/tiki-index.php?page=Bell%2BScheduler'
+			cmd='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Bell-Scheduler-en-Bionic'
 
 		os.system(cmd)
 	
