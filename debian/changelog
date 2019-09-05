@@ -1,3 +1,9 @@
+bell-scheduler (0.3.24) bionic; urgency=medium
+
+  * Updated the links to the help
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 05 Sep 2019 14:24:14 +0200
+
 bell-scheduler (0.3.23) bionic; urgency=medium
 
   * Fixed valencian translations
