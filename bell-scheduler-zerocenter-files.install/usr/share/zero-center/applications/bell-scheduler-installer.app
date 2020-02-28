@@ -1,0 +1,17 @@
+Name=bell-scheduler-installer
+Name[en]=Bell Scheduler installer
+Name[es]=Instalador del Bell Scheduler
+Name[ca_ES.UTF-8@valencia]=Instal·lador del Bell Scheduler
+Name[ca_ES@valencia]=Instal·lador del Bell Scheduler
+Comment=Installation assistant of Bell-Scheduler (application to program the alarms of the educational centers for the entrance, exit, recreation) 
+Comment[es]=Asistente de instalación del Bell-Scheduler (aplicación para programar las alarmas de los centros educativos para la entrada, salida, recreo)
+Comment[ca_ES@valencia]=Assistent d'instal·lació del Bell-Scheduler (aplicació per a programar les alarmes dels centres educatius per a l'entrada, eixida, recreo)
+Comment[ca_ES.UTF-8@valencia]=Assistent d'instal·lació del Bell-Scheduler (aplicació per a programar les alarmes dels centres educatius per a l'entrada, eixida, recreo)
+Icon=bell-scheduler
+Category=Software
+ScriptPath=bell-scheduler-installer.zmd
+ReplacedWith=bell-scheduler
+Using=pkexec
+Service=True
+Modal=True
+Groups=sudo;admins

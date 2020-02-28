@@ -115,6 +115,9 @@ class EditBox(Gtk.VBox):
 		label=self.sound_urlslist.get_children()[0].get_children()[0].get_children()[1]
 		label.set_max_width_chars(30)
 		label.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
+
+		self.localpath_cb=builder.get_object("localpath_checkbutton")
+		self.localpath_leyend=builder.get_object("localpath_leyend")
 		
 		self.play_label=builder.get_object("play_label")
 		self.start_time_label=builder.get_object("start_time_label")
@@ -191,6 +194,7 @@ class EditBox(Gtk.VBox):
 		self.image_popover_msg.set_name("MSG_ERROR_LABEL")
 		self.sound_popover_msg.set_name("MSG_ERROR_LABEL")
 		self.sound_url.set_name("CUSTOM-ENTRY")
+		self.localpath_leyend.set_name("NOTE_LABEL")
 
 	#def set-css_info
 
@@ -255,6 +259,8 @@ class EditBox(Gtk.VBox):
 		self.sound_dc.set_sensitive(False)
 		self.sound_url.set_sensitive(False)
 		self.sound_urlslist.set_sensitive(False)
+		self.localpath_cb.set_active(False)
+		self.localpath_cb.set_sensitive(False)
 		self.start_time_spinbutton.set_value(0)
 		self.duration_spinbutton.set_value(30)
 		self.init_threads()
@@ -289,8 +295,10 @@ class EditBox(Gtk.VBox):
 				self.sound_fc.set_sensitive(False)
 				self.sound_url.set_sensitive(False)
 				self.sound_urlslist.set_sensitive(False)
+				self.localpath_cb.set_sensitive(False)
 				self.sound_op="directory"
 				self.sound_popover_apply_bt.set_sensitive(True)
+
 
 			elif name=="file":
 				self.sound_dc.set_sensitive(False)
@@ -298,13 +306,25 @@ class EditBox(Gtk.VBox):
 				self.sound_url.set_sensitive(False)
 				self.sound_urlslist.set_sensitive(False)
 				self.sound_op="file"
-				self.sound_popover_apply_bt.set_sensitive(False)
+				if self.sound_fc.get_filename() !=None:
+					check=self.core.bellmanager.check_mimetypes(self.sound_fc.get_filename(),"audio")
+					if check==None:
+						self.sound_popover_apply_bt.set_sensitive(True)
+						if self.core.sounds_path not in self.sound_fc.get_filename():
+							self.localpath_cb.set_sensitive(True)
+					else:
+						self.sound_popover_apply_bt.set_sensitive(False)
+						self.localpath_cb.set_sensitive(False)	
+				else:	
+					self.sound_popover_apply_bt.set_sensitive(False)
+					self.localpath_cb.set_sensitive(False)	
 
 			elif name=="url":
 				self.sound_dc.set_sensitive(False)
 				self.sound_fc.set_sensitive(False)
 				self.sound_url.set_sensitive(True)
-				self.sound_urlslist.set_sensitive(False)	
+				self.sound_urlslist.set_sensitive(False)
+				self.localpath_cb.set_sensitive(False)	
 				self.sound_op="url"
 				self.sound_popover_apply_bt.set_sensitive(True)
 
@@ -312,7 +332,8 @@ class EditBox(Gtk.VBox):
 				self.sound_dc.set_sensitive(False)
 				self.sound_fc.set_sensitive(False)
 				self.sound_url.set_sensitive(False)
-				self.sound_urlslist.set_sensitive(True)	
+				self.sound_urlslist.set_sensitive(True)
+				self.localpath_cb.set_sensitive(False)	
 				self.sound_op="urlslist"	
 				self.sound_popover_apply_bt.set_sensitive(True)
 
@@ -321,6 +342,8 @@ class EditBox(Gtk.VBox):
 	
 	def load_values(self,bell):
 	
+		self.localpath_cb.set_active(False)
+
 		bell_to_edit=self.core.mainWindow.bells_info[bell]
 
 		self.hour_spinbutton.set_value(bell_to_edit["hour"])	
@@ -377,6 +400,12 @@ class EditBox(Gtk.VBox):
 			if os.path.exists(bell_to_edit["sound"]["path"]):
 				self.sound_fc.set_filename(bell_to_edit["sound"]["path"])
 				sound_error=False
+
+			if self.core.sounds_path in bell_to_edit["sound"]["path"]:
+				self.localpath_cb.set_active(True)
+			else:
+				self.localpath_cb.set_sensitive(True)	
+				
 		elif sound_op=="url":
 			self.url_rb.set_active(True)
 			self.sound_url.set_text(bell_to_edit["sound"]["path"])
@@ -550,11 +579,14 @@ class EditBox(Gtk.VBox):
 
 		bell[order]["sound"]={}
 		bell[order]["sound"]["option"]=self.sound_op
+		orig_sound_path=""
 		if self.sound_op=="file":
-			orig_sound_path=self.sound_path
-			dest_sound_path=os.path.join(self.core.sounds_path,os.path.basename(orig_sound_path))
+			if self.localpath_cb.get_active():
+				orig_sound_path=self.sound_path
+				dest_sound_path=os.path.join(self.core.sounds_path,os.path.basename(orig_sound_path))
+			else:
+				dest_sound_path=self.sound_path
 		else:
-			orig_sound_path=""
 			dest_sound_path=self.sound_path
 
 		bell[order]["sound"]["path"]=dest_sound_path	
@@ -622,8 +654,14 @@ class EditBox(Gtk.VBox):
 			msg=self.core.mainWindow.get_msg(check["code"])
 			self.sound_popover_msg.set_text(msg)
 			self.sound_popover_apply_bt.set_sensitive(False)
+			self.localpath_cb.set_sensitive(False)
 		else:
 			self.sound_popover_msg.set_text("")
+			self.localpath_cb.set_active(True)
+			if self.core.sounds_path not in self.sound_fc.get_filename():
+				self.localpath_cb.set_sensitive(True)
+			else:
+				self.localpath_cb.set_sensitive(False)
 			self.sound_popover_apply_bt.set_sensitive(True)
 
 	#def check_mimetype_sound		
@@ -822,6 +860,8 @@ class EditBox(Gtk.VBox):
 		if self.sound_op=="file":
 			if self.previous_sound_path==None:
 				self.sound_popover_apply_bt.set_sensitive(False)
+			else:
+				self.sound_popover_apply_bt.set_sensitive(True)	
 		self.sound_popover.show_all()
 
 	#def sound_edit_button_clicked	
@@ -862,22 +902,33 @@ class EditBox(Gtk.VBox):
 	
 		if self.restore_sound:
 
+			self.localpath_cb.set_active(False)
+			
 			if self.previous_sound_op=="file":
 				self.file_rb.set_active(True)
+				self.localpath_cb.set_sensitive(True)
+				
 				try:
 					self.sound_fc.set_filename(self.previous_sound_path)
+				
+					if self.core.sounds_path in self.previous_sound_path:
+						self.localpath_cb.set_sensitive(False)
+						self.localpath_cb.set_active(True)
 				except:
 					pass	
 			elif self.previous_sound_op=="directory":
+				self.localpath_cb.set_sensitive(False)
 				self.directory_rb.set_active(True)
 				try:
 					self.sound_dc.set_filename(self.previous_sound_path)
 				except:
 					pass	
 			elif self.previous_sound_op=="url":
+				self.localpath_cb.set_sensitive(False)
 				self.url_rb.set_active(True)
 				self.sound_url.set_text(self.previous_sound_path)
 			elif self.previous_sound_op=="urllist":
+				self.localpath_cb.set_sensitive(False)
 				self.urlslist_rb.set_active(True)
 				try:
 					self.sound_urllist.set_filenanme(self.previous_sound_path)
