@@ -1,3 +1,10 @@
+bell-scheduler (0.3.25) bionic; urgency=medium
+
+  * Added zomando to install application
+  * Added option to not copy sounds files 
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 02 Mar 2020 09:00:49 +0100
+
 bell-scheduler (0.3.24) bionic; urgency=medium
 
   * Updated the links to the help
