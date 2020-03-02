@@ -15,7 +15,7 @@
 
 export PYBUILD_NAME=bell-scheduler
 %:
-	dh $@ --with llxsrc,python3 --buildsystem pybuild
+	dh $@ --with llxsrc,zero,python3 --buildsystem pybuild
 
 # dh_make generated override targets
 # This is example for Cmake (See https://bugs.debian.org/641051 )
