@@ -1,3 +1,9 @@
+bell-scheduler (0.3.26) bionic; urgency=medium
+
+  * Fixed translations in app files
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 02 Mar 2020 09:23:48 +0100
+
 bell-scheduler (0.3.25) bionic; urgency=medium
 
   * Added zomando to install application
