@@ -1,0 +1,6 @@
+#!/bin/sh
+
+
+epi-gtk /usr/share/zero-lliurex-bellscheduler/bell-scheduler.epi
+
+exit 0
