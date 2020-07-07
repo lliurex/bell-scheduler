@@ -1,6 +1,6 @@
 {
 	"type":"apt",
-	"pkg_list": [{"name":"bell-scheduler","key_store":"bell-scheduler"}], 
+	"pkg_list": [{"name":"bell-scheduler","key_store":"bell-scheduler","custom_icon":"bell-scheduler_bell-scheduler.png"}], 
 	"script": {},
 	"zomando":"bell-scheduler-installer"
 }
