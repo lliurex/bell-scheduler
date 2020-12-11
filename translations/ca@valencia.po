@@ -10,15 +10,16 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-25 10:25+0100\n"
-"PO-Revision-Date: 2020-02-28 14:04+0100\n"
-"Last-Translator: empar <montoro_mde@gva.es>\n"
-"Language-Team: Catalan <kde-i18n-ca@kde.org>\n"
-"Language: es\n"
+"PO-Revision-Date: 2020-11-06 13:04+0000\n"
+"Last-Translator: Weblate Admin <fernandezdeybarra_jua@gva.es>\n"
+"Language-Team: Valencian <http://weblate.lliurex.net/projects/bell-scheduler/"
+"bell-scheduler/ca@valencia/>\n"
+"Language: ca@valencia\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 19.04.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3.1\n"
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:65
 msgid ""
@@ -362,7 +363,7 @@ msgstr "Cal que indiqueu un fitxer per a la llista d'URL"
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:750
 msgid "The specified urls list has not valid urls. Errors in lines: "
 msgstr ""
-"La llista d'URL especificada conté URL no vàlids. Errors en les línies."
+"La llista d'URL especificada conté URL no vàlids. Errors en les línies: "
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:752
 msgid "Unabled to validated the data"
@@ -495,9 +496,8 @@ msgid "30"
 msgstr "30"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:612
-#| msgid " seconds"
 msgid "seconds"
-msgstr " segons"
+msgstr "segons"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:666
 msgid ""
@@ -519,7 +519,7 @@ msgstr "Fitxer de so"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1064
 msgid "Random from directory"
-msgstr "Fitxer aleatori des d'un directori "
+msgstr "Fitxer aleatori des d'un directori"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1095
 msgid "YouTube url"
@@ -534,6 +534,7 @@ msgid "Copy the sound file to the internal folder (*)"
 msgstr "Copia el fitxer de so en una carpeta interna (*)"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1199
+#, fuzzy
 msgid ""
 "(*) Checking this option the sound file will be copied to the internal "
 "folder. It will be this file \n"
@@ -541,10 +542,10 @@ msgid ""
 "the file will be \n"
 "included in the export. It is recommended to mark it"
 msgstr ""
-"(*) Si seleccioneu aquesta opció, el fitxer de so es copiarà en la carpeta"
-" interna. Aquest fitxer serà \n"
-"el que s'utilitzarà per a reproduir l'alarma. A més, si s'exporten alarmes,"
-" el fitxer serà \n"
+"(*) Si seleccioneu aquesta opció, el fitxer de so es copiarà en la carpeta "
+"interna. Aquest fitxer serà \n"
+"el que s'utilitzarà per a reproduir l'alarma. A més, si s'exporten alarmes, "
+"el fitxer serà"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1396
 msgid "Add new bell"
