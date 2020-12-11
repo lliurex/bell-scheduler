@@ -22,7 +22,7 @@ set -e
 case "$1" in
     purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
     
-		zero-center set-non-configured bell-scheduler-installer
+		zero-center set-non-configured bell-scheduler-installer || true
 		
     ;;
 

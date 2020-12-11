@@ -22,7 +22,7 @@ set -e
 case "$1" in
    	configure)
     
-		zero-center set-configured bell-scheduler-installer
+		zero-center set-configured bell-scheduler-installer || true
 		
     ;;
 
