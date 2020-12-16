@@ -1,3 +1,9 @@
+bell-scheduler (0.3.28) bionic; urgency=medium
+
+  * Fixed posinst and postrm scripts
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 16 Dec 2020 13:40:48 +0100
+
 bell-scheduler (0.3.27) bionic; urgency=medium
 
   * Added custom icon to show in epi

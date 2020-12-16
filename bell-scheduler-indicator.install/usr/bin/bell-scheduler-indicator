@@ -89,21 +89,13 @@ class BellSchedulerIndicator:
 					
 	def populate_menu(self):
 	
-		#item=Gtk.ImageMenuItem()
-		hbox=Gtk.HBox()
+		item=Gtk.ImageMenuItem()
 		label_item=_("Stop the bell now")
-		#item.set_label(label_item)
+		item.set_label(label_item)
 		img=Gtk.Image()
 		img.set_from_icon_name("media-playback-stop",Gtk.IconSize.MENU)
-		'''
 		item.set_image(img)
 		item.set_always_show_image(True)
-		'''
-		label=Gtk.Label(label=label_item)
-		hbox.pack_start(img,False,False,0)
-		hbox.pack_end(label,False,False,0)
-		item=Gtk.MenuItem()
-		item.add(hbox)
 		item.connect("activate",self.stop_bell)
 		self.menu.insert(item,0)
 
@@ -447,5 +439,5 @@ if __name__=="__main__":
 
 
 	BellSchedulerIndicator=BellSchedulerIndicator("bell-scheduler-indicator")
-	#GObject.threads_init()
+	GObject.threads_init()
 	Gtk.main()
