@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-25 10:25+0100\n"
-"PO-Revision-Date: 2020-11-06 13:04+0000\n"
-"Last-Translator: Weblate Admin <fernandezdeybarra_jua@gva.es>\n"
+"PO-Revision-Date: 2020-12-18 11:41+0000\n"
+"Last-Translator: Angels <gimenez_angcam@gva.es>\n"
 "Language-Team: Valencian <http://weblate.lliurex.net/projects/bell-scheduler/"
 "bell-scheduler/ca@valencia/>\n"
 "Language: ca@valencia\n"
@@ -68,11 +68,11 @@ msgid ""
 "If the folder is not saved manually, when the export is restored, the alarms "
 "that use it will be deactivated"
 msgstr ""
-"S'han detectat alarmes amb selecció aleatòria de fitxers de so d'una"
-" carpeta.\n"
+"S'han detectat alarmes amb selecció aleatòria de fitxers de so d'una carpeta."
+"\n"
 "Recordeu que aquesta carpeta no s'inclourà en l'exportació realitzada.\n"
-"Si la carpeta no es guarda de forma manual, quan l'exportació siga "
-"restaurada les alarmes que la utilitzen seran desactivades."
+"Si la carpeta no es guarda de forma manual, quan es restaure l'exportació, "
+"les alarmes que la utilitzen es desactivaran."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:369
 msgid ""
@@ -83,8 +83,8 @@ msgid ""
 msgstr ""
 "S'han detectat alarmes amb selecció aleatòria d'URL d'una llista.\n"
 "Recordeu que aquesta llista no s'inclourà en l'exportació realitzada.\n"
-"Si la llista no es guarda de forma manual, quan es restaure l'exportació les"
-" alarmes que la utilitzen seran desactivades."
+"Si la llista no es guarda de forma manual, les alarmes que s'utilitzen es "
+"desactivaran quan es restaure l'exportació."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:372
 msgid ""
@@ -94,13 +94,12 @@ msgid ""
 "If the folder and the list ar not saved manually, when the export is "
 "restored, the alarms that use them will be deactivated"
 msgstr ""
-"S'han detectat alarmes amb selecció aleatòria de fitxers de so d'una carpeta"
-" i "
-"d'URL d'una llista.\n"
-"Recordeu que aquesta carpeta i aquesta llista no s'inclouran en "
-"l'exportació realitzada.\n"
-"Si la carpeta i la llista no es guarden de forma manual, quan l'exportació "
-"siga restaurada les alarmes que les utilitzen seran desactivades."
+"S'han detectat alarmes amb selecció aleatòria de fitxers de so d'una carpeta "
+"i d'URL d'una llista.\n"
+"Recordeu que aquesta carpeta i aquesta llista no s'inclouran en l'exportació "
+"realitzada.\n"
+"Si la carpeta i la llista no es guarden de forma manual, les alarmes que les "
+"utilitzen es desactivaran quan l'exportació siga restaurada."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:381
 msgid "Please choose a file to save bells list"
@@ -190,55 +189,55 @@ msgstr "Dv."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:672
 msgid "You must indicate a name for the alarm"
-msgstr "Cal que indiqueu un nom per a l'alarma"
+msgstr "Indiqueu un nom per a l'alarma"
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:674
 msgid "Sound file is not correct"
-msgstr "El fitxer de so no és correcte"
+msgstr "El fitxer de so no és correcte."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:676
 msgid "You must indicate sound file"
-msgstr "Cal que indiqueu un fitxer de so"
+msgstr "Indiqueu un fitxer de so"
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:678
 msgid "Image file is not correct"
-msgstr "El fitxer d'imatge no és correcte"
+msgstr "El fitxer d'imatge no és correcte."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:680
 msgid "You must indicate a image file"
-msgstr "Cal que indiqueu un fitxer d'imatge"
+msgstr "Indiqueu un fitxer d'imatge"
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:682
 msgid "You must indicate a url"
-msgstr "Cal que indiqueu un URL"
+msgstr "Indiqueu un URL"
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:684
 msgid "You must indicate a directory"
-msgstr "Cal que indiqueu un directori"
+msgstr "Indiqueu un directori"
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:686
 msgid "The sound file or url indicated is not reproducible"
-msgstr "El fitxer de so o l'URL indicats no es poden reproduir"
+msgstr "El fitxer de so o l'URL indicats no es poden reproduir."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:688
 msgid "File has errors. Unabled to load it"
-msgstr "El fitxer conté errors. No és possible carregar-lo"
+msgstr "El fitxer conté errors. No és possible carregar-lo."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:690
 msgid "File loaded succesfully"
-msgstr "El fitxer s'ha carregat correctament"
+msgstr "El fitxer s'ha carregat correctament."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:692
 msgid "File saved succcesfully"
-msgstr "El fitxer s'ha guardat correctament"
+msgstr "El fitxer s'ha guardat correctament."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:694
 msgid "Unable to save file"
-msgstr "No es pot guardar el fitxer"
+msgstr "No es pot guardar el fitxer."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:696
 msgid "File loaded with errors"
-msgstr "El fitxer s'ha carregat amb errors"
+msgstr "El fitxer s'ha carregat amb errors."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:698
 msgid "Bell deleted successfully"
@@ -246,19 +245,19 @@ msgstr "L'alarma s'ha eliminat correctament."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:700
 msgid "Bell edited successfully"
-msgstr "L'alarma s'ha editat correctament"
+msgstr "L'alarma s'ha editat correctament."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:702
 msgid "Bell activated successfully"
-msgstr "L'alarma s'ha activat correctament"
+msgstr "L'alarma s'ha activat correctament."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:704
 msgid "Bell deactivated successfully"
-msgstr "L'alarma s'ha desactivat correctament"
+msgstr "L'alarma s'ha desactivat correctament."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:706
 msgid "Bell created successfully"
-msgstr "L'alarma s'ha creat correctament"
+msgstr "L'alarma s'ha creat correctament."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:708
 msgid "Unabled to edit the Bell due to problems with cron sync"
@@ -314,7 +313,7 @@ msgstr ""
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:728
 msgid "ERROR: File or directory not available"
-msgstr "ERROR: el fitxer o la carpeta no estan disponibles"
+msgstr "ERROR: el fitxer o la carpeta no estan disponibles."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:730
 msgid "Validating the data entered..."
@@ -322,7 +321,7 @@ msgstr "S'estan validant les dades introduïdes..."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:732
 msgid "Detected alarms with errors"
-msgstr "Detectades alarmes amb errors"
+msgstr "S'han detectat alarmes amb errors."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:734
 msgid "Activating holiday control.Wait a moment..."
@@ -334,11 +333,11 @@ msgstr "S'està desactivant el control de vacances. Espereu un moment..."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:738
 msgid "Holiday control deactivated successfully"
-msgstr "S'ha desactivat el control de vacances correctament"
+msgstr "S'ha desactivat el control de vacances correctament."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:740
 msgid "Holiday control activated successfully"
-msgstr "S'ha activat el control de vacances correctament"
+msgstr "S'ha activat el control de vacances correctament."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:742
 msgid "Unabled to apply changes due to problems with cron sync"
@@ -354,11 +353,11 @@ msgstr ""
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:746
 msgid "The specified folder does not contain playable files"
-msgstr "La carpeta especificada no conté fitxers reproduïbles"
+msgstr "La carpeta especificada no conté fitxers reproduïbles."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:748
 msgid "You must indicate a urls list file"
-msgstr "Cal que indiqueu un fitxer per a la llista d'URL"
+msgstr "Indiqueu un fitxer per a la llista d'URL"
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:750
 msgid "The specified urls list has not valid urls. Errors in lines: "
@@ -380,11 +379,11 @@ msgstr "La llista especificada d'URL"
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:758
 msgid "Activating all bells. Wait a moment..."
-msgstr "S'està activant totes les alarmes. Espereu un moment..."
+msgstr "S'estan activant totes les alarmes. Espereu un moment..."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:760
 msgid "Deactivating all bells. Wait a moment..."
-msgstr "S'està desactivant totes les alarmes. Espereu un moment..."
+msgstr "S'estan desactivant totes les alarmes. Espereu un moment..."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:762
 msgid "The bells have been activated successfully"
@@ -396,7 +395,7 @@ msgstr "S'han desactivat les alarmes correctament."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:766
 msgid "It is not possible to activate all bells"
-msgstr "No és possible activar totes les alarmes"
+msgstr "No és possible activar totes les alarmes."
 
 #: bell-scheduler/python3-bellscheduler/MainWindow.py:768
 msgid "It is not possible to deactivate all bells"
@@ -489,7 +488,7 @@ msgstr "0"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:579
 msgid "Max. duration"
-msgstr "Duració màx."
+msgstr "Duració màxima"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:599
 msgid "30"
@@ -519,7 +518,7 @@ msgstr "Fitxer de so"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1064
 msgid "Random from directory"
-msgstr "Fitxer aleatori des d'un directori"
+msgstr "Fitxer aleatori d'un directori"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1095
 msgid "YouTube url"
@@ -527,14 +526,13 @@ msgstr "URL de YouTube"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1126
 msgid "Random from urls list"
-msgstr "URL aleatori des d'una llista."
+msgstr "URL aleatori d'una llista"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1171
 msgid "Copy the sound file to the internal folder (*)"
 msgstr "Copia el fitxer de so en una carpeta interna (*)"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1199
-#, fuzzy
 msgid ""
 "(*) Checking this option the sound file will be copied to the internal "
 "folder. It will be this file \n"
@@ -545,7 +543,8 @@ msgstr ""
 "(*) Si seleccioneu aquesta opció, el fitxer de so es copiarà en la carpeta "
 "interna. Aquest fitxer serà \n"
 "el que s'utilitzarà per a reproduir l'alarma. A més, si s'exporten alarmes, "
-"el fitxer serà"
+"el fitxer\n"
+"s'inclourà en l'exportació. Es recomana marcar-la."
 
 #: bell-scheduler/python3-bellscheduler/rsrc/bell-scheduler.ui:1396
 msgid "Add new bell"
