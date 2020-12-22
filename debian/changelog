@@ -1,3 +1,9 @@
+bell-scheduler (0.3.30) bionic; urgency=medium
+
+  * Updated link to the wiki
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 22 Dec 2020 17:49:26 +0100
+
 bell-scheduler (0.3.29) bionic; urgency=medium
 
   * Fixed valencian translations
