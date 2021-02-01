@@ -8,8 +8,6 @@ import json
 import codecs
 import datetime
 from mimetypes import MimeTypes
-import xmlrpc.client as n4dclient
-import ssl
 import tempfile
 import shutil
 import subprocess
@@ -17,10 +15,28 @@ import threading
 import glob
 import random
 import urllib.request
-
+import n4d.client
 
 
 class BellManager(object):
+
+	MISSING_BELL_NAME_ERROR=-1
+	INVALID_SOUND_FILE_ERROR=-2
+	MISSING_SOUND_FILE_ERROR=-3
+	INVALID_IMAGE_FILE_ERROR=-4
+	MISSING_IMAGE_FILE_ERROR=-5
+	MISSING_URL_ERROR=-6
+	MISSING_SOUND_FOLDER_ERROR=-7
+	SOUND_FILE_URL_NOT_VALID_ERROR=-8
+	FOLDER_WITH_INCORRECT_FILES_ERROR=-38
+	MISSING_URL_LIST_ERROR=-39
+	INCORRECT_URL_LIST_ERROR=-40
+	TIME_OUT_VALIDATION_ERROR=-41
+	FAILED_INTERNET_ERROR=-42
+	URL_FILE_NOT_VALID_ERROR=-43
+
+	ACTION_SUCCESSFUL=0
+
 
 	def __init__(self):
 
@@ -28,12 +44,28 @@ class BellManager(object):
 
 		self.dbg=0
 		self.credentials=[]
-		server='localhost'
+		self.server='localhost'
+		'''
 		context=ssl._create_unverified_context()
 		self.n4d = n4dclient.ServerProxy("https://"+server+":9779",context=context,allow_none=True)
-		
+		'''
 
 	#def __init__	
+
+	def create_n4dClient(self,credentials):
+
+		try:
+			self.credentials=credentials
+			self.client=n4d.client.Client("https://%s:9779"%self.server,self.credentials[0],self.credentials[1])
+			t=self.client.get_ticket()
+
+			if t.valid():
+				self.client=n4d.client.Client(ticket=t)
+		
+		except Exception as e:
+			print(str(e))
+			pass
+	
 
 	def _debug(self,function,msg):
 
@@ -44,7 +76,8 @@ class BellManager(object):
 
 	def sync_with_cron(self):
 
-		result=self.n4d.sync_with_cron(self.credentials,'BellSchedulerManager')
+		#Old n4d:result=self.n4d.sync_with_cron(self.credentials,'BellSchedulerManager')
+		result=self.client.BellSchedulerManager.sync_with_cron()
 		self._debug("Sync_with_cron: ",result)
 		return result
 
@@ -54,7 +87,8 @@ class BellManager(object):
 
 	def read_conf(self):
 		
-		result=self.n4d.read_conf(self.credentials,'BellSchedulerManager')
+		#Old n4d:result=self.n4d.read_conf(self.credentials,'BellSchedulerManager')
+		result=self.client.BellSchedulerManager.read_conf()
 		self._debug("Read configuration file: ",result)
 		self.bells_config=result["data"]
 		return result
@@ -68,31 +102,20 @@ class BellManager(object):
 		self.bells_config=info
 		change=str(last_change)
 				
-		result=self.n4d.save_changes(self.credentials,'BellSchedulerManager',info,change,action)
+		#Old n4d:result=self.n4d.save_changes(self.credentials,'BellSchedulerManager',info,change,action)
+		result=self.n4d.BellSchedulerManager.save_changes(info,change,action)
 		self._debug("Save configuration file: ",result)
 		return result
 
 	#def save_conf		
 
 	def check_data(self,data):
-
-		'''
-		Result code:
-			-1: Missing bell name
-			-3: Missing sound file
-			-5: Missing image file
-			-6: Missing url
-			-7: Missing sound directory
-			-39: Missing list url
-			-42: Failed internet connection 
-
-		'''	
 		
 		check_image=None
 		check_sound=None
 
 		if data["name"]=="":
-			return {"result":False,"code":1,"data":""}
+			return {"result":False,"code":BellManager.MISSING_BELL_NAME_ERROR,"data":""}
 			
 
 						
@@ -101,7 +124,7 @@ class BellManager(object):
 				check_image=self.check_mimetypes(data["image"]["file"],"image")
 				
 			else:
-				return {"result":False,"code":5,"data":""}
+				return {"result":False,"code":BellManager.MISSING_IMAGE_FILE_ERROR,"data":""}
 		
 		if check_image==None:
 			if data["sound"]["option"]=="file":
@@ -113,24 +136,24 @@ class BellManager(object):
 					else:
 						return check_sound
 				else:
-					return {"result":False,"code":3,"data":""}
+					return {"result":False,"code":BellManager.MISSING_SOUND_FILE_ERROR,"data":""}
 
 			elif data["sound"]["option"]=="directory":
 				if data["sound"]["file"]==None:
-					return {"result":False,"code":7,"data":""}
+					return {"result":False,"code":BellManager.MISSING_SOUND_FOLDER_ERROR,"data":""}
 				else:
 					self.correct_files=0
 					return self.check_directory(data["sound"]["file"])	
 
 			elif data["sound"]["option"]=="url":			
 				if data["sound"]["file"]=="":
-					return {"result":False,"code":6,"data":""}
+					return {"result":False,"code":BellManager.MISSING_URL_ERROR,"data":""}
 				else:
 					check_connection=self.check_connection()
 					if check_connection:
 						return self.check_audiofile(data["sound"]["file"],"url")
 					else:
-						return {"result":False,"code":42,"data":""}	
+						return {"result":False,"code":BellManager.FAILED_INTERNET_ERROR,"data":""}	
 
 			elif data["sound"]["option"]=="urlslist":				
 				if data["sound"]["file"]!=None:
@@ -138,9 +161,9 @@ class BellManager(object):
 					if check_connection:
 						return self.check_list(data["sound"]["file"])
 					else:
-						return {"result":False,"code":42,"data":""}	
+						return {"result":False,"code":BellManager.FAILED_INTERNET_ERROR,"data":""}	
 				else:		
-					return {"result":False,"code":39,"data":""}
+					return {"result":False,"code":BellManager.MISSING_URL_LIST_ERROR,"data":""}
 			
 						
 		else:
@@ -151,13 +174,6 @@ class BellManager(object):
 	
 	def check_mimetypes(self,file,check):
 
-		'''
-		Result code:
-			-2: Invalid sound file
-			-4: Invalid image file
-		
-		'''	
-	
 		mime = MimeTypes()
 		file_mime_type= mime.guess_type(file)
 		error=False
@@ -177,20 +193,13 @@ class BellManager(object):
 
 		if error:
 			if check=="audio":
-				return {"result":False,"code":2,"data":""}
+				return {"result":False,"code":BellManager.INVALID_SOUND_FILE_ERROR,"data":""}
 			else:
-				return {"result":False,"code":4,"data":""}				
+				return {"result":False,"code":BellManager.INVALID_IMAGE_FILE_ERROR,"data":""}				
 		
 	#def check_mimetypes			
 				
 	def check_audiofile(self,file,type):
-
-		'''
-		Result code:
-			-0: All correct
-			-8: Sound file or ulr not valid
-		
-		'''	
 		
 		params=' -show_entries stream=codec_type,duration -of compact=p=0:nk=1'
 		
@@ -204,23 +213,15 @@ class BellManager(object):
 		poutput=p.communicate()[0]
 		
 		if len(poutput)==0:
-			return {"result":False,"code":8,"data":""}	
+			return {"result":False,"code":BellManager.SOUND_FILE_URL_NOT_VALID_ERROR,"data":""}	
 		else:
-			return {"result":True,"code":0,"data":""}
+			return {"result":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
 	
 	
 	#def check_audiofile	
 
 	def check_directory(self,directory):
 
-		'''
-		Result code:
-			-0: All correct
-			-38: Not correct files in directory
-		
-		'''	
-
-		
 		path=directory+"/*"
 		content_directory=glob.glob(path)
 		for item in content_directory:
@@ -235,25 +236,17 @@ class BellManager(object):
 					self.check_directory(item)			
 		
 		if self.correct_files>0:
-			return {"result":True,"code":0,"data":""}
+			return {"result":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
 		else:
-			return {"result":False,"code":38,"data":""}
+			return {"result":False,"code":BellManager.FOLDER_WITH_INCORRECT_FILES_ERROR "data":""}
 
 	#def check_directory		
 
 	def check_list(self,url_list):
 
-		'''
-		Result code:
-			-0: All correct
-			-40: Url list with errors
-			-41: time out validation
-			-43: File not valid 
-		
-		'''	
 		result=True
 		data=""
-		code=0
+		code=BellManager.ACTION_SUCCESSFUL
 		self.url_invalid=[]
 		self.error_lines=[]
 		self.file=url_list
@@ -271,14 +264,14 @@ class BellManager(object):
 				if len(self.url_invalid)>0 or len(self.error_lines):
 					data=self.order_error_lines()
 					result=False
-					code=40
+					code=BellManager.INCORRECT_URL_LIST_ERROR
 			else:
 				result=False
-				code=43
+				code=BellManager.URL_FILE_NOT_VALID_ERROR
 							
 		else:
 			result=False
-			code=41
+			code=BellManager.TIME_OUT_VALIDATION_ERROR
 
 		return {"result":result,"code":code,"data":data}					
 
@@ -420,7 +413,8 @@ class BellManager(object):
 
 	def copy_media_files(self,image,sound):
 
-		result=self.n4d.copy_media_files(self.credentials,'BellSchedulerManager',image,sound)
+		#Old n4d:result=self.n4d.copy_media_files(self.credentials,'BellSchedulerManager',image,sound)
+		result=self.client.BellSchedulerManager.copy_media_files(image,sound)
 		self._debug("Copy files: ",result)
 		return result
 
@@ -430,7 +424,8 @@ class BellManager(object):
 	def export_bells_conf(self,dest_file):
 
 		user=os.environ["USER"]
-		result=self.n4d.export_bells_conf(self.credentials,'BellSchedulerManager',dest_file,user)
+		#Old n4d: result=self.n4d.export_bells_conf(self.credentials,'BellSchedulerManager',dest_file,user)
+		result=self.n4d.BellSchedulerManager.export_bells_conf(dest_file,user)
 		self._debug("Export bells conf : ",result)
 		return result
 
@@ -439,7 +434,8 @@ class BellManager(object):
 
 	def import_bells_conf(self,orig_file,backup):
 		user=os.environ["USER"]
-		result=self.n4d.import_bells_conf(self.credentials,'BellSchedulerManager',orig_file,user,backup)
+		#Old n4d: result=self.n4d.import_bells_conf(self.credentials,'BellSchedulerManager',orig_file,user,backup)
+		result=self.client.BellSchedulerManager.import_bells_conf(orig_file,user,backup)
 		self._debug("Import bells conf: ",result)	
 		return result
 
@@ -448,7 +444,8 @@ class BellManager(object):
 
 	def recovery_bells_conf(self,orig_file,backup):
 		user=os.environ["USER"]
-		result=self.n4d.import_bells_conf(self.credentials,'BellSchedulerManager',orig_file,user,backup)
+		#Old n4d: result=self.n4d.import_bells_conf(self.credentials,'BellSchedulerManager',orig_file,user,backup)
+		result=self.client.BellSchedulerManager.import_bells_conf(orig_file,user,backup)
 		self._debug("Recovery bells conf: ",result)	
 		return result
 
@@ -456,7 +453,8 @@ class BellManager(object):
 
 	def enable_holiday_control(self,action):
 
-		result=self.n4d.enable_holiday_control(self.credentials,'BellSchedulerManager',action)
+		#Old n4d: result=self.n4d.enable_holiday_control(self.credentials,'BellSchedulerManager',action)
+		result=self.client.BellSchedulerManager.enable_holiday_control(action)
 		self._debug("Enable holiday control: ",result)	
 		return result
 
@@ -465,7 +463,8 @@ class BellManager(object):
 
 	def change_activation_status(self,action):
 
-		result=self.n4d.change_activation_status(self.credentials,'BellSchedulerManager',action)
+		#Old n4d: result=self.n4d.change_activation_status(self.credentials,'BellSchedulerManager',action)
+		result=self.client.BellSchedulerManager.change_activation_status(action)
 		self._debug("Activation/Deactivation process: ",result)	
 		return result
 
@@ -473,7 +472,8 @@ class BellManager(object):
 
 	def remove_all_bells(self):
 
-		result=self.n4d.remove_all_bells(self.credentials,'BellSchedulerManager')
+		#Old n4d: result=self.n4d.remove_all_bells(self.credentials,'BellSchedulerManager')
+		result=self.client.BellSchedulerManager.remove_all_bells()
 		self._debug("Remove all bells process: ",result)	
 		return result
 

@@ -28,7 +28,8 @@ import gettext
 _ = gettext.gettext
 
 class MainWindow:
-	
+
+
 	def __init__(self):
 
 		self.core=Core.Core.get_core()
@@ -270,8 +271,8 @@ class MainWindow:
 				
 	def _signin(self,user,pwd,server):
 
-		self.core.bellmanager.credentials=[user,pwd]
-		self.core.holidayBox.credentials=[user,pwd]
+		self.core.bellmanager.create_n4dClient([user,pwd])
+		self.core.holidayBox.create_n4dClient([user,pwd])
 		self._init_holiday_switch()
 		self.manage_down_buttons(False)
 		result_sync=self.core.bellmanager.sync_with_cron()
@@ -485,7 +486,7 @@ class MainWindow:
 						if not self.loading_errors:
 							self.manage_message(False,self.import_result['code'])
 						else:
-							self.manage_message(True,13)	
+							self.manage_message(True,-13)	
 					except:
 						self.manage_menubar(False)
 						self.recovery=True
@@ -533,9 +534,9 @@ class MainWindow:
 			try:
 				self.core.bellBox.draw_bell(False)
 				if not self.loading_errors:
-					self.manage_message(True,9)
+					self.manage_message(True,-9)
 				else:
-					self.manage_message(True,9)	
+					self.manage_message(True,-9)	
 			except:
 				self.manage_message(True,self.recovery_result['code'])	
 				return False	
@@ -668,31 +669,31 @@ class MainWindow:
 
 	def get_msg(self,code):
 
-		if 	code==1:
+		if 	code==-1:
 			msg_text=_("You must indicate a name for the alarm")
-		elif code==2:
+		elif code==-2:
 			msg_text=_("Sound file is not correct")
-		elif code==3:
+		elif code==-3:
 			msg_text=_("You must indicate sound file")
-		elif code==4:
+		elif code==-4:
 			msg_text=_("Image file is not correct")
-		elif code==5:
+		elif code==-5:
 			msg_text=_("You must indicate a image file")
-		elif code==6:
+		elif code==-6:
 			msg_text=_("You must indicate a url")
-		elif code==7:
+		elif code==-7:
 			msg_text=_("You must indicate a directory")	
-		elif code==8:
+		elif code==-8:
 			msg_text=_("The sound file or url indicated is not reproducible")
-		elif code==9:
+		elif code==-9:
 			msg_text=_("File has errors. Unabled to load it")
 		elif code==10:
 			msg_text=_("File loaded succesfully")
 		elif code==11:
 			msg_text=_("File saved succcesfully")
-		elif code==12:
+		elif code==-12:
 			msg_text=_("Unable to save file")	
-		elif code==13:
+		elif code==-13:
 			msg_text=_("File loaded with errors")	
 		elif code==14:
 			msg_text=_("Bell deleted successfully")	
@@ -704,19 +705,19 @@ class MainWindow:
 			msg_text=_("Bell deactivated successfully")
 		elif code==18:
 			msg_text=_("Bell created successfully")		
-		elif code==19:
+		elif code==-19:
 			msg_text=_("Unabled to edit the Bell due to problems with cron sync")	
-		elif code==20:
+		elif code==-20:
 			msg_text=_("Unabled to create the Bell due to problems with cron sync")
-		elif code==21:
+		elif code==-21:
 			msg_text=_("Unabled to delete the Bell due to problems with cron sync")	
-		elif code==22:
+		elif code==-22:
 			msg_text=_("Unabled to activate the Bell due to problems with cron sync")	
-		elif code==23:
+		elif code==-23:
 			msg_text=_("Unabled to deactivate the Bell due to problems with cron sync")	
-		elif code==24:
+		elif code==-24:
 			msg_text=_("Unabled to copy image and/or sound file to work directory")	
-		elif code==25:
+		elif code==-25:
 			msg_text=_("Unabled to read bells configuration file")	
 		elif code==26:
 			msg_text=_("Exporting bells configuration. Wait a moment...")	
@@ -724,11 +725,11 @@ class MainWindow:
 			msg_text=_("Importing bells configuration. Wait a moment...")
 		elif code==28:
 			msg_text=_("Revovering previous bells configuration. Wait a moment...")	
-		elif code==29:
+		elif code==-29:
 			msg_text=_("ERROR: File or directory not available")
 		elif code==30:
 			msg_text=_("Validating the data entered...")		
-		elif code==31:
+		elif code==-31:
 			msg_text=_("Detected alarms with errors")
 		elif code==32:
 			msg_text=_("Activating holiday control.Wait a moment...")
@@ -738,21 +739,21 @@ class MainWindow:
 			msg_text=_("Holiday control deactivated successfully")
 		elif code==35:
 			msg_text=_("Holiday control activated successfully")
-		elif code==36:
+		elif code==-36:
 			msg_text=_("Unabled to apply changes due to problems with cron sync")
-		elif code==37:
+		elif code==-37:
 			msg_text=_("Unabled to load bell list due to problems with cron sync")	
-		elif code==38:
+		elif code==-38:
 			msg_text=_("The specified folder does not contain playable files")	
-		elif code==39:
+		elif code==-39:
 			msg_text=_("You must indicate a urls list file")
-		elif code==40:
+		elif code==-40:
 			msg_text=_("The specified urls list has not valid urls. Errors in lines: ")	
-		elif code==41:
+		elif code==-41:
 			msg_text=_("Unabled to validated the data")				
-		elif code==42:
+		elif code==-42:
 			msg_text=_("Unabled to validated the data. Internet connection not detected")
-		elif code==43:
+		elif code==-43:
 			msg_text=_("The specified urls list is not valid")
 		elif code==44:
 			msg_text=_("Activating all bells. Wait a moment...")
@@ -762,15 +763,15 @@ class MainWindow:
 			msg_text=_("The bells have been activated successfully")	
 		elif code==47:
 			msg_text=_("The bells have been deactivated successfully")	
-		elif code==48:
+		elif code==-48:
 			msg_text=_("It is not possible to activate all bells")
-		elif code==49:
+		elif code==-49:
 			msg_text=_("It is not possible to deactivate all bells")			
 		elif code==50:
 			msg_text=_("Removing all bells. Wait a moment...")
 		elif code==51:
 			msg_text=_("The bells have been removed successfully")	
-		elif code==52:
+		elif code==-52:
 			msg_text=_("It is not possible to remove all bells")	
 		return msg_text
 
@@ -855,7 +856,7 @@ class MainWindow:
 		lang=os.environ["LANG"]
 
 		if 'ca_ES' in lang:
-			cmd='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Bell-Scheduler-en-Bionic_va'
+			cmd='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Bell+Scheduler+en+Bionic.'
 		else:
 			cmd='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Bell-Scheduler-en-Bionic'
 
