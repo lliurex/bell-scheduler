@@ -1,0 +1,95 @@
+{
+    "SETUP": {
+        "type": "python",
+        "path": "BellSchedulerManager.py",
+        "class": "BellSchedulerManager"
+    },
+    "METHODS": {
+        
+        "read_conf": {
+            "allowed_groups": [
+                "*",
+                "anonymous"
+            ]
+        },
+       
+        "sync_with_cron": {
+            "allowed_groups": [
+                "sudo",
+                "admins",
+                "teachers"
+            ]
+        },
+        
+        "save_changes": {
+            "allowed_groups": [
+                "sudo",
+                "admins",
+                "teachers"
+            ]
+        },
+       
+        "copy_media_files": {
+            "allowed_groups": [
+                "sudo",
+                "admins",
+                "teachers"
+            ]
+        },
+        "export_bells_conf": {
+            "allowed_groups": [
+                "sudo",
+                "admins"
+            ]
+        },
+        "import_bells_conf": {
+            "allowed_groups": [
+                "sudo",
+                "admins",
+                "teachers"
+            ]
+        },
+        "enable_holiday_control": {
+            "allowed_groups": [
+                "sudo",
+                "admins",
+                "teachers"
+            ]
+        },
+       
+        "update_indicator_token": {
+            "allowed_groups": [
+                "sudo",
+                "admins",
+                "teachers"
+            ]
+        },
+        "stop_bell": {
+            "allowed_groups": [
+                "*",
+                "anonymous"
+            ]
+        },
+        
+        "update_config_file": {
+            "allowed_groups": [
+                "sudo",
+                "admins"
+            ]
+        },
+        "change_activation_status": {
+            "allowed_groups": [
+                "sudo",
+                "admins",
+                "teachers"
+            ]
+        },
+        "remove_all_bells": {
+            "allowed_groups": [
+                "sudo",
+                "admins",
+                "teachers"
+            ]
+        }
+    }
+}
