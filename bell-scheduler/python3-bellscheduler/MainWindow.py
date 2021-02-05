@@ -17,7 +17,6 @@ import threading
 import tempfile
 from shutil import copyfile
 
-from edupals.ui.n4dgtklogin import *
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -206,7 +205,7 @@ class MainWindow:
 		self.stack_window.set_transition_type(Gtk.StackTransitionType.NONE)
 		self.stack_window.set_visible_child_name("loadingBox")
 		self.return_button.hide()
-		#self.holiday_control=False
+		self.load_process()
 
 		
 	#def load_gui
@@ -270,10 +269,10 @@ class MainWindow:
 	#def connect_signals	
 
 				
-	def load_process(self,user,pwd,server):
+	def load_process(self):
 
-		self.core.bellmanager.create_n4dClient([user,pwd])
-		self.core.holidayBox.create_n4dClient([user,pwd])
+		self.core.bellmanager.create_n4dClient(sys.argv[1])
+		self.core.holidayBox.create_n4dClient(sys.argv[1])
 		self._init_holiday_switch()
 		self.manage_down_buttons(False)
 		self.loading_process_t.start()

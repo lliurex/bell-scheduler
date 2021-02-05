@@ -153,7 +153,7 @@ class BellSchedulerManager:
 	
 	def sync_with_cron(self):
 	
-		bell_tasks=self.read_conf()["data"]
+		bell_tasks=self.read_conf().get('result',None).get('data',None)
 		keys_bells=bell_tasks.keys()
 
 		bells_incron=self._get_tasks_from_cron()

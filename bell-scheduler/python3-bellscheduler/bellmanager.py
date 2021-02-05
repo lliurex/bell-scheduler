@@ -52,20 +52,13 @@ class BellManager(object):
 
 	#def __init__	
 
-	def create_n4dClient(self,credentials):
+	def create_n4dClient(self,ticket):
 
-		try:
-			self.credentials=credentials
-			self.client=n4d.client.Client("https://%s:9779"%self.server,self.credentials[0],self.credentials[1])
-			t=self.client.get_ticket()
+		ticket=ticket.replace('##U+0020##',' ')
+		tk=n4d.client.Ticket(ticket)
+		self.client=n4d.client.Client(ticket=tk)
 
-			if t.valid():
-				self.client=n4d.client.Client(ticket=t)
-		
-		except Exception as e:
-			print(str(e))
-			pass
-	
+	#def create_n4dClient
 
 	def _debug(self,function,msg):
 
@@ -238,7 +231,7 @@ class BellManager(object):
 		if self.correct_files>0:
 			return {"result":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
 		else:
-			return {"result":False,"code":BellManager.FOLDER_WITH_INCORRECT_FILES_ERROR "data":""}
+			return {"result":False,"code":BellManager.FOLDER_WITH_INCORRECT_FILES_ERROR,"data":""}
 
 	#def check_directory		
 

@@ -39,7 +39,8 @@
         "export_bells_conf": {
             "allowed_groups": [
                 "sudo",
-                "admins"
+                "admins",
+                "teachers"
             ]
         },
         "import_bells_conf": {
@@ -74,7 +75,8 @@
         "update_config_file": {
             "allowed_groups": [
                 "sudo",
-                "admins"
+                "admins",
+                "teachers"
             ]
         },
         "change_activation_status": {
