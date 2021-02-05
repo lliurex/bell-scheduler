@@ -58,16 +58,13 @@ class MainWindow:
 		
 		self.main_window=builder.get_object("main_window")
 		self.main_window.set_title("Bell Scheduler")
-		self.main_window.resize(930,780)
+		self.main_window.resize(932,780)
 		self.main_box=builder.get_object("main_box")
-		self.login=N4dGtkLogin()
-		self.login.set_allowed_groups(['adm','teachers'])
-		self.login.hide_server_entry()
-		desc=_("Welcome to the Bell Scheduler.\nFrom here you can program multiple alarms for entry, exit, recess or any other event")
-		self.login.set_info_text("<span foreground='black'>Bell Scheduler</span>",_("Bell Scheduler"),"<span foreground='black'>"+desc+"</span>\n")
-		image=os.path.join(self.core.rsrc_dir,"bell.png")
-		self.login.set_info_background(image=image,cover=True)
-		self.login.after_validation_goto(self._signin)
+		
+		self.loading_box=builder.get_object("loading_box")
+		self.banner_box=builder.get_object("banner_box")
+		self.loading_spinner=builder.get_object("loading_spinner")
+		self.loading_label=builder.get_object("loading_label")
 
 		self.option_box=builder.get_object("options_box")
 		self.add_button=builder.get_object("add_button")
@@ -179,7 +176,7 @@ class MainWindow:
 		self.waiting_pbar=builder.get_object("waiting_pbar")
 		self.waiting_window.set_transient_for(self.main_window)
 
-		self.stack_window.add_titled(self.login, "login", "Login")
+		self.stack_window.add_titled(self.loading_box, "loadingBox", "Loading Box")
 		self.stack_window.add_titled(self.option_box,"optionBox", "Option Box")
 		self.stack_window.show_all()
 		self.main_box.pack_start(self.stack_window,True,True,0)
@@ -207,7 +204,7 @@ class MainWindow:
 		self.main_window.connect("key-press-event",self.on_key_press_event)
 		self.main_window.show()
 		self.stack_window.set_transition_type(Gtk.StackTransitionType.NONE)
-		self.stack_window.set_visible_child_name("login")
+		self.stack_window.set_visible_child_name("loadingBox")
 		self.return_button.hide()
 		#self.holiday_control=False
 
@@ -217,6 +214,7 @@ class MainWindow:
 
 	def init_threads(self):
 
+		self.loading_process_t=threading.Thread(target=self.loading_process)
 		self.export_bells_t=threading.Thread(target=self.export_bells)
 		self.import_bells_t=threading.Thread(target=self.import_bells)
 		self.recovery_bells_t=threading.Thread(target=self.recovery_bells)
@@ -224,6 +222,7 @@ class MainWindow:
 		self.change_activation_status_t=threading.Thread(target=self.change_activation_status)
 		self.remove_all_bells_t=threading.Thread(target=self.remove_all_process)
 
+		self.loading_process_t.daemon=True
 		self.export_bells_t.daemon=True
 		self.import_bells_t.daemon=True
 		self.recovery_bells_t.daemon=True
@@ -244,6 +243,8 @@ class MainWindow:
 		Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),self.style_provider,Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 		self.main_window.set_name("WINDOW")
 		self.waiting_label.set_name("WAITING_LABEL")
+		self.banner_box.set_name("BANNER_BOX")
+		self.loading_label.set_name("WAITING_LABEL")
 		self.search_entry.set_name("CUSTOM-ENTRY")
 
 		#self.banner_box.set_name("BANNER_BOX")
@@ -269,26 +270,52 @@ class MainWindow:
 	#def connect_signals	
 
 				
-	def _signin(self,user,pwd,server):
+	def load_process(self,user,pwd,server):
 
 		self.core.bellmanager.create_n4dClient([user,pwd])
 		self.core.holidayBox.create_n4dClient([user,pwd])
 		self._init_holiday_switch()
 		self.manage_down_buttons(False)
-		result_sync=self.core.bellmanager.sync_with_cron()
-		if result_sync["status"]:
-			self.load_info()
-			self.core.bellBox.draw_bell(False)
+		self.loading_process_t.start()
+		self.loading_spinner.start()
+		GLib.timeout_add(100,self.pulsate_load_process)
+
+	#def loading_process
+	
+	def pulsate_load_process(self):
+
+		if self.loading_process_t.is_alive():
+			return True
 		else:
-			self.manage_menubar(False)
-			self.manage_message(True,result_sync["code"])
+			self.loading_spinner.stop()
+			if self.result_sync["status"]:
+				self.load_info(True)
+				if not self.load_info_error:
+					self.core.bellBox.draw_bell(False)
+					self.stack_window.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
+					self.stack_window.set_visible_child_name("optionBox")	
+			else:
+				self.manage_loading_error(self.result_sync["code"])
 
-		self.stack_window.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
-		self.stack_window.set_visible_child_name("optionBox")
-		#self.stack_opt.set_visible_child_name("bellBox")
+		
+		return False
 
+	#def pulsate_load_process	
+				
+	def loading_process(self):
 
-	#def _signin
+		time.sleep(1)
+		self.result_sync=self.core.bellmanager.sync_with_cron()
+		
+	#def loading_process
+
+	def manage_loading_error(self,code):
+
+		msg=self.get_msg(code)
+		self.loading_label.set_name("MSG_ERROR_LABEL")
+		self.loading_label.set_text(msg)
+
+	#def manage_loading_error	
 
 	def _init_holiday_switch(self,init=None):
 
@@ -314,15 +341,21 @@ class MainWindow:
 		
 	#def on_key_press_event
 
-	def load_info(self):
+	def load_info(self,loading=False):
 	
+		self.load_info_error=False
 		self.read_conf=self.core.bellmanager.read_conf()
 		self.bells_info=self.core.bellmanager.bells_config.copy()
 		self.order_bells=self.core.bellmanager.get_order_bell()	
 		if not self.read_conf['status']:
 			if self.cont==0:
-				self.manage_message(True,self.read_conf['code'])
-				self.manage_menubar(False,False)	
+				if not loading:
+					self.manage_message(True,self.read_conf['code'])
+					self.manage_menubar(False,False)
+				else:
+					self.load_info_error=True
+					self.manage_loading_error(self.read_conf['code'])
+		
 		else:
 			self.manage_menubar(True)			
 	
@@ -669,6 +702,7 @@ class MainWindow:
 
 	def get_msg(self,code):
 
+		msg_text=""
 		if 	code==-1:
 			msg_text=_("You must indicate a name for the alarm")
 		elif code==-2:

@@ -10,7 +10,12 @@
 	GtkLabel {
 		font: 12pt Roboto;
 	}
-	
+
+#BANNER_BOX{
+		background-color: #0049ab;
+
+
+	}
 	#OPTION_LABEL {
 		color: #707070;
 		font: 12pt Roboto Light;
@@ -156,12 +161,6 @@
 		box-shadow: -0.5px 3px 2px #cdcdcd;
 	}
 	
-	#BANNER_BOX {
-		 background: #005cd2;
-    	 background: linear-gradient(to right, #005cd2 , #69abff);
-
-
-	}
 
 	@keyframes selected{
 		0%{ background-color: #ffffff; }
