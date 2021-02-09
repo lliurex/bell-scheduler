@@ -3,7 +3,7 @@ import os
 import json
 import codecs
 import shutil
-import ssl
+import tempfile
 import zipfile
 import n4d.server.core as n4dcore
 import n4d.responses
@@ -460,7 +460,7 @@ class BellSchedulerManager:
 					
 				except Exception as e:
 					result={"status":False,"msg":str(e),"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}	
-					return result		
+					return n4d.responses.build_successful_call_response(result)		
 
 				holiday_token=os.path.join(unzip_tmp,os.path.basename(self.holiday_token))	
 

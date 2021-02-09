@@ -96,7 +96,7 @@ class BellManager(object):
 		change=str(last_change)
 				
 		#Old n4d:result=self.n4d.save_changes(self.credentials,'BellSchedulerManager',info,change,action)
-		result=self.n4d.BellSchedulerManager.save_changes(info,change,action)
+		result=self.client.BellSchedulerManager.save_changes(info,change,action)
 		self._debug("Save configuration file: ",result)
 		return result
 
@@ -418,7 +418,7 @@ class BellManager(object):
 
 		user=os.environ["USER"]
 		#Old n4d: result=self.n4d.export_bells_conf(self.credentials,'BellSchedulerManager',dest_file,user)
-		result=self.n4d.BellSchedulerManager.export_bells_conf(dest_file,user)
+		result=self.client.BellSchedulerManager.export_bells_conf(dest_file,user)
 		self._debug("Export bells conf : ",result)
 		return result
 
