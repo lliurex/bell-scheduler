@@ -11,8 +11,7 @@ import subprocess
 import sys
 import time
 import threading
-import xmlrpc.client as n4dclient
-import ssl
+import n4d.client
 gi.require_version('Notify', '0.7')
 from gi.repository import Notify
 
@@ -42,8 +41,7 @@ class BellSchedulerIndicator:
 		
 		server='localhost'
 
-		context=ssl._create_unverified_context()
-		self.n4d = n4dclient.ServerProxy("https://"+server+":9779",context=context,allow_none=True)
+		self.n4d = n4d.client.Client()
 		
 		self.is_working=False
 		self.bell_info=[]
@@ -112,7 +110,7 @@ class BellSchedulerIndicator:
 
 	def stop_bell(self,widget):
 
-		tasks=self.n4d.stop_bell("",'BellSchedulerManager')
+		tasks=self.n4d.BellSchedulerManager.stop_bell()
 
 
 	#def stop_bell	
@@ -274,7 +272,7 @@ class BellSchedulerIndicator:
 			f.close()
 
 		try:
-			bell_info=self.n4d.read_conf("",'BellSchedulerManager')
+			bell_info=self.n4d.BellSchedulerManager.read_conf()
 
 			if bell_info["status"]:		
 				if len(bell_info["data"])>0:
