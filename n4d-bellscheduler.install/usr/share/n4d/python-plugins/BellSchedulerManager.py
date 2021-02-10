@@ -57,21 +57,21 @@ class BellSchedulerManager:
 		server='localhost'
 		context=ssl._create_unverified_context()
 		self.n4d = n4dclient.ServerProxy("https://"+server+":9779",context=context,allow_none=True)
-		
-		self._get_n4d_key()
 		'''
+		self._get_n4d_key()
+		
 		self.core=n4dcore.Core.get_core()
 
 
 	#def __init__	
 
-	'''
+	
 	def _get_n4d_key(self):
 
 		self.n4dkey=''
 		with open('/etc/n4d/key') as file_data:
 			self.n4dkey = file_data.readlines()[0].strip()
-	'''
+	
 	#def _get_n4d_key
 
 	def _create_dirs(self):
@@ -132,13 +132,13 @@ class BellSchedulerManager:
 		cron_tasks={}
 		tmp_tasks={}
 		#Old n4d: tasks=self.n4d.get_local_tasks(self.n4dkey,'SchedulerServer')
-		tasks=self.core.get_plugin('SchedulerServer').get_local_tasks()['return']
 		
-		if tasks["status"]:
+		tasks=self.core.get_plugin('SchedulerServer').get_local_tasks()
+		if tasks.get("status",None)==0:
 
-			for item in tasks["data"]:
+			for item in tasks.get('return',None):
 				if item=="BellScheduler":
-					tmp_tasks=tasks["data"][item]
+					tmp_tasks=tasks.get('return',None)[item]
 
 			if len(tmp_tasks)>0:
 				for	item in tmp_tasks:
@@ -153,7 +153,7 @@ class BellSchedulerManager:
 	
 	def sync_with_cron(self):
 	
-		bell_tasks=self.read_conf().get('result',None).get('data',None)
+		bell_tasks=self.read_conf().get('return',None).get('data',None)
 		keys_bells=bell_tasks.keys()
 
 		bells_incron=self._get_tasks_from_cron()
@@ -178,7 +178,7 @@ class BellSchedulerManager:
 			for item in keys_cron:
 				if item not in keys_bells:
 					result=self._delete_from_cron(item)
-					if not result["status"]:
+					if result.get('status',None)!=0:
 						#Old n4d:return {"status":False,"msg":"Unable to clear alarm from cron file","code":37,"data":""}
 						tmp_result={"status":False,"msg":"Unable to clear alarm from cron file","code":BellSchedulerManager.CRON_SYNC_PROBLEMS_ERROR,"data":""}
 						self.n4d.responses.build_successful_call_response(tmp_result)
@@ -231,27 +231,26 @@ class BellSchedulerManager:
 				tasks_for_cron=self._format_to_cron(info,last_change,action)
 				#Old n4d:result=self.n4d.write_tasks(self.n4dkey,'SchedulerServer','local',tasks_for_cron)
 				result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
-
 			else:
 				result=self._delete_from_cron(last_change)
 		else:
 			result=self._delete_from_cron(last_change)
 
 
-		if result['status']:	
+		if result.get('status',None)==0:	
 			return self._write_conf(info,"BellList")
 		else:
 			if action=="edit":
-				tmp_result={"status":False,"action":action,"msg":result['data'],"code":BellSchedulerManager.BELL_EDIT_ERROR,"data":""}	
+				tmp_result={"status":False,"action":action,"msg":result.get('return',None),"code":BellSchedulerManager.BELL_EDIT_ERROR,"data":""}	
 			elif action=="add":
-				tmp_result={"status":False,"action":action,"msg":result['data'],"code":BellSchedulerManager.BELL_CREATE_ERROR,"data":""}
+				tmp_result={"status":False,"action":action,"msg":result.get('return',None),"code":BellSchedulerManager.BELL_CREATE_ERROR,"data":""}
 			elif action=="remove":
-				tmp_result={"status":False,"action":action,"msg":result['data'],"code":BellSchedulerManager.BELL_DELETE_ERROR,"data":""}	
+				tmp_result={"status":False,"action":action,"msg":result.get('return',None),"code":BellSchedulerManager.BELL_DELETE_ERROR,"data":""}	
 			elif action=="active":	
 				if turn_on:
-					tmp_result={"status":False,"action":action,"msg":result['data'],"code":BellSchedulerManager.BELL_ACTIVATE_ERROR,"data":""}
+					tmp_result={"status":False,"action":action,"msg":result.get('return',None),"code":BellSchedulerManager.BELL_ACTIVATE_ERROR,"data":""}
 				else:
-					tmp_result={"status":False,"action":action,"msg":result['data'],"code":BellSchedulerManager.BELL_DEACTIVATE_ERROR,"data":""}
+					tmp_result={"status":False,"action":action,"msg":result.get('return',None),"code":BellSchedulerManager.BELL_DEACTIVATE_ERROR,"data":""}
 			
 			return n4d.responses.build_successful_call_response(tmp_result)	
 	#def save_changes				
@@ -271,12 +270,11 @@ class BellSchedulerManager:
 
 		id_to_remove=self._get_cron_id(last_change)
 		cron_id=id_to_remove["id"]["CronId"]
-		delete={"status":True,"data":"0"}
-
+		delete={"status":0,"data":"0"}
+		
 		if id_to_remove["status"]:
 			#OLd n4d:delete=self.n4d.remove_task(self.n4dkey,'SchedulerServer','local','BellScheduler',cron_id,'cmd')
 			delete=self.core.get_plugin('SchedulerServer').remove_task('local','BellScheduler',cron_id,'cmd')
-		
 		return delete
 
 	#def _delete_from_cron	
@@ -439,7 +437,7 @@ class BellSchedulerManager:
 			backup_file=tempfile.mkstemp("_bells_backup")
 			result=self.export_bells_conf(backup_file[1],user,True)['return']
 
-		try:	
+		try:
 			if result['status']:	
 				tmp_zip=zipfile.ZipFile(orig_file)
 				tmp_zip.extractall(unzip_tmp)
@@ -453,14 +451,16 @@ class BellSchedulerManager:
 					shutil.copy2(config_file,self.config_dir)
 					f_config.close()
 					cron_file=os.path.join(unzip_tmp,os.path.basename(self.cron_file))
-					f_cron=open(cron_file)
-					read=json.load(f_cron)
-					shutil.copy2(cron_file,self.cron_dir)
-					f_cron.close()
+					if os.path.exists(cron_file):
+						f_cron=open(cron_file)
+						read=json.load(f_cron)
+						shutil.copy2(cron_file,self.cron_dir)
+						f_cron.close()
 					
 				except Exception as e:
 					result={"status":False,"msg":str(e),"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}	
 					return n4d.responses.build_successful_call_response(result)		
+		
 
 				holiday_token=os.path.join(unzip_tmp,os.path.basename(self.holiday_token))	
 
@@ -481,27 +481,28 @@ class BellSchedulerManager:
 						shutil.rmtree(self.sounds_folder)
 					shutil.copytree(os.path.join(unzip_tmp,"media/sounds"),self.sounds_folder)
 		
-				update_holiday=self.enable_holiday_control(action)	
-				
+				update_holiday=self.enable_holiday_control(action).get('return',None)	
 				if update_holiday["status"]:
-					update_indicator=self.update_indicator_token()
+					update_indicator=self.update_indicator_token().get('return',None)
+
 					if update_indicator["status"]:
 						result={"status":True,"msg":"Bells imported successfully","code":BellSchedulerManager.BELL_IMPORT_SUCCESSFUL,"data":backup_file[1]}
 					else:
 						result={"status":False,"msg":update_indicator["msg"],"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}	
 				else:
 					result={"status":False,"msg":update_holiday["msg"],"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}				
+				
+				return n4d.responses.build_successful_call_response(result)		
+	
 		except Exception as e:
 			result={"status":False,"msg":str(e),"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}	
-
-		
-		return n4d.responses.build_successful_call_response(result)		
+			return n4d.responses.build_successful_call_response(result)		
 
 	#def import_bells_conf
 
 	def enable_holiday_control(self,action):
 
-		result=self._update_holiday_control(action)
+		result=self._update_holiday_control(action).get('return',None)
 		if result['status']:
 			if action=="disable":
 				if os.path.exists(self.holiday_token):
@@ -539,7 +540,7 @@ class BellSchedulerManager:
 
 			
 			self._write_conf(tasks_cron,"CronList")
-			self.n4d.process_tasks(self.n4dkey,'SchedulerClient')
+			self.core.get_plugin('SchedulerClient').process_tasks(self.n4dkey)
 			result={"status":True,"msg":"Cron file updated to use holiday manager","code":"","data":""}
 		else:
 			result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.BELL_LIST_LOADED_DUETOCRON_ERROR,"data":""}			
@@ -575,7 +576,7 @@ class BellSchedulerManager:
 
 				
 			self._write_conf(tasks_cron,"CronList")
-			self.n4d.process_tasks(self.n4dkey,'SchedulerClient')
+			self.core.get_plugin('SchedulerClient').process_tasks(self.n4dkey)
 			result={"status":True,"msg":"Cron file updated to use indicator","code":"","data":""}
 		else:
 			result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.BELL_LIST_LOADED_DUETOCRON_ERROR,"data":""}			
@@ -659,14 +660,6 @@ class BellSchedulerManager:
 
 	def change_activation_status(self,action):
 
-		'''
-		Result code:
-			-46: Activation ok
-			-47: Deactivation ok
-			-48: Activation error
-			-49: Deactivation error
-		'''
-
 	
 		bell_list=self.bells_config.copy()
 		errors=0
@@ -685,7 +678,7 @@ class BellSchedulerManager:
 						#Old n4d:result=self.n4d.write_tasks(self.n4dkey,'SchedulerServer','local',tasks_for_cron)
 						result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
 
-						if result['status']:
+						if result.get('status',None)==0:
 							bell_list[item]["active"]=True
 						else:
 							errors+=1
@@ -696,7 +689,7 @@ class BellSchedulerManager:
 			for item in	bell_list:
 				if bell_list[item]["active"]:
 					result=self._delete_from_cron(item)
-					if result['status']:
+					if result.get('status',None)==0:
 						bell_list[item]["active"]=False
 					else:
 						errors+=1
@@ -707,7 +700,7 @@ class BellSchedulerManager:
 			result_change={"status":True,"msg":"Activation/Deactivation successfully","code":msg_code_ok,"data":""}
 
 		else:
-			result_change={"status":False,"msg":"Activation/Deactivation failled","code":msg_code_error,"data":result}			
+			result_change={"status":False,"msg":"Activation/Deactivation failled","code":msg_code_error,"data":result.get('return',None)}			
 
 		return n4d.responses.build_successful_call_response(result_change)	
 
@@ -723,7 +716,7 @@ class BellSchedulerManager:
 		for item in	self.bells_config:
 			if self.bells_config[item]["active"]:
 				result=self._delete_from_cron(item)
-				if result['status']:
+				if result.get('status',None)==0:
 						bell_list.pop(item)
 				else:
 					errors+=1
