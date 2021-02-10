@@ -60,7 +60,7 @@ class Tunnel(QObject):
 	def on_ticket(self, ticket):
 		
 		ticket=ticket.replace(' ','##U+0020##')
-		os.system("/usr/sbin/bell-scheduler-gui %s 2>/dev/null &"%ticket)
+		os.system("/usr/sbin/bell-scheduler-gui %s &"%ticket)
 		app.quit()
 
 app = QApplication([])
