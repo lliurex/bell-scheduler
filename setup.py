@@ -48,6 +48,7 @@ if __name__ == '__main__':
 		package_dir = {'bellscheduler':'bell-scheduler/python3-bellscheduler'},
 		package_data = {'bellscheduler':['rsrc/*']},
 		data_files = [('sbin',['bell-scheduler/bell-scheduler']),
+				  ('sbin',['bell-scheduler/bell-scheduler-gui']),
 			      ('share/bell-scheduler/banners',listdir),
 			      ] + polist ,
 		classifiers=[

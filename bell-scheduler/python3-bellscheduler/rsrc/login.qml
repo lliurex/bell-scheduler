@@ -10,8 +10,8 @@ Rectangle {
 
     N4DAgent.Login
     {
-        showAddress:!tunnel.standAlone
-        address:tunnel.standAlone?'localhost':'server'
+        showAddress:false
+        address:"localhost"
         showCancel: false
         inGroups:["sudo","admins","teachers"]
         
