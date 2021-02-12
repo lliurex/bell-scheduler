@@ -181,7 +181,7 @@ class BellSchedulerManager:
 					if result.get('status',None)!=0:
 						#Old n4d:return {"status":False,"msg":"Unable to clear alarm from cron file","code":37,"data":""}
 						tmp_result={"status":False,"msg":"Unable to clear alarm from cron file","code":BellSchedulerManager.CRON_SYNC_PROBLEMS_ERROR,"data":""}
-						self.n4d.responses.build_successful_call_response(tmp_result)
+						return n4d.responses.build_successful_call_response(tmp_result)
 	
 		else:
 			for item in bell_tasks:
@@ -502,7 +502,7 @@ class BellSchedulerManager:
 
 	def enable_holiday_control(self,action):
 
-		result=self._update_holiday_control(action).get('return',None)
+		result=self._update_holiday_control(action)
 		if result['status']:
 			if action=="disable":
 				if os.path.exists(self.holiday_token):
@@ -545,7 +545,7 @@ class BellSchedulerManager:
 		else:
 			result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.BELL_LIST_LOADED_DUETOCRON_ERROR,"data":""}			
 
-		return n4d.responses.build_successful_call_response(result)
+		return result
 
 	#def _update_holiday_control		
 
