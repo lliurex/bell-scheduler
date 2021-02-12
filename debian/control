@@ -15,7 +15,7 @@ Vcs-Browser: https://svn.lliurex.net/xenial/bell-scheduler
 
 Package: bell-scheduler
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, n4d-bellscheduler (= ${binary:Version}),youtube-dl, python3-n4dgtklogin (>=0.4), python3-holidaymanager, ffmpeg
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, n4d-bellscheduler (= ${binary:Version}),youtube-dl,n4d-qt-agent,python3-n4d-client,python3-holidaymanager, ffmpeg
 Recommends: bell-scheduler-indicator (= ${binary:Version}), bell-scheduler-zerocenter-files(= ${binary:Version})
 Description:Bell Schededuler GUI package
   Provides the gui to program alarms
@@ -23,13 +23,13 @@ Description:Bell Schededuler GUI package
 
 Package: n4d-bellscheduler
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends},n4d-taskscheduler-server (>=1.0.5), n4d-taskscheduler-client (>=1.0.5), n4d, n4d-lliurex-base
+Depends: ${misc:Depends}, ${python3:Depends},n4d-taskscheduler-server (>=1.0.5), n4d-taskscheduler-client (>=1.0.5), n4d
 Description: Bell Scheduler plugin
   Plugins supporting bell-scheduler functionality 
 
 Package: bell-scheduler-indicator
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends},python3-pyinotify,n4d-bellscheduler (= ${binary:Version})
+Depends: ${misc:Depends}, ${python3:Depends},python3-pyinotify,n4d-bellscheduler (= ${binary:Version}), python3-n4d-client
 Description: Bell Scheduler menu bar indicator
   Provides a indicator to menu bar that allows to stop the alarm
   

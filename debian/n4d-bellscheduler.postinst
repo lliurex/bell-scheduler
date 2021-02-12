@@ -4,7 +4,7 @@ set -e
 case "$1" in
    configure)
    
-	n4d-modules enable-plugin /etc/n4d/conf.d/BellSchedulerManager || true
+	n4d-modules enable-plugin /etc/n4d/conf.d/BellSchedulerManager.json || true
 	
 	if dpkg --compare-versions "$2" lt 0.3.5; then
 		echo "Copying script to update bell file to use indicator"
