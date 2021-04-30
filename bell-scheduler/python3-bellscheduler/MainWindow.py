@@ -63,6 +63,8 @@ class MainWindow:
 		self.loading_box=builder.get_object("loading_box")
 		self.banner_box=builder.get_object("banner_box")
 		self.loading_spinner=builder.get_object("loading_spinner")
+		self.loading_msg_box=builder.get_object("loading_msg_box")
+		self.loading_error_img=builder.get_object("loading_error_img")
 		self.loading_label=builder.get_object("loading_label")
 
 		self.option_box=builder.get_object("options_box")
@@ -165,6 +167,9 @@ class MainWindow:
 		#self.enable_holiday_label=builder.get_object("enable_holiday_label")
 		self.enable_holiday_switch=builder.get_object("enable_holiday_switch")
 		self.search_entry=builder.get_object("search_entry")
+		self.msg_box=builder.get_object("msg_box")
+		self.msg_error_img=builder.get_object("msg_error_img")
+		self.msg_ok_img=builder.get_object("msg_ok_img")
 		self.msg_label=builder.get_object("msg_label")
 		self.save_button=builder.get_object("save_button")
 		self.cancel_button=builder.get_object("cancel_button")
@@ -205,6 +210,9 @@ class MainWindow:
 		self.stack_window.set_transition_type(Gtk.StackTransitionType.NONE)
 		self.stack_window.set_visible_child_name("loadingBox")
 		self.return_button.hide()
+		self.msg_ok_img.hide()
+		self.msg_error_img.hide()
+		self.loading_error_img.hide()
 		self.load_process()
 
 		
@@ -245,6 +253,7 @@ class MainWindow:
 		self.banner_box.set_name("BANNER_BOX")
 		self.loading_label.set_name("WAITING_LABEL")
 		self.search_entry.set_name("CUSTOM-ENTRY")
+		self.msg_box.set_name("HIDE_BOX")
 
 		#self.banner_box.set_name("BANNER_BOX")
 
@@ -311,7 +320,9 @@ class MainWindow:
 	def manage_loading_error(self,code):
 
 		msg=self.get_msg(code)
-		self.loading_label.set_name("MSG_ERROR_LABEL")
+		self.loading_label.set_name("LOADING_ERROR_LABEL")
+		self.loading_error_img.show()
+		self.loading_msg_box.set_name("ERROR_BOX")
 		self.loading_label.set_text(msg)
 
 	#def manage_loading_error	
@@ -421,7 +432,7 @@ class MainWindow:
 			self.dest=dialog.get_filename()
 			dialog.destroy()
 			self.manage_menubar(False)
-			self.msg_label.set_text("")
+			self.hide_message_items("")
 			self.core.bellBox.manage_bells_buttons(False)
 			self.waiting_label.set_text(self.get_msg(26))			
 			self.waiting_window.show_all()
@@ -478,7 +489,7 @@ class MainWindow:
 				self.orig=dialog.get_filename()
 				dialog.destroy()
 				self.manage_menubar(False)
-				self.msg_label.set_text("")
+				self.hide_message_items("")
 				self.core.bellBox.manage_bells_buttons(False)
 				self.waiting_label.set_text(self.get_msg(27))			
 				self.waiting_window.show_all()
@@ -670,12 +681,12 @@ class MainWindow:
 			self.cancel_button.set_sensitive(True)
 			self.save_button.show()
 			self.save_button.set_sensitive(True)
-			self.msg_label.set_text("")
+			self.hide_message_items()
 		
 		else:
 			self.cancel_button.hide()
 			self.save_button.hide()
-			self.msg_label.set_text("")
+			self.hide_message_items()
 			
 
 
@@ -689,15 +700,29 @@ class MainWindow:
 			msg=msg+data
 
 		if error:
-			self.msg_label.set_name("MSG_ERROR_LABEL")
+			#self.msg_label.set_name("MSG_ERROR_LABEL")
+			self.msg_error_img.show()
+			self.msg_ok_img.hide()
+			self.msg_box.set_name("ERROR_BOX")
 		else:
-			self.msg_label.set_name("MSG_CORRECT_LABEL")	
+			#self.msg_label.set_name("MSG_CORRECT_LABEL")
+			self.msg_ok_img.show()
+			self.msg_error_img.hide()
+			self.msg_box.set_name("SUCCESS_BOX")	
 
 		self.msg_label.set_text(msg)
 		#self.msg_label.show()
 
-	#def manage_message		
+	#def manage_message	
 
+	def hide_message_items(self):
+
+		self.msg_label.set_text("")
+		self.msg_ok_img.hide()
+		self.msg_error_img.hide()
+		self.msg_box.set_name("HIDE_BOX")
+
+	#def hide_message_items
 
 	def get_msg(self,code):
 
@@ -813,7 +838,7 @@ class MainWindow:
 	def manage_holiday(self,widget,event=None):
 
 		self.core.holidayBox.start_api_connect()
-		self.msg_label.set_text("")
+		self.hide_message_items()
 		self.manage_menubar(False)
 		self.stack_opt.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
 		self.stack_opt.set_visible_child_name("holidayBox")
@@ -845,7 +870,7 @@ class MainWindow:
 		if self.holiday_control:
 			self.holiday_popover.hide()
 			self.manage_menubar(False)
-			self.msg_label.set_text("")
+			self.hide_message_items()
 			self.core.bellBox.manage_bells_buttons(False)
 			self.waiting_label.set_text(self.get_msg(32))			
 			self.waiting_window.show_all()
@@ -936,7 +961,7 @@ class MainWindow:
 		self.manage_popover.hide()
 		self.manage_menubar(False)
 		self.core.bellBox.manage_bells_buttons(False)
-		self.msg_label.set_text("")
+		self.hide_message_items()
 		self.waiting_label.set_text(self.get_msg(code))			
 		self.waiting_window.show_all()
 		self.init_threads()
@@ -988,7 +1013,7 @@ class MainWindow:
 		
 			if response==Gtk.ResponseType.YES:	
 				self.manage_menubar(False)
-				self.msg_label.set_text("")
+				self.hide_message_items("")
 				self.core.bellBox.manage_bells_buttons(False)
 				self.waiting_label.set_text(self.get_msg(50))			
 				self.waiting_window.show_all()
