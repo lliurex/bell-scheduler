@@ -50,7 +50,7 @@ class BellBox(Gtk.VBox):
 		self.style_provider.load_from_file(f)
 
 		Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),self.style_provider,Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-				
+		self.bell_list_box.set_name("BELL_LIST")			
 	#def set_css_info			
 			
 	def init_bell_list(self):
@@ -75,20 +75,23 @@ class BellBox(Gtk.VBox):
 			order=self.core.mainWindow.search_order
 
 		last_change=args
+		count=len(self.bells_list)
 		for item in order:
-			self.new_bell_box(item,last_change)
-
+			self.new_bell_box(item,count,last_change)
+			count-=1		
+		
 		if self.alarms_error>0:
-			self.core.mainWindow.manage_message(True,31)	
+			self.core.mainWindow.manage_message(True,-31)	
 
 	#def draw_bell		
 
-	def new_bell_box(self,id_bell,args=None):
+	def new_bell_box(self,id_bell,count,args=None):
 
 		self.days_on=0
 		self.error_sound=False
 		self.error_image=False
 
+		bell_vbox=Gtk.VBox()
 		hbox=Gtk.HBox()
 		hbox_cron=Gtk.VBox()
 		hour_info=self.core.bellmanager.format_time(id_bell)[2]
@@ -227,7 +230,7 @@ class BellBox(Gtk.VBox):
 		delete_box.set_margin_right(10)
 		delete_eb=Gtk.EventBox()
 		delete_eb.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK)
-		delete_eb.connect("button-press-event", self.delete_bell_clicked,hbox)
+		delete_eb.connect("button-press-event", self.delete_bell_clicked,hbox,bell_vbox)
 		delete_eb.connect("motion-notify-event", self.mouse_over_popover)
 		delete_eb.connect("leave-notify-event", self.mouse_exit_popover)
 		delete_label=Gtk.Label()
@@ -280,17 +283,32 @@ class BellBox(Gtk.VBox):
 		hbox.pack_end(switch_button,False,False,5)
 		hbox.show_all()
 
+		list_separator=Gtk.Separator()
+		list_separator.set_margin_top(5)
+		list_separator.set_margin_left(20)
+		list_separator.set_margin_right(20)
+
+		if count!=1:
+			list_separator.set_name("SEPARATOR")
+		else:
+			list_separator.set_name("WHITE_SEPARATOR")	
+
+
+		bell_vbox.pack_start(hbox,False,False,0)
+		bell_vbox.pack_end(list_separator,False,False,0)
+		bell_vbox.show_all()
+
 		if str(id_bell)==str(args):
-			hbox.set_name("CHANGE_BOX")
+			bell_vbox.set_name("CHANGE_BOX")
 		else:
 			if not self.error_sound and not self.error_image:
-				hbox.set_name("APP_BOX")
+				bell_vbox.set_name("APP_BOX")
 			else:
 				self.alarms_error+=1
-				hbox.set_name("ERROR_BOX")	
-		self.bell_list_box.pack_start(hbox,False,False,5)
+				bell_vbox.set_name("APP_ERROR_BOX")	
+		self.bell_list_box.pack_start(bell_vbox,False,False,0)
 		self.bell_list_box.queue_draw()
-		hbox.queue_draw()	
+		bell_vbox.queue_draw()	
 
 	#def new_bell_box	
 		
@@ -349,7 +367,7 @@ class BellBox(Gtk.VBox):
 	#def format_image_size	
 
 
-	def delete_bell_clicked(self,widget,event,hbox):
+	def delete_bell_clicked(self,widget,event,hbox,bell_box):
 
 		popover=hbox.get_children()[4].popover.hide()
 		dialog = Gtk.MessageDialog(None,0,Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, "BELL SCHEDULER")
@@ -362,7 +380,7 @@ class BellBox(Gtk.VBox):
 			self.core.mainWindow.bells_info.pop(bell_to_remove)
 			result=self.core.bellmanager.save_conf(self.core.mainWindow.bells_info,bell_to_remove,"remove")
 			if result['status']:
-				self.bell_list_box.remove(hbox)
+				self.bell_list_box.remove(bell_box)
 				self.core.mainWindow.manage_message(False,14)
 			else:
 				self.core.mainWindow.manage_message(True,result['code'])
@@ -371,7 +389,7 @@ class BellBox(Gtk.VBox):
 			
 		
 	def edit_bell_clicked(self,widget,event,hbox):
-
+		
 		popover=hbox.get_children()[4].popover.hide()
 		bell_to_edit=hbox		
 		bell_to_edit=bell_to_edit.get_children()[0].get_children()[0].id
@@ -386,7 +404,8 @@ class BellBox(Gtk.VBox):
 	#def edit_bell_clicked		
 
 	def on_switch_activaded (self,switch,gparam,hbox):
-
+		
+		self.core.mainWindow.hide_message_items()
 		bell_to_edit=hbox		
 		bell_to_edit=bell_to_edit.get_children()[0].get_children()[0].id
 		turn_on=False
@@ -412,13 +431,14 @@ class BellBox(Gtk.VBox):
 	def manage_bells_buttons(self,sensitive):
 	
 		for item in self.bell_list_box:
-			item.get_children()[3].set_sensitive(sensitive)
-			item.get_children()[4].set_sensitive(sensitive)
+			item.get_children()[0].get_children()[3].set_sensitive(sensitive)
+			item.get_children()[0].get_children()[4].set_sensitive(sensitive)
 
 	#def manage_bells_buttons
 	
 	def manage_bell_options(self,button,hbox,event=None):
-	
+		
+		self.core.mainWindow.hide_message_items()
 		button.popover.show()
 
 	#def manage_bell_options	

@@ -133,18 +133,22 @@ class BellSchedulerManager:
 		tmp_tasks={}
 		#Old n4d: tasks=self.n4d.get_local_tasks(self.n4dkey,'SchedulerServer')
 		
-		tasks=self.core.get_plugin('SchedulerServer').get_local_tasks()
-		if tasks.get("status",None)==0:
+		try:
+			tasks=self.core.get_plugin('SchedulerServer').get_local_tasks()
+			if tasks.get("status",None)==0:
 
-			for item in tasks.get('return',None):
-				if item=="BellScheduler":
-					tmp_tasks=tasks.get('return',None)[item]
+				for item in tasks.get('return',None):
+					if item=="BellScheduler":
+						tmp_tasks=tasks.get('return',None)[item]
 
-			if len(tmp_tasks)>0:
-				for	item in tmp_tasks:
-					key=str(tmp_tasks[item]["BellId"])
-					cron_tasks[key]={}
-					cron_tasks[key]["CronId"]=item
+				if len(tmp_tasks)>0:
+					for	item in tmp_tasks:
+						key=str(tmp_tasks[item]["BellId"])
+						cron_tasks[key]={}
+						cron_tasks[key]["CronId"]=item
+		except Exception as e:
+			print("BellSchedulerManager-SchedulerServer:_get_tasks_from_cron.Error: "+str(e))
+			pass
 		
 		return cron_tasks
 
@@ -230,7 +234,11 @@ class BellSchedulerManager:
 				turn_on=True
 				tasks_for_cron=self._format_to_cron(info,last_change,action)
 				#Old n4d:result=self.n4d.write_tasks(self.n4dkey,'SchedulerServer','local',tasks_for_cron)
-				result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
+				try:
+					result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
+				except Exception as e:
+					print("BellSchedulerManager-SchedulerServer:save_changes.Error: "+str(e))
+					result={"status":-1}	
 			else:
 				result=self._delete_from_cron(last_change)
 		else:
@@ -257,10 +265,15 @@ class BellSchedulerManager:
 
 	def _get_cron_id(self,last_change):
 
-		cron_tasks=self._get_tasks_from_cron()
-		if len(cron_tasks)>0:
-			if last_change in cron_tasks.keys():
-				return {"status":True, "id":cron_tasks[last_change]}
+		try:
+			cron_tasks=self._get_tasks_from_cron()
+			if len(cron_tasks)>0:
+				if last_change in cron_tasks.keys():
+					return {"status":True, "id":cron_tasks[last_change]}
+		except Exception as e:
+			print("BellSchedulerManager:_get_cron_id.Error:"+str(e))
+			return {"status":False,"id":{}}
+		
 		
 		return {"status":False,"id":{"CronId":0}}
 
@@ -269,12 +282,22 @@ class BellSchedulerManager:
 	def _delete_from_cron(self,last_change):
 
 		id_to_remove=self._get_cron_id(last_change)
-		cron_id=id_to_remove["id"]["CronId"]
-		delete={"status":0,"data":"0"}
+		if len(id_to_remove["id"])>0:
+			cron_id=id_to_remove["id"]["CronId"]
+			delete={"status":0,"data":"0"}
+			
+			if id_to_remove["status"]:
+				#OLd n4d:delete=self.n4d.remove_task(self.n4dkey,'SchedulerServer','local','BellScheduler',cron_id,'cmd')
+				try:
+					delete=self.core.get_plugin('SchedulerServer').remove_task('local','BellScheduler',cron_id,'cmd')
+				except Exception as e:
+					print("BellSchedulerManager-SchedulerServer:_delete_from_cron.Error:"+str(e))
+					delete={"status":-1,"data":"0"}
+					pass
 		
-		if id_to_remove["status"]:
-			#OLd n4d:delete=self.n4d.remove_task(self.n4dkey,'SchedulerServer','local','BellScheduler',cron_id,'cmd')
-			delete=self.core.get_plugin('SchedulerServer').remove_task('local','BellScheduler',cron_id,'cmd')
+		else:
+			delete={"status":-1,"data":"0"}
+
 		return delete
 
 	#def _delete_from_cron	
@@ -540,10 +563,15 @@ class BellSchedulerManager:
 
 			
 			self._write_conf(tasks_cron,"CronList")
-			self.core.get_plugin('SchedulerClient').process_tasks(self.n4dkey)
-			result={"status":True,"msg":"Cron file updated to use holiday manager","code":"","data":""}
+			try:
+				self.core.get_plugin('SchedulerClient').process_tasks(self.n4dkey)
+				result={"status":True,"msg":"Cron file updated to use holiday manager","code":"","data":""}
+			except Exception as e:
+				print("BellSchedulerManager-SchedulerServer:_update_holiday_control.Error: "+str(e))
+				result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}			
+			
 		else:
-			result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.BELL_LIST_LOADED_DUETOCRON_ERROR,"data":""}			
+			result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}			
 
 		return result
 
@@ -576,10 +604,15 @@ class BellSchedulerManager:
 
 				
 			self._write_conf(tasks_cron,"CronList")
-			self.core.get_plugin('SchedulerClient').process_tasks(self.n4dkey)
-			result={"status":True,"msg":"Cron file updated to use indicator","code":"","data":""}
+			try:
+				self.core.get_plugin('SchedulerClient').process_tasks(self.n4dkey)
+				result={"status":True,"msg":"Cron file updated to use indicator","code":"","data":""}
+			except Exception as e:
+				print("BellSchedulerManager-SchedulerServer:update_indicator_token.Error: "+str(e))
+				result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}			
+				
 		else:
-			result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.BELL_LIST_LOADED_DUETOCRON_ERROR,"data":""}			
+			result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}			
 
 		return n4d.responses.build_successful_call_response(result)
 	
@@ -676,13 +709,19 @@ class BellSchedulerManager:
 					if cont_days>0:			
 						tasks_for_cron=self._format_to_cron(bell_list,str(item),"active")
 						#Old n4d:result=self.n4d.write_tasks(self.n4dkey,'SchedulerServer','local',tasks_for_cron)
-						result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
+						try:
+							result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
+						except Exception as e:
+							print("BellSchedulerManager-SchedulerServer: change_activation_status.Error: "+str(e))
+							result={'status':-1}
+								
 
 						if result.get('status',None)==0:
 							bell_list[item]["active"]=True
 						else:
 							errors+=1
 							break
+							
 		else:
 			msg_code_ok=BellSchedulerManager.CHANGE_DEACTIVATION_STATUS_SUCCESSFUL
 			msg_code_error=BellSchedulerManager.CHANGE_DEACTIVATION_STATUS_ERROR

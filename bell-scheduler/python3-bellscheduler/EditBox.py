@@ -69,6 +69,8 @@ class EditBox(Gtk.VBox):
 		self.name_label=builder.get_object("name_label")
 		self.name_entry=builder.get_object("name_entry")
 		self.image_popover=builder.get_object("image_popover")
+		self.image_popover_msg_box=builder.get_object("image_popover_msg_box")
+		self.image_popover_error_img=builder.get_object("image_popover_error_img")
 		self.image_popover_msg=builder.get_object("image_popover_msg")
 		self.image_popover_cancel_bt=builder.get_object("image_popover_cancel_bt")
 		self.image_popover_apply_bt=builder.get_object("image_popover_apply_bt")
@@ -91,6 +93,8 @@ class EditBox(Gtk.VBox):
 		self.sound_path_label.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
 		self.sound_edit_button=builder.get_object("sound_edit_button")
 		self.sound_popover=builder.get_object("sound_popover")
+		self.sound_popover_msg_box=builder.get_object("sound_popover_msg_box")
+		self.sound_popover_error_img=builder.get_object("sound_popover_error_img")
 		self.sound_popover_msg=builder.get_object("sound_popover_msg")
 		self.sound_popover_cancel_bt=builder.get_object("sound_popover_cancel_bt")
 		self.sound_popover_apply_bt=builder.get_object("sound_popover_apply_bt")
@@ -191,8 +195,8 @@ class EditBox(Gtk.VBox):
 		self.play_label.set_name("EDIT_LABEL")
 		self.note_label.set_name("NOTE_LABEL")
 		self.image_box.set_name("IMAGE_BOX")
-		self.image_popover_msg.set_name("MSG_ERROR_LABEL")
-		self.sound_popover_msg.set_name("MSG_ERROR_LABEL")
+		#self.image_popover_msg.set_name("MSG_ERROR_LABEL")
+		#self.sound_popover_msg.set_name("MSG_ERROR_LABEL")
 		self.sound_url.set_name("CUSTOM-ENTRY")
 		self.localpath_leyend.set_name("NOTE_LABEL")
 
@@ -640,9 +644,13 @@ class EditBox(Gtk.VBox):
 		if check !=None:
 			msg=self.core.mainWindow.get_msg(check["code"])
 			self.image_popover_msg.set_text(msg)
+			self.image_popover_error_img.show()
+			self.image_popover_msg_box.set_name("ERROR_BOX")
 			self.image_popover_apply_bt.set_sensitive(False)
 		else:
 			self.image_popover_msg.set_text("")
+			self.image_popover_error_img.hide()
+			self.image_popover_msg_box.set_name("HIDE_BOX")
 			self.image_popover_apply_bt.set_sensitive(True)
 
 	#def check_mimetype_image		
@@ -653,10 +661,14 @@ class EditBox(Gtk.VBox):
 		if check !=None:
 			msg=self.core.mainWindow.get_msg(check["code"])
 			self.sound_popover_msg.set_text(msg)
+			self.sound_popover_error_img.show()
+			self.sound_popover_msg_box.set_name("ERROR_BOX")
 			self.sound_popover_apply_bt.set_sensitive(False)
 			self.localpath_cb.set_sensitive(False)
 		else:
 			self.sound_popover_msg.set_text("")
+			self.sound_popover_error_img.hide()
+			self.sound_popover_msg_box.set_name("HIDE_BOX")
 			self.localpath_cb.set_active(True)
 			if self.core.sounds_path not in self.sound_fc.get_filename():
 				self.localpath_cb.set_sensitive(True)
@@ -777,7 +789,8 @@ class EditBox(Gtk.VBox):
 			if self.previous_image_path==None:
 				self.image_popover_apply_bt.set_sensitive(False)
 		
-		self.image_popover.show_all()	
+		self.image_popover.show_all()
+		self.image_popover_error_img.hide()	
 
 	#def edit_image_clicked	
 	
@@ -863,6 +876,7 @@ class EditBox(Gtk.VBox):
 			else:
 				self.sound_popover_apply_bt.set_sensitive(True)	
 		self.sound_popover.show_all()
+		self.sound_popover_error_img.hide()
 
 	#def sound_edit_button_clicked	
 
