@@ -352,7 +352,7 @@ class MainWindow:
 	#def on_key_press_event
 
 	def load_info(self,loading=False):
-	
+		
 		self.load_info_error=False
 		self.read_conf=self.core.bellmanager.read_conf()
 		self.bells_info=self.core.bellmanager.bells_config.copy()
@@ -432,7 +432,7 @@ class MainWindow:
 			self.dest=dialog.get_filename()
 			dialog.destroy()
 			self.manage_menubar(False)
-			self.hide_message_items("")
+			self.hide_message_items()
 			self.core.bellBox.manage_bells_buttons(False)
 			self.waiting_label.set_text(self.get_msg(26))			
 			self.waiting_window.show_all()
@@ -489,7 +489,7 @@ class MainWindow:
 				self.orig=dialog.get_filename()
 				dialog.destroy()
 				self.manage_menubar(False)
-				self.hide_message_items("")
+				self.hide_message_items()
 				self.core.bellBox.manage_bells_buttons(False)
 				self.waiting_label.set_text(self.get_msg(27))			
 				self.waiting_window.show_all()
@@ -605,6 +605,7 @@ class MainWindow:
 		if search=="":
 			self.core.bellBox.draw_bell(False)
 		else:
+			self.hide_message_items()
 			for item in self.bells_info:
 				time=self.core.bellmanager.format_time(item)
 				hour=str(time[0])
@@ -1013,7 +1014,7 @@ class MainWindow:
 		
 			if response==Gtk.ResponseType.YES:	
 				self.manage_menubar(False)
-				self.hide_message_items("")
+				self.hide_message_items()
 				self.core.bellBox.manage_bells_buttons(False)
 				self.waiting_label.set_text(self.get_msg(50))			
 				self.waiting_window.show_all()

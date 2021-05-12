@@ -11,7 +11,7 @@
 		font: 12pt Roboto;
 	}
 
-#BANNER_BOX{
+	#BANNER_BOX{
 		background-color: #0049ab;
 
 
@@ -155,15 +155,21 @@
 		
 	}
 
+	#BELL_LIST{
+		background-color: #ffffff;
+
+	}
+
 	
 	#APP_BOX {
 		background-color: #ffffff;
-		box-shadow: -0.5px 3px 2px #cdcdcd;
+		/*box-shadow: -0.5px 3px 2px #cdcdcd;*/
+
 	}
 
-	#ERROR_BOX {
+	#APP_ERROR_BOX {
 		background-color: #ffa64c;
-		box-shadow: -0.5px 3px 2px #cdcdcd;
+		/*box-shadow: -0.5px 3px 2px #cdcdcd;*/
 	}
 	
 
@@ -176,7 +182,7 @@
 	}
 
 	#CHANGE_BOX{
-		box-shadow: -0.5px 3px 2px #cdcdcd;
+		/*box-shadow: -0.5px 3px 2px #cdcdcd;*/
 		animation-name: selected;
 		animation-duration: 2s;
 		animation-timing-function: ease;
@@ -185,7 +191,7 @@
 	}
 	
 	#APP_BOX:hover {
-		box-shadow: -0.5px 3px 2px #cacaca;
+		/*ox-shadow: -0.5px 3px 2px #cacaca;*/
 	}
 	
 	#TITLE {
@@ -270,10 +276,10 @@
 	#CUSTOM-ENTRY
 	{
 		color: @default-grey;
-		border: none;
+		border:  1px solid #aaaaaa;
 		/*border-radius: 5px;*/
 		/*background-color: @arc-blue;*/
-		border-bottom: 1px solid #aaaaaa;
+		/*border-bottom: 1px solid #aaaaaa;*/
 		padding: 4px;
 		/*background: #eeeeee;*/
 		
@@ -284,7 +290,8 @@
 	#CUSTOM-ENTRY:focus
 	{
 		color: @arc-blue;
-		border-bottom: 1px solid @arc-blue-light;
+		border:1px solid @arc-blue-light;
+		/*border-bottom: 1px solid @arc-blue-light;*/
 		/*border-bottom: 2px solid rgba(0,0,0,0);*/
 		/*background-color: transparent;*/
 		
@@ -298,7 +305,8 @@
 	#CUSTOM-ENTRY:disabled
 	{
 		background-color: #bbbbbb;
-		border-bottom: 1px solid transparent;
+		border:1px solid transparent;
+		/*border-bottom: 1px solid transparent;*/
 		color: #999999;
 	}
 
@@ -360,4 +368,16 @@
 		border-radius: 0px;
 		border-color:transparent;
 		background:transparent;
+	}
+
+	#SEPARATOR{
+		
+		background-color: #b3b3b3;
+
+	}
+
+	#WHITE_SEPARATOR{
+		
+		background-color: #ffffff;
+
 	}
