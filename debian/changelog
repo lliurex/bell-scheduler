@@ -1,3 +1,10 @@
+bell-scheduler (0.4.31) focal; urgency=medium
+
+  * Improved stability of n4d plugin
+  * Changes in style of gui
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 12 May 2021 11:53:35 +0200
+
 bell-scheduler (0.4.30) focal; urgency=medium
 
   * Initial release for focal
