@@ -213,6 +213,7 @@ class MainWindow:
 		self.msg_ok_img.hide()
 		self.msg_error_img.hide()
 		self.loading_error_img.hide()
+		self.loading_label.set_halign(Gtk.Align.CENTER)
 		self.load_process()
 
 		
@@ -320,10 +321,11 @@ class MainWindow:
 	def manage_loading_error(self,code):
 
 		msg=self.get_msg(code)
-		self.loading_label.set_name("LOADING_ERROR_LABEL")
+		self.loading_label.set_name("FEEDBACK_LABEL")
 		self.loading_error_img.show()
 		self.loading_msg_box.set_name("ERROR_BOX")
 		self.loading_label.set_text(msg)
+		self.loading_label.set_halign(Gtk.Align.START)
 
 	#def manage_loading_error	
 
@@ -699,6 +701,8 @@ class MainWindow:
 		msg=self.get_msg(code)
 		if data!=None:
 			msg=msg+data
+
+		self.msg_label.set_name("FEEDBACK_LABEL")
 
 		if error:
 			#self.msg_label.set_name("MSG_ERROR_LABEL")
