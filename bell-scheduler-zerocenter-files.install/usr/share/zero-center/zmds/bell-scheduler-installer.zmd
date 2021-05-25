@@ -1,6 +1,18 @@
-#!/bin/sh
+#!/bin/bash
 
+bellschedulerisinstaled="0"
 
-epi-gtk /usr/share/zero-lliurex-bellscheduler/bell-scheduler.epi
+TEST=$( dpkg-query -s  bell-scheduler 2> /dev/null| grep Status | cut -d " " -f 4 )
+
+if ! [ "$TEST" == 'installed' ];then
+	bellschedulerisinstaled="1"
+fi
+
+if [ "$bellschedulerisinstaled" = "1" ]; then
+	
+	epi-gtk /usr/share/zero-lliurex-bellscheduler/bell-scheduler.epi
+else
+	zero-center set-configured bell-scheduler-installer || true
+fi		
 
 exit 0
