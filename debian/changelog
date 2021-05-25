@@ -1,3 +1,9 @@
+bell-scheduler (0.4.33) focal; urgency=medium
+
+  * Fixed bell-scheduler-installer zmd file
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 25 May 2021 15:34:07 +0200
+
 bell-scheduler (0.4.32) focal; urgency=medium
 
   * Fixed ui and css file
