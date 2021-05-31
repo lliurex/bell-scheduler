@@ -1,3 +1,9 @@
+bell-scheduler (0.4.35) focal; urgency=medium
+
+  * Fixed some code when edit a bell
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 31 May 2021 16:26:30 +0200
+
 bell-scheduler (0.4.34) focal; urgency=medium
 
   * Fixed import library in n4d plugin
