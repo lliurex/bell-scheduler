@@ -1683,6 +1683,7 @@ included in the export. It is recommended to mark it</property>
           <object class="GtkBox" id="msg_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="margin_bottom">10</property>
             <child>
               <object class="GtkImage" id="msg_ok_img">
                 <property name="visible">True</property>

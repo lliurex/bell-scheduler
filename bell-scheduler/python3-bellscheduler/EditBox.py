@@ -273,7 +273,7 @@ class EditBox(Gtk.VBox):
 
 
 	def image_toggled_button(self,button,name):
-
+		
 		if button.get_active():
 			if name=="stock":
 				self.image_cb.set_sensitive(True)
@@ -447,7 +447,7 @@ class EditBox(Gtk.VBox):
 	
 	def gather_values(self,widget):
 
-		self.core.mainWindow.msg_label.set_text("")
+		self.core.mainWindow.hide_message_items()
 		self.data_tocheck={}
 		self.data_tocheck["name"]=self.name_entry.get_text()
 		self.data_tocheck["image"]={}
@@ -698,7 +698,8 @@ class EditBox(Gtk.VBox):
 	#def manage_form_control	
 
 	def edit_hour_bell(self,widget,event=None):
-
+		
+		self.core.mainWindow.hide_message_items()
 		self.previous_hour=self.hour_spinbutton.get_value_as_int()
 		self.previous_minute=self.minute_spinbutton.get_value_as_int()
 		self.restore_hour=True
@@ -770,7 +771,8 @@ class EditBox(Gtk.VBox):
 		
 
 	def edit_image_clicked(self,widget,event=None):
-
+		
+		self.core.mainWindow.hide_message_items()
 		self.previous_image_op=self.image_op
 		self.restore_img=True
 		
@@ -866,7 +868,8 @@ class EditBox(Gtk.VBox):
 	#def mouse_exit_image		
 
 	def sound_edit_button_clicked (self,widget):
-
+		
+		self.core.mainWindow.hide_message_items()
 		self.restore_sound=True
 		self.previous_sound_op=self.sound_op
 		self.previous_sound_path=self.get_sound_path(self.sound_op,False)
@@ -985,7 +988,8 @@ class EditBox(Gtk.VBox):
 	#def get_sound_path
 
 	def start_edit_bt_clicked(self,button):
-
+		
+		self.core.mainWindow.hide_message_items()
 		self.restore_start_time=True
 		self.previous_start_time=self.start_time_spinbutton.get_value_as_int()
 		self.start_popover.show_all()
@@ -1022,6 +1026,7 @@ class EditBox(Gtk.VBox):
 
 	def duration_edit_bt_clicked(self,button):
 
+		self.core.mainWindow.hide_message_items()
 		self.restore_duration=False
 		self.previous_duration=self.duration_spinbutton.get_value_as_int()
 		self.duration_popover.show_all()
