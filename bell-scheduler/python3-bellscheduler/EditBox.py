@@ -473,7 +473,8 @@ class EditBox(Gtk.VBox):
 		self.start_time=self.start_time_spinbutton.get_value_as_int()
 		
 		self.core.mainWindow.waiting_label.set_text(self.core.mainWindow.get_msg(30))			
-		self.core.mainWindow.waiting_window.show_all()
+		#self.core.mainWindow.waiting_window.show_all()
+		self.core.mainWindow.manage_waiting_stack(True,True)
 		self.init_threads()
 		self.checking_data_t.start()
 		GLib.timeout_add(100,self.pulsate_checking_data)
@@ -483,13 +484,14 @@ class EditBox(Gtk.VBox):
 	def pulsate_checking_data(self):
 		
 		if self.checking_data_t.is_alive():
-			self.core.mainWindow.waiting_pbar.pulse()
+			#self.core.mainWindow.waiting_pbar.pulse()
 			return True
 			
 		else:
-			self.core.mainWindow.waiting_window.hide()
+			#self.core.mainWindow.waiting_window.hide()
 			
 			if not self.check["result"]:
+				self.core.mainWindow.manage_waiting_stack(False,True,True)
 				self.core.mainWindow.save_button.set_sensitive(True)
 				self.core.mainWindow.cancel_button.set_sensitive(True)
 				self.manage_form_control(True)
