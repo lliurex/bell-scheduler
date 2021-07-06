@@ -175,10 +175,15 @@ class MainWindow:
 		self.cancel_button=builder.get_object("cancel_button")
 		self.return_button=builder.get_object("return_button")
 
+		'''
 		self.waiting_window=builder.get_object("waiting_window")
 		self.waiting_label=builder.get_object("waiting_plabel")
 		self.waiting_pbar=builder.get_object("waiting_pbar")
 		self.waiting_window.set_transient_for(self.main_window)
+		'''
+		self.waiting_box=builder.get_object("waiting_box")
+		self.waiting_label=builder.get_object("waiting_label")
+		self.waiting_spinner=builder.get_object("waiting_spinner")
 
 		self.stack_window.add_titled(self.loading_box, "loadingBox", "Loading Box")
 		self.stack_window.add_titled(self.option_box,"optionBox", "Option Box")
@@ -190,10 +195,10 @@ class MainWindow:
 		self.stack_opt.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
 
 		
+		self.stack_opt.add_titled(self.waiting_box,"waitingBox","Waiting Box")
 		self.stack_opt.add_titled(self.core.bellBox,"bellBox", "Bell Box")
 		self.stack_opt.add_titled(self.core.editBox,"editBox", "Edit Box")
 		self.stack_opt.add_titled(self.core.holidayBox,"holidayBox", "Holiday Box")
-
 		
 		self.stack_opt.show_all()
 
@@ -250,9 +255,9 @@ class MainWindow:
 		self.style_provider.load_from_file(f)
 		Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),self.style_provider,Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 		self.main_window.set_name("WINDOW")
-		self.waiting_label.set_name("WAITING_LABEL")
+		self.waiting_label.set_name("FEEDBACK_LABEL")
 		self.banner_box.set_name("BANNER_BOX")
-		self.loading_label.set_name("WAITING_LABEL")
+		self.loading_label.set_name("FEEDBACK_LABEL")
 		self.search_entry.set_name("CUSTOM-ENTRY")
 		self.msg_box.set_name("HIDE_BOX")
 
@@ -302,7 +307,8 @@ class MainWindow:
 				if not self.load_info_error:
 					self.core.bellBox.draw_bell(False)
 					self.stack_window.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
-					self.stack_window.set_visible_child_name("optionBox")	
+					self.stack_window.set_visible_child_name("optionBox")
+					self.stack_opt.set_visible_child_name("bellBox")	
 			else:
 				self.manage_loading_error(self.result_sync["code"])
 
@@ -437,7 +443,8 @@ class MainWindow:
 			self.hide_message_items()
 			self.core.bellBox.manage_bells_buttons(False)
 			self.waiting_label.set_text(self.get_msg(26))			
-			self.waiting_window.show_all()
+			#self.waiting_window.show_all()
+			self.manage_waiting_stack(True)
 			self.init_threads()
 			self.export_bells_t.start()
 			GLib.timeout_add(100,self.pulsate_export_bells)
@@ -448,11 +455,12 @@ class MainWindow:
 	def pulsate_export_bells(self):
 
 		if self.export_bells_t.is_alive():
-			self.waiting_pbar.pulse()
+			#self.waiting_pbar.pulse()
 			return True
 
 		else:
-			self.waiting_window.hide()
+			#self.waiting_window.hide()
+			self.manage_waiting_stack(False)
 			self.manage_menubar(True)
 			self.core.bellBox.manage_bells_buttons(True)
 			self.search_entry.set_text("")
@@ -494,7 +502,8 @@ class MainWindow:
 				self.hide_message_items()
 				self.core.bellBox.manage_bells_buttons(False)
 				self.waiting_label.set_text(self.get_msg(27))			
-				self.waiting_window.show_all()
+				#self.waiting_window.show_all()
+				self.manage_waiting_stack(True)
 				self.init_threads()
 				self.import_bells_t.start()
 				GLib.timeout_add(100,self.pulsate_import_bells)
@@ -515,13 +524,14 @@ class MainWindow:
 	def pulsate_import_bells(self):
 
 		if self.import_bells_t.is_alive():
-			self.waiting_pbar.pulse()
+			#self.waiting_pbar.pulse()
 			return True
 
 		else:
 			self._init_holiday_switch()
-			self.waiting_window.hide()
+			#self.waiting_window.hide()
 			if self.import_result['status']:
+				self.manage_waiting_stack(False)
 				self.search_entry.set_text("")
 				self.load_info()
 				if self.read_conf['status']:
@@ -552,7 +562,8 @@ class MainWindow:
 				self.manage_message(True,self.import_result['code'])	
 				self.init_threads()
 				self.recovery_bells_t.start()
-				self.waiting_window.show()
+				#self.waiting_window.show()
+				self.manage_waiting_stack(True)
 				self.waiting_label.set_text(self.get_msg(28))
 				GLib.timeout_add(100,self.pulsate_recovery_bells)
 				return False		
@@ -569,11 +580,12 @@ class MainWindow:
 	def pulsate_recovery_bells(self):
 
 		if self.recovery_bells_t.is_alive():
-			self.waiting_pbar.pulse()
+			#self.waiting_pbar.pulse()
 			return True
 
 		else:
-			self.waiting_window.hide()
+			#self.waiting_window.hide()
+			self.manage_waiting_stack(False)
 			self.load_info()
 			self.manage_menubar(True)
 			try:
@@ -878,7 +890,8 @@ class MainWindow:
 			self.hide_message_items()
 			self.core.bellBox.manage_bells_buttons(False)
 			self.waiting_label.set_text(self.get_msg(32))			
-			self.waiting_window.show_all()
+			#self.waiting_window.show_all()
+			self.manage_waiting_stack(True)
 			self.init_threads()
 			self.enable_holiday_control_t.start()
 			GLib.timeout_add(100,self.pulsate_enable_holiday_control)
@@ -890,11 +903,12 @@ class MainWindow:
 
 
 		if self.enable_holiday_control_t.is_alive():
-			self.waiting_pbar.pulse()
+			#self.waiting_pbar.pulse()
 			return True
 
 		else:
-			self.waiting_window.hide()
+			#self.waiting_window.hide()
+			self.manage_waiting_stack(False)
 			self.manage_menubar(True)
 			self.core.bellBox.manage_bells_buttons(True)
 			if self.enable_holiday_result['status']:
@@ -968,7 +982,8 @@ class MainWindow:
 		self.core.bellBox.manage_bells_buttons(False)
 		self.hide_message_items()
 		self.waiting_label.set_text(self.get_msg(code))			
-		self.waiting_window.show_all()
+		#self.waiting_window.show_all()
+		self.manage_waiting_stack(True)
 		self.init_threads()
 		self.change_activation_status_t.start()
 		GLib.timeout_add(100,self.pulsate_change_activation_status)
@@ -980,11 +995,12 @@ class MainWindow:
 
 
 		if self.change_activation_status_t.is_alive():
-			self.waiting_pbar.pulse()
+			#self.waiting_pbar.pulse()
 			return True
 
 		else:
-			self.waiting_window.hide()
+			#self.waiting_window.hide()
+			self.manage_waiting_stack(False)
 			self.manage_menubar(True)
 			self.core.bellBox.manage_bells_buttons(True)
 			self.search_entry.set_text("")
@@ -1021,7 +1037,8 @@ class MainWindow:
 				self.hide_message_items()
 				self.core.bellBox.manage_bells_buttons(False)
 				self.waiting_label.set_text(self.get_msg(50))			
-				self.waiting_window.show_all()
+				#self.waiting_window.show_all()
+				self.manage_waiting_stack(True)
 				self.init_threads()
 				self.remove_all_bells_t.start()
 				GLib.timeout_add(100,self.pulsate_remove_all_process)
@@ -1031,11 +1048,12 @@ class MainWindow:
 	def pulsate_remove_all_process(self):
 
 		if self.remove_all_bells_t.is_alive():
-			self.waiting_pbar.pulse()
+			#self.waiting_pbar.pulse()
 			return True
 
 		else:
-			self.waiting_window.hide()
+			#self.waiting_window.hide()
+			self.manage_waiting_stack(False)
 			self.manage_menubar(True)
 			self.search_entry.set_text("")
 			self.load_info()
@@ -1071,6 +1089,26 @@ class MainWindow:
 		widget.set_name("POPOVER_OFF")
 
 	#def mouse_exit_popover
+
+	def manage_waiting_stack(self,show,editBell=False,error=False):
+
+		self.stack_opt.set_transition_duration(700)
+		self.stack_opt.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
+
+		if show:
+			self.waiting_spinner.start()
+			self.stack_opt.set_visible_child_name("waitingBox")
+		else:
+			self.waiting_spinner.stop()
+			if not editBell:
+				self.stack_opt.set_visible_child_name("bellBox")
+			else:
+				if not error:
+					self.stack_opt.set_visible_child_name("bellBox")
+				else:
+					self.stack_opt.set_visible_child_name("editBox")
+
+	#def manage_waiting_stack
 
 	def quit(self,widget):
 
