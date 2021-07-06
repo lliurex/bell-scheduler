@@ -1,3 +1,9 @@
+bell-scheduler (0.4.36) focal; urgency=medium
+
+  * Changed waiting window by stack
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 06 Jul 2021 14:30:00 +0200
+
 bell-scheduler (0.4.35) focal; urgency=medium
 
   * Fixed some code when edit a bell
