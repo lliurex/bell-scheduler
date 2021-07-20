@@ -1,3 +1,9 @@
+bell-scheduler (0.4.37) focal; urgency=medium
+
+  * Fixed login panel
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 20 Jul 2021 16:47:20 +0200
+
 bell-scheduler (0.4.36) focal; urgency=medium
 
   * Changed waiting window by stack
