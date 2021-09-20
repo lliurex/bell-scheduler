@@ -60,7 +60,7 @@ class MainWindow:
 		self.main_window.resize(930,780)
 		self.main_box=builder.get_object("main_box")
 		self.login=N4dGtkLogin()
-		self.login.set_allowed_groups(['adm','teachers'])
+		self.login.set_allowed_groups(['sudo','admins','teachers'])
 		self.login.hide_server_entry()
 		desc=_("Welcome to the Bell Scheduler.\nFrom here you can program multiple alarms for entry, exit, recess or any other event")
 		self.login.set_info_text("<span foreground='black'>Bell Scheduler</span>",_("Bell Scheduler"),"<span foreground='black'>"+desc+"</span>\n")
@@ -270,21 +270,24 @@ class MainWindow:
 				
 	def _signin(self,user,pwd,server):
 
-		self.core.bellmanager.credentials=[user,pwd]
-		self.core.holidayBox.credentials=[user,pwd]
-		self._init_holiday_switch()
-		self.manage_down_buttons(False)
-		result_sync=self.core.bellmanager.sync_with_cron()
-		if result_sync["status"]:
-			self.load_info()
-			self.core.bellBox.draw_bell(False)
-		else:
-			self.manage_menubar(False)
-			self.manage_message(True,result_sync["code"])
+		try:
+			self.core.bellmanager.credentials=[user,pwd]
+			self.core.holidayBox.credentials=[user,pwd]
+			self._init_holiday_switch()
+			self.manage_down_buttons(False)
+			result_sync=self.core.bellmanager.sync_with_cron()
+			if result_sync["status"]:
+				self.load_info()
+				self.core.bellBox.draw_bell(False)
+			else:
+				self.manage_menubar(False)
+				self.manage_message(True,result_sync["code"])
 
-		self.stack_window.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
-		self.stack_window.set_visible_child_name("optionBox")
-		#self.stack_opt.set_visible_child_name("bellBox")
+			self.stack_window.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
+			self.stack_window.set_visible_child_name("optionBox")
+			#self.stack_opt.set_visible_child_name("bellBox")
+		except Exception as e:
+			pass
 
 
 	#def _signin
