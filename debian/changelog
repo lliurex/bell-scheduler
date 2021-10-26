@@ -1,3 +1,9 @@
+bell-scheduler (0.4.39) focal; urgency=medium
+
+  * Added some depends in control
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 26 Oct 2021 08:40:18 +0200
+
 bell-scheduler (0.4.38) focal; urgency=medium
 
   * Updated help link
