@@ -15,7 +15,7 @@ Vcs-Browser: https://svn.lliurex.net/xenial/bell-scheduler
 
 Package: bell-scheduler
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, n4d-bellscheduler (= ${binary:Version}),youtube-dl,n4d-qt-agent,python3-n4d-client,python3-holidaymanager, ffmpeg
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, n4d-bellscheduler (= ${binary:Version}),youtube-dl,n4d-qt-agent,python3-n4d-client,python3-holidaymanager, ffmpeg, python3-pyside2.qtqml, python3-pyside2.qtwidgets, python3-pyside2.qtquick
 Recommends: bell-scheduler-indicator (= ${binary:Version}), bell-scheduler-zerocenter-files(= ${binary:Version})
 Description:Bell Schededuler GUI package
   Provides the gui to program alarms
