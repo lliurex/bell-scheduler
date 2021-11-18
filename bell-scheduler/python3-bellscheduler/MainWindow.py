@@ -168,15 +168,23 @@ class MainWindow:
 		#self.enable_holiday_label=builder.get_object("enable_holiday_label")
 		self.enable_holiday_switch=builder.get_object("enable_holiday_switch")
 		self.search_entry=builder.get_object("search_entry")
+		self.msg_box=builder.get_object("msg_box")
+		self.msg_error_img=builder.get_object("msg_error_img")
+		self.msg_ok_img=builder.get_object("msg_ok_img")
 		self.msg_label=builder.get_object("msg_label")
 		self.save_button=builder.get_object("save_button")
 		self.cancel_button=builder.get_object("cancel_button")
 		self.return_button=builder.get_object("return_button")
 
+		'''
 		self.waiting_window=builder.get_object("waiting_window")
 		self.waiting_label=builder.get_object("waiting_plabel")
 		self.waiting_pbar=builder.get_object("waiting_pbar")
 		self.waiting_window.set_transient_for(self.main_window)
+		'''
+		self.waiting_box=builder.get_object("waiting_box")
+		self.waiting_label=builder.get_object("waiting_label")
+		self.waiting_spinner=builder.get_object("waiting_spinner")
 
 		self.stack_window.add_titled(self.login, "login", "Login")
 		self.stack_window.add_titled(self.option_box,"optionBox", "Option Box")
@@ -188,6 +196,7 @@ class MainWindow:
 		self.stack_opt.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
 
 		
+		self.stack_opt.add_titled(self.waiting_box,"waitingBox","Waiting Box")
 		self.stack_opt.add_titled(self.core.bellBox,"bellBox", "Bell Box")
 		self.stack_opt.add_titled(self.core.editBox,"editBox", "Edit Box")
 		self.stack_opt.add_titled(self.core.holidayBox,"holidayBox", "Holiday Box")
@@ -208,7 +217,8 @@ class MainWindow:
 		self.stack_window.set_transition_type(Gtk.StackTransitionType.NONE)
 		self.stack_window.set_visible_child_name("login")
 		self.return_button.hide()
-		#self.holiday_control=False
+		self.msg_ok_img.hide()
+		self.msg_error_img.hide()
 
 		
 	#def load_gui
@@ -242,8 +252,9 @@ class MainWindow:
 		self.style_provider.load_from_file(f)
 		Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),self.style_provider,Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 		self.main_window.set_name("WINDOW")
-		self.waiting_label.set_name("WAITING_LABEL")
+		self.waiting_label.set_name("FEEDBACK_LABEL")
 		self.search_entry.set_name("CUSTOM-ENTRY")
+		self.msg_box.set_name("HIDE_BOX")
 
 		#self.banner_box.set_name("BANNER_BOX")
 
@@ -285,7 +296,7 @@ class MainWindow:
 
 			self.stack_window.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
 			self.stack_window.set_visible_child_name("optionBox")
-			#self.stack_opt.set_visible_child_name("bellBox")
+			self.stack_opt.set_visible_child_name("bellBox")
 		except Exception as e:
 			pass
 
@@ -324,7 +335,8 @@ class MainWindow:
 		if not self.read_conf['status']:
 			if self.cont==0:
 				self.manage_message(True,self.read_conf['code'])
-				self.manage_menubar(False,False)	
+				self.manage_menubar(False,False)
+		
 		else:
 			self.manage_menubar(True)			
 	
@@ -391,10 +403,11 @@ class MainWindow:
 			self.dest=dialog.get_filename()
 			dialog.destroy()
 			self.manage_menubar(False)
-			self.msg_label.set_text("")
+			self.hide_message_items()
 			self.core.bellBox.manage_bells_buttons(False)
 			self.waiting_label.set_text(self.get_msg(26))			
-			self.waiting_window.show_all()
+			#self.waiting_window.show_all()
+			self.manage_waiting_stack(True)
 			self.init_threads()
 			self.export_bells_t.start()
 			GLib.timeout_add(100,self.pulsate_export_bells)
@@ -405,11 +418,12 @@ class MainWindow:
 	def pulsate_export_bells(self):
 
 		if self.export_bells_t.is_alive():
-			self.waiting_pbar.pulse()
+			#self.waiting_pbar.pulse()
 			return True
 
 		else:
-			self.waiting_window.hide()
+			#self.waiting_window.hide()
+			self.manage_waiting_stack(False)
 			self.manage_menubar(True)
 			self.core.bellBox.manage_bells_buttons(True)
 			self.search_entry.set_text("")
@@ -448,10 +462,11 @@ class MainWindow:
 				self.orig=dialog.get_filename()
 				dialog.destroy()
 				self.manage_menubar(False)
-				self.msg_label.set_text("")
+				self.hide_message_items()
 				self.core.bellBox.manage_bells_buttons(False)
 				self.waiting_label.set_text(self.get_msg(27))			
-				self.waiting_window.show_all()
+				#self.waiting_window.show_all()
+				self.manage_waiting_stack(True)
 				self.init_threads()
 				self.import_bells_t.start()
 				GLib.timeout_add(100,self.pulsate_import_bells)
@@ -472,13 +487,14 @@ class MainWindow:
 	def pulsate_import_bells(self):
 
 		if self.import_bells_t.is_alive():
-			self.waiting_pbar.pulse()
+			#self.waiting_pbar.pulse()
 			return True
 
 		else:
 			self._init_holiday_switch()
-			self.waiting_window.hide()
+			#self.waiting_window.hide()
 			if self.import_result['status']:
+				self.manage_waiting_stack(False)
 				self.search_entry.set_text("")
 				self.load_info()
 				if self.read_conf['status']:
@@ -488,7 +504,7 @@ class MainWindow:
 						if not self.loading_errors:
 							self.manage_message(False,self.import_result['code'])
 						else:
-							self.manage_message(True,13)	
+							self.manage_message(True,-13)	
 					except:
 						self.manage_menubar(False)
 						self.recovery=True
@@ -509,7 +525,8 @@ class MainWindow:
 				self.manage_message(True,self.import_result['code'])	
 				self.init_threads()
 				self.recovery_bells_t.start()
-				self.waiting_window.show()
+				#self.waiting_window.show()
+				self.manage_waiting_stack(True)
 				self.waiting_label.set_text(self.get_msg(28))
 				GLib.timeout_add(100,self.pulsate_recovery_bells)
 				return False		
@@ -526,19 +543,20 @@ class MainWindow:
 	def pulsate_recovery_bells(self):
 
 		if self.recovery_bells_t.is_alive():
-			self.waiting_pbar.pulse()
+			#self.waiting_pbar.pulse()
 			return True
 
 		else:
-			self.waiting_window.hide()
+			#self.waiting_window.hide()
+			self.manage_waiting_stack(False)
 			self.load_info()
 			self.manage_menubar(True)
 			try:
 				self.core.bellBox.draw_bell(False)
 				if not self.loading_errors:
-					self.manage_message(True,9)
+					self.manage_message(True,-9)
 				else:
-					self.manage_message(True,9)	
+					self.manage_message(True,-9)	
 			except:
 				self.manage_message(True,self.recovery_result['code'])	
 				return False	
@@ -564,6 +582,7 @@ class MainWindow:
 		if search=="":
 			self.core.bellBox.draw_bell(False)
 		else:
+			self.hide_message_items()
 			for item in self.bells_info:
 				time=self.core.bellmanager.format_time(item)
 				hour=str(time[0])
@@ -640,12 +659,12 @@ class MainWindow:
 			self.cancel_button.set_sensitive(True)
 			self.save_button.show()
 			self.save_button.set_sensitive(True)
-			self.msg_label.set_text("")
+			self.hide_message_items()
 		
 		else:
 			self.cancel_button.hide()
 			self.save_button.hide()
-			self.msg_label.set_text("")
+			self.hide_message_items()
 			
 
 
@@ -658,44 +677,61 @@ class MainWindow:
 		if data!=None:
 			msg=msg+data
 
+		self.msg_label.set_name("FEEDBACK_LABEL")
+
 		if error:
-			self.msg_label.set_name("MSG_ERROR_LABEL")
+			#self.msg_label.set_name("MSG_ERROR_LABEL")
+			self.msg_error_img.show()
+			self.msg_ok_img.hide()
+			self.msg_box.set_name("ERROR_BOX")
 		else:
-			self.msg_label.set_name("MSG_CORRECT_LABEL")	
+			#self.msg_label.set_name("MSG_CORRECT_LABEL")
+			self.msg_ok_img.show()
+			self.msg_error_img.hide()
+			self.msg_box.set_name("SUCCESS_BOX")	
 
 		self.msg_label.set_text(msg)
 		#self.msg_label.show()
 
-	#def manage_message		
+	#def manage_message	
 
+	def hide_message_items(self):
+
+		self.msg_label.set_text("")
+		self.msg_ok_img.hide()
+		self.msg_error_img.hide()
+		self.msg_box.set_name("HIDE_BOX")
+
+	#def hide_message_items
 
 	def get_msg(self,code):
 
-		if 	code==1:
+		msg_text=""
+		if 	code==-1:
 			msg_text=_("You must indicate a name for the alarm")
-		elif code==2:
+		elif code==-2:
 			msg_text=_("Sound file is not correct")
-		elif code==3:
+		elif code==-3:
 			msg_text=_("You must indicate sound file")
-		elif code==4:
+		elif code==-4:
 			msg_text=_("Image file is not correct")
-		elif code==5:
+		elif code==-5:
 			msg_text=_("You must indicate a image file")
-		elif code==6:
+		elif code==-6:
 			msg_text=_("You must indicate a url")
-		elif code==7:
+		elif code==-7:
 			msg_text=_("You must indicate a directory")	
-		elif code==8:
+		elif code==-8:
 			msg_text=_("The sound file or url indicated is not reproducible")
-		elif code==9:
+		elif code==-9:
 			msg_text=_("File has errors. Unabled to load it")
 		elif code==10:
 			msg_text=_("File loaded succesfully")
 		elif code==11:
 			msg_text=_("File saved succcesfully")
-		elif code==12:
+		elif code==-12:
 			msg_text=_("Unable to save file")	
-		elif code==13:
+		elif code==-13:
 			msg_text=_("File loaded with errors")	
 		elif code==14:
 			msg_text=_("Bell deleted successfully")	
@@ -707,19 +743,19 @@ class MainWindow:
 			msg_text=_("Bell deactivated successfully")
 		elif code==18:
 			msg_text=_("Bell created successfully")		
-		elif code==19:
+		elif code==-19:
 			msg_text=_("Unabled to edit the Bell due to problems with cron sync")	
-		elif code==20:
+		elif code==-20:
 			msg_text=_("Unabled to create the Bell due to problems with cron sync")
-		elif code==21:
+		elif code==-21:
 			msg_text=_("Unabled to delete the Bell due to problems with cron sync")	
-		elif code==22:
+		elif code==-22:
 			msg_text=_("Unabled to activate the Bell due to problems with cron sync")	
-		elif code==23:
+		elif code==-23:
 			msg_text=_("Unabled to deactivate the Bell due to problems with cron sync")	
-		elif code==24:
+		elif code==-24:
 			msg_text=_("Unabled to copy image and/or sound file to work directory")	
-		elif code==25:
+		elif code==-25:
 			msg_text=_("Unabled to read bells configuration file")	
 		elif code==26:
 			msg_text=_("Exporting bells configuration. Wait a moment...")	
@@ -727,11 +763,11 @@ class MainWindow:
 			msg_text=_("Importing bells configuration. Wait a moment...")
 		elif code==28:
 			msg_text=_("Revovering previous bells configuration. Wait a moment...")	
-		elif code==29:
+		elif code==-29:
 			msg_text=_("ERROR: File or directory not available")
 		elif code==30:
 			msg_text=_("Validating the data entered...")		
-		elif code==31:
+		elif code==-31:
 			msg_text=_("Detected alarms with errors")
 		elif code==32:
 			msg_text=_("Activating holiday control.Wait a moment...")
@@ -741,21 +777,21 @@ class MainWindow:
 			msg_text=_("Holiday control deactivated successfully")
 		elif code==35:
 			msg_text=_("Holiday control activated successfully")
-		elif code==36:
+		elif code==-36:
 			msg_text=_("Unabled to apply changes due to problems with cron sync")
-		elif code==37:
+		elif code==-37:
 			msg_text=_("Unabled to load bell list due to problems with cron sync")	
-		elif code==38:
+		elif code==-38:
 			msg_text=_("The specified folder does not contain playable files")	
-		elif code==39:
+		elif code==-39:
 			msg_text=_("You must indicate a urls list file")
-		elif code==40:
+		elif code==-40:
 			msg_text=_("The specified urls list has not valid urls. Errors in lines: ")	
-		elif code==41:
+		elif code==-41:
 			msg_text=_("Unabled to validated the data")				
-		elif code==42:
+		elif code==-42:
 			msg_text=_("Unabled to validated the data. Internet connection not detected")
-		elif code==43:
+		elif code==-43:
 			msg_text=_("The specified urls list is not valid")
 		elif code==44:
 			msg_text=_("Activating all bells. Wait a moment...")
@@ -765,15 +801,15 @@ class MainWindow:
 			msg_text=_("The bells have been activated successfully")	
 		elif code==47:
 			msg_text=_("The bells have been deactivated successfully")	
-		elif code==48:
+		elif code==-48:
 			msg_text=_("It is not possible to activate all bells")
-		elif code==49:
+		elif code==-49:
 			msg_text=_("It is not possible to deactivate all bells")			
 		elif code==50:
 			msg_text=_("Removing all bells. Wait a moment...")
 		elif code==51:
 			msg_text=_("The bells have been removed successfully")	
-		elif code==52:
+		elif code==-52:
 			msg_text=_("It is not possible to remove all bells")	
 		return msg_text
 
@@ -782,7 +818,7 @@ class MainWindow:
 	def manage_holiday(self,widget,event=None):
 
 		self.core.holidayBox.start_api_connect()
-		self.msg_label.set_text("")
+		self.hide_message_items()
 		self.manage_menubar(False)
 		self.stack_opt.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
 		self.stack_opt.set_visible_child_name("holidayBox")
@@ -814,10 +850,11 @@ class MainWindow:
 		if self.holiday_control:
 			self.holiday_popover.hide()
 			self.manage_menubar(False)
-			self.msg_label.set_text("")
+			self.hide_message_items()
 			self.core.bellBox.manage_bells_buttons(False)
 			self.waiting_label.set_text(self.get_msg(32))			
-			self.waiting_window.show_all()
+			#self.waiting_window.show_all()
+			self.manage_waiting_stack(True)
 			self.init_threads()
 			self.enable_holiday_control_t.start()
 			GLib.timeout_add(100,self.pulsate_enable_holiday_control)
@@ -829,11 +866,12 @@ class MainWindow:
 
 
 		if self.enable_holiday_control_t.is_alive():
-			self.waiting_pbar.pulse()
+			#self.waiting_pbar.pulse()
 			return True
 
 		else:
-			self.waiting_window.hide()
+			#self.waiting_window.hide()
+			self.manage_waiting_stack(False)
 			self.manage_menubar(True)
 			self.core.bellBox.manage_bells_buttons(True)
 			if self.enable_holiday_result['status']:
@@ -905,9 +943,10 @@ class MainWindow:
 		self.manage_popover.hide()
 		self.manage_menubar(False)
 		self.core.bellBox.manage_bells_buttons(False)
-		self.msg_label.set_text("")
+		self.hide_message_items()
 		self.waiting_label.set_text(self.get_msg(code))			
-		self.waiting_window.show_all()
+		#self.waiting_window.show_all()
+		self.manage_waiting_stack(True)
 		self.init_threads()
 		self.change_activation_status_t.start()
 		GLib.timeout_add(100,self.pulsate_change_activation_status)
@@ -919,11 +958,12 @@ class MainWindow:
 
 
 		if self.change_activation_status_t.is_alive():
-			self.waiting_pbar.pulse()
+			#self.waiting_pbar.pulse()
 			return True
 
 		else:
-			self.waiting_window.hide()
+			#self.waiting_window.hide()
+			self.manage_waiting_stack(False)
 			self.manage_menubar(True)
 			self.core.bellBox.manage_bells_buttons(True)
 			self.search_entry.set_text("")
@@ -957,10 +997,11 @@ class MainWindow:
 		
 			if response==Gtk.ResponseType.YES:	
 				self.manage_menubar(False)
-				self.msg_label.set_text("")
+				self.hide_message_items()
 				self.core.bellBox.manage_bells_buttons(False)
 				self.waiting_label.set_text(self.get_msg(50))			
-				self.waiting_window.show_all()
+				#self.waiting_window.show_all()
+				self.manage_waiting_stack(True)
 				self.init_threads()
 				self.remove_all_bells_t.start()
 				GLib.timeout_add(100,self.pulsate_remove_all_process)
@@ -970,11 +1011,12 @@ class MainWindow:
 	def pulsate_remove_all_process(self):
 
 		if self.remove_all_bells_t.is_alive():
-			self.waiting_pbar.pulse()
+			#self.waiting_pbar.pulse()
 			return True
 
 		else:
-			self.waiting_window.hide()
+			#self.waiting_window.hide()
+			self.manage_waiting_stack(False)
 			self.manage_menubar(True)
 			self.search_entry.set_text("")
 			self.load_info()
@@ -1010,6 +1052,26 @@ class MainWindow:
 		widget.set_name("POPOVER_OFF")
 
 	#def mouse_exit_popover
+
+	def manage_waiting_stack(self,show,editBell=False,error=False):
+
+		self.stack_opt.set_transition_duration(700)
+		self.stack_opt.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
+
+		if show:
+			self.waiting_spinner.start()
+			self.stack_opt.set_visible_child_name("waitingBox")
+		else:
+			self.waiting_spinner.stop()
+			if not editBell:
+				self.stack_opt.set_visible_child_name("bellBox")
+			else:
+				if not error:
+					self.stack_opt.set_visible_child_name("bellBox")
+				else:
+					self.stack_opt.set_visible_child_name("editBox")
+
+	#def manage_waiting_stack
 
 	def quit(self,widget):
 

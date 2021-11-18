@@ -22,6 +22,24 @@ import urllib.request
 
 class BellManager(object):
 
+	MISSING_BELL_NAME_ERROR=-1
+	INVALID_SOUND_FILE_ERROR=-2
+	MISSING_SOUND_FILE_ERROR=-3
+	INVALID_IMAGE_FILE_ERROR=-4
+	MISSING_IMAGE_FILE_ERROR=-5
+	MISSING_URL_ERROR=-6
+	MISSING_SOUND_FOLDER_ERROR=-7
+	SOUND_FILE_URL_NOT_VALID_ERROR=-8
+	FOLDER_WITH_INCORRECT_FILES_ERROR=-38
+	MISSING_URL_LIST_ERROR=-39
+	INCORRECT_URL_LIST_ERROR=-40
+	TIME_OUT_VALIDATION_ERROR=-41
+	FAILED_INTERNET_ERROR=-42
+	URL_FILE_NOT_VALID_ERROR=-43
+
+	ACTION_SUCCESSFUL=0
+
+
 	def __init__(self):
 
 		super(BellManager, self).__init__()
@@ -92,7 +110,7 @@ class BellManager(object):
 		check_sound=None
 
 		if data["name"]=="":
-			return {"result":False,"code":1,"data":""}
+			return {"result":False,"code":BellManager.MISSING_BELL_NAME_ERROR,"data":""}
 			
 
 						
@@ -101,7 +119,7 @@ class BellManager(object):
 				check_image=self.check_mimetypes(data["image"]["file"],"image")
 				
 			else:
-				return {"result":False,"code":5,"data":""}
+				return {"result":False,"code":BellManager.MISSING_IMAGE_FILE_ERROR,"data":""}
 		
 		if check_image==None:
 			if data["sound"]["option"]=="file":
@@ -113,24 +131,24 @@ class BellManager(object):
 					else:
 						return check_sound
 				else:
-					return {"result":False,"code":3,"data":""}
+					return {"result":False,"code":BellManager.MISSING_SOUND_FILE_ERROR,"data":""}
 
 			elif data["sound"]["option"]=="directory":
 				if data["sound"]["file"]==None:
-					return {"result":False,"code":7,"data":""}
+					return {"result":False,"code":BellManager.MISSING_SOUND_FOLDER_ERROR,"data":""}
 				else:
 					self.correct_files=0
 					return self.check_directory(data["sound"]["file"])	
 
 			elif data["sound"]["option"]=="url":			
 				if data["sound"]["file"]=="":
-					return {"result":False,"code":6,"data":""}
+					return {"result":False,"code":BellManager.MISSING_URL_ERROR,"data":""}
 				else:
 					check_connection=self.check_connection()
 					if check_connection:
 						return self.check_audiofile(data["sound"]["file"],"url")
 					else:
-						return {"result":False,"code":42,"data":""}	
+						return {"result":False,"code":BellManager.FAILED_INTERNET_ERROR,"data":""}	
 
 			elif data["sound"]["option"]=="urlslist":				
 				if data["sound"]["file"]!=None:
@@ -138,9 +156,9 @@ class BellManager(object):
 					if check_connection:
 						return self.check_list(data["sound"]["file"])
 					else:
-						return {"result":False,"code":42,"data":""}	
+						return {"result":False,"code":BellManager.FAILED_INTERNET_ERROR,"data":""}	
 				else:		
-					return {"result":False,"code":39,"data":""}
+					return {"result":False,"code":BellManager.MISSING_URL_LIST_ERROR,"data":""}
 			
 						
 		else:
@@ -177,9 +195,9 @@ class BellManager(object):
 
 		if error:
 			if check=="audio":
-				return {"result":False,"code":2,"data":""}
+				return {"result":False,"code":BellManager.INVALID_SOUND_FILE_ERROR,"data":""}
 			else:
-				return {"result":False,"code":4,"data":""}				
+				return {"result":False,"code":BellManager.INVALID_IMAGE_FILE_ERROR,"data":""}				
 		
 	#def check_mimetypes			
 				
@@ -204,9 +222,9 @@ class BellManager(object):
 		poutput=p.communicate()[0]
 		
 		if len(poutput)==0:
-			return {"result":False,"code":8,"data":""}	
+			return {"result":False,"code":BellManager.SOUND_FILE_URL_NOT_VALID_ERROR,"data":""}	
 		else:
-			return {"result":True,"code":0,"data":""}
+			return {"result":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
 	
 	
 	#def check_audiofile	
@@ -235,9 +253,9 @@ class BellManager(object):
 					self.check_directory(item)			
 		
 		if self.correct_files>0:
-			return {"result":True,"code":0,"data":""}
+			return {"result":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
 		else:
-			return {"result":False,"code":38,"data":""}
+			return {"result":False,"code":BellManager.FOLDER_WITH_INCORRECT_FILES_ERROR,"data":""}
 
 	#def check_directory		
 
@@ -253,7 +271,7 @@ class BellManager(object):
 		'''	
 		result=True
 		data=""
-		code=0
+		code=BellManager.ACTION_SUCCESSFUL
 		self.url_invalid=[]
 		self.error_lines=[]
 		self.file=url_list
@@ -271,14 +289,14 @@ class BellManager(object):
 				if len(self.url_invalid)>0 or len(self.error_lines):
 					data=self.order_error_lines()
 					result=False
-					code=40
+					code=BellManager.INCORRECT_URL_LIST_ERROR
 			else:
 				result=False
-				code=43
+				code=BellManager.URL_FILE_NOT_VALID_ERROR
 							
 		else:
 			result=False
-			code=41
+			code=BellManager.TIME_OUT_VALIDATION_ERROR
 
 		return {"result":result,"code":code,"data":data}					
 
