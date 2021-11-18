@@ -1,3 +1,9 @@
+bell-scheduler (0.3.32) bionic-updates; urgency=medium
+
+  * Backported changes applied in Llx21 version
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 18 Nov 2021 09:23:21 +0100
+
 bell-scheduler (0.3.31) bionic-updates; urgency=medium
 
   * Allowed sudo and admins groups
