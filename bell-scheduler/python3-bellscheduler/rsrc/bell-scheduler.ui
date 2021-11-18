@@ -965,11 +965,43 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="image_popover_msg">
+          <object class="GtkBox" id="image_popover_msg_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="margin_top">5</property>
-            <property name="margin_bottom">5</property>
+            <property name="margin_top">10</property>
+            <property name="margin_bottom">10</property>
+            <child>
+              <object class="GtkImage" id="image_popover_error_img">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <property name="margin_left">10</property>
+                <property name="margin_right">10</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
+                <property name="pixbuf">dialog-error.png</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="image_popover_msg">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="valign">center</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -1208,11 +1240,41 @@ included in the export. It is recommended to mark it</property>
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="sound_popover_msg">
+          <object class="GtkBox" id="sound_popover_msg_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="margin_top">5</property>
-            <property name="margin_bottom">5</property>
+            <child>
+              <object class="GtkImage" id="sound_popover_error_img">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <property name="margin_left">10</property>
+                <property name="margin_right">10</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
+                <property name="pixbuf">dialog-error.png</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="sound_popover_msg">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="valign">center</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -1517,11 +1579,55 @@ included in the export. It is recommended to mark it</property>
         <property name="margin_bottom">10</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkLabel" id="msg_label">
+          <object class="GtkBox" id="msg_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="margin_top">2</property>
             <property name="margin_bottom">10</property>
+            <child>
+              <object class="GtkImage" id="msg_ok_img">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <property name="margin_left">10</property>
+                <property name="margin_right">10</property>
+                <property name="pixbuf">dialog-positive.png</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="msg_error_img">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="margin_left">10</property>
+                <property name="margin_right">10</property>
+                <property name="pixbuf">dialog-error.png</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="msg_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -1597,27 +1703,24 @@ included in the export. It is recommended to mark it</property>
       </packing>
     </child>
   </object>
-  <object class="GtkWindow" id="waiting_window">
+  <object class="GtkBox" id="waiting_box">
+    <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="type">popup</property>
-    <property name="window_position">center-on-parent</property>
+    <property name="orientation">vertical</property>
     <child>
-      <placeholder/>
-    </child>
-    <child>
-      <object class="GtkBox" id="box6">
+      <object class="GtkBox" id="elements_box">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="valign">center</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkLabel" id="waiting_plabel">
+          <object class="GtkSpinner" id="waiting_spinner">
+            <property name="width_request">50</property>
+            <property name="height_request">50</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="margin_left">50</property>
-            <property name="margin_right">50</property>
-            <property name="margin_top">10</property>
-            <property name="margin_bottom">5</property>
-            <property name="justify">center</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -1626,13 +1729,13 @@ included in the export. It is recommended to mark it</property>
           </packing>
         </child>
         <child>
-          <object class="GtkProgressBar" id="waiting_pbar">
+          <object class="GtkLabel" id="waiting_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="margin_left">30</property>
-            <property name="margin_right">30</property>
-            <property name="margin_top">5</property>
-            <property name="margin_bottom">10</property>
+            <property name="valign">center</property>
+            <property name="margin_top">10</property>
+            <property name="margin_bottom">5</property>
+            <property name="justify">center</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -1641,6 +1744,11 @@ included in the export. It is recommended to mark it</property>
           </packing>
         </child>
       </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
     </child>
   </object>
 </interface>
