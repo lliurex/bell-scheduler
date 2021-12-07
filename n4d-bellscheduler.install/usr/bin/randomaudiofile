@@ -6,12 +6,12 @@ URLPLAYED="/etc/bellScheduler/list_url_played"
 FILEPLAYED="/etc/bellScheduler/list_file_played"
 MULTI=2
 
-if [ -d $MUSICPATH ];then
+if [ -d "$MUSICPATH" ];then
 	TYPE="directory"
 	if [ ! -f $FILEPLAYED ];then
 		touch $FILEPLAYED
 	fi
-elif [ -f $MUSICPATH ];then
+elif [ -f "$MUSICPATH" ];then
 	TYPE="list"
 	if [ ! -f $URLPLAYED ];then
 		touch $URLPLAYED
