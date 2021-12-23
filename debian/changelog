@@ -1,3 +1,9 @@
+bell-scheduler (0.3.33) bionic-updates; urgency=medium
+
+  * Fixed random audio file selection
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 23 Dec 2021 10:06:16 +0100
+
 bell-scheduler (0.3.32) bionic-updates; urgency=medium
 
   * Backported changes applied in Llx21 version
