@@ -643,7 +643,7 @@ class BellSchedulerManager:
 	
 		bells_pid=[]
 
-		cmd='ps -ef | grep "ffplay -nodisp -autoexit" | grep -v "grep"'
+		cmd="ps -ef | grep 'ffplay -nodisp -autoexit' | grep -v '/bin/bash' |grep -v 'grep' |egrep ' ' | awk '{print $2}' "
 		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 		output=p.communicate()[0]
 		
@@ -651,10 +651,12 @@ class BellSchedulerManager:
 			output=output.decode()
 
 		lst=output.split("\n")
-		lst.pop(0)
+		lst=lst[:-1]
 		
 		if len(lst)>0:
 			for item in lst:
+				bells_pid.append(item)
+				'''
 				processed_line=item.split(" ")
 				tmp_list=[]
 				
@@ -666,7 +668,7 @@ class BellSchedulerManager:
 					
 					if str(processed_line[7])!='/bin/bash':
 						bells_pid.append(processed_line[1])
-
+				'''
 		result={"status":True,"msg":"","code":"","data":bells_pid}
 		return result	
 
