@@ -32,7 +32,7 @@ case $TYPE in
 				let num_files=num_files+1
 				echo $musicfile >> $TEMPATH2
 			elif [ "$mimetype" = "check" ]; then
-				mimetype=$(mimetype $musicfile | awk -F ':' '{if ( $2 ~ /audio/ || $2 ~ /video/) print "audio"}')
+				mimetype=$(mimetype "$musicfile" | awk -F ':' '{if ( $2 ~ /audio/ || $2 ~ /video/) print "audio"}')
 				if [ $mimetype = "audio" ]; then
 					let num_files=num_files+1
 					echo $musicfile >> $TEMPATH2
@@ -56,15 +56,16 @@ case $TYPE in
 		while [ $match -eq 0 ];do
 			file_select=$(echo $(cat $TEMPATH2 | shuf -n 1))
 			if [ $cont -lt $time_out ];then
-				if ! egrep "$(basename "$file_select")" $FILEPLAYED
-				then	
-					let match=match+1	
-					echo  "$(basename "$file_select")" >> $FILEPLAYED
-				fi
+					tmpFile="$(basename "$file_select")"
+					check=$(egrep -i "$tmpFile" $FILEPLAYED)
+					if [ -z $check ];then
+						let match=match+1	
+						echo  "$(basename "$file_select")" >> $FILEPLAYED
+					fi
 			else
 				break
 			fi	
-				let cont=cont+1		
+			let cont=cont+1		
 		done
 		#echo $(cat $TEMPATH2 | shuf -n 1)
 		echo $file_select
@@ -92,8 +93,8 @@ case $TYPE in
 			while [ $match -eq 0 ];do
 				url_select=$(echo $(grep . $MUSICPATH | shuf -n 1 ) | sed -e 's,%,\%,g')
 				if [ $cont -lt $time_out ];then
-					if ! grep -Fxq "$url_select" $URLPLAYED
-					then	
+					check=$(grep -Fxq "$url_select" $URLPLAYED)
+					if [ -z $check ];then
 						let match=match+1	
 						echo $url_select >> $URLPLAYED
 					fi

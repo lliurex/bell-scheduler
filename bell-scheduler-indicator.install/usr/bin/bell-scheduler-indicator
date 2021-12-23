@@ -260,6 +260,7 @@ class BellSchedulerIndicator:
 
 		seconds_label=_(" seconds")
 		error=True
+		content=""
 
 		if os.path.exists(BellSchedulerIndicator.TARGET_FILE):
 			f=open(BellSchedulerIndicator.TARGET_FILE,'r')
