@@ -1,3 +1,9 @@
+bell-scheduler (0.3.34) bionic-updates; urgency=medium
+
+  * Fixed random audio file selection
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 18 Jan 2022 16:57:24 +0100
+
 bell-scheduler (0.3.33) bionic-updates; urgency=medium
 
   * Fixed random audio file selection
