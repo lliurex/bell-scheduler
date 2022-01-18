@@ -54,11 +54,11 @@ case $TYPE in
 		cont=0
 		time_out=$(expr $num_files '*' $MULTI)
 		while [ $match -eq 0 ];do
-			file_select=$(echo $(cat $TEMPATH2 | shuf -n 1))
+			file_select="$(echo $(cat $TEMPATH2 | shuf -n 1))"
 			if [ $cont -lt $time_out ];then
 					tmpFile="$(basename "$file_select")"
-					check=$(egrep -i "$tmpFile" $FILEPLAYED)
-					if [ -z $check ];then
+					check="$(egrep -i "$tmpFile" $FILEPLAYED)"
+					if [ -z "$check" ];then
 						let match=match+1	
 						echo  "$(basename "$file_select")" >> $FILEPLAYED
 					fi
@@ -68,7 +68,7 @@ case $TYPE in
 			let cont=cont+1		
 		done
 		#echo $(cat $TEMPATH2 | shuf -n 1)
-		echo $file_select
+		echo "$file_select"
 		rm $TEMPATH $TEMPATH2
 	;;
 
