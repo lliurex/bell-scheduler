@@ -16,4 +16,4 @@ ReplacedWith=bell-scheduler
 Using=pkexec
 Service=True
 Modal=True
-Groups=sudo;admins
+Groups=sudo;admins;teachers;
