@@ -1,3 +1,9 @@
+bell-scheduler (0.4.42) lliurex22; urgency=medium
+
+  * add teachers to allowed groups
+
+ -- Raul Rodrigo Segura <raurodse@gmail.com>  Tue, 14 Jun 2022 12:49:40 +0200
+
 bell-scheduler (0.4.41) focal-updates; urgency=medium
 
   * Fixed random audio file selection
