@@ -26,6 +26,9 @@ class EditBox(Gtk.VBox):
 		Gtk.VBox.__init__(self)
 		
 		self.core=Core.Core.get_core()
+		self.cmd_create_token='bellscheduler-token-management create_token '
+		self.cmd_remove_token='bellscheduler-token-management remove_token '
+
 	
 	#def __init__	
 		
@@ -604,8 +607,24 @@ class EditBox(Gtk.VBox):
 
 
 		bell[order]["active"]=active_bell
-		
 
+
+		if self.duration>0:
+			fade_out=int(self.duration)+int(self.start_time)-2
+			fade_effects='-af aformat=channel_layouts=mono -af afade=in:st='+str(self.start_time)+':d=3,afade=out:st='+str(fade_out)+":d=2"
+			cmd=self.cmd_create_token+order+" && ffplay -nodisp -autoexit " + "-ss "+ str(self.start_time) +" -t "+str(self.duration)
+		else:
+			fade_effects='-af aformat=channel_layouts=mono '
+			cmd=self.cmd_create_token+order+" && ffplay -nodisp -autoexit -ss "+str(self.start_time)
+
+		if self.sound_op=="file":
+			cmd=cmd+' "'+ dest_sound_path +'" '+fade_effects+';'+self.cmd_remove_token+order
+		elif sound_option=="url":
+			sound_path=dest_sound_path.replace("%","\%")
+			cmd=cmd+ ' $(youtube-dl -g "'+sound_path+'" | sed -n 2p) '+fade_effects+';'+self.cmd_remove_token+order	
+
+		bell[order]["scriptCommand"]=cmd
+		
 		result_copy=self.core.bellmanager.copy_media_files(orig_image_path,orig_sound_path)
 		if result_copy['status']:
 			result=self.core.bellmanager.save_conf(bell,order,action)

@@ -356,28 +356,24 @@ class BellSchedulerManager:
 			except:
 				start_time=0	
 			
-
-			if duration>0:
-				fade_out=int(duration)+int(start_time)-2
-				fade_effects='-af aformat=channel_layouts=mono -af afade=in:st='+str(start_time)+':d=3,afade=out:st='+str(fade_out)+":d=2"
-				cmd=self.cmd_create_token+item+" && ffplay -nodisp -autoexit " + "-ss "+ str(start_time) +" -t "+str(duration)
+			if sound_option in ['file','url']:
+				info_to_cron["BellScheduler"][key]["cmd"]='BellSchedulerPlayer.py %s'%item
 			else:
-				fade_effects='-af aformat=channel_layouts=mono '
-				cmd=self.cmd_create_token+item+" && ffplay -nodisp -autoexit -ss "+str(start_time)
+				if duration>0:
+					fade_out=int(duration)+int(start_time)-2
+					fade_effects='-af aformat=channel_layouts=mono -af afade=in:st='+str(start_time)+':d=3,afade=out:st='+str(fade_out)+":d=2"
+					cmd=self.cmd_create_token+item+" && ffplay -nodisp -autoexit " + "-ss "+ str(start_time) +" -t "+str(duration)
+				else:
+					fade_effects='-af aformat=channel_layouts=mono '
+					cmd=self.cmd_create_token+item+" && ffplay -nodisp -autoexit -ss "+str(start_time)
 
-			if sound_option=="file":
-				cmd=cmd+' "'+ sound_path +'" '+fade_effects+';'+self.cmd_remove_token+item
-			elif sound_option=="url":
-				sound_path=sound_path.replace("%","\%")
-				cmd=cmd+ ' $(youtube-dl -g "'+sound_path+'" | sed -n 2p) '+fade_effects+';'+self.cmd_remove_token+item	
-			else:
 				random_file="$(randomaudiofile" + " '"+sound_path+"')"
 				if sound_option=="directory":
 					cmd=cmd+' "'+ random_file + '" '+fade_effects+';'+self.cmd_remove_token+item
 				elif sound_option=="urlslist":
 					cmd=cmd+ ' $(youtube-dl -g "'+random_file+'" | sed -n 2p) '+fade_effects+';'+self.cmd_remove_token+item
 				
-			info_to_cron["BellScheduler"][key]["cmd"]=cmd
+				info_to_cron["BellScheduler"][key]["cmd"]='PlayBell.py %s'%item
 
 			if os.path.exists(self.holiday_token):
 				info_to_cron["BellScheduler"][key]["holidays"]=True
