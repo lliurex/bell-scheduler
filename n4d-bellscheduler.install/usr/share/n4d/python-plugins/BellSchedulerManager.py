@@ -351,13 +351,14 @@ class BellSchedulerManager:
 			sound_option=info[item]["sound"]["option"]
 			sound_path=info[item]["sound"]["path"]
 			duration=info[item]["play"]["duration"]
+
 			try:
 				start_time=info[item]["play"]["start"]
 			except:
 				start_time=0	
-			
-			if sound_option in ['file','url']:
-				info_to_cron["BellScheduler"][key]["cmd"]='BellSchedulerPlayer.py %s'%item
+	
+			if sound_option in ["file","url"]:
+				cmd=self.cmd_create_token+item+" && BellSchedulerPlayer "+item+';'+self.cmd_remove_token+item
 			else:
 				if duration>0:
 					fade_out=int(duration)+int(start_time)-2
@@ -373,7 +374,7 @@ class BellSchedulerManager:
 				elif sound_option=="urlslist":
 					cmd=cmd+ ' $(youtube-dl -g "'+random_file+'" | sed -n 2p) '+fade_effects+';'+self.cmd_remove_token+item
 				
-				info_to_cron["BellScheduler"][key]["cmd"]='PlayBell.py %s'%item
+			info_to_cron["BellScheduler"][key]["cmd"]=cmd
 
 			if os.path.exists(self.holiday_token):
 				info_to_cron["BellScheduler"][key]["holidays"]=True
@@ -383,7 +384,7 @@ class BellSchedulerManager:
 			
 		return info_to_cron
 
-	#def _format_to_cron	
+	#def _format_to_cron
 
 	def copy_media_files(self,image,sound):
 

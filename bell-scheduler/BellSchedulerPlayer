@@ -22,7 +22,8 @@ class BellSchedulerPlayer:
 
 		user=self._getActiveUser()
 		playCommand=self._getPlayCommand()
-
+		print(playCommand)
+		
 		if user!="":
 			cmd="su -l %s -c '%s'"%(user,playCommand)
 		else:
@@ -30,7 +31,7 @@ class BellSchedulerPlayer:
 
 		subprocess.run(cmd,shell=True,check=True)
 		sys.exit(0)
-
+		
 	#def playBell
 
 	def _getActiveUser(self):
@@ -68,7 +69,29 @@ class BellSchedulerPlayer:
 				bellsConfig=json.load(f)
 				for item in bellsConfig:
 					if item==str(self.bellId):
-						playCommand=bellsConfig[item]["scriptCommand"]
+						duration=bellsConfig[item]["play"]["duration"]
+						try:
+							startTime=bellsConfig[item]["play"]["start"]
+						except:
+							startTime=0
+						soundOption=bellsConfig[item]["sound"]["option"]
+						soundPath=bellsConfig[item]["sound"]["path"]
+
+						if duration>0:
+							fadeOut=int(duration)+int(startTime)-2
+							fadeEffects='-af aformat=channel_layouts=mono -af afade=in:st=%s:d=3,afade=out:st=%s:d=2'%(str(startTime),str(fadeOut))
+							cmd=" ffplay -nodisp -autoexit " + "-ss %s -t %s"%(str(startTime),duration)
+						else:
+							fadeEffects='-af aformat=channel_layouts=mono '
+							cmd=" ffplay -nodisp -autoexit -ss %s"%str(startTime)
+
+						if soundOption=="file":
+							cmd=cmd+' "'+ soundPath +'" '+fadeEffects+';'
+						elif sound_option=="url":
+							soundPath=soundPath.replace("%","\%")
+							cmd=cmd+ ' $(youtube-dl -g "'+soundPath+'" | sed -n 2p) '+fadeEffects+';'	
+						
+						playCommand=cmd
 						break
 			except Exception as e:
 				pass
