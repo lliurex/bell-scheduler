@@ -1,3 +1,9 @@
+bell-scheduler (0.4.43) focal; urgency=medium
+
+  * Added new script to play bells with the session user 
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 26 Jul 2022 11:55:13 +0200
+
 bell-scheduler (0.4.42) lliurex22; urgency=medium
 
   * add teachers to allowed groups
