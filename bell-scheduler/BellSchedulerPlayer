@@ -13,7 +13,6 @@ class BellSchedulerPlayer:
 		self.bellId=bellId
 		self.configDir=os.path.expanduser("/etc/bellScheduler/")
 		self.configFile=os.path.join(self.configDir,"bell_list")
-
 		self.playBell()
 
 	#def__init__
@@ -22,8 +21,7 @@ class BellSchedulerPlayer:
 
 		user=self._getActiveUser()
 		playCommand=self._getPlayCommand()
-		print(playCommand)
-		
+	
 		if user!="":
 			cmd="su -l %s -c '%s'"%(user,playCommand)
 		else:
@@ -93,6 +91,7 @@ class BellSchedulerPlayer:
 						
 						playCommand=cmd
 						break
+
 			except Exception as e:
 				pass
 
