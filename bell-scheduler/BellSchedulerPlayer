@@ -1,7 +1,8 @@
-#!/bin/python3
+#! /usr/bin/python3
 
 import os
 import subprocess
+import shutil
 import dbus
 import sys
 import json
@@ -19,15 +20,24 @@ class BellSchedulerPlayer:
 
 	def playBell(self):
 
+		self.fileToRemove=""
+		
 		user=self._getActiveUser()
 		playCommand=self._getPlayCommand()
-	
+		
 		if user!="":
 			cmd="su -l %s -c '%s'"%(user,playCommand)
 		else:
 			cmd=playCommand
 
 		subprocess.run(cmd,shell=True,check=True)
+		
+		try:
+			if os.path.exists(self.fileToRemove):
+				os.remove(self.fileToRemove)
+		except:
+			pass
+		
 		sys.exit(0)
 		
 	#def playBell
@@ -35,6 +45,7 @@ class BellSchedulerPlayer:
 	def _getActiveUser(self):
 
 		user=""
+
 		try:
 			bellBus=dbus.SystemBus()
 			bellProxy=bellBus.get_object('org.freedesktop.login1','/org/freedesktop/login1')
@@ -54,6 +65,7 @@ class BellSchedulerPlayer:
 
 		if user=="sddm":
 			user=""
+		
 		return user
 
 	#def _getActiveUser
@@ -61,6 +73,7 @@ class BellSchedulerPlayer:
 	def _getPlayCommand(self):
 
 		playCommand=""
+		
 		if os.path.exists(self.configFile):
 			try:
 				f=open(self.configFile)
@@ -68,10 +81,12 @@ class BellSchedulerPlayer:
 				for item in bellsConfig:
 					if item==str(self.bellId):
 						duration=bellsConfig[item]["play"]["duration"]
+						
 						try:
 							startTime=bellsConfig[item]["play"]["start"]
 						except:
 							startTime=0
+						
 						soundOption=bellsConfig[item]["sound"]["option"]
 						soundPath=bellsConfig[item]["sound"]["path"]
 
@@ -83,21 +98,44 @@ class BellSchedulerPlayer:
 							fadeEffects='-af aformat=channel_layouts=mono '
 							cmd=" ffplay -nodisp -autoexit -ss %s"%str(startTime)
 
-						if soundOption=="file":
+						if soundOption in ["directory","urlslist"]:
+							soundPath=self._getSoundPath(soundOption,soundPath)
+							
+						if soundOption in ["file","directory"]:
 							cmd=cmd+' "'+ soundPath +'" '+fadeEffects+';'
-						elif sound_option=="url":
+						elif sound_option in ["url","urlslist"]:
 							soundPath=soundPath.replace("%","\%")
 							cmd=cmd+ ' $(youtube-dl -g "'+soundPath+'" | sed -n 2p) '+fadeEffects+';'	
 						
 						playCommand=cmd
 						break
-
+			
 			except Exception as e:
 				pass
 
 		return playCommand
 
 	#def _getPlayCommand
+
+	def _getSoundPath(self,option,soundPath):
+
+		cmd='randomaudiofile "%s"'%soundPath
+		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
+		pout=p.communicate()[0].decode().strip()
+
+		if pout!="":
+			if option=="directory":
+				extensionFile=pout.split(".")[-1]
+				tmpFile="bellSelected.%s"%extensionFile
+				soundPath=os.path.join("/tmp",tmpFile)
+				shutil.copy(pout,soundPath)
+				self.fileToRemove=soundPath
+			else:
+				soundPath=pout
+
+		return soundPath
+
+	#def _getSoundPath
 
 #class BellSchedulerPlayer
 
