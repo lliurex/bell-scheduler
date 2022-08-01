@@ -119,6 +119,7 @@ class BellSchedulerPlayer:
 
 	def _getSoundPath(self,option,soundPath):
 
+		playPath=""
 		cmd='randomaudiofile "%s"'%soundPath
 		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
 		pout=p.communicate()[0].decode().strip()
@@ -127,13 +128,16 @@ class BellSchedulerPlayer:
 			if option=="directory":
 				extensionFile=pout.split(".")[-1]
 				tmpFile="bellSelected.%s"%extensionFile
-				soundPath=os.path.join("/tmp",tmpFile)
-				shutil.copy(pout,soundPath)
-				self.fileToRemove=soundPath
+				playPath=os.path.join("/tmp",tmpFile)
+				try:
+					shutil.copy(pout,playPath)
+				except :
+					pass
+				self.fileToRemove=playPath
 			else:
-				soundPath=pout
+				playPath=pout
 
-		return soundPath
+		return playPath
 
 	#def _getSoundPath
 
