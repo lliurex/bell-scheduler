@@ -1,3 +1,9 @@
+bell-scheduler (0.4.44) focal; urgency=medium
+
+  * Changed random play command to use new bell play script
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 01 Aug 2022 12:57:46 +0200
+
 bell-scheduler (0.4.43) focal; urgency=medium
 
   * Added new script to play bells with the session user 
