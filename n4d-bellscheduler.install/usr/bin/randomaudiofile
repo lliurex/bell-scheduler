@@ -30,31 +30,38 @@ case $TYPE in
 			mimetype=$(file -i "$musicfile" | awk -F ':' '{ if ( $2 ~ /audio/ || $2 ~ /video/ ) print "audio" ; else if ($2 ~ /octet-stream/ ) print "check" }')
 			if [ "$mimetype" = "audio" ]; then
 				let num_files=num_files+1
-				echo $musicfile >> $TEMPATH2
+				echo "$musicfile" >> $TEMPATH2
 			elif [ "$mimetype" = "check" ]; then
 				mimetype=$(mimetype "$musicfile" | awk -F ':' '{if ( $2 ~ /audio/ || $2 ~ /video/) print "audio"}')
 				if [ $mimetype = "audio" ]; then
 					let num_files=num_files+1
-					echo $musicfile >> $TEMPATH2
+					echo "$musicfile" >> $TEMPATH2
 				fi
 			fi
 			
 		done < $TEMPATH
-		lines_fileplayed=$(wc -l $FILEPLAYED)
-		lines_fileplayed=($lines_fileplayed%%: *)
-		full_list=0
-		if [ $lines_fileplayed -ge $num_files ]; then
-			let full_list=full_list+1
+		if [ -f $FILEPLAYED ];then
+			lines_fileplayed="$(wc -l $FILEPLAYED)"
+			lines_fileplayed=($lines_fileplayed%%: *)
+			full_list=0
+
+			if [ $lines_fileplayed -ge $num_files ]; then
+				let full_list=full_list+1
+
+			fi
+			if [ $full_list -eq 1 ];then
+					rm -f $FILEPLAYED
+					touch $FILEPLAYED
+			fi
+		else
+			touch $FILEPLAYED
 		fi
-		if [ $full_list -eq 1 ];then
-				rm -f $FILEPLAYED
-				touch $FILEPLAYED
-		fi	
+	
 		match=0
 		cont=0
 		time_out=$(expr $num_files '*' $MULTI)
 		while [ $match -eq 0 ];do
-			file_select="$(echo $(cat $TEMPATH2 | shuf -n 1))"
+			file_select="$(echo "$(cat $TEMPATH2 | shuf -n 1)")"
 			if [ $cont -lt $time_out ];then
 					tmpFile="$(basename "$file_select")"
 					check="$(egrep -i "$tmpFile" $FILEPLAYED)"
