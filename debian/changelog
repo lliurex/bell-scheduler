@@ -1,3 +1,9 @@
+bell-scheduler (0.3.35) bionic; urgency=medium
+
+  * Improved performance of random audio file selection
+ 
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 03 Aug 2022 09:44:29 +0200
+
 bell-scheduler (0.3.34) bionic-updates; urgency=medium
 
   * Fixed random audio file selection
