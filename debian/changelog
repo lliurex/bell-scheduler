@@ -1,3 +1,9 @@
+bell-scheduler (0.4.45) focal; urgency=medium
+
+  * Improved performance of random audio selection
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 03 Aug 2022 09:56:43 +0200
+
 bell-scheduler (0.4.44) focal; urgency=medium
 
   * Changed random play command to use new bell play script
