@@ -357,7 +357,7 @@ class BellSchedulerManager:
 			except:
 				start_time=0	
 	
-			cmd=self.cmd_create_token+item+" && BellSchedulerPlayer "+item+';'+self.cmd_remove_token+item
+			cmd="/usr/bin/BellSchedulerPlayer "+item
 			
 			info_to_cron["BellScheduler"][key]["cmd"]=cmd
 

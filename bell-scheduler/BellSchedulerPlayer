@@ -14,6 +14,8 @@ class BellSchedulerPlayer:
 		self.bellId=bellId
 		self.configDir=os.path.expanduser("/etc/bellScheduler/")
 		self.configFile=os.path.join(self.configDir,"bell_list")
+		self.tokenFolder="/tmp/.BellScheduler"
+		self.tokenPath=os.path.join(self.tokenFolder,'bellscheduler-token')
 		self.playBell()
 
 	#def__init__
@@ -22,25 +24,74 @@ class BellSchedulerPlayer:
 
 		self.fileToRemove=""
 		
+		bellInfo=self._readCurrentBell()
+		self._manageToken('create')
 		user=self._getActiveUser()
-		playCommand=self._getPlayCommand()
+		playCommand=self._getPlayCommand(bellInfo)
 		
 		if user!="":
 			cmd="su -l %s -c '%s'"%(user,playCommand)
 		else:
 			cmd=playCommand
 
-		subprocess.run(cmd,shell=True,check=True)
-		
+		pc=subprocess.run(cmd,shell=True,check=False)
+
 		try:
 			if os.path.exists(self.fileToRemove):
 				os.remove(self.fileToRemove)
 		except:
 			pass
 		
+		self._manageToken('remove')
+		
 		sys.exit(0)
 		
 	#def playBell
+
+	def _readCurrentBell(self):
+
+		bellInfo=[]
+
+		if os.path.exists(self.configFile):
+			try:
+				f=open(self.configFile)
+				bellsConfig=json.load(f)
+				for item in bellsConfig:
+					if item==str(self.bellId):
+						duration=bellsConfig[item]["play"]["duration"]
+						bellInfo.append(duration)
+						try:
+							startTime=bellsConfig[item]["play"]["start"]
+						except:
+							startTime=0
+						
+						bellInfo.append(startTime)
+						soundOption=bellsConfig[item]["sound"]["option"]
+						bellInfo.append(soundOption)
+						soundPath=bellsConfig[item]["sound"]["path"]
+						bellInfo.append(soundPath)
+						break;
+			except:
+				pass
+
+		return bellInfo
+
+	#def _readCurrentBell
+
+	def _manageToken(self,action):
+
+		if action=='create':
+			if not os.path.exists(self.tokenFolder):
+				os.mkdir(self.tokenFolder)
+
+			with open(self.tokenPath,'w') as fd:
+				fd.write(self.bellId)
+
+		else:
+			if os.path.exists(self.tokenPath):
+				os.remove(self.tokenPath)
+
+	#def _manageToken
 
 	def _getActiveUser(self):
 
@@ -70,48 +121,34 @@ class BellSchedulerPlayer:
 
 	#def _getActiveUser
 
-	def _getPlayCommand(self):
+	def _getPlayCommand(self,bellInfo):
 
 		playCommand=""
 		
-		if os.path.exists(self.configFile):
-			try:
-				f=open(self.configFile)
-				bellsConfig=json.load(f)
-				for item in bellsConfig:
-					if item==str(self.bellId):
-						duration=bellsConfig[item]["play"]["duration"]
-						
-						try:
-							startTime=bellsConfig[item]["play"]["start"]
-						except:
-							startTime=0
-						
-						soundOption=bellsConfig[item]["sound"]["option"]
-						soundPath=bellsConfig[item]["sound"]["path"]
+		if len(bellInfo)>0:
+			duration=bellInfo[0]
+			startTime=bellInfo[1]
+			soundOption=bellInfo[2]
+			soundPath=bellInfo[3]
 
-						if duration>0:
-							fadeOut=int(duration)+int(startTime)-2
-							fadeEffects='-af aformat=channel_layouts=mono -af afade=in:st=%s:d=3,afade=out:st=%s:d=2'%(str(startTime),str(fadeOut))
-							cmd=" ffplay -nodisp -autoexit " + "-ss %s -t %s"%(str(startTime),duration)
-						else:
-							fadeEffects='-af aformat=channel_layouts=mono '
-							cmd=" ffplay -nodisp -autoexit -ss %s"%str(startTime)
+			if duration>0:
+				fadeOut=int(duration)+int(startTime)-2
+				fadeEffects='-af aformat=channel_layouts=mono -af afade=in:st=%s:d=3,afade=out:st=%s:d=2'%(str(startTime),str(fadeOut))
+				cmd=" ffplay -nodisp -autoexit " + "-ss %s -t %s"%(str(startTime),duration)
+			else:
+				fadeEffects='-af aformat=channel_layouts=mono '
+				cmd=" ffplay -nodisp -autoexit -ss %s"%str(startTime)
 
-						if soundOption in ["directory","urlslist"]:
-							soundPath=self._getSoundPath(soundOption,soundPath)
-							
-						if soundOption in ["file","directory"]:
-							cmd=cmd+' "'+ soundPath +'" '+fadeEffects+';'
-						elif sound_option in ["url","urlslist"]:
-							soundPath=soundPath.replace("%","\%")
-							cmd=cmd+ ' $(youtube-dl -g "'+soundPath+'" | sed -n 2p) '+fadeEffects+';'	
-						
-						playCommand=cmd
-						break
+			if soundOption in ["directory","urlslist"]:
+				soundPath=self._getSoundPath(soundOption,soundPath)
+
+			if soundOption in ["file","directory"]:
+				cmd=cmd+' "'+ soundPath +'" '+fadeEffects+';'
+			elif sound_option in ["url","urlslist"]:
+				soundPath=soundPath.replace("%","\%")
+				cmd=cmd+ ' $(youtube-dl -g "'+soundPath+'" | sed -n 2p) '+fadeEffects+';'	
 			
-			except Exception as e:
-				pass
+			playCommand=cmd
 
 		return playCommand
 
