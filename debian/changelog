@@ -1,3 +1,9 @@
+bell-scheduler (0.4.47) focal; urgency=medium
+
+  * Updated import backup function
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 07 Sep 2022 11:51:08 +0200
+
 bell-scheduler (0.4.46) focal; urgency=medium
 
   * Improved BellSchedulerPlayer script
