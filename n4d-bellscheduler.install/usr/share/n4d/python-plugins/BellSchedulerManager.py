@@ -488,14 +488,7 @@ class BellSchedulerManager:
 					shutil.copytree(os.path.join(unzip_tmp,"media/sounds"),self.sounds_folder)
 		
 				update_holiday=self.enable_holiday_control(action).get('return',None)	
-				if update_holiday["status"]:
-					update_indicator=self.update_indicator_token().get('return',None)
-
-					if update_indicator["status"]:
-						result={"status":True,"msg":"Bells imported successfully","code":BellSchedulerManager.BELL_IMPORT_SUCCESSFUL,"data":backup_file[1]}
-					else:
-						result={"status":False,"msg":update_indicator["msg"],"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}	
-				else:
+				if not update_holiday["status"]:
 					result={"status":False,"msg":update_holiday["msg"],"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}				
 				
 				return n4d.responses.build_successful_call_response(result)		
