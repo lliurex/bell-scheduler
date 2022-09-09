@@ -6,6 +6,7 @@ import shutil
 import dbus
 import sys
 import json
+from datetime import datetime, date,timedelta
 
 class BellSchedulerPlayer:
 
@@ -23,30 +24,59 @@ class BellSchedulerPlayer:
 	def playBell(self):
 
 		self.fileToRemove=""
-		
+		abort=False
+
+		#if not self._isThrereBellRunning():
 		bellInfo=self._readCurrentBell()
-		self._manageToken('create')
-		user=self._getActiveUser()
-		playCommand=self._getPlayCommand(bellInfo)
-		
-		if user!="":
-			cmd="su -l %s -c '%s'"%(user,playCommand)
+		if len(bellInfo)>0 and bellInfo[4]!="":
+			if not self._checkBellValidity(bellInfo[4]):
+				abort=True
+		'''
 		else:
-			cmd=playCommand
+			abort=True
+		'''
+		if abort:
+			sys.exit(1)
+		else:
+			self._manageToken('create')
+			user=self._getActiveUser()
 
-		pc=subprocess.run(cmd,shell=True,check=False)
+			playCommand=self._getPlayCommand(bellInfo)
+			
+			if user!="":
+				cmd="su -l %s -c '%s'"%(user,playCommand)
+			else:
+				cmd=playCommand
 
-		try:
-			if os.path.exists(self.fileToRemove):
-				os.remove(self.fileToRemove)
-		except:
-			pass
-		
-		self._manageToken('remove')
-		
-		sys.exit(0)
+			pc=subprocess.run(cmd,shell=True,check=False)
+
+			try:
+				if os.path.exists(self.fileToRemove):
+					os.remove(self.fileToRemove)
+			except:
+				pass
+			
+			self._manageToken('remove')
+			
+			sys.exit(0)
 		
 	#def playBell
+
+	def _isThrereBellRunning(self):
+
+		cmd='ps -ef | grep "ffplay -nodisp -autoexit" | grep -v "grep"'
+		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+		output=p.communicate()[0]
+		
+		if type(output) is bytes:
+			output=output.decode()
+
+		if len(output)>0:
+			return True
+		else:
+			return False
+
+	#def _isThrereBellRunning
 
 	def _readCurrentBell(self):
 
@@ -70,6 +100,14 @@ class BellSchedulerPlayer:
 						bellInfo.append(soundOption)
 						soundPath=bellsConfig[item]["sound"]["path"]
 						bellInfo.append(soundPath)
+						try:
+							if bellsConfig[item]["validity"]["active"]:
+								validity=bellsConfig[item]["validity"]["value"]
+							else:
+								validity=""
+						except:
+							validity=""
+						bellInfo.append(validity)
 						break;
 			except:
 				pass
@@ -77,6 +115,29 @@ class BellSchedulerPlayer:
 		return bellInfo
 
 	#def _readCurrentBell
+
+	def _checkBellValidity(self,validity):
+
+		currentDay=date.today().strftime('%d/%m/%Y')
+		
+		listDays=[]
+		tmp=validity.split("-")
+		if len(tmp)>1:
+			date1=datetime.strptime(tmp[0],'%d/%m/%Y')
+			date2=datetime.strptime(tmp[1],'%d/%m/%Y')
+			delta=date2-date1
+			for i in range(delta.days + 1):
+				tmpDay=(date1 + timedelta(days=i)).strftime('%d/%m/%Y')
+				listDays.append(tmpDay)
+		else:
+			listDays.append(tmp[0])
+		
+		if currentDay in listDays:
+			return True
+		else:
+			return False
+
+	#def _checkBellValidity
 
 	def _manageToken(self,action):
 

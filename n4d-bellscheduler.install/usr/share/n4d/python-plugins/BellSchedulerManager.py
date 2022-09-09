@@ -160,9 +160,13 @@ class BellSchedulerManager:
 	
 		bell_tasks=self.read_conf().get('return',None).get('data',None)
 		keys_bells=bell_tasks.keys()
-
-		bells_incron=self._get_tasks_from_cron()
-		keys_cron=bells_incron.keys()
+		bells_incron=[]
+		keys_cron=[]
+		try:
+			bells_incron=self._get_tasks_from_cron()
+			keys_cron=bells_incron.keys()
+		except:
+			pass
 		changes=0
 
 		if len(keys_cron)>0:
@@ -489,6 +493,15 @@ class BellSchedulerManager:
 		
 				update_holiday=self.enable_holiday_control(action).get('return',None)	
 				if not update_holiday["status"]:
+					'''
+					update_indicator=self.update_indicator_token().get('return',None)
+
+					if update_indicator["status"]:
+						result={"status":True,"msg":"Bells imported successfully","code":BellSchedulerManager.BELL_IMPORT_SUCCESSFUL,"data":backup_file[1]}
+					else:
+						result={"status":False,"msg":update_indicator["msg"],"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}	
+				else:
+					'''
 					result={"status":False,"msg":update_holiday["msg"],"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}				
 				
 				return n4d.responses.build_successful_call_response(result)		

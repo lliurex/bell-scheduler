@@ -51,6 +51,7 @@ class BellBox(Gtk.VBox):
 
 		Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),self.style_provider,Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 		self.bell_list_box.set_name("BELL_LIST")			
+	
 	#def set_css_info			
 			
 	def init_bell_list(self):
@@ -91,6 +92,15 @@ class BellBox(Gtk.VBox):
 		self.error_sound=False
 		self.error_image=False
 
+		hour_margin=5
+		day_margin=12
+		try:
+			if (self.bells_list[id_bell]["validity"]["value"]!=""):
+				hour_margin=1
+				day_margin=5
+		except:
+			pass
+
 		bell_vbox=Gtk.VBox()
 		hbox=Gtk.HBox()
 		hbox_cron=Gtk.VBox()
@@ -100,7 +110,7 @@ class BellBox(Gtk.VBox):
 		bell_hour.set_name("TIME_LABEL")
 		bell_hour.set_margin_left(15)
 		bell_hour.set_margin_right(15)
-		bell_hour.set_margin_top(5)
+		bell_hour.set_margin_top(hour_margin)
 		bell_hour.set_margin_bottom(0)
 		bell_hour.id=id_bell
 		
@@ -108,7 +118,7 @@ class BellBox(Gtk.VBox):
 		monday_inf=Gtk.Label()
 		monday_inf.set_text(_("M"))
 		monday_inf.set_margin_left(10)
-		monday_inf.set_margin_bottom(12)
+		monday_inf.set_margin_bottom(day_margin)
 		monday_inf.set_width_chars(2)
 		monday_inf.set_max_width_chars(2)
 		monday_inf.id=id_bell
@@ -118,7 +128,7 @@ class BellBox(Gtk.VBox):
 		thuesday_inf=Gtk.Label()
 		thuesday_inf.set_text(_("T"))
 		thuesday_inf.set_margin_left(1)
-		thuesday_inf.set_margin_bottom(12)
+		thuesday_inf.set_margin_bottom(day_margin)
 		thuesday_inf.set_width_chars(2)
 		thuesday_inf.set_max_width_chars(2)
 		thuesday_inf.id=id_bell
@@ -128,7 +138,7 @@ class BellBox(Gtk.VBox):
 		wednesday_inf=Gtk.Label()
 		wednesday_inf.set_text(_("W"))
 		wednesday_inf.set_margin_left(1)
-		wednesday_inf.set_margin_bottom(12)
+		wednesday_inf.set_margin_bottom(day_margin)
 		wednesday_inf.set_width_chars(2)
 		wednesday_inf.set_max_width_chars(2)
 		wednesday_inf.id=id_bell
@@ -138,7 +148,7 @@ class BellBox(Gtk.VBox):
 		thursday_inf=Gtk.Label()
 		thursday_inf.set_text(_("R"))
 		thursday_inf.set_margin_left(1)
-		thursday_inf.set_margin_bottom(12)
+		thursday_inf.set_margin_bottom(day_margin)
 		thursday_inf.set_width_chars(2)
 		thursday_inf.set_max_width_chars(2)
 		thursday_inf.id=id_bell
@@ -148,7 +158,7 @@ class BellBox(Gtk.VBox):
 		friday_inf=Gtk.Label()
 		friday_inf.set_text(_("F"))
 		friday_inf.set_margin_left(1)
-		friday_inf.set_margin_bottom(12)
+		friday_inf.set_margin_bottom(day_margin)
 		friday_inf.set_width_chars(2)
 		friday_inf.set_max_width_chars(2)
 		friday_inf.id=id_bell
@@ -160,6 +170,25 @@ class BellBox(Gtk.VBox):
 		hbox_week.pack_start(wednesday_inf,False,False,2)
 		hbox_week.pack_start(thursday_inf,False,False,2)
 		hbox_week.pack_start(friday_inf,False,False,2)
+
+		try:
+			if (self.bells_list[id_bell]["validity"]["value"]!=""):
+				hbox_validity=Gtk.HBox()
+				hbox_validity.set_hexpand(False)
+				validity=Gtk.Label()
+				validity.set_text(self.bells_list[id_bell]["validity"]["value"])
+				validity.set_margin_left(15)
+				validity.set_margin_right(15)
+				validity.set_margin_bottom(5)
+				if self.bells_list[id_bell]["validity"]["active"]:
+					validity.set_name("VALIDITY_ON")
+				else:
+					validity.set_name("VALIDITY_OFF")
+				
+				validity.set_hexpand(True)
+				hbox_validity.pack_start(validity,False,False,0)
+		except:
+			pass		
 
 		image=Gtk.Image()
 		pixbuf=self.format_image_size(id_bell)
@@ -193,11 +222,10 @@ class BellBox(Gtk.VBox):
 		sound.set_max_width_chars(40)
 		sound.set_xalign(-1)
 		sound.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
-		
 		sound.set_valign(Gtk.Align.START)
+		
 		hbox_description.pack_start(description,False,False,15)
 		hbox_description.pack_start(sound,False,False,1)
-
 		manage_bell=Gtk.Button()
 		manage_bell_image=Gtk.Image.new_from_file(self.manage_bell_image)
 		manage_bell.add(manage_bell_image)
@@ -273,9 +301,23 @@ class BellBox(Gtk.VBox):
 					pass
 		switch_button.connect("notify::active",self.on_switch_activaded,hbox)
 
-		hbox_cron.pack_start(bell_hour,False,False,5)
-		hbox_cron.pack_end(hbox_week,False,False,5)
-		hbox.pack_start(hbox_cron,False,False,5)
+		
+		try:
+			if (self.bells_list[id_bell]["validity"]["value"]!=""):
+				hbox_cron.pack_start(bell_hour,False,False,1)
+				hbox_cron.pack_start(hbox_week,False,False,2)
+				hbox_cron.pack_end(hbox_validity,False,False,2)
+				hbox.pack_start(hbox_cron,False,False,1)
+			else:
+				hbox_cron.pack_start(bell_hour,False,False,5)
+				hbox_cron.pack_end(hbox_week,False,False,5)
+				hbox.pack_start(hbox_cron,False,False,5)
+		
+		except Exception as er:
+			hbox_cron.pack_start(bell_hour,False,False,5)
+			hbox_cron.pack_end(hbox_week,False,False,5)
+			hbox.pack_start(hbox_cron,False,False,5)
+		
 		hbox.pack_start(image,False,False,5)
 		hbox.pack_start(hbox_description,False,False,5)
 		hbox.pack_end(manage_bell,False,False,5)

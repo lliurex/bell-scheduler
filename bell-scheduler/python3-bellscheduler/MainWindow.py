@@ -648,8 +648,13 @@ class MainWindow:
 					days.append(_("F"))	
 					days.append(_("Fri"))
 
+				try:
+					validity=self.bells_info[item]["validity"]["value"]
+				except:
+					validity=""
+
 				
-				if search in hour or search in minute or search in name or search in cron or search in [ x.lower() for x in days]:
+				if search in hour or search in minute or search in name or search in cron or search in [ x.lower() for x in days] or search in validity:
 					pass
 				else:
 					self.search_list.pop(item)
@@ -848,6 +853,14 @@ class MainWindow:
 			msg_text=_("The bells have been removed successfully")	
 		elif code==-52:
 			msg_text=_("It is not possible to remove all bells")	
+		elif code==-53:
+			msg_text=_("Last date in range must be major than init date")
+		elif code==-54:
+			msg_text=_("You must indicate the two dates of range")
+		elif code==-55:
+			msg=_("You must indicate the date")
+		elif code==-56:
+			msg_text=_("Days outside the established validity period have been selected")
 		return msg_text
 
 	#def get_msg	
