@@ -396,7 +396,6 @@ class BellManager(object):
 				time_f=datetime.strptime(time,"%H:%M")
 				try:
 					if (info[item]["validity"]["value"]!=""):
-						print("dentro")
 						if "-" in info[item]["validity"]["value"]:
 							date_toformat=info[item]["validity"]["value"].split("-")[0]
 							datef=datetime.strptime(date_toformat,"%d/%m/%Y")
@@ -512,27 +511,28 @@ class BellManager(object):
 		weekdays_validity=[]
 		no_match_day=0
 		
-		if "-" in validity:
-			days_in_validity=self.get_days_inrange(validity)
-		else:
-			days_in_validity.append(validity)
+		if validity!="":
+			if "-" in validity:
+				days_in_validity=self.get_days_inrange(validity)
+			else:
+				days_in_validity.append(validity)
 
-		for item in days_in_validity:
-			tmp_day=datetime.strptime(item,"%d/%m/%Y")
-			tmp_weekday=tmp_day.weekday()
-			if tmp_weekday not in weekdays_validity:
-				weekdays_validity.append(tmp_weekday)
+			for item in days_in_validity:
+				tmp_day=datetime.strptime(item,"%d/%m/%Y")
+				tmp_weekday=tmp_day.weekday()
+				if tmp_weekday not in weekdays_validity:
+					weekdays_validity.append(tmp_weekday)
 
-		for i in range(len(weekdays)):
-			if weekdays[i]:
-				weekdays_selected.append(i)
+			for i in range(len(weekdays)):
+				if weekdays[i]:
+					weekdays_selected.append(i)
 
-		for item in weekdays_selected:
-			if item not in weekdays_validity:
-				no_match_day+=1
+			for item in weekdays_selected:
+				if item not in weekdays_validity:
+					no_match_day+=1
 
-		if no_match_day>0:
-			return {"result":False,"code":BellManager.DAY_NOT_IN_VALIDITY_ERROR,"data":""}
+			if no_match_day>0:
+				return {"result":False,"code":BellManager.DAY_NOT_IN_VALIDITY_ERROR,"data":""}
 
 	#def check_validity
 

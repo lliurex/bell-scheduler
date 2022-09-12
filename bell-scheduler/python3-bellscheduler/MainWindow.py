@@ -408,7 +408,6 @@ class MainWindow:
 		info_dialog=False
 
 		for item in self.bells_info:
-			print (self.bells_info[item]["sound"]["option"])
 			if self.bells_info[item]["sound"]["option"]=="directory":
 				random_directory=True
 			if self.bells_info[item]["sound"]["option"]=="urlslist":
