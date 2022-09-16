@@ -1,3 +1,9 @@
+bell-scheduler (0.4.48) focal; urgency=medium
+
+  * Added option to set validity period in alarms
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 16 Sep 2022 09:48:36 +0200
+
 bell-scheduler (0.4.47) focal; urgency=medium
 
   * Updated import backup function
