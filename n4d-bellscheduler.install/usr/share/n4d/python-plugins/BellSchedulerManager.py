@@ -160,9 +160,13 @@ class BellSchedulerManager:
 	
 		bell_tasks=self.read_conf().get('return',None).get('data',None)
 		keys_bells=bell_tasks.keys()
-
-		bells_incron=self._get_tasks_from_cron()
-		keys_cron=bells_incron.keys()
+		bells_incron=[]
+		keys_cron=[]
+		try:
+			bells_incron=self._get_tasks_from_cron()
+			keys_cron=bells_incron.keys()
+		except:
+			pass
 		changes=0
 
 		if len(keys_cron)>0:
@@ -321,8 +325,54 @@ class BellSchedulerManager:
 		info_to_cron["BellScheduler"]={}
 		info_to_cron["BellScheduler"][key]={}
 		info_to_cron["BellScheduler"][key]["name"]=info[item]["name"]
-		info_to_cron["BellScheduler"][key]["dom"]="*"
-		info_to_cron["BellScheduler"][key]["mon"]="*" 
+		try:
+			if info[item]["validity"]["active"]:
+				bell_validity=info[item]["validity"]["value"]
+				if bell_validity!="":
+					if "-" in bell_validity:
+						tmpRange=bell_validity.split("-")
+						tmpday1=tmpRange[0].split("/")[0]
+						if tmpday1.startswith("0"):
+							tmpday1=tmpday1[1:]
+
+						tmpmonth1=tmpRange[0].split("/")[1]
+						if tmpmonth1.startswith("0"):
+							tmpmonth1=tmpmonth1[1:]
+
+						tmpday2=tmpRange[1].split("/")[0]
+						if tmpday2.startswith("0"):
+							tmpday2=tmpday2[1:]
+
+						tmpmonth2=tmpRange[1].split("/")[1]
+						if tmpmonth2.startswith("0"):
+							tmpmonth2=tmpmonth2[1:]
+						
+						if tmpmonth1==tmpmonth2:
+							info_to_cron["BellScheduler"][key]["dom"]="%s-%s"%(tmpday1,tmpday2)
+							info_to_cron["BellScheduler"][key]["mon"]="%s"%(tmpmonth1) 
+						else:
+							info_to_cron["BellScheduler"][key]["dom"]="*"
+							info_to_cron["BellScheduler"][key]["mon"]="%s-%s"%(tmpmonth1,tmpmonth2) 
+						
+					else:
+						tmpday=bell_validity.split("/")[0]
+						if tmpday.startswith("0"):
+							tmpday=tmpday[1:]
+						tmpmonth=bell_validity.split("/")[1]
+						if tmpmonth.startswith("0"):
+							tmpmonth=tmpmonth[1:]
+						info_to_cron["BellScheduler"][key]["dom"]="%s"%tmpday
+						info_to_cron["BellScheduler"][key]["mon"]="%s"%tmpmonth
+				else:
+					info_to_cron["BellScheduler"][key]["dom"]="*"
+					info_to_cron["BellScheduler"][key]["mon"]="*" 
+			else:
+				info_to_cron["BellScheduler"][key]["dom"]="*"
+				info_to_cron["BellScheduler"][key]["mon"]="*" 
+		except:
+			info_to_cron["BellScheduler"][key]["dom"]="*"
+			info_to_cron["BellScheduler"][key]["mon"]="*" 
+
 		info_to_cron["BellScheduler"][key]["h"]=str(info[item]["hour"])
 		info_to_cron["BellScheduler"][key]["m"]=str(info[item]["minute"])
 		info_to_cron["BellScheduler"][key]["protected"]=True
@@ -489,6 +539,15 @@ class BellSchedulerManager:
 		
 				update_holiday=self.enable_holiday_control(action).get('return',None)	
 				if not update_holiday["status"]:
+					'''
+					update_indicator=self.update_indicator_token().get('return',None)
+
+					if update_indicator["status"]:
+						result={"status":True,"msg":"Bells imported successfully","code":BellSchedulerManager.BELL_IMPORT_SUCCESSFUL,"data":backup_file[1]}
+					else:
+						result={"status":False,"msg":update_indicator["msg"],"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}	
+				else:
+					'''
 					result={"status":False,"msg":update_holiday["msg"],"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}				
 				
 				return n4d.responses.build_successful_call_response(result)		

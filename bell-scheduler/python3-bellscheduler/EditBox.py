@@ -16,11 +16,17 @@ import codecs
 import io
 import glob
 import threading
+from datetime import datetime, date,timedelta
+
 
 BANNERS_PATH="/usr/share/bell-scheduler/banners/"
 
 class EditBox(Gtk.VBox):
 	
+	DATE_RANGE_INCONSISTENT_ERROR=-53
+	DATE_RANGE_INCOMPLETE_ERROR=-54
+	DATE_EMPTY_ERROR=-55
+
 	def __init__(self):
 		
 		Gtk.VBox.__init__(self)
@@ -64,7 +70,26 @@ class EditBox(Gtk.VBox):
 		self.wednesday_tb=builder.get_object("wednesday_togglebutton")
 		self.thursday_tb=builder.get_object("thursday_togglebutton")
 		self.friday_tb=builder.get_object("friday_togglebutton")
-
+		self.validity_cb=builder.get_object("validity_cb")
+		self.validity_entry=builder.get_object("validity_entry")
+		self.validity_edit_bt=builder.get_object("validity_edit_bt")
+		self.validity_popover=builder.get_object("validity_popover")
+		self.calendar=builder.get_object("calendar")
+		self.date_separator_label=builder.get_object("date_separaror_label")
+		self.date_separator=builder.get_object("date_separator")
+		self.single_day_rb=builder.get_object("single_day_rb")
+		self.single_day_entry=builder.get_object("single_day_entry")
+		self.range_day_rb=builder.get_object("range_day_rb")
+		self.range_day1_entry=builder.get_object("range_day1_entry")
+		self.range_day2_entry=builder.get_object("range_day2_entry")
+		self.remove_day_button=builder.get_object("remove_day_button")
+		self.remove_range_button=builder.get_object("remove_range_button")
+		self.add_day_button=builder.get_object("add_day_button")
+		self.calendar_message_box=builder.get_object("calendar_message_box")
+		self.calendar_error_img=builder.get_object("calendar_error_img")
+		self.calendar_message_label=builder.get_object("calendar_message_label")
+		self.save_day_button=builder.get_object("save_day_button")
+		self.cancel_day_button=builder.get_object("cancel_day_button")	
 		self.data_box=builder.get_object("data_box")
 		self.name_label=builder.get_object("name_label")
 		self.name_entry=builder.get_object("name_entry")
@@ -159,7 +184,6 @@ class EditBox(Gtk.VBox):
 			pixbuf=pixbuf.scale_simple(64,64,GdkPixbuf.InterpType.BILINEAR)
 			self.image_store.append([pixbuf,f_name])
 			
-			
 		self.image_cb.set_model(self.image_store)
 		pixbuf_renderer=Gtk.CellRendererPixbuf()
 		
@@ -195,10 +219,14 @@ class EditBox(Gtk.VBox):
 		self.play_label.set_name("EDIT_LABEL")
 		self.note_label.set_name("NOTE_LABEL")
 		self.image_box.set_name("IMAGE_BOX")
-		#self.image_popover_msg.set_name("MSG_ERROR_LABEL")
-		#self.sound_popover_msg.set_name("MSG_ERROR_LABEL")
 		self.sound_url.set_name("CUSTOM-ENTRY")
 		self.localpath_leyend.set_name("NOTE_LABEL")
+		self.calendar.set_name("CALENDAR")
+		self.single_day_entry.set_name("CUSTOM-ENTRY")
+		self.range_day1_entry.set_name("CUSTOM-ENTRY")
+		self.range_day2_entry.set_name("CUSTOM-ENTRY")
+		self.date_separator_label.set_name("HEADER-LABEL")
+		self.date_separator.set_name("HEADER_SEPARATOR")
 
 	#def set-css_info
 
@@ -211,6 +239,22 @@ class EditBox(Gtk.VBox):
 		self.hour_popover.connect("closed",self.hour_popover_closed)
 		self.hour_popover_apply_bt.connect("clicked",self.hour_popover_apply_bt_clicked)
 		self.hour_popover_cancel_bt.connect("clicked",self.hour_popover_cancel_bt_clicked)
+		self.monday_tb.connect("toggled",self.weekday_clicked,0)
+		self.tuesday_tb.connect("toggled",self.weekday_clicked,1)
+		self.wednesday_tb.connect("toggled",self.weekday_clicked,2)
+		self.thursday_tb.connect("toggled",self.weekday_clicked,3)
+		self.friday_tb.connect("toggled",self.weekday_clicked,4)
+		self.validity_cb.connect("toggled",self.validity_cb_clicked)
+		self.validity_edit_bt.connect("clicked",self.validity_edit_bt_clicked)
+		self.single_day_rb.connect("toggled",self.day_toggled_button,"singleDay")
+		self.range_day_rb.connect("toggled",self.day_toggled_button,"rangeDay")
+		self.calendar.connect("month-changed",self.month_changed)
+		self.calendar.connect("day_selected",self.day_selected)
+		self.remove_day_button.connect("clicked",self.remove_range,"singleDay")
+		self.remove_range_button.connect("clicked",self.remove_range,"rangeDay")
+		self.save_day_button.connect("clicked",self.save_day_clicked)
+		self.cancel_day_button.connect("clicked",self.cancel_day_clicked)
+		self.validity_popover.connect("closed",self.validity_popover_closed)
 		self.stock_rb.connect("toggled",self.image_toggled_button,"stock")
 		self.custom_rb.connect("toggled",self.image_toggled_button,"custom")
 		self.directory_rb.connect("toggled",self.sound_toggled_button,"directory")
@@ -238,9 +282,7 @@ class EditBox(Gtk.VBox):
 		self.duration_popover.connect("closed",self.duration_popover_closed)
 		self.duration_popover_cancel_bt.connect("clicked",self.duration_popover_cancel_bt_clicked)
 		self.duration_popover_apply_bt.connect("clicked",self.duration_popover_apply_bt_clicked)
-
-
-
+	
 	#def connect_signals	
 
 	def init_threads(self):
@@ -267,10 +309,15 @@ class EditBox(Gtk.VBox):
 		self.localpath_cb.set_sensitive(False)
 		self.start_time_spinbutton.set_value(0)
 		self.duration_spinbutton.set_value(30)
+		self.validity_cb.set_active(False)
+		self.validity_cb.set_sensitive(False)
+		self.validity_edit_bt.set_sensitive(False)
+		self.active_weekdays=[False,False,False,False,False]
+		self.there_are_active_days=False
+		self.init_calendar()
 		self.init_threads()
 
 	#def init_data_form	
-
 
 	def image_toggled_button(self,button,name):
 		
@@ -280,7 +327,6 @@ class EditBox(Gtk.VBox):
 				self.image_fc.set_sensitive(False)
 				self.image_popover_apply_bt.set_sensitive(True)
 				self.image_op="stock"
-
 			else:
 				self.image_cb.set_sensitive(False)
 				self.image_fc.set_sensitive(True)	
@@ -290,7 +336,6 @@ class EditBox(Gtk.VBox):
 
 	#def image_toggled_button			
 
-	
 	def sound_toggled_button(self,button,name):
 
 		if button.get_active():
@@ -302,8 +347,6 @@ class EditBox(Gtk.VBox):
 				self.localpath_cb.set_sensitive(False)
 				self.sound_op="directory"
 				self.sound_popover_apply_bt.set_sensitive(True)
-
-
 			elif name=="file":
 				self.sound_dc.set_sensitive(False)
 				self.sound_fc.set_sensitive(True)
@@ -322,7 +365,6 @@ class EditBox(Gtk.VBox):
 				else:	
 					self.sound_popover_apply_bt.set_sensitive(False)
 					self.localpath_cb.set_sensitive(False)	
-
 			elif name=="url":
 				self.sound_dc.set_sensitive(False)
 				self.sound_fc.set_sensitive(False)
@@ -331,7 +373,6 @@ class EditBox(Gtk.VBox):
 				self.localpath_cb.set_sensitive(False)	
 				self.sound_op="url"
 				self.sound_popover_apply_bt.set_sensitive(True)
-
 			elif name=="urlslist":
 				self.sound_dc.set_sensitive(False)
 				self.sound_fc.set_sensitive(False)
@@ -343,11 +384,11 @@ class EditBox(Gtk.VBox):
 
 	#def sound_toggled_button 					
 	
-	
 	def load_values(self,bell):
 	
 		self.localpath_cb.set_active(False)
-
+		self.validity_cb.set_active(False)
+		
 		bell_to_edit=self.core.mainWindow.bells_info[bell]
 
 		self.hour_spinbutton.set_value(bell_to_edit["hour"])	
@@ -360,14 +401,35 @@ class EditBox(Gtk.VBox):
 		weekdays=bell_to_edit["weekdays"]
 		if weekdays["0"]:
 			self.monday_tb.set_active(True)
+			self.active_weekdays[0]=True
 		if weekdays["1"]:
-			self.tuesday_tb.set_active(True)	
+			self.tuesday_tb.set_active(True)
+			self.active_weekdays[1]=True	
 		if weekdays["2"]:
-			self.wednesday_tb.set_active(True)	
+			self.wednesday_tb.set_active(True)
+			self.active_weekdays[2]=True	
 		if weekdays["3"]:
-			self.thursday_tb.set_active(True)	
+			self.thursday_tb.set_active(True)
+			self.active_weekdays[3]=True	
 		if weekdays["4"]:
-			self.friday_tb.set_active(True)	
+			self.friday_tb.set_active(True)
+			self.active_weekdays[4]=True	
+
+		try:
+			if True in self.active_weekdays:
+				self.validity_cb.set_sensitive(True)
+			if bell_to_edit["validity"]["active"]:
+				self.validity_cb.set_active(True)
+				if True in self.active_weekdays:
+					self.validity_edit_bt.set_sensitive(True)
+			self.validity=bell_to_edit["validity"]["value"]
+			self.validity_entry.set_text(self.validity)
+
+		except:
+			self.validity=""
+			self.validity_entry.set_text(self.validity)
+		
+		self.load_current_validity()
 
 		image_op=bell_to_edit["image"]["option"]
 
@@ -428,7 +490,6 @@ class EditBox(Gtk.VBox):
 			self.sound_path_label.set_text(self.get_sound_path(sound_op,True))
 			self.sound_path_label.set_name("SOUND_PATH_LABEL")
 			
-
 		self.duration_spinbutton.set_value(bell_to_edit["play"]["duration"])
 		duration=bell_to_edit["play"]["duration"]
 		self.manage_duration_entry_label(duration)
@@ -454,12 +515,15 @@ class EditBox(Gtk.VBox):
 		self.data_tocheck["image"]["option"]=self.image_op
 		self.data_tocheck["sound"]={}
 		self.data_tocheck["sound"]["option"]=self.sound_op
+		self.data_tocheck["weekdays"]=self.active_weekdays
+		self.data_tocheck["validity"]={}
+		self.data_tocheck["validity"]["active"]=self.validity_cb.get_active()
+		self.data_tocheck["validity"]["value"]=self.validity
 
 		self.core.mainWindow.save_button.set_sensitive(False)
 		self.core.mainWindow.cancel_button.set_sensitive(False)
 		self.manage_form_control(False)
 
-		
 		if self.image_op=="stock":
 			self.image_path=BANNERS_PATH+self.image_store[self.image_cb.get_active()][1]+".png"
 		else:
@@ -473,7 +537,6 @@ class EditBox(Gtk.VBox):
 		self.start_time=self.start_time_spinbutton.get_value_as_int()
 		
 		self.core.mainWindow.waiting_label.set_text(self.core.mainWindow.get_msg(30))			
-		#self.core.mainWindow.waiting_window.show_all()
 		self.core.mainWindow.manage_waiting_stack(True,True)
 		self.init_threads()
 		self.checking_data_t.start()
@@ -484,12 +547,8 @@ class EditBox(Gtk.VBox):
 	def pulsate_checking_data(self):
 		
 		if self.checking_data_t.is_alive():
-			#self.core.mainWindow.waiting_pbar.pulse()
 			return True
-			
 		else:
-			#self.core.mainWindow.waiting_window.hide()
-			
 			if not self.check["result"]:
 				self.core.mainWindow.manage_waiting_stack(False,True,True)
 				self.core.mainWindow.save_button.set_sensitive(True)
@@ -537,30 +596,21 @@ class EditBox(Gtk.VBox):
 		minute=self.minute_spinbutton.get_value_as_int()
 		hour=self.hour_spinbutton.get_value_as_int()
 				
-
 		bell[order]={}		
 		bell[order]["hour"]=hour
 		bell[order]["minute"]=minute
 		bell[order]["weekdays"]={}			
-		bell[order]["weekdays"]["0"]=self.monday_tb.get_active()
-		bell[order]["weekdays"]["1"]=self.tuesday_tb.get_active()
-		bell[order]["weekdays"]["2"]=self.wednesday_tb.get_active()
-		bell[order]["weekdays"]["3"]=self.thursday_tb.get_active()
-		bell[order]["weekdays"]["4"]=self.friday_tb.get_active()
+		bell[order]["weekdays"]["0"]=self.active_weekdays[0]
+		bell[order]["weekdays"]["1"]=self.active_weekdays[1]
+		bell[order]["weekdays"]["2"]=self.active_weekdays[2]
+		bell[order]["weekdays"]["3"]=self.active_weekdays[3]
+		bell[order]["weekdays"]["4"]=self.active_weekdays[4]
 
 		count=0
-		if self.monday_tb.get_active():
-			count=count+1
-		if self.tuesday_tb.get_active():
-			count+=count+1
-		if self.wednesday_tb.get_active():
-			count+=count+1		
-		if self.thursday_tb.get_active():
-			count+=count+1
-		if self.friday_tb.get_active():
-			count+=count+1	
-
-
+		for item in self.active_weekdays:
+			if item:
+				count=count+1
+	
 		if count>0:
 			if self.edit:
 				active_bell=self.active_bell
@@ -569,7 +619,17 @@ class EditBox(Gtk.VBox):
 		else:
 			active_bell=False	
 
-				
+		bell[order]["validity"]={}
+		if self.validity!="":
+			if self.validity_cb.get_active():
+				bell[order]["validity"]["active"]=True
+			else:
+				bell[order]["validity"]["active"]=False
+		else:
+			bell[order]["validity"]["active"]=False
+
+		bell[order]["validity"]["value"]=self.validity
+		
 		bell[order]["name"]=self.name_entry.get_text()
 
 		bell[order]["image"]={}
@@ -586,6 +646,7 @@ class EditBox(Gtk.VBox):
 		bell[order]["sound"]={}
 		bell[order]["sound"]["option"]=self.sound_op
 		orig_sound_path=""
+		
 		if self.sound_op=="file":
 			if self.localpath_cb.get_active():
 				orig_sound_path=self.sound_path
@@ -597,25 +658,20 @@ class EditBox(Gtk.VBox):
 
 		bell[order]["sound"]["path"]=dest_sound_path	
 
-
 		bell[order]["play"]={}
 		bell[order]["play"]["duration"]=self.duration
 		bell[order]["play"]["start"]=self.start_time
 
-
 		bell[order]["active"]=active_bell
 		
-
 		result_copy=self.core.bellmanager.copy_media_files(orig_image_path,orig_sound_path)
 		if result_copy['status']:
 			result=self.core.bellmanager.save_conf(bell,order,action)
 			if result['status']:
 				self.core.mainWindow.load_info()
 				self.core.bellBox.draw_bell(False,order)
-
 			else:
 				self.core.bellBox.draw_bell(False)
-
 
 		self.core.mainWindow.search_entry.set_text("")
 		self.core.mainWindow.manage_menubar(True)	
@@ -635,13 +691,10 @@ class EditBox(Gtk.VBox):
 		else:
 			self.core.mainWindow.manage_message(True,result_copy['code'])		
 
-
 	#def save_values		
-	
 	
 	def check_mimetype_image(self,widget):
 	
-
 		check=self.core.bellmanager.check_mimetypes(self.image_fc.get_filename(),"image")
 		if check !=None:
 			msg=self.core.mainWindow.get_msg(check["code"])
@@ -680,7 +733,6 @@ class EditBox(Gtk.VBox):
 
 	#def check_mimetype_sound		
 
-
 	def manage_form_control(self,sensitive):
 
 		self.hour_spinbutton.set_sensitive(sensitive)
@@ -689,8 +741,8 @@ class EditBox(Gtk.VBox):
 		for item in self.weekdays:
 			item.set_sensitive(sensitive)
 
+		self.validity_edit_bt.set_sensitive(sensitive)
 		self.name_entry.set_sensitive(sensitive)	
-
 		self.hour_eb.set_sensitive(sensitive)
 		self.sound_edit_button.set_sensitive(sensitive)
 		self.image_eb.set_sensitive(sensitive)
@@ -770,7 +822,294 @@ class EditBox(Gtk.VBox):
 		self.minute_label.set_name("TIME_LABEL")
 
 	#def mouse_exit_hour
+
+	def weekday_clicked(self,button,day):
+
+		if button.get_active():
+			self.active_weekdays[day]=True
+		else:
+			self.active_weekdays[day]=False
+
+		if True in self.active_weekdays:
+			self.validity_cb.set_sensitive(True)
+			if self.validity_cb.get_active():
+				self.validity_edit_bt.set_sensitive(True)
+		else:
+			self.validity_cb.set_sensitive(False)
+			self.validity_edit_bt.set_sensitive(False)
+
+	#def weekday_clicked
+
+	def validity_cb_clicked(self,cb,name=None):
+
+		if cb.get_active():
+			self.validity_edit_bt.set_sensitive(True)
+			self.validity_cb.set_tooltip_text(_("Click to deactive the alarm validity period"))
+		else:
+			self.validity_cb.set_tooltip_text(_("Click to active the alarm validiy period"))
+			self.validity_edit_bt.set_sensitive(False)
+
+	#def validity_cb_clicked
+
+	def validity_edit_bt_clicked(self,widget,event=None):
+
+		self.restore_validity=True
+		self.validity_popover.show_all()
+		self.hide_calendar_message_items()
+	
+	def init_calendar(self):
+
+		self.range=False
+		self.clear_days=False
+		self.day=""
+		self.days_inrange=[]
+		current_date=date.today().strftime('%d/%m/%Y').split("/")
+		current_month=int(current_date[1])-1
+		current_year=int(current_date[2])
+
+		self.calendar.select_day(0)
+		self.calendar.select_month(current_month,current_year)
+		self.range_day_rb.set_active(True)
+		self.remove_day_button.set_sensitive(False)
+		self.single_day_entry.set_text("")
+		self.range_day1_entry.set_text("")
+		self.range_day2_entry.set_text("")
+		self.edit_day=False
+		self.hide_calendar_message_items()
+
+	#def init_calendar
+
+	def load_current_validity(self):
+
+		self.init_calendar()
+		self.calendar.clear_marks()
+		if self.validity!="":
+			if "-" in self.validity:
+				self.range=True
+				tmpDay=self.validity.split("-")
+				self.range_day_rb.set_active(True)
+				self.range_day1_entry.set_text(tmpDay[0])
+				self.range_day2_entry.set_text(tmpDay[1])
+			else:
+				self.range=False
+				self.single_day_rb.set_active(True)
+				self.single_day_entry.set_text(self.validity)	
+
+			self.marked_range_days(1,self.validity)
+	
+	#def load_current_validity
+
+	def day_toggled_button (self,button,name):
+
+		if button.get_active():
+			self.calendar.clear_marks()
+
+			if name=="singleDay":
+				self.range=False
+				self.range_day1_entry.set_text("")
+				self.range_day2_entry.set_text("")
+				self.remove_day_button.set_sensitive(True)
+				self.remove_range_button.set_sensitive(False)
+				self.hide_calendar_message_items()
+			else:
+				self.calendar.select_day(0)
+				self.range=True
+				self.remove_range_button.set_sensitive(True)
+				self.remove_day_button.set_sensitive(False)
+				self.single_day_entry.set_text("")
+				self.hide_calendar_message_items()
+	
+	#def day_toggled_button
+
+	def month_changed(self,widget):	
+
+		self.calendar.select_day(0)
+		self.calendar.clear_marks()
+
+		if  self.clear_days:
+			self.marked_range_days(0)
+		else:
+			date=self.range_day1_entry.get_text()
+			if date!="":
+				month_ref=self.calendar.get_date().month
+				year_ref=self.calendar.get_date().year	
+
+				split_date=self._splited_date(date)
+				tmp_day=split_date[0]
+				tmp_month=split_date[1]
+				tmp_year=split_date[2]
+	
+				if tmp_month==month_ref and tmp_year==year_ref:
+					self.calendar.mark_day(tmp_day)				
+	
+	#def month_changed							
+
+	def day_selected(self,widget):
 		
+		date_selected=self.calendar.get_date()
+		day_selected=date_selected.day
+		
+		if int(day_selected)!=0:
+			if day_selected<10:
+				day_selectedf="0"+str(day_selected)
+			else:
+				day_selectedf=day_selected	
+			month_selected=date_selected.month+1
+			if month_selected<10:
+				month_selected="0"+str(month_selected)
+
+			year_selected=date_selected.year
+			date_format=str(day_selectedf)+"/"+str(month_selected)+"/"+str(year_selected)
+
+			if not self.range:
+				self.calendar.clear_marks()
+				self.single_day_entry.set_text(date_format)
+				self.range=False
+				self.clear_days=True
+			else:
+				if self.range_day1_entry.get_text()=="":
+					self.clear_days=False
+					self.calendar.clear_marks()
+					self.range_day1_entry.set_text(date_format)
+					self.calendar.mark_day(day_selected)
+					self.calendar.select_day(0)
+
+				else:
+					if self.range_day2_entry.get_text()=="":
+						date1=datetime.strptime(self.range_day1_entry.get_text(),"%d/%m/%Y")
+						date2=datetime.strptime(date_format,"%d/%m/%Y")
+						if date2>date1:
+							self.range=True
+							self.clear_days=True
+							self.range_day2_entry.set_text(date_format)	
+							range_day=self.range_day1_entry.get_text()+"-"+self.range_day2_entry.get_text()
+							self.marked_range_days(2,range_day)
+							self.calendar.select_day(0)
+							self.hide_calendar_message_items()
+						else:
+							self.calendar.select_day(0)
+							self.manage_calendar_msg(self.core.mainWindow.get_msg(EditBox.DATE_RANGE_INCONSISTENT_ERROR))	
+	#def day_selected						
+
+	def marked_range_days(self,monthref,range_day=None):
+
+		if range_day!=None:
+			if self.range:
+				self.days_inrange=self.core.bellmanager.get_days_inrange(range_day)
+
+		if monthref==0:
+			ref_month=self.calendar.get_date().month
+			ref_year=self.calendar.get_date().year
+
+		elif monthref==1:
+			if self.range:
+				ref_date=self.range_day1_entry.get_text()
+			else:
+				ref_date=self.single_day_entry.get_text()
+				
+			split_date=self._splited_date(ref_date)
+			ref_month=split_date[1]
+			ref_year=split_date[2]
+
+			self.calendar.select_month(ref_month,ref_year)
+
+		else:
+			split_date=self._splited_date(self.range_day2_entry.get_text())
+			ref_month=split_date[1]
+			ref_year=split_date[2]
+
+		if self.range:
+			for i in self.days_inrange:
+				split_date=self._splited_date(i)
+				tmp_day=split_date[0]
+				tmp_month=split_date[1]
+				tmp_year=split_date[2]
+				if tmp_month==ref_month and tmp_year==ref_year:
+					self.calendar.mark_day(tmp_day)
+			
+		else:
+			if self.single_day_entry.get_text()!="":
+				split_date=self._splited_date(self.single_day_entry.get_text())
+				tmp_day=split_date[0]
+				tmp_month=split_date[1]
+				tmp_year=split_date[2]
+				
+				if tmp_month==ref_month and tmp_year==ref_year:
+					self.calendar.mark_day(tmp_day)		
+
+	#def marked_range_days			
+
+	def _splited_date(self,date):
+
+		splited_date=[]
+		tmp_date=date.split("/")
+		tmp_day=int(tmp_date[0])
+		tmp_month=int(tmp_date[1])-1
+		tmp_year=int(tmp_date[2])
+
+		splited_date=[tmp_day,tmp_month,tmp_year]
+		
+		return splited_date
+
+	#def _splited_date	
+
+	def remove_range(self,widget,typeDate):
+
+		self.calendar.clear_marks()
+		self.clear_days=False
+		self.calendar.select_day(0)
+		if typeDate=="singleDay":
+			self.single_day_entry.set_text("")
+		else:
+			self.range_day1_entry.set_text("")
+			self.range_day2_entry.set_text("")
+		
+		self.hide_calendar_message_items()
+
+	#def remove_range
+
+	def save_day_clicked(self,widget,event=None):
+
+		error=False
+		if self.range:
+			if self.range_day1_entry.get_text()!="" and self.range_day2_entry.get_text()!="":
+				self.validity_entry.set_text(self.range_day1_entry.get_text()+"-"+self.range_day2_entry.get_text())
+			else:
+				if self.range_day1_entry.get_text()!="" and self.range_day2_entry.get_text()=="":
+					error=True
+				else:
+					self.validity_entry.set_text("")
+		else:
+			self.validity_entry.set_text(self.single_day_entry.get_text())		
+
+		if not error:
+			self.validity=self.validity_entry.get_text()
+			self.restore_validity=False
+			self.validity_popover.hide()
+		else:
+			self.manage_calendar_msg(self.core.mainWindow.get_msg(EditBox.DATE_RANGE_INCOMPLETE_ERROR))	
+
+	#def save_day_clicked
+
+	def cancel_day_clicked(self,widget,event=None):
+
+		self.restore_validity=True
+		self.validity_popover.hide()
+
+	#def cancel_day_clicked	
+
+	def validity_popover_closed(self,widget,event=None):
+
+		self.restore_validity_popover()
+			
+	#def validity_popover_closed
+
+	def restore_validity_popover(self):
+
+		if self.restore_validity:
+			self.load_current_validity()
+
+	#def restore_validity_popover		
 
 	def edit_image_clicked(self,widget,event=None):
 		
@@ -798,14 +1137,12 @@ class EditBox(Gtk.VBox):
 
 	#def edit_image_clicked	
 	
-
 	def image_popover_cancel_bt_clicked(self,widget):
 
 		self.restore_img=True
 		self.image_popover.hide()
 
 	#def image_popover_cancel_bt_clicked	
-
 	
 	def image_popover_apply_bt_clicked(self,widget):	
 
@@ -822,7 +1159,6 @@ class EditBox(Gtk.VBox):
 
 	#def image_popover_apply_bt_clicked(self,widget)		
 
-
 	def render_bell_image(self,path):
 
 		image=Gtk.Image()
@@ -830,7 +1166,6 @@ class EditBox(Gtk.VBox):
 		pixbuf=image.get_pixbuf()
 		pixbuf=pixbuf.scale_simple(80,80,GdkPixbuf.InterpType.BILINEAR)
 		self.image_bell.set_from_pixbuf(pixbuf)
-		
 
 	#def render_bell_image	
 
@@ -855,7 +1190,6 @@ class EditBox(Gtk.VBox):
 			self.image_path=self.previous_image_path
 
 	#def restore_image_popover		
-
 
 	def mouse_over_image(self,widget,event=None):
 
@@ -1069,14 +1403,28 @@ class EditBox(Gtk.VBox):
 		if duration==0:
 			self.duration_entry_label.set_text(_("Full reproduction"))
 			self.duration_second_label.hide()
-
 		else:
 			self.duration_entry_label.set_text(str(duration))
 			self.duration_second_label.show()
 
+	#def manage_duration_entry_label
 
-	#def manage_duration_entry_label	
+	def manage_calendar_msg(self,msg):
 
+		self.calendar_error_img.show()
+		self.calendar_message_box.set_name("ERROR_BOX")
+		self.calendar_message_label.set_text(msg)
+		self.calendar_message_label.show()
+
+	#def manage_calendar_msg
+
+	def hide_calendar_message_items(self):
+
+		self.calendar_message_box.set_name("HIDE_BOX")
+		self.calendar_error_img.hide()
+		self.calendar_message_label.set_text("")
+
+	#def hide_calendar_message_items
 		
 #class EditBox
 

@@ -7,6 +7,16 @@
 	@define-color default-grey #666666;
 
 
+	GtkCalendar {
+		margin: 10px;
+		padding: 5px;
+		outline-offset: -1px;
+	}
+
+	GtkCalendar#CALENDAR:active, GtkCalendar#CALENDAR:active:focus, GtkCalendar#CALENDAR:active:hover, GtkCalendar#CALENDAR:active:disabled {
+		color: #ff0000;
+	}
+
 	GtkLabel {
 		font: 12pt Roboto;
 	}
@@ -50,6 +60,18 @@
 	#DAY_LABEL_OFF{
 		color: #A0A0A0;
 		font: 18pt Roboto;
+
+	}
+
+	#VALIDITY_ON{
+		color: #3366cc;
+		font: 11pt Roboto;
+
+	}
+
+	#VALIDITY_OFF{
+		color: #A0A0A0;
+		font: 11pt Roboto;
 
 	}
 
@@ -381,3 +403,55 @@
 		background-color: #ffffff;
 
 	}
+
+	#CUSTOM-ENTRY
+	{
+		color: @default-grey;
+		border:1px solid #aaaaaa;
+		/*border-radius: 5px;*/
+		/*background-color: @arc-blue;*/
+		/*border-bottom: 1px solid #aaaaaa;*/
+		padding: 4px;
+		/*background: #eeeeee;*/
+		
+		/*border-bottom: 2px solid transparent;*/
+	
+	}
+
+	#CUSTOM-ENTRY:focus
+	{
+		color: @arc-blue;
+		border:1px solid @arc-blue-light;
+		/*border-bottom: 1px solid @arc-blue-light;*/
+		/*border-bottom: 2px solid rgba(0,0,0,0);*/
+		/*background-color: transparent;*/
+		
+	
+	}
+	#CUSTOM-ENTRY:selected
+	{
+		color: white;
+	}
+
+	#CUSTOM-ENTRY:disabled
+	{
+		background-color: #bbbbbb;
+		border:1px solid transparent;
+			/*border-bottom: 1px solid transparent;*/
+		color: #999999;
+	}
+	
+	#HEADER-LABEL
+	{
+		color: @arc-blue;
+		font: 11pt Quattrocento Sans Bold;
+		font-weight: bold;
+
+	}
+
+	#HEADER_SEPARATOR
+	{
+
+		background-color: @arc-blue;
+
+	}	

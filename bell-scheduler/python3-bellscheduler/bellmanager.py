@@ -6,7 +6,6 @@ from gi.repository import Gtk, GObject, GLib
 import os
 import json
 import codecs
-import datetime
 from mimetypes import MimeTypes
 import tempfile
 import shutil
@@ -16,6 +15,7 @@ import glob
 import random
 import urllib.request
 import n4d.client
+from datetime import datetime, date,timedelta
 
 
 class BellManager(object):
@@ -34,6 +34,7 @@ class BellManager(object):
 	TIME_OUT_VALIDATION_ERROR=-41
 	FAILED_INTERNET_ERROR=-42
 	URL_FILE_NOT_VALID_ERROR=-43
+	DAY_NOT_IN_VALIDITY_ERROR=-56
 
 	ACTION_SUCCESSFUL=0
 
@@ -104,63 +105,67 @@ class BellManager(object):
 
 	def check_data(self,data):
 		
+		check_validity=None
 		check_image=None
 		check_sound=None
 
 		if data["name"]=="":
 			return {"result":False,"code":BellManager.MISSING_BELL_NAME_ERROR,"data":""}
-			
 
-						
-		if data["image"]["option"]=="custom":						
-			if data["image"]["file"]!=None:
-				check_image=self.check_mimetypes(data["image"]["file"],"image")
-				
-			else:
-				return {"result":False,"code":BellManager.MISSING_IMAGE_FILE_ERROR,"data":""}
+		if data["validity"]["active"]:
+			check_validity=self.check_validity(data["weekdays"],data["validity"]["value"])
 		
-		if check_image==None:
-			if data["sound"]["option"]=="file":
-				if data["sound"]["file"]!=None:
-					check_sound=self.check_mimetypes(data["sound"]["file"],"audio")
+		if check_validity==None:
+			if data["image"]["option"]=="custom":						
+				if data["image"]["file"]!=None:
+					check_image=self.check_mimetypes(data["image"]["file"],"image")
 					
-					if check_sound==None:
-						return self.check_audiofile(data["sound"]["file"],"file")
-					else:
-						return check_sound
 				else:
-					return {"result":False,"code":BellManager.MISSING_SOUND_FILE_ERROR,"data":""}
-
-			elif data["sound"]["option"]=="directory":
-				if data["sound"]["file"]==None:
-					return {"result":False,"code":BellManager.MISSING_SOUND_FOLDER_ERROR,"data":""}
-				else:
-					self.correct_files=0
-					return self.check_directory(data["sound"]["file"])	
-
-			elif data["sound"]["option"]=="url":			
-				if data["sound"]["file"]=="":
-					return {"result":False,"code":BellManager.MISSING_URL_ERROR,"data":""}
-				else:
-					check_connection=self.check_connection()
-					if check_connection:
-						return self.check_audiofile(data["sound"]["file"],"url")
-					else:
-						return {"result":False,"code":BellManager.FAILED_INTERNET_ERROR,"data":""}	
-
-			elif data["sound"]["option"]=="urlslist":				
-				if data["sound"]["file"]!=None:
-					check_connection=self.check_connection()
-					if check_connection:
-						return self.check_list(data["sound"]["file"])
-					else:
-						return {"result":False,"code":BellManager.FAILED_INTERNET_ERROR,"data":""}	
-				else:		
-					return {"result":False,"code":BellManager.MISSING_URL_LIST_ERROR,"data":""}
+					return {"result":False,"code":BellManager.MISSING_IMAGE_FILE_ERROR,"data":""}
 			
+			if check_image==None:
+				if data["sound"]["option"]=="file":
+					if data["sound"]["file"]!=None:
+						check_sound=self.check_mimetypes(data["sound"]["file"],"audio")
 						
+						if check_sound==None:
+							return self.check_audiofile(data["sound"]["file"],"file")
+						else:
+							return check_sound
+					else:
+						return {"result":False,"code":BellManager.MISSING_SOUND_FILE_ERROR,"data":""}
+
+				elif data["sound"]["option"]=="directory":
+					if data["sound"]["file"]==None:
+						return {"result":False,"code":BellManager.MISSING_SOUND_FOLDER_ERROR,"data":""}
+					else:
+						self.correct_files=0
+						return self.check_directory(data["sound"]["file"])	
+
+				elif data["sound"]["option"]=="url":			
+					if data["sound"]["file"]=="":
+						return {"result":False,"code":BellManager.MISSING_URL_ERROR,"data":""}
+					else:
+						check_connection=self.check_connection()
+						if check_connection:
+							return self.check_audiofile(data["sound"]["file"],"url")
+						else:
+							return {"result":False,"code":BellManager.FAILED_INTERNET_ERROR,"data":""}	
+
+				elif data["sound"]["option"]=="urlslist":				
+					if data["sound"]["file"]!=None:
+						check_connection=self.check_connection()
+						if check_connection:
+							return self.check_list(data["sound"]["file"])
+						else:
+							return {"result":False,"code":BellManager.FAILED_INTERNET_ERROR,"data":""}	
+					else:		
+						return {"result":False,"code":BellManager.MISSING_URL_LIST_ERROR,"data":""}
+							
+			else:
+				return check_image
 		else:
-			return check_image			
+			return check_validity			
 				
 	
 	#def check_data
@@ -219,6 +224,7 @@ class BellManager(object):
 		content_directory=glob.glob(path)
 		for item in content_directory:
 			if os.path.isfile(item):
+				print("ARCHIVO: %s"%item)
 				check_file=self.check_mimetypes(item,"audio")
 				if check_file==None:
 					check_run=self.check_audiofile(item,'file')
@@ -361,23 +367,50 @@ class BellManager(object):
 	
 		tmp=[]
 		order_bells=[]
+		current_day=date.today().strftime('%d/%m/%Y')
 		if info==None:
 			if len(self.bells_config)>0:
 				for item in self.bells_config:
 					time=str(self.bells_config[item]["hour"])+":"+str(self.bells_config[item]["minute"])
-					time_f=datetime.datetime.strptime(time,"%H:%M")
+					time_f=datetime.strptime(time,"%H:%M")
+					try:
+						if (self.bells_config[item]["validity"]["value"]!=""):
+							if "-" in self.bells_config[item]["validity"]["value"]:
+								date_toformat=self.bells_config[item]["validity"]["value"].split("-")[0]
+								datef=datetime.strptime(date_toformat,"%d/%m/%Y")
+							else:
+								date_toformat=self.bells_config[item]["validity"]["value"]
+								datef=datetime.strptime(date_toformat,"%d/%m/%Y")
+						else:
+							datef=datetime.strptime(current_day,"%d/%m/%Y")
+					except:
+						datef=datetime.strptime(current_day,"%d/%m/%Y")
+
 					x=()
-					x=item,time_f
+					x=item,time_f,datef
 					tmp.append(x)
 		else:
+			
 			for item in info:
 				time=str(info[item]["hour"])+":"+str(info[item]["minute"])
-				time_f=datetime.datetime.strptime(time,"%H:%M")
+				time_f=datetime.strptime(time,"%H:%M")
+				try:
+					if (info[item]["validity"]["value"]!=""):
+						if "-" in info[item]["validity"]["value"]:
+							date_toformat=info[item]["validity"]["value"].split("-")[0]
+							datef=datetime.strptime(date_toformat,"%d/%m/%Y")
+						else:
+							date_toformat=info[item]["validity"]["value"]
+							datef=datetime.strptime(date_toformat,"%d/%m/%Y")
+					else:
+						datef=datetime.strptime(current_day,"%d/%m/%Y")
+				except:
+					datef=datetime.strptime(current_day,"%d/%m/%Y")
 				x=()
-				x=item,time_f
+				x=item,time_f,datef
 				tmp.append(x)		
 
-		tmp.sort(key=lambda bell:bell[1])
+		tmp.sort(key=lambda bell:(bell[1],bell[2]))
 		for item in tmp:
 			order_bells.append(item[0])
 
@@ -453,7 +486,6 @@ class BellManager(object):
 
 	#def enable_holiday	
 
-
 	def change_activation_status(self,action):
 
 		#Old n4d: result=self.n4d.change_activation_status(self.credentials,'BellSchedulerManager',action)
@@ -470,7 +502,54 @@ class BellManager(object):
 		self._debug("Remove all bells process: ",result)	
 		return result
 
-	#def remove_all_bells			
+	#def remove_all_bells
+
+	def check_validity(self,weekdays,validity):
+
+		days_in_validity=[]
+		weekdays_selected=[]
+		weekdays_validity=[]
+		no_match_day=0
+		
+		if validity!="":
+			if "-" in validity:
+				days_in_validity=self.get_days_inrange(validity)
+			else:
+				days_in_validity.append(validity)
+
+			for item in days_in_validity:
+				tmp_day=datetime.strptime(item,"%d/%m/%Y")
+				tmp_weekday=tmp_day.weekday()
+				if tmp_weekday not in weekdays_validity:
+					weekdays_validity.append(tmp_weekday)
+
+			for i in range(len(weekdays)):
+				if weekdays[i]:
+					weekdays_selected.append(i)
+
+			for item in weekdays_selected:
+				if item not in weekdays_validity:
+					no_match_day+=1
+
+			if no_match_day>0:
+				return {"result":False,"code":BellManager.DAY_NOT_IN_VALIDITY_ERROR,"data":""}
+
+	#def check_validity
+
+	def get_days_inrange(self,day):	
+
+		list_days=[]
+		tmp=day.split("-")
+		date1=datetime.strptime(tmp[0],'%d/%m/%Y')
+		date2=datetime.strptime(tmp[1],'%d/%m/%Y')
+		delta=date2-date1
+		for i in range(delta.days + 1):
+			tmp_day=(date1 + timedelta(days=i)).strftime('%d/%m/%Y')
+			list_days.append(tmp_day)
+
+		return list_days	
+
+	#def get_days_inrange			
 							
 
 #class BellManager 		
