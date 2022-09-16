@@ -869,8 +869,8 @@ class EditBox(Gtk.VBox):
 
 		self.calendar.select_day(0)
 		self.calendar.select_month(current_month,current_year)
-		self.single_day_rb.set_active(True)
-		self.remove_range_button.set_sensitive(False)
+		self.range_day_rb.set_active(True)
+		self.remove_day_button.set_sensitive(False)
 		self.single_day_entry.set_text("")
 		self.range_day1_entry.set_text("")
 		self.range_day2_entry.set_text("")
