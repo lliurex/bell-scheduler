@@ -1,3 +1,9 @@
+bell-scheduler (0.4.49) focal; urgency=medium
+
+  * Fixed translations
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 22 Sep 2022 09:25:29 +0200
+
 bell-scheduler (0.4.48) focal; urgency=medium
 
   * Added option to set validity period in alarms
