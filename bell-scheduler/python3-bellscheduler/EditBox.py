@@ -309,6 +309,7 @@ class EditBox(Gtk.VBox):
 		self.localpath_cb.set_sensitive(False)
 		self.start_time_spinbutton.set_value(0)
 		self.duration_spinbutton.set_value(30)
+		self.validity=""
 		self.validity_cb.set_active(False)
 		self.validity_cb.set_sensitive(False)
 		self.validity_edit_bt.set_sensitive(False)
@@ -859,7 +860,7 @@ class EditBox(Gtk.VBox):
 	
 	def init_calendar(self):
 
-		self.range=False
+		self.range=True
 		self.clear_days=False
 		self.day=""
 		self.days_inrange=[]
@@ -869,6 +870,7 @@ class EditBox(Gtk.VBox):
 
 		self.calendar.select_day(0)
 		self.calendar.select_month(current_month,current_year)
+		self.single_day_rb.set_active(False)
 		self.range_day_rb.set_active(True)
 		self.remove_day_button.set_sensitive(False)
 		self.single_day_entry.set_text("")
