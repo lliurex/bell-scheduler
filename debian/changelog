@@ -1,3 +1,9 @@
+bell-scheduler (0.4.50) focal; urgency=medium
+
+  * Fixed bug in validity form
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 23 Sep 2022 10:13:29 +0200
+
 bell-scheduler (0.4.49) focal; urgency=medium
 
   * Fixed translations
