@@ -184,6 +184,7 @@ class BellSchedulerPlayer:
 				soundPath=self._getSoundPath(soundOption,soundPath)
 
 			if soundOption in ["file","directory"]:
+				soundPath=soundPath.replace("'","'\\''")
 				cmd=cmd+' "'+ soundPath +'" '+fadeEffects+';'
 			elif sound_option in ["url","urlslist"]:
 				soundPath=soundPath.replace("%","\%")
