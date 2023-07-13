@@ -96,9 +96,7 @@ Rectangle{
             Layout.preferredHeight:40
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
-            onClicked:{
-                
-            }
+            onClicked:bellSchedulerBridge.addNewBell() 
         }
     }
 

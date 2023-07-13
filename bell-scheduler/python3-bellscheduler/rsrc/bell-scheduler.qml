@@ -112,15 +112,12 @@ ApplicationWindow {
                     id:mainOptions
                 }
             }
-            /*
             Component{
                 id:bellView
                 BellOptions{
                     id:bellOptions
                 }
             }
-            */
-
         }
 
     }

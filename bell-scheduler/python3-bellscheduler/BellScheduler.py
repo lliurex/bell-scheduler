@@ -41,6 +41,7 @@ class Bridge(QObject):
 		self._bellsModel=BellsModel.BellsModel()
 		self._currentStack=0
 		self._mainCurrentOption=0
+		self._bellCurrentOption=0
 		self._closeGui=False
 		self._showMainMessage=[False,"","Ok"]
 		self._showLoadErrorMessage=[False,""]
@@ -101,6 +102,20 @@ class Bridge(QObject):
 
 	#def _setMainCurrentOption
 
+	def _getBellCurrentOption(self):
+
+		return self._bellCurrentOption
+
+	#def _getBellCurrentOption	
+
+	def _setBellCurrentOption(self,bellCurrentOption):
+		
+		if self._bellCurrentOption!=bellCurrentOption:
+			self._bellCurrentOption=bellCurrentOption
+			self.on_bellCurrentOption.emit()
+
+	#def _setBellCurrentOption
+
 	def _getBellsModel(self):
 
 		return self._bellsModel
@@ -135,6 +150,7 @@ class Bridge(QObject):
 
 	#def _setShowLoadErrorMessage
 
+
 	def _getCloseGui(self):
 
 		return self._closeGui
@@ -168,6 +184,22 @@ class Bridge(QObject):
 				self._bellsModel.setData(index,param,updatedInfo[i][param])
 
 	#def _updateBellsModelInfo
+
+	@Slot()
+	def addNewBell(self):
+
+		self.currentStack=2
+		self.bellCurrentOption=0
+		
+	#def addNewBell
+
+	@Slot()
+	def goHome(self):
+
+		self.currentStack=1
+		self.mainCurrentOption=0			
+
+	#def goHome
 
 	@Slot()
 	def openHelp(self):
@@ -210,6 +242,9 @@ class Bridge(QObject):
 	
 	on_showLoadErrorMessage=Signal()
 	showLoadErrorMessage=Property('QVariantList',_getShowLoadErrorMessage,_setShowLoadErrorMessage, notify=on_showLoadErrorMessage)
+
+	on_bellCurrentOption=Signal()
+	bellCurrentOption=Property(int,_getBellCurrentOption,_setBellCurrentOption, notify=on_bellCurrentOption)
 
 	on_closeGui=Signal()
 	closeGui=Property(bool,_getCloseGui,_setCloseGui, notify=on_closeGui)
