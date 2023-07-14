@@ -118,6 +118,7 @@ Rectangle{
                     color:"transparent"
    
                     Image{
+                        id:bellImg
                         width:80
                         height:80
                         fillMode:Image.PreserveAspectFit
@@ -135,8 +136,15 @@ Rectangle{
                                 container.border.color="#ffffff"
                             }
                             onClicked:{
-                                console.log("Clic")
+                                imageSelector.open()
                             }
+                        }
+
+                        ImageSelector{
+                            id:imageSelector
+                            xPopUp:-Math.round(imageSelector.width-parent.width/2)
+                            yPopUp:-Math.round(parent.height*4.55)
+
                         }
                     }
                 }

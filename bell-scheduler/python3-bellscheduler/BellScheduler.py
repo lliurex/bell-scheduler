@@ -10,6 +10,7 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 from . import BellManager
 from . import BellsModel
+from . import ImagesModel
 
 class GatherInfo(QThread):
 
@@ -39,12 +40,14 @@ class Bridge(QObject):
 		QObject.__init__(self)
 
 		self._bellsModel=BellsModel.BellsModel()
+		self._imagesModel=ImagesModel.ImagesModel()
 		self._currentStack=0
 		self._mainCurrentOption=0
 		self._bellCurrentOption=0
 		self._closeGui=False
 		self._showMainMessage=[False,"","Ok"]
 		self._showLoadErrorMessage=[False,""]
+
 		Bridge.bellMan.createN4dClient(ticket)
 		self.initBridge()
 
@@ -150,6 +153,12 @@ class Bridge(QObject):
 
 	#def _setShowLoadErrorMessage
 
+	def _getImagesModel(self):
+
+		return self._imagesModel
+
+	#def _getImagesModel	
+
 
 	def _getCloseGui(self):
 
@@ -188,10 +197,21 @@ class Bridge(QObject):
 	@Slot()
 	def addNewBell(self):
 
+		self._updateImagesModel()
 		self.currentStack=2
 		self.bellCurrentOption=0
 		
 	#def addNewBell
+
+	def _updateImagesModel(self):
+
+		ret=self._imagesModel.clear()
+		imagesEntries=Bridge.bellMan.imagesConfigData
+		for item in imagesEntries:
+			if item["imageSource"]!="":
+				self._imagesModel.appendRow(item["imageSource"])
+	
+	#def _updateImagesModel
 
 	@Slot()
 	def goHome(self):
@@ -249,6 +269,7 @@ class Bridge(QObject):
 	on_closeGui=Signal()
 	closeGui=Property(bool,_getCloseGui,_setCloseGui, notify=on_closeGui)
 
+	imagesModel=Property(QObject,_getImagesModel,constant=True)
 	bellsModel=Property(QObject,_getBellsModel,constant=True)
 
 #class Bridge

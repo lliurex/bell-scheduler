@@ -52,6 +52,8 @@ class BellManager(object):
 		self.server='localhost'
 		self.bellsConfigData=[]
 		self.imgNoDispPath="/usr/lib/python3/dist-packages/bellscheduler/rsrc/image_nodisp.svg"
+		self.bannersPath="/usr/share/bell-scheduler/banners"
+		self.imagesConfigData=[]
 		'''
 		context=ssl._create_unverified_context()
 		self.n4d = n4dclient.ServerProxy("https://"+server+":9779",context=context,allow_none=True)
@@ -91,6 +93,7 @@ class BellManager(object):
 		self.bellsConfigData=[]
 		if result["status"]:
 			self.getBellsConfig()
+			self.getImagesConfig()
 		
 		return result
 
@@ -154,6 +157,25 @@ class BellManager(object):
 		print(self.bellsConfigData)
 		
 	#def getBellsConfig
+
+	def getImagesConfig(self):
+
+		self.imagesConfigData=[]
+
+		tmpFiles=[]
+		if os.path.exists(self.bannersPath):
+			for item in os.listdir(self.bannersPath):
+				tmpFiles.append(item)
+			
+			tmpFiles.sort()
+			for item in tmpFiles:
+				tmp={}
+				tmp["imageSource"]="%s/%s"%(self.bannersPath,item)
+				self.imagesConfigData.append(tmp)
+
+		print(self.imagesConfigData)
+
+	#def getImagesConfig
 
 	def _loadSoundPath(self,bell):
 		
