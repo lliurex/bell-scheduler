@@ -177,7 +177,7 @@ Rectangle{
             }
             Text{
                 id:startOption
-                text:i18nd("bell-scheduler","Start in second:")
+                text:i18nd("bell-scheduler","Start in second")+":"
                 Layout.alignment:Qt.AlignRight
             }
             RowLayout{
@@ -200,12 +200,30 @@ Rectangle{
                     ToolTip.visible: hovered
                     ToolTip.text:i18nd("bell-scheduler","Click to edit start value")
                     hoverEnabled:true
+                    onClicked:editStartForm.open()
+                    SliderPopUp{
+                        id:editStartForm
+                        popUpWidth:300
+                        popUpHeight:190
+                        xPopUp:Math.round(parent.width/ 2)
+                        yPopUp:-Math.round(editStartForm.popUpHeight)
+                        headText:i18nd("bell-scheduler","Start in second")
+                        footText:""
+                        showFoot:false
+                        sliderValue:0
+                        Connections{
+                            target:editStartForm
+                            function onApplyButtonClicked(){
+                                editStartForm.close()
+                            }
+                        }
+                    }
                 }
 
             }
             Text{
                 id:durationOption
-                text:i18nd("bell-scheduler","Max. duration:")
+                text:i18nd("bell-scheduler","Max. duration")+":"
                 Layout.alignment:Qt.AlignRight
             }
             RowLayout{
@@ -228,6 +246,24 @@ Rectangle{
                     ToolTip.visible: hovered
                     ToolTip.text:i18nd("bell-scheduler","Click to edit duration value")
                     hoverEnabled:true
+                    onClicked:editDurationForm.open()
+                    SliderPopUp{
+                        id:editDurationForm
+                        popUpWidth:450
+                        popUpHeight:220
+                        xPopUp:Math.round(parent.width/ 2)
+                        yPopUp:-Math.round(editDurationForm.popUpHeight)
+                        headText:i18nd("bell-scheduler","Max. duration")
+                        footText:i18nd("bell-scheduler","(!) If duration is 0, the sound will be reproduced in its entirety")
+                        showFoot:true
+                        sliderValue:30
+                        Connections{
+                            target:editDurationForm
+                            function onApplyButtonClicked(){
+                                editDurationForm.close()
+                            }
+                        }
+                    }
                 }
 
             }
@@ -283,4 +319,5 @@ Rectangle{
             */
         }
     } 
+   
 }
