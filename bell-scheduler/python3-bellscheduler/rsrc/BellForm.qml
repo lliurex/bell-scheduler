@@ -180,6 +180,16 @@ Rectangle{
                     ToolTip.visible: hovered
                     ToolTip.text:i18nd("bell-scheduler","Click to edit sound")
                     hoverEnabled:true
+                    onClicked:{
+                        soundSelector.open()
+                    }
+                    SoundSelector{
+                        id:soundSelector
+                        xPopUp:-Math.round(soundSelector.width-parent.width/2)
+                        yPopUp:-Math.round(soundSelector.height)
+
+
+                    }
                 }
 
             }
