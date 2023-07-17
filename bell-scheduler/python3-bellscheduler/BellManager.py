@@ -54,6 +54,8 @@ class BellManager(object):
 		self.imgNoDispPath="/usr/lib/python3/dist-packages/bellscheduler/rsrc/image_nodisp.svg"
 		self.bannersPath="/usr/share/bell-scheduler/banners"
 		self.imagesConfigData=[]
+		self.getImagesConfig()
+		self.initValues()
 		'''
 		context=ssl._create_unverified_context()
 		self.n4d = n4dclient.ServerProxy("https://"+server+":9779",context=context,allow_none=True)
@@ -90,11 +92,11 @@ class BellManager(object):
 		result=self.client.BellSchedulerManager.read_conf()
 		self._debug("Read configuration file: ",result)
 		self.bellsConfig=result["data"]
+		print(self.bellsConfig)
 		self.bellsConfigData=[]
 		if result["status"]:
 			self.getBellsConfig()
-			self.getImagesConfig()
-		
+	
 		return result
 
 	#def readConf	
@@ -154,8 +156,7 @@ class BellManager(object):
 
 			self.bellsConfigData.append(tmp)
 
-		print(self.bellsConfigData)
-		
+	
 	#def getBellsConfig
 
 	def getImagesConfig(self):
@@ -173,9 +174,43 @@ class BellManager(object):
 				tmp["imageSource"]="%s/%s"%(self.bannersPath,item)
 				self.imagesConfigData.append(tmp)
 
-		print(self.imagesConfigData)
-
 	#def getImagesConfig
+
+	def initValues(self):
+
+		self.bellCron=[0,0]
+		self.bellDays=[False,False,False,False,False]
+		self.bellValidity=[False,""]
+		self.bellName=""
+		self.bellImage=["stock",1,"/usr/share/bell-scheduler/banners/bell.png"]
+		self.bellSound=["file","",""]
+		self.bellPlay=[0,0]
+		self.bellActive=False
+		self.initBellConfig={}
+		self.initBellConfig["hour"]=self.bellCron[0]
+		self.initBellConfig["minute"]=self.bellCron[1]
+		self.initBellConfig["validity"]={}
+		self.initBellConfig["validity"]["active"]=self.bellValidity[0]
+		self.initBellConfig["validity"]["value"]=self.bellValidity[1]
+		self.initBellConfig["weekdays"]={}
+		self.initBellConfig["weekdays"]["0"]=self.bellDays[0]
+		self.initBellConfig["weekdays"]["1"]=self.bellDays[1]
+		self.initBellConfig["weekdays"]["2"]=self.bellDays[2]
+		self.initBellConfig["weekdays"]["3"]=self.bellDays[3]
+		self.initBellConfig["weekdays"]["4"]=self.bellDays[4]
+		self.initBellConfig["name"]=self.bellName
+		self.initBellConfig["image"]={}
+		self.initBellConfig["image"]["option"]=self.bellImage[0]
+		self.initBellConfig["image"]["path"]=self.imagesConfigData[self.bellImage[1]]["imageSource"]
+		self.initBellConfig["sound"]={}
+		self.initBellConfig["sound"]["option"]=self.bellSound[0]
+		self.initBellConfig["sound"]["path"]=self.bellSound[1]
+		self.initBellConfig["play"]={}
+		self.initBellConfig["play"]["duration"]=self.bellPlay[0]
+		self.initBellConfig["play"]["start"]=self.bellPlay[1]
+		self.initBellConfig["active"]=self.bellActive
+	
+	#def initValues
 
 	def _loadSoundPath(self,bell):
 		
@@ -227,6 +262,39 @@ class BellManager(object):
 		return tmpDay
 
 	#def _getDayToSearch
+
+	def loadBellConfig(self,bellId):
+
+		self.currentBellConfig=self.bellsConfig[bellId]
+		self.bellCron=[self.currentBellConfig["hour"],self.currentBellConfig["minute"]]
+		self.bellDays=[self.currentBellConfig["weekdays"]["0"],self.currentBellConfig["weekdays"]["1"],self.currentBellConfig["weekdays"]["2"],self.currentBellConfig["weekdays"]["3"],self.currentBellConfig["weekdays"]["4"]]
+		self.bellValidity=[self.currentBellConfig["validity"]["active"],self.currentBellConfig["validity"]["value"]]
+		self.bellName=self.currentBellConfig["name"]
+		if self.currentBellConfig["image"]["option"]=="stock":
+			imgIndex=self._getImageIndexFromPath(self.currentBellConfig["image"]["path"])
+		else:
+			imgIndex=1
+		self.bellImage=[self.currentBellConfig["image"]["option"],imgIndex,self.currentBellConfig["image"]["path"]]
+		tmpSoundFilePath=""
+		tmpSoundDirectoryPath=""
+		if self.currentBellConfig["sound"]["option"]=="file":
+			tmpSoundFilePath=self.currentBellConfig["sound"]["path"]
+		else:
+			tmpSoundDirectoryPath=self.currentBellConfig["sound"]["path"]
+		
+		self.bellSound=[self.currentBellConfig["sound"]["option"],tmpSoundFilePath,tmpSoundDirectoryPath]
+		self.bellPlay=[self.currentBellConfig["play"]["duration"],self.currentBellConfig["play"]["start"]]
+		self.bellActive=self.currentBellConfig["active"]
+
+	#def loadBellConfig
+
+	def _getImageIndexFromPath(self,imagePath):
+
+		for i in range(len(self.imagesConfigData)):
+			if self.imagesConfigData[i]["imageSource"]==imagePath:
+				return i
+
+	#def _getImageIndexFromPath
 	
 	def saveConf(self,info,last_change,action):
 

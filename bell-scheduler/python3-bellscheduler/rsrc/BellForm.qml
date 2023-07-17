@@ -42,6 +42,7 @@ Rectangle{
 
             Cron{
                 id:scheduler
+              
             }
 
             RowLayout{
@@ -49,6 +50,7 @@ Rectangle{
 
                CheckBox {
                     id:enableValidity
+                    checked:bellSchedulerBridge.bellValidity[0]
                     text:i18nd("bell-scheduler","Validity:")
                     font.pointSize: 10
                     focusPolicy: Qt.NoFocus
@@ -58,7 +60,7 @@ Rectangle{
                 }
                 Text{
                     id:validityText
-                    text:"25/09/2023-31/10/2023"
+                    text:bellSchedulerBridge.bellValidity[1]
                     font.pointSize: 10
 
                 }
@@ -66,6 +68,7 @@ Rectangle{
                     id:editValidityBtn
                     display:AbstractButton.IconOnly
                     icon.name:"document-edit.svg"
+                    enabled:enableValidity.checked?true:false
                     Layout.preferredHeight: 35
                     ToolTip.delay: 1000
                     ToolTip.timeout: 3000
@@ -105,6 +108,7 @@ Rectangle{
 
                 TextField{
                     id:bellNameEntry
+                    text:bellSchedulerBridge.bellName
                     horizontalAlignment:TextInput.AlignLeft
                     focus:true
                     implicitWidth:400
@@ -122,7 +126,7 @@ Rectangle{
                         width:80
                         height:80
                         fillMode:Image.PreserveAspectFit
-                        source:"/usr/share/bell-scheduler/banners/bell.png"
+                        source:bellSchedulerBridge.bellImage[2]
                         clip:true
                         anchors.centerIn:parent
                         MouseArea {
@@ -161,12 +165,18 @@ Rectangle{
 
                 Text{
                     id:soundOption
-                    text:i18nd("bell-scheduler","Sound file")+": "
+                    text:{
+                        if (bellSchedulerBridge.bellSound[0]=="file"){
+                            i18nd("bell-scheduler","Sound file")+": "
+                        }else{
+                            i18nd("bell-scheduler","Random from directory")+": "
+                        }
+                    }
                 }
 
                 Text{
                     id:soundPath
-                    text:i18nd("bell-scheduler","<specify the file/url for the sound>")
+                    text:getSoundPath()
                     width:400
                     elide:Text.ElideMiddle
                 }
@@ -204,7 +214,7 @@ Rectangle{
 
                 Text{
                     id:startValue
-                    text:"0"
+                    text:bellSchedulerBridge.bellPlay[1]
                     width:400
                     elide:Text.ElideMiddle
                 }
@@ -228,7 +238,7 @@ Rectangle{
                         headText:i18nd("bell-scheduler","Start in second")
                         footText:""
                         showFoot:false
-                        sliderValue:0
+                        sliderValue:bellSchedulerBridge.bellPlay[1]
                         Connections{
                             target:editStartForm
                             function onApplyButtonClicked(){
@@ -250,7 +260,13 @@ Rectangle{
 
                 Text{
                     id:durationValue
-                    text:"30"+" "+i18nd("bell-scheduler","seconds")
+                    text:{
+                        if (bellSchedulerBridge.bellPlay[0]>0){
+                            bellSchedulerBridge.bellPlay[0]+" "+i18nd("bell-scheduler","seconds")
+                        }else{
+                            i18nd("bell-scheduler","Full reproduction")
+                        }
+                    }
                     width:400
                     elide:Text.ElideMiddle
                 }
@@ -267,14 +283,14 @@ Rectangle{
                     onClicked:editDurationForm.open()
                     SliderPopUp{
                         id:editDurationForm
-                        popUpWidth:450
-                        popUpHeight:220
+                        popUpWidth:350
+                        popUpHeight:230
                         xPopUp:Math.round(parent.width/ 2)
                         yPopUp:-Math.round(editDurationForm.popUpHeight)
                         headText:i18nd("bell-scheduler","Max. duration")
                         footText:i18nd("bell-scheduler","(!) If duration is 0, the sound will be reproduced in its entirety")
                         showFoot:true
-                        sliderValue:30
+                        sliderValue:bellSchedulerBridge.bellPlay[0]
                         Connections{
                             target:editDurationForm
                             function onApplyButtonClicked(){
@@ -337,5 +353,27 @@ Rectangle{
             */
         }
     } 
+
+    function getSoundPath(){
+
+        var tmpPath=""
+        if (bellSchedulerBridge.bellSound[0]=="file"){
+            var tmpPath=bellSchedulerBridge.bellSound[1]
+        }else{
+            var tmpPath=bellSchedulerBridge.bellSound[2]
+        } 
+
+        if (tmpPath==""){
+            return i18nd("bell-scheduler","<specify the file/url for the sound>")
+        }else{
+            if (bellSchedulerBridge.bellSound[0]=="file"){
+                return tmpPath.substring(tmpPath.lastIndexOf('/')+1)
+            }else{
+                return tmpPath
+            }
+
+        }
+
+    }
    
 }

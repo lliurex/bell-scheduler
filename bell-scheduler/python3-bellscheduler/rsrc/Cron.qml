@@ -9,15 +9,8 @@ GridLayout{
 	flow: GridLayout.TopToBottom
 
 	property alias clockLayoutEnabled:clockLayout.enabled
-	property alias currentHour:hoursTumbler.currentIndex
-	property alias currentMinutes: minutesTumbler.currentIndex
 	signal updateClock(variant value)
 	property alias daysLayoutEnabled:daysLayout.enabled
-	property alias mondayChecked:mondaybtn.dayBtnChecked
-	property alias tuesdayChecked:tuesdaybtn.dayBtnChecked
-	property alias wednesdayChecked:wednesdaybtn.dayBtnChecked
-	property alias thursdayChecked:thursdaybtn.dayBtnChecked
-	property alias fridayChecked:fridaybtn.dayBtnChecked
 	signal updateWeekDays(variant value)
 
 
@@ -95,7 +88,7 @@ GridLayout{
 		    	width:80
 	            height:80
 	            model: 24
-	            currentIndex:currentHour
+	            currentIndex:bellSchedulerBridge.bellCron[0]
 	            delegate:delegateComponent 
 	            visibleItemCount:1
 	            hoverEnabled:true
@@ -127,7 +120,7 @@ GridLayout{
 	    		height:80
 	    		width:80
 	    		model: 60
-	    		currentIndex:currentMinutes
+	    		currentIndex:bellSchedulerBridge.bellCron[1]
 	    		delegate: delegateComponent
 	    		visibleItemCount:1
 	    		hoverEnabled:true
@@ -263,7 +256,7 @@ GridLayout{
 
 	    DayButton {
 	      	id:mondaybtn
-			dayBtnChecked:mondayChecked
+			dayBtnChecked:bellSchedulerBridge.bellDays[0]
 			dayBtnText:i18nd("bell-scheduler","Monday")
 			Connections{
 				function onDayBtnClicked(value){
@@ -275,7 +268,7 @@ GridLayout{
 				
 		DayButton {
 	       	id:tuesdaybtn
-			dayBtnChecked:tuesdayChecked
+			dayBtnChecked:bellSchedulerBridge.bellDays[1]
 			dayBtnText:i18nd("bell-scheduler","Tuesday")
 			Connections{
 				function onDayBtnClicked(value){
@@ -286,7 +279,7 @@ GridLayout{
 		
 		DayButton {
 			id:wednesdaybtn
-			dayBtnChecked:wednesdayChecked
+			dayBtnChecked:bellSchedulerBridge.bellDays[2]
 			dayBtnText:i18nd("bell-scheduler","Wednesday")
 			Connections{
 				function onDayBtnClicked(value){
@@ -298,7 +291,7 @@ GridLayout{
 				
 		DayButton {
 			id:thursdaybtn
-			dayBtnChecked:thursdayChecked
+			dayBtnChecked:bellSchedulerBridge.bellDays[3]
 			dayBtnText:i18nd("bell-scheduler","Thursday")
 			Connections{
 				function onDayBtnClicked(value){
@@ -309,7 +302,7 @@ GridLayout{
 			
 		DayButton {
 			id:fridaybtn
-			dayBtnChecked:fridayChecked
+			dayBtnChecked:bellSchedulerBridge.bellDays[4]
 			dayBtnText:i18nd("bell-scheduler","Friday")
 			Connections{
 				function onDayBtnClicked(value){

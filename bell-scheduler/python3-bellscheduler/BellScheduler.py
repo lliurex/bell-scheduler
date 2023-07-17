@@ -41,6 +41,13 @@ class Bridge(QObject):
 
 		self._bellsModel=BellsModel.BellsModel()
 		self._imagesModel=ImagesModel.ImagesModel()
+		self._bellCron=Bridge.bellMan.bellCron
+		self._bellDays=Bridge.bellMan.bellDays
+		self._bellValidity=Bridge.bellMan.bellValidity
+		self._bellName=Bridge.bellMan.bellName
+		self._bellImage=Bridge.bellMan.bellImage
+		self._bellSound=Bridge.bellMan.bellSound
+		self._bellPlay=Bridge.bellMan.bellPlay
 		self._currentStack=0
 		self._mainCurrentOption=0
 		self._bellCurrentOption=0
@@ -68,6 +75,7 @@ class Bridge(QObject):
 			if self.gatherInfo.readConf['status']:
 				self.currentStack=1
 				self._updateBellsModel()
+				self._updateImagesModel()
 				if Bridge.bellMan.loadError:
 					self.showMainMessage=[True,Bridge.bellMan.SOUND_PATH_UNAVAILABLE,"Error"]
 			else:
@@ -76,6 +84,104 @@ class Bridge(QObject):
 			self.showLoadErrorMessage=[True,self.gatherInfo.syncWithCron['code']]
 	
 	#def _loadConfig
+
+	def _getBellCron(self):
+
+		return self._bellCron
+
+	#def _getBellCron
+
+	def _setBellCron(self,bellCron):
+
+		if self._bellCron!=bellCron:
+			self._bellCron=bellCron
+			self.on_bellCron.emit()
+
+	#def _setBellCron
+
+	def _getBellDays(self):
+
+		return self._bellDays
+
+	#def _getBellDays
+
+	def _setBellDays(self,bellDays):
+
+		if self._bellDays!=bellDays:
+			self._bellDays=bellDays
+			self.on_bellDays.emit()
+
+	#def _setBellDays
+
+	def _getBellValidity(self):
+
+		return self._bellValidity
+
+	#def _getBellValidity
+
+	def _setBellValidity(self,bellValidity):
+
+		if self._bellValidity!=bellValidity:
+			self._bellValidity=bellValidity
+			self.on_bellValidity.emit()
+
+	#def _setBellValidity
+
+	def _getBellName(self):
+
+		return self._bellName
+
+	#def _getBellName
+
+	def _setBellName(self,bellName):
+
+		if self._bellName!=bellName:
+			self._bellName=bellName
+			self.on_bellName.emit()
+
+	#def _setBellName 
+
+	def _getBellImage(self):
+
+		return self._bellImage
+
+	#def _getBellImage
+
+	def _setBellImage(self,bellImage):
+
+		if self._bellImage!=bellImage:
+			self._bellImage=bellImage
+			self.on_bellImage.emit()
+
+	#def _setBellImage
+
+	def _getBellSound(self):
+
+		return self._bellSound
+
+	#def _getBellSound
+
+	def _setBellSound(self,bellSound):
+
+		if self._bellSound!=bellSound:
+			self._bellSound=bellSound
+			self.on_bellSound.emit()
+
+	#def _setBellSound
+
+	def _getBellPlay(self):
+
+		return self._bellPlay
+
+	#def _getBellPlay
+
+	def _setBellPlay(self,bellPlay):
+
+		if self._bellPlay!=bellPlay:
+			self._bellPlay=bellPlay
+			self.on_bellPlay.emit()
+
+	#def _setBellPlay  
 
 	def _getCurrentStack(self):
 
@@ -159,7 +265,6 @@ class Bridge(QObject):
 
 	#def _getImagesModel	
 
-
 	def _getCloseGui(self):
 
 		return self._closeGui
@@ -197,11 +302,25 @@ class Bridge(QObject):
 	@Slot()
 	def addNewBell(self):
 
-		self._updateImagesModel()
+		self._initializeVars()
 		self.currentStack=2
 		self.bellCurrentOption=0
 		
 	#def addNewBell
+
+	def _initializeVars(self):
+
+		Bridge.bellMan.initValues()
+		self.currentBellConfig=copy.deepcopy(Bridge.bellMan.initBellConfig)
+		self.bellCron=Bridge.bellMan.bellCron
+		self.bellDays=Bridge.bellMan.bellDays
+		self.bellValidity=Bridge.bellMan.bellValidity
+		self.bellName=Bridge.bellMan.bellName
+		self.bellImage=Bridge.bellMan.bellImage
+		self.bellSound=Bridge.bellMan.bellSound
+		self.bellPlay=Bridge.bellMan.bellPlay
+
+	#def _initializeVars
 
 	def _updateImagesModel(self):
 
@@ -220,6 +339,24 @@ class Bridge(QObject):
 		self.mainCurrentOption=0			
 
 	#def goHome
+
+	@Slot(str)
+	def loadBell(self,bellId):
+
+		Bridge.bellMan.initValues()
+		Bridge.bellMan.loadBellConfig(bellId)
+		self.currentBellConfig=copy.deepcopy(Bridge.bellMan.currentBellConfig)
+		self.bellCron=Bridge.bellMan.bellCron
+		self.bellDays=Bridge.bellMan.bellDays
+		self.bellValidity=Bridge.bellMan.bellValidity
+		self.bellName=Bridge.bellMan.bellName
+		self.bellImage=Bridge.bellMan.bellImage
+		self.bellSound=Bridge.bellMan.bellSound
+		self.bellPlay=Bridge.bellMan.bellPlay
+		self.currentStack=2
+		self.bellCurrentOption=0
+
+	#def loadBell
 
 	@Slot()
 	def openHelp(self):
@@ -251,6 +388,27 @@ class Bridge(QObject):
 
 	#def closeBellScheduler
 	
+	on_bellCron=Signal()
+	bellCron=Property('QVariantList',_getBellCron,_setBellCron,notify=on_bellCron)
+
+	on_bellDays=Signal()
+	bellDays=Property('QVariantList',_getBellDays,_setBellDays,notify=on_bellDays)
+
+	on_bellValidity=Signal()
+	bellValidity=Property('QVariantList',_getBellValidity,_setBellValidity,notify=on_bellValidity)
+
+	on_bellName=Signal()
+	bellName=Property(str,_getBellName,_setBellName,notify=on_bellName)
+
+	on_bellImage=Signal()
+	bellImage=Property('QVariantList',_getBellImage,_setBellImage,notify=on_bellImage)
+
+	on_bellSound=Signal()
+	bellSound=Property('QVariantList',_getBellSound,_setBellSound,notify=on_bellSound)
+
+	on_bellPlay=Signal()
+	bellPlay=Property('QVariantList',_getBellPlay,_setBellPlay,notify=on_bellPlay)
+
 	on_currentStack=Signal()
 	currentStack=Property(int,_getCurrentStack,_setCurrentStack, notify=on_currentStack)
 

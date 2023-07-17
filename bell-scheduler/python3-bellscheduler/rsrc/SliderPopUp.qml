@@ -1,6 +1,6 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.6
-import QtQuick.Layouts 1.12
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 import org.kde.plasma.components 3.0 as PC3
 
 
@@ -20,8 +20,8 @@ Popup {
 
     width:popUpWidth
     height:popUpHeight
-    x:sliderPopUp.x
-    y:sliderPopUp.y
+    x:xPopUp
+    y:yPopUp
     /*anchors.centerIn: Overlay.overlay*/
     modal:true
     focus:true
@@ -62,6 +62,7 @@ Popup {
             font.pointSize: 14
             anchors.top:sliderId.bottom
             anchors.topMargin:10
+            anchors.bottomMargin:20
             anchors.horizontalCenter:parent.horizontalCenter
         }
 
@@ -74,8 +75,9 @@ Popup {
             anchors.bottom:cancelBtn.top
             anchors.left:container.left
             anchors.leftMargin:10
-            anchors.topMargin:10
             anchors.bottomMargin:10
+            width:320
+            wrapMode: Text.WordWrap
         }
 
         Button {

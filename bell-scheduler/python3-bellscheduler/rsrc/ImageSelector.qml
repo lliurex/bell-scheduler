@@ -54,7 +54,9 @@ Popup {
                 flow: GridLayout.TopToBottom
                 rowSpacing:10
                 Layout.topMargin: messageLabel.visible?0:50
-
+                ButtonGroup{
+                    id:imageOptionsGroup
+                }
                 RowLayout{
                     id:standarRow
                     spacing:10
@@ -62,7 +64,15 @@ Popup {
                     Layout.bottomMargin:10
                     RadioButton{
                         id:standardOption
+                        checked:{
+                            if (bellSchedulerBridge.bellImage[0]=="stock"){
+                                true
+                            }else{
+                                false
+                            }
+                        }
                         text:i18nd("bell-scheduler","From stock")
+                        ButtonGroup.group:imageOptionsGroup
                         
                     }
                     ImageList{
@@ -77,12 +87,26 @@ Popup {
                     Layout.bottomMargin:10
                     RadioButton{
                         id:customOption
+                        checked:{
+                            if (bellSchedulerBridge.bellImage[0]=="custom"){
+                                true
+                            }else{
+                                false
+                            }
+                        }
                         text:i18nd("bell-scheduler","Custom image")
+                        ButtonGroup.group:imageOptionsGroup
                         
                     }
                     Text{
                         id:customImagePath 
-                        text:i18nd("bell-scheduler","No file selected")
+                        text:{
+                            if (bellSchedulerBridge.bellImage[0]=="custom"){
+                                bellSchedulerBridge.bellImage[2].substring(bellSchedulerBridge.bellImage[2].lastIndexOf('/')+1)
+                            }else{
+                                ""
+                            }
+                        }
                         font.family: "Quattrocento Sans Bold"
                         font.pointSize: 10
                         Layout.maximumWidth:250
@@ -93,6 +117,7 @@ Popup {
                         id:fileSelectorBtn
                         display:AbstractButton.IconOnly
                         icon.name:"insert-image.svg"
+                        enabled:customOption.checked?true:false
                         height: 35
                         ToolTip.delay: 1000
                         ToolTip.timeout: 3000

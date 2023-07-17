@@ -11,6 +11,7 @@ Popup {
     property alias xPopUp:soundPopUp.x
     property alias yPopUp:soundPopUp.y
     signal applyButtonClicked
+    property string selectedPath
 
     width:530
     height:390
@@ -63,14 +64,21 @@ Popup {
                     Layout.alignment:Qt.AlignLeft
                     Layout.bottomMargin:10
                     RadioButton{
-                        id:standardOption
+                        id:fileOption
+                        checked:{
+                            if (bellSchedulerBridge.bellSound[0]=="file"){
+                                true
+                            }else{
+                                false
+                            }
+                        }
                         text:i18nd("bell-scheduler","Sound file")
                         ButtonGroup.group:soundOptionsGroup
                         
                     }
                     Text{
                         id:soundPath 
-                        text:i18nd("bell-scheduler","No file selected")
+                        text:bellSchedulerBridge.bellSound[1].substring(bellSchedulerBridge.bellSound[1].lastIndexOf('/')+1)
                         font.family: "Quattrocento Sans Bold"
                         font.pointSize: 10
                         Layout.maximumWidth:250
@@ -80,6 +88,7 @@ Popup {
                         id:fileSelectorBtn
                         display:AbstractButton.IconOnly
                         icon.name:"audio-x-mpeg.svg"
+                        enabled:fileOption.checked?true:false
                         height: 35
                         ToolTip.delay: 1000
                         ToolTip.timeout: 3000
@@ -97,14 +106,21 @@ Popup {
                     Layout.alignment:Qt.AlignLeft|Qt.AlignVCenter
                     Layout.bottomMargin:10
                     RadioButton{
-                        id:customOption
+                        id:directoryOption
+                        checked:{
+                            if (bellSchedulerBridge.bellSound[0]=="directory"){
+                                true
+                            }else{
+                                false
+                            }
+                        }
                         text:i18nd("bell-scheduler","Random from directory")
                         ButtonGroup.group:soundOptionsGroup
                         
                     }
                     Text{
                         id:folderPath 
-                        text:i18nd("bell-scheduler","No folder selected")
+                        text:bellSchedulerBridge.bellSound[2]
                         font.family: "Quattrocento Sans Bold"
                         font.pointSize: 10
                         Layout.maximumWidth:250
@@ -115,6 +131,7 @@ Popup {
                         id:folderSelectorBtn
                         display:AbstractButton.IconOnly
                         icon.name:"view-media-playlist.svg"
+                        enabled:directoryOption.checked?true:false
                         height: 35
                         ToolTip.delay: 1000
                         ToolTip.timeout: 3000
@@ -127,6 +144,8 @@ Popup {
                 CheckBox {
                     id:bellCopyFilesCb
                     text:i18nd("bell-scheduler","Copy the sound file to the internal folder (*)")
+                    checked:true
+                    enabled:fileOption.checked?true:false
                     font.pointSize: 10
                     focusPolicy: Qt.NoFocus
                     Keys.onReturnPressed: cdcControlCb.toggled()
@@ -139,11 +158,9 @@ Popup {
                     text:i18nd("bell-scheduler","(*) Checking this option the sound file will be copied to the internal folder.\n It will be this file that is used to reproduce the alarm. In addition, if alarms are exported the file will be included in the export. It is recommended to mark it")
                     font.family: "Quattrocento Sans Bold"
                     font.pointSize: 10
-                    anchors.bottom:cancelBtn.top
-                    anchors.left:container.left
-                    anchors.leftMargin:10
-                    anchors.topMargin:10
-                    anchors.bottomMargin:10
+                    Layout.leftMargin:10
+                    Layout.topMargin:10
+                    Layout.bottomMargin:10
                     Layout.preferredWidth:480
                     wrapMode: Text.WordWrap
                 }
@@ -196,10 +213,10 @@ Popup {
         title: "Select a sound file"
         folder:shortcuts.home
         onAccepted:{
-            var tmpFile=soundFileDialog.fileUrl.toString()
-            tmpFile=tmpFile.replace(/^(file:\/{2})/,"")
-            console.log(tmpFile)
-            soundPath.text=tmpFile
+            selectedPath=soundFileDialog.fileUrl.toString()
+            selectedPath=selectedPath.replace(/^(file:\/{2})/,"")
+            console.log(selectedPath)
+            soundPath.text=selectedPath.substring(selectedPath.lastIndexOf('/')+1)
         }
       
     }
@@ -209,10 +226,10 @@ Popup {
         folder:shortcuts.home
         selectFolder:true
         onAccepted:{
-            var tmpFolder=soundFolderDialog.fileUrl.toString()
-            tmpFolder=tmpFolder.replace(/^(file:\/{2})/,"")
-            console.log(tmpFolder)
-            folderPath.text=tmpFolder
+            selectedPath=soundFileDialog.fileUrl.toString()
+            selectedPath=selectedPath.replace(/^(file:\/{2})/,"")
+            console.log(selectedPath)
+            folderPath.text=selectedPath
         }
       
     }
