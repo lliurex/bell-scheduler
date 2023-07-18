@@ -112,7 +112,9 @@ Rectangle {
                         }else{
                             calendar.startDate=styleData.date
                             calendar.stopDate=undefined
+
                         }
+                        getSelectedDate([Qt.formatDate(styleData.date,"dd/MM/yyyy"),"start"])
                     }
 
                     mouse.accepted = false
