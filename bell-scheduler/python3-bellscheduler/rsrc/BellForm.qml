@@ -75,6 +75,13 @@ Rectangle{
                     ToolTip.visible: hovered
                     ToolTip.text:i18nd("bell-scheduler","Click to edit validity")
                     hoverEnabled:true
+                    onClicked:validitySelector.open()
+                    ValiditySelector{
+                        id:validitySelector
+                        xPopUp:-Math.round(validitySelector.width-parent.width/2)
+                        yPopUp:-Math.round(parent.height*4.55)
+
+                        }
                 }
 
             }

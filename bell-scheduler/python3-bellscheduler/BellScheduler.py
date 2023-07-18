@@ -44,6 +44,8 @@ class Bridge(QObject):
 		self._bellCron=Bridge.bellMan.bellCron
 		self._bellDays=Bridge.bellMan.bellDays
 		self._bellValidity=Bridge.bellMan.bellValidity
+		self._validityRangeDate=True
+		self._daysInRange=[]
 		self._bellName=Bridge.bellMan.bellName
 		self._bellImage=Bridge.bellMan.bellImage
 		self._bellSound=Bridge.bellMan.bellSound
@@ -126,6 +128,34 @@ class Bridge(QObject):
 			self.on_bellValidity.emit()
 
 	#def _setBellValidity
+
+	def _getValidityRangeDate(self):
+
+		return self._validityRangeDate
+
+	#def _getValidityRangeDate
+
+	def _setValidityRangeDate(self,validityRangeDate):
+
+		if self._validityRangeDate!=validityRangeDate:
+			self._validityRangeDate=validityRangeDate
+			self.on_validityRangeDate.emit()
+
+	#def _setValidityRangeDate
+
+	def _getDaysInRange(self):
+
+		return self._daysInRange
+
+	#def _getDaysInRange
+
+	def _setDaysInRange(self,daysInRange):
+
+		if self._daysInRange!=daysInRange:
+			self._daysInRange=daysInRange
+			self.on_daysInRange.emit()
+
+	#def _setDaysInRange
 
 	def _getBellName(self):
 
@@ -315,6 +345,8 @@ class Bridge(QObject):
 		self.bellCron=Bridge.bellMan.bellCron
 		self.bellDays=Bridge.bellMan.bellDays
 		self.bellValidity=Bridge.bellMan.bellValidity
+		self.validityRangeDate=Bridge.bellMan.validityRangeDate
+		self.daysInRange=Bridge.bellMan.daysInRange
 		self.bellName=Bridge.bellMan.bellName
 		self.bellImage=Bridge.bellMan.bellImage
 		self.bellSound=Bridge.bellMan.bellSound
@@ -349,6 +381,8 @@ class Bridge(QObject):
 		self.bellCron=Bridge.bellMan.bellCron
 		self.bellDays=Bridge.bellMan.bellDays
 		self.bellValidity=Bridge.bellMan.bellValidity
+		self.validityRangeDate=Bridge.bellMan.validityRangeDate
+		self.daysInRange=Bridge.bellMan.daysInRange
 		self.bellName=Bridge.bellMan.bellName
 		self.bellImage=Bridge.bellMan.bellImage
 		self.bellSound=Bridge.bellMan.bellSound
@@ -396,6 +430,12 @@ class Bridge(QObject):
 
 	on_bellValidity=Signal()
 	bellValidity=Property('QVariantList',_getBellValidity,_setBellValidity,notify=on_bellValidity)
+
+	on_validityRangeDate=Signal()
+	validityRangeDate=Property(bool,_getValidityRangeDate,_setValidityRangeDate,notify=on_validityRangeDate)
+
+	on_daysInRange=Signal()
+	daysInRange=Property('QVariantList',_getDaysInRange,_setDaysInRange,notify=on_daysInRange)
 
 	on_bellName=Signal()
 	bellName=Property(str,_getBellName,_setBellName,notify=on_bellName)

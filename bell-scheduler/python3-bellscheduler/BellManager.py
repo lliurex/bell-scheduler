@@ -181,6 +181,8 @@ class BellManager(object):
 		self.bellCron=[0,0]
 		self.bellDays=[False,False,False,False,False]
 		self.bellValidity=[False,""]
+		self.validityRangeDate=True
+		self.daysInRange=[]
 		self.bellName=""
 		self.bellImage=["stock",1,"/usr/share/bell-scheduler/banners/bell.png"]
 		self.bellSound=["file","",""]
@@ -269,6 +271,8 @@ class BellManager(object):
 		self.bellCron=[self.currentBellConfig["hour"],self.currentBellConfig["minute"]]
 		self.bellDays=[self.currentBellConfig["weekdays"]["0"],self.currentBellConfig["weekdays"]["1"],self.currentBellConfig["weekdays"]["2"],self.currentBellConfig["weekdays"]["3"],self.currentBellConfig["weekdays"]["4"]]
 		self.bellValidity=[self.currentBellConfig["validity"]["active"],self.currentBellConfig["validity"]["value"]]
+		self.daysInRange=[]
+		self._getValidityConfig(self.bellValidity[1])
 		self.bellName=self.currentBellConfig["name"]
 		if self.currentBellConfig["image"]["option"]=="stock":
 			imgIndex=self._getImageIndexFromPath(self.currentBellConfig["image"]["path"])
@@ -295,6 +299,20 @@ class BellManager(object):
 				return i
 
 	#def _getImageIndexFromPath
+
+	def _getValidityConfig(self,validityInfo):
+
+		tmpValue=validityInfo
+
+		if tmpValue!="":
+			if "-" in tmpValue:
+				self.validityRangeDate=True
+				self.daysInRange=self.get_days_inrange(tmpValue)
+			else:
+				self.validityRangeDate=False
+				self.daysInRange.append(tmpValue)
+
+	#def _getValidityConfig
 	
 	def saveConf(self,info,last_change,action):
 
