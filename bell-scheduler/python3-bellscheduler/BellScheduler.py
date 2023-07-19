@@ -12,6 +12,9 @@ from . import BellManager
 from . import BellsModel
 from . import ImagesModel
 
+NEW_BELL_CONFIG=1
+LOAD_BELL_CONFIG=2
+
 class GatherInfo(QThread):
 
 	def __init__(self,*args):
@@ -30,6 +33,28 @@ class GatherInfo(QThread):
 	#def run
 
 #class GatherInfo
+
+class LoadBell(QThread):
+
+	def __init__(self,*args):
+
+		QThread.__init__(self)
+		self.newBell=args[0]
+		self.bellInfo=args[1]
+
+	#def __init__
+
+	def run(self,*args):
+
+		time.sleep(0.5)
+		ret=Bridge.bellMan.initValues()
+		if not self.newBell:
+			ret=Bridge.bellMan.loadBellConfig(self.bellInfo)
+
+	#def run
+
+#class LoadBell
+
 
 class Bridge(QObject):
 
@@ -53,10 +78,11 @@ class Bridge(QObject):
 		self._currentStack=0
 		self._mainCurrentOption=0
 		self._bellCurrentOption=0
+		self._closePopUp=[True,""]
 		self._closeGui=False
 		self._showMainMessage=[False,"","Ok"]
 		self._showLoadErrorMessage=[False,""]
-
+		self._changesInBell=False
 		Bridge.bellMan.createN4dClient(ticket)
 		self.initBridge()
 
@@ -255,6 +281,34 @@ class Bridge(QObject):
 
 	#def _setBellCurrentOption
 
+	def _getClosePopUp(self):
+
+		return self._closePopUp
+
+	#def _getClosePopUp
+
+	def _setClosePopUp(self,closePopUp):
+
+		if self._closePopUp!=closePopUp:
+			self._closePopUp=closePopUp
+			self.on_closePopUp.emit()
+
+	#def _setClosePopUp
+
+	def _getChangesInBell(self):
+
+		return self._changesInBell
+
+	#def _getChangesInBell
+
+	def _setChangesInBell(self,changesInBell):
+
+		if self._changesInBell!=changesInBell:
+			self._changesInBell=changesInBell
+			self.on_changesInBell.emit()
+
+	#def _setChangesInBell
+
 	def _getBellsModel(self):
 
 		return self._bellsModel
@@ -329,19 +383,38 @@ class Bridge(QObject):
 
 	#def _updateBellsModelInfo
 
+	def _updateImagesModel(self):
+
+		ret=self._imagesModel.clear()
+		imagesEntries=Bridge.bellMan.imagesConfigData
+		for item in imagesEntries:
+			if item["imageSource"]!="":
+				self._imagesModel.appendRow(item["imageSource"])
+	
+	#def _updateImagesModel
+
 	@Slot()
 	def addNewBell(self):
 
+		self.closePopUp=[False,NEW_BELL_CONFIG]
+		self.newBell=LoadBell(True,"")
+		self.newBell.start()
+		self.newBell.finished.connect(self._addNewBellRet)
+
+	#def addNewBell
+
+	def _addNewBellRet(self):
+
+		self.currentBellConfig=copy.deepcopy(Bridge.bellMan.currentBellConfig)
 		self._initializeVars()
+		self.closePopUp=[True,""]
 		self.currentStack=2
 		self.bellCurrentOption=0
-		
-	#def addNewBell
+
+	#def _addNewBellRet
 
 	def _initializeVars(self):
 
-		Bridge.bellMan.initValues()
-		self.currentBellConfig=copy.deepcopy(Bridge.bellMan.initBellConfig)
 		self.bellCron=Bridge.bellMan.bellCron
 		self.bellDays=Bridge.bellMan.bellDays
 		self.bellValidity=Bridge.bellMan.bellValidity
@@ -354,43 +427,84 @@ class Bridge(QObject):
 
 	#def _initializeVars
 
-	def _updateImagesModel(self):
-
-		ret=self._imagesModel.clear()
-		imagesEntries=Bridge.bellMan.imagesConfigData
-		for item in imagesEntries:
-			if item["imageSource"]!="":
-				self._imagesModel.appendRow(item["imageSource"])
-	
-	#def _updateImagesModel
-
 	@Slot()
 	def goHome(self):
 
 		self.currentStack=1
-		self.mainCurrentOption=0			
+		self.mainCurrentOption=0
+		self.changesInBell=False			
 
 	#def goHome
 
-	@Slot(str)
-	def loadBell(self,bellId):
+	@Slot('QVariantList')
+	def loadBell(self,bellToLoad):
 
-		Bridge.bellMan.initValues()
-		Bridge.bellMan.loadBellConfig(bellId)
+		self.closePopUp=[False,LOAD_BELL_CONFIG]
+		self.editBell=LoadBell(False,bellToLoad)
+		self.editBell.start()
+		self.editBell.finished.connect(self._loadBellRet)
+
+	#def loadBell
+
+	def _loadBellRet(self):
+
 		self.currentBellConfig=copy.deepcopy(Bridge.bellMan.currentBellConfig)
-		self.bellCron=Bridge.bellMan.bellCron
-		self.bellDays=Bridge.bellMan.bellDays
-		self.bellValidity=Bridge.bellMan.bellValidity
-		self.validityRangeDate=Bridge.bellMan.validityRangeDate
-		self.daysInRange=Bridge.bellMan.daysInRange
-		self.bellName=Bridge.bellMan.bellName
-		self.bellImage=Bridge.bellMan.bellImage
-		self.bellSound=Bridge.bellMan.bellSound
-		self.bellPlay=Bridge.bellMan.bellPlay
+		self._initializeVars()
+		self.closePopUp=[True,""]
 		self.currentStack=2
 		self.bellCurrentOption=0
 
-	#def loadBell
+	#def _loadBellRet
+
+	@Slot('QVariantList')
+	def updateClockValues(self,values):
+
+		if values[0]=="H":
+			if values[1]!=self.bellCron[0]:
+				self.bellCron[0]=values[1]
+				self.currentBellConfig["hour"]=self.bellCron[0]
+		else:
+			if values[1]!=self.bellCron[1]:
+				self.bellCron[1]=values[1]
+				self.currentBellConfig["minute"]=self.bellCron[1]
+
+		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+			self.changesInBell=True
+		else:
+			self.changesInBell=False
+
+	#def updateClockValues
+
+	@Slot('QVariantList')
+	def updateWeekDaysValues(self,values):
+
+		if values[0]=="MO":
+			if values[1]!=self.bellDays[0]:
+				self.bellDays[0]=values[1]
+				self.currentBellConfig["weekdays"]["0"]=self.bellDays[0]
+		elif values[0]=="TU":
+			if values[1]!=self.bellDays[1]:
+				self.bellDays[1]=values[1]
+				self.currentBellConfig["weekdays"]["1"]=self.bellDays[1]
+		elif values[0]=="WE":
+			if values[1]!=self.bellDays[2]:
+				self.bellDays[2]=values[1]
+				self.currentBellConfig["weekdays"]["2"]=self.bellDays[2]
+		elif values[0]=="TH":
+			if values[1]!=self.bellDays[3]:
+				self.bellDays[3]=values[1]
+				self.currentBellConfig["weekdays"]["3"]=self.bellDays[3]
+		elif values[0]=="FR":
+			if values[1]!=self.bellDays[4]:
+				self.bellDays[4]=values[1]
+				self.currentBellConfig["weekdays"]["4"]=self.bellDays[4]
+
+		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+			self.changesInBell=True
+		else:
+			self.changesInBell=False
+
+	#def updateWeekDaysValues
 
 	@Slot()
 	def openHelp(self):
@@ -463,6 +577,12 @@ class Bridge(QObject):
 
 	on_bellCurrentOption=Signal()
 	bellCurrentOption=Property(int,_getBellCurrentOption,_setBellCurrentOption, notify=on_bellCurrentOption)
+
+	on_closePopUp=Signal()
+	closePopUp=Property('QVariantList',_getClosePopUp,_setClosePopUp, notify=on_closePopUp)
+
+	on_changesInBell=Signal()
+	changesInBell=Property(bool,_getChangesInBell,_setChangesInBell,notify=on_changesInBell)
 
 	on_closeGui=Signal()
 	closeGui=Property(bool,_getCloseGui,_setCloseGui, notify=on_closeGui)

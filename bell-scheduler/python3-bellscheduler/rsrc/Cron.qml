@@ -9,11 +9,8 @@ GridLayout{
 	flow: GridLayout.TopToBottom
 
 	property alias clockLayoutEnabled:clockLayout.enabled
-	signal updateClock(variant value)
 	property alias daysLayoutEnabled:daysLayout.enabled
-	signal updateWeekDays(variant value)
-
-
+	
 	GridLayout {
 		id:clockLayout
 		enabled:true
@@ -41,7 +38,6 @@ GridLayout{
 						parent.color="#3daee9"
 					}
 					onWheel:{
-						var index=modelData
 						wheel.accepted=false
 						if (wheel.angleDelta.y>0){
 							if (modelData==0){
@@ -97,7 +93,7 @@ GridLayout{
 	            ToolTip.visible: hovered
 	            ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the hour")
 	            onCurrentIndexChanged: {
-	            	updateClock(["H",hoursTumbler.currentIndex]);
+	            	bellSchedulerBridge.updateClockValues(["H",hoursTumbler.currentIndex]);
 	            } 
 	        }       
 		}
@@ -129,7 +125,7 @@ GridLayout{
 	    	 	ToolTip.visible: hovered
 	    	 	ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the minutes")
 	    		onCurrentIndexChanged: {
-	    			updateClock(["M",minutesTumbler.currentIndex]);
+	    			bellSchedulerBridge.updateClockValues(["M",minutesTumbler.currentIndex]);
 	    		}
 	    	}
 		} 
@@ -260,7 +256,7 @@ GridLayout{
 			dayBtnText:i18nd("bell-scheduler","Monday")
 			Connections{
 				function onDayBtnClicked(value){
-					updateWeekDays(["MO",value]);	
+					bellSchedulerBridge.updateWeekDaysValues(["MO",value]);	
 				}
 			}
 					
@@ -272,7 +268,7 @@ GridLayout{
 			dayBtnText:i18nd("bell-scheduler","Tuesday")
 			Connections{
 				function onDayBtnClicked(value){
-					updateWeekDays(["TU",value]);
+					bellSchedulerBridge.updateWeekDaysValues(["TU",value]);
 				}
 			}
 		}
@@ -283,7 +279,7 @@ GridLayout{
 			dayBtnText:i18nd("bell-scheduler","Wednesday")
 			Connections{
 				function onDayBtnClicked(value){
-					updateWeekDays(["WE",value]);
+					bellSchedulerBridge.updateWeekDaysValues(["WE",value]);
 				}
 			}
 			
@@ -295,7 +291,7 @@ GridLayout{
 			dayBtnText:i18nd("bell-scheduler","Thursday")
 			Connections{
 				function onDayBtnClicked(value){
-					updateWeekDays(["TH",value]);
+					bellSchedulerBridge.updateWeekDaysValues(["TH",value]);
 				}
 			}
 		}
@@ -306,7 +302,7 @@ GridLayout{
 			dayBtnText:i18nd("bell-scheduler","Friday")
 			Connections{
 				function onDayBtnClicked(value){
-					updateWeekDays(["FR",value]);
+					bellSchedulerBridge.updateWeekDaysValues(["FR",value]);
 				}
 			}
 		}
@@ -317,8 +313,8 @@ GridLayout{
 	function formatText(count, modelData) {
         var data = count === 12 ? modelData + 1 : modelData;
         return data.toString().length < 2 ? "0" + data : data;
-    }	
-
+    }
+    
     function formatEditText(value){
     	if (value<10){
     		return "0"+value.toString();

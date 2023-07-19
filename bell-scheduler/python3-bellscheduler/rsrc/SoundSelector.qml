@@ -33,7 +33,7 @@ Popup {
             font.pointSize: 16
         }
         GridLayout{
-            id:imageSelectorLayout
+            id:soundSelectorLayout
             rows:2
             flow: GridLayout.TopToBottom
             rowSpacing:10

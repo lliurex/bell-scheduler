@@ -100,7 +100,11 @@ Rectangle{
         }
     }
 
-     function getTextMessage(msgCode){
+    CustomPopUp{
+        id:loadBellForm
+    }
+
+    function getTextMessage(msgCode){
         switch (msgCode){
             case -31:
                 var msg=i18nd("bell-scheduler","Detected alarms with errors")

@@ -42,7 +42,6 @@ Rectangle{
 
             Cron{
                 id:scheduler
-              
             }
 
             RowLayout{
@@ -133,7 +132,13 @@ Rectangle{
                         width:80
                         height:80
                         fillMode:Image.PreserveAspectFit
-                        source:bellSchedulerBridge.bellImage[2]
+                        source:{
+                            if (!bellSchedulerBridge.bellImage[3]){
+                                bellSchedulerBridge.bellImage[2]
+                            }else{
+                                "/usr/lib/python3/dist-packages/bellscheduler/rsrc/image_nodisp.svg"
+                            }
+                        }
                         clip:true
                         anchors.centerIn:parent
                         MouseArea {
@@ -328,7 +333,7 @@ Rectangle{
             icon.name:"dialog-ok.svg"
             text:i18nd("bell-scheduler","Apply")
             Layout.preferredHeight:40
-            enabled:true
+            enabled:bellSchedulerBridge.changesInBell
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
             /*
@@ -348,16 +353,14 @@ Rectangle{
             icon.name:"dialog-cancel.svg"
             text:i18nd("bell-scheduler","Cancel")
             Layout.preferredHeight: 40
-            enabled:true
+            enabled:bellSchedulerBridge.changesInBell
             Keys.onReturnPressed: cancelBtn.clicked()
             Keys.onEnterPressed: cancelBtn.clicked()
-            /*
+
             onClicked:{
-                discardChanges()
-                closeTimer.stop()
-                wifiControlBridge.cancelChanges()
+               bellSchedulerBridge.goHome()
             }
-            */
+            
         }
     } 
 

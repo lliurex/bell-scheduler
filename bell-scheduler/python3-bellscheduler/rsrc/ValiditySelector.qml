@@ -73,7 +73,6 @@ Popup {
                 Connections{
                     target:calendar
                     function onGetSelectedDate(info){
-                        console.log(info)
                         if (rangeDate.checked){
                             if (info[1]=="start"){
                                 day1Entry.text=info[0]

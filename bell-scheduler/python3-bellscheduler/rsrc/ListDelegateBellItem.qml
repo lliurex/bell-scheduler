@@ -204,7 +204,7 @@ Components.ListItem{
                     MenuItem{
                         icon.name:"document-edit.svg"
                         text:i18nd("bell-scheduler","Edit bell")
-                        onClicked:bellSchedulerBridge.loadBell(bellId)
+                        onClicked:bellSchedulerBridge.loadBell([bellId,isImgError])
                     }
                     MenuItem{
                         icon.name:"delete.svg"
