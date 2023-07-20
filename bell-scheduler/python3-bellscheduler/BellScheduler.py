@@ -69,8 +69,9 @@ class Bridge(QObject):
 		self._bellCron=Bridge.bellMan.bellCron
 		self._bellDays=Bridge.bellMan.bellDays
 		self._bellValidity=Bridge.bellMan.bellValidity
-		self._validityRangeDate=True
-		self._daysInRange=[]
+		self._bellValidityRangeOption=True
+		self._bellValidityDaysInRange=[]
+		self._enableBellValidity=False
 		self._bellName=Bridge.bellMan.bellName
 		self._bellImage=Bridge.bellMan.bellImage
 		self._bellSound=Bridge.bellMan.bellSound
@@ -79,9 +80,11 @@ class Bridge(QObject):
 		self._mainCurrentOption=0
 		self._bellCurrentOption=0
 		self._closePopUp=[True,""]
+		self.moveToStack=""
 		self._closeGui=False
 		self._showMainMessage=[False,"","Ok"]
 		self._showLoadErrorMessage=[False,""]
+		self._showChangesInBellDialog=False
 		self._changesInBell=False
 		Bridge.bellMan.createN4dClient(ticket)
 		self.initBridge()
@@ -155,33 +158,47 @@ class Bridge(QObject):
 
 	#def _setBellValidity
 
-	def _getValidityRangeDate(self):
+	def _getBellValidityRangeOption(self):
 
-		return self._validityRangeDate
+		return self._bellValidityRangeOption
 
-	#def _getValidityRangeDate
+	#def _getBellValidityRangeOption
 
-	def _setValidityRangeDate(self,validityRangeDate):
+	def _setBellValidityRangeOption(self,bellValidityRangeOption):
 
-		if self._validityRangeDate!=validityRangeDate:
-			self._validityRangeDate=validityRangeDate
-			self.on_validityRangeDate.emit()
+		if self._bellValidityRangeOption!=bellValidityRangeOption:
+			self._bellValidityRangeOption=bellValidityRangeOption
+			self.on_bellValidityRangeOption.emit()
 
-	#def _setValidityRangeDate
+	#def _setBellValidityRangeOption
 
-	def _getDaysInRange(self):
+	def _getBellValidityDaysInRange(self):
 
-		return self._daysInRange
+		return self._bellValidityDaysInRange
 
-	#def _getDaysInRange
+	#def _getBellValidityDaysInRange
 
-	def _setDaysInRange(self,daysInRange):
+	def _setBellValidityDaysInRange(self,bellValidityDaysInRange):
 
-		if self._daysInRange!=daysInRange:
-			self._daysInRange=daysInRange
-			self.on_daysInRange.emit()
+		if self._bellValidityDaysInRange!=bellValidityDaysInRange:
+			self._bellValidityDaysInRange=bellValidityDaysInRange
+			self.on_bellValidityDaysInRange.emit()
 
-	#def _setDaysInRange
+	#def _setBellValidityDaysInRange
+
+	def _getEnableBellValidity(self):
+
+		return self._enableBellValidity
+
+	#def _getEnableBellValidity
+
+	def _setEnableBellValidity(self,enableBellValidity):
+
+		if self._enableBellValidity!=enableBellValidity:
+			self._enableBellValidity=enableBellValidity
+			self.on_enableBellValidity.emit()
+
+	#def _setEnableBellValidity
 
 	def _getBellName(self):
 
@@ -294,6 +311,20 @@ class Bridge(QObject):
 			self.on_closePopUp.emit()
 
 	#def _setClosePopUp
+
+	def _getShowChangesInBellDialog(self):
+
+		return self._showChangesInBellDialog
+
+	#def _getShowChangesInBellDialog
+
+	def _setShowChangesInBellDialog(self,showChangesInBellDialog):
+
+		if self._showChangesInBellDialog!=showChangesInBellDialog:
+			self._showChangesInBellDialog=showChangesInBellDialog
+			self.on_showChangesInBellDialog.emit()
+
+	#def _setShowChangesInBellDialog
 
 	def _getChangesInBell(self):
 
@@ -418,8 +449,9 @@ class Bridge(QObject):
 		self.bellCron=Bridge.bellMan.bellCron
 		self.bellDays=Bridge.bellMan.bellDays
 		self.bellValidity=Bridge.bellMan.bellValidity
-		self.validityRangeDate=Bridge.bellMan.validityRangeDate
-		self.daysInRange=Bridge.bellMan.daysInRange
+		self.bellValidityRangeOption=Bridge.bellMan.bellValidityRangeOption
+		self.bellValidityDaysInRange=Bridge.bellMan.bellValidityDaysInRange
+		self.enableBellValidity=Bridge.bellMan.enableBellValidity
 		self.bellName=Bridge.bellMan.bellName
 		self.bellImage=Bridge.bellMan.bellImage
 		self.bellSound=Bridge.bellMan.bellSound
@@ -430,9 +462,13 @@ class Bridge(QObject):
 	@Slot()
 	def goHome(self):
 
-		self.currentStack=1
-		self.mainCurrentOption=0
-		self.changesInBell=False			
+		if not self.changesInBell:
+			self.currentStack=1
+			self.mainCurrentOption=0
+			self.moveToStack=""
+		else:
+			self.showChangesInBellDialog=True
+			self.moveToStack=1
 
 	#def goHome
 
@@ -499,12 +535,93 @@ class Bridge(QObject):
 				self.bellDays[4]=values[1]
 				self.currentBellConfig["weekdays"]["4"]=self.bellDays[4]
 
+		self.enableBellValidity=Bridge.bellMan.checkIfValidityIsEnabled(self.bellDays)
+		
 		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
 
 	#def updateWeekDaysValues
+
+	@Slot(str,result=bool)
+	def checkMimetypeImage(self,imagePath):
+
+		return Bridge.bellMan.checkMimetypes(imagePath,"image")
+
+	#def checkMimetypeImage
+
+	@Slot('QVariantList')
+	def updateImageValues(self,values):
+
+		tmpImage=[]
+		tmpImage.append(values[0])
+		tmpImage.append(values[1])
+
+		if values[0]=="stock":
+			tmpPath=Bridge.bellMan.imagesConfigData[values[1]]["imageSource"]
+		else:
+			tmpPath=values[2]
+		tmpImage.append(tmpPath)
+
+		if os.path.exists(tmpPath):
+			tmpImage.append(False)
+		else:
+			tmpImage.append(True)
+
+		if tmpImage!=self.bellImage[0]:
+			self.bellImage=tmpImage
+			self.currentBellConfig["image"]["option"]=self.bellImage[0]
+			self.currentBellConfig["image"]["path"]=self.bellImage[2]
+	
+		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+			self.changesInBell=True
+		else:
+			self.changesInBell=False
+
+	#def updateImageValues
+
+	@Slot(str)
+	def manageChangesDialog(self,action):
+
+		self.showChangesInBellDialog=False
+
+		if action=="Accept":
+			self.applyBellChanges()
+		elif action=="Discard":
+			self.cancelBellChanges()
+		elif action=="Cancel":
+			pass
+
+	#def manageChangesDialog
+
+	def applyBellChanges(self):
+
+		self.changesInBell=False
+		self.closeGui=True
+		self.moveToStack=1
+		self._manageGoToStack()
+
+	#def applyBellChanges
+
+	@Slot()
+	def cancelBellChanges(self):
+
+		self.changesInBell=False
+		self.closeGui=True
+		self.moveToStack=1
+		self._manageGoToStack()	
+
+	#def cancellBellChanges
+
+	def _manageGoToStack(self):
+
+		if self.moveToStack!="":
+			self.currentStack=self.moveToStack
+			self.mainCurrentOption=0
+			self.moveToStack=""
+
+	#def _manageGoToStack
 
 	@Slot()
 	def openHelp(self):
@@ -532,7 +649,11 @@ class Bridge(QObject):
 
 		#Bridge.onedriveMan.deleteTempConfig()
 
-		self.closeGui=True
+		if self.changesInBell:
+			self.closeGui=False
+			self.showChangesInBellDialog=True
+		else:
+			self.closeGui=True
 
 	#def closeBellScheduler
 	
@@ -545,11 +666,14 @@ class Bridge(QObject):
 	on_bellValidity=Signal()
 	bellValidity=Property('QVariantList',_getBellValidity,_setBellValidity,notify=on_bellValidity)
 
-	on_validityRangeDate=Signal()
-	validityRangeDate=Property(bool,_getValidityRangeDate,_setValidityRangeDate,notify=on_validityRangeDate)
+	on_bellValidityRangeOption=Signal()
+	bellValidityRangeOption=Property(bool,_getBellValidityRangeOption,_setBellValidityRangeOption,notify=on_bellValidityRangeOption)
 
-	on_daysInRange=Signal()
-	daysInRange=Property('QVariantList',_getDaysInRange,_setDaysInRange,notify=on_daysInRange)
+	on_bellValidityDaysInRange=Signal()
+	bellValidityDaysInRange=Property('QVariantList',_getBellValidityDaysInRange,_setBellValidityDaysInRange,notify=on_bellValidityDaysInRange)
+
+	on_enableBellValidity=Signal()
+	enableBellValidity=Property(bool,_getEnableBellValidity,_setEnableBellValidity,notify=on_enableBellValidity)
 
 	on_bellName=Signal()
 	bellName=Property(str,_getBellName,_setBellName,notify=on_bellName)
@@ -580,6 +704,9 @@ class Bridge(QObject):
 
 	on_closePopUp=Signal()
 	closePopUp=Property('QVariantList',_getClosePopUp,_setClosePopUp, notify=on_closePopUp)
+
+	on_showChangesInBellDialog=Signal()
+	showChangesInBellDialog=Property(bool,_getShowChangesInBellDialog,_setShowChangesInBellDialog,notify=on_showChangesInBellDialog)
 
 	on_changesInBell=Signal()
 	changesInBell=Property(bool,_getChangesInBell,_setChangesInBell,notify=on_changesInBell)

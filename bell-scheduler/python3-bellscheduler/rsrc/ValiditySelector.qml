@@ -69,7 +69,7 @@ Popup {
                     }
                 }
                 rangeDate:rangeDate.checked
-                daysInRange:bellSchedulerBridge.daysInRange
+                daysInRange:bellSchedulerBridge.bellValidityDaysInRange
                 Connections{
                     target:calendar
                     function onGetSelectedDate(info){
@@ -104,7 +104,7 @@ Popup {
                     Layout.bottomMargin:10
                     RadioButton{
                         id:singleDate
-                        checked:!bellSchedulerBridge.validityRangeDate
+                        checked:!bellSchedulerBridge.bellValidityRangeOption
                         text:i18nd("bell-scheduler","Day:")
                         ButtonGroup.group:dateOptionsGroup
                             
@@ -112,8 +112,8 @@ Popup {
                     TextField{
                         id:dayText 
                         text:{
-                            if (!bellSchedulerBridge.validityRangeDate){
-                                bellSchedulerBridge.daysInRange[0]
+                            if (!bellSchedulerBridge.bellValidityRangeOption){
+                                 bellSchedulerBridge.bellValidityDaysInRange[0]
                             }else{
                                 ""
                             }
@@ -135,7 +135,7 @@ Popup {
                     Layout.bottomMargin:10
                     RadioButton{
                         id:rangeDate
-                        checked:bellSchedulerBridge.validityRangeDate
+                        checked:bellSchedulerBridge.bellValidityRangeOption
                         text:i18nd("bell-scheduler","From:")
                         ButtonGroup.group:dateOptionsGroup
                             
@@ -143,9 +143,9 @@ Popup {
                     TextField{
                         id:day1Entry 
                         text:{
-                            if (bellSchedulerBridge.validityRangeDate){
-                                if (bellSchedulerBridge.daysInRange.length>0){
-                                    bellSchedulerBridge.daysInRange[0]
+                            if (bellSchedulerBridge.bellValidityRangeOption){
+                                if (bellSchedulerBridge.bellValidityDaysInRange.length>0){
+                                    bellSchedulerBridge.bellValidityDaysInRange[0]
                                 }else{
                                     ""
                                 }
@@ -166,9 +166,9 @@ Popup {
                     TextField{
                         id:day2Entry 
                         text:{
-                           if (bellSchedulerBridge.validityRangeDate){
-                                if (bellSchedulerBridge.daysInRange.length>0){
-                                    bellSchedulerBridge.daysInRange[bellSchedulerBridge.daysInRange.length-1]
+                           if (bellSchedulerBridge.bellValidityRangeOption){
+                                if (bellSchedulerBridge.bellValidityDaysInRange.length>0){
+                                    bellSchedulerBridge.bellValidityDaysInRange[ bellSchedulerBridge.bellValidityDaysInRange.length-1]
                                 }else{
                                     ""
                                 }

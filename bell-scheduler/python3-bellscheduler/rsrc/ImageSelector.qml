@@ -10,7 +10,10 @@ Popup {
     id:imagePopUp
     property alias xPopUp:imagePopUp.x
     property alias yPopUp:imagePopUp.y
+    property alias customImagePathText:customImagePath.text
     signal applyButtonClicked
+    property var imageFileSelected:""
+    property bool imageFileError:false
 
     width:500
     height:350
@@ -41,7 +44,7 @@ Popup {
             Kirigami.InlineMessage {
                 id: messageLabel
                 visible:false
-                text:"Text test"
+                text:i18nd("bell-scheduler","Image file is not correct")
                 type: Kirigami.MessageType.Error
                 Layout.minimumWidth:480
                 Layout.fillWidth:true
@@ -58,12 +61,12 @@ Popup {
                     id:imageOptionsGroup
                 }
                 RowLayout{
-                    id:standarRow
+                    id:stockRow
                     spacing:10
                     Layout.alignment:Qt.AlignLeft
                     Layout.bottomMargin:10
                     RadioButton{
-                        id:standardOption
+                        id:stockOption
                         checked:{
                             if (bellSchedulerBridge.bellImage[0]=="stock"){
                                 true
@@ -72,11 +75,18 @@ Popup {
                             }
                         }
                         text:i18nd("bell-scheduler","From stock")
+                        onToggled:{
+                            if (checked){
+                                messageLabel.visible=false
+                                applyBtn.enabled=true
+                            }
+                        }
                         ButtonGroup.group:imageOptionsGroup
                         
                     }
                     ImageList{
                         id:imageList
+                        currentImgIndex:bellSchedulerBridge.bellImage[1]
                     }
                 }
 
@@ -95,9 +105,23 @@ Popup {
                             }
                         }
                         text:i18nd("bell-scheduler","Custom image")
+                        onToggled:{
+                            if (checked){
+                                if (imageFileError){
+                                    messageLabel.visible=true
+                                    applyBtn.enabled=false
+                                }else{
+                                    if (customImagePath.text==""){
+                                        applyBtn.enabled=false
+                                    }else{
+                                        applyBtn.enabled=true
+                                    }
+                                }
+                            }
+                        }
                         ButtonGroup.group:imageOptionsGroup
-                        
                     }
+                    /*
                     Text{
                         id:customImagePath 
                         text:{
@@ -107,10 +131,26 @@ Popup {
                                 ""
                             }
                         }
+                        text:customImagePathText
                         font.family: "Quattrocento Sans Bold"
                         font.pointSize: 10
                         Layout.maximumWidth:250
                         elide:Text.ElideMiddle
+                    }
+                    */
+                    TextField{
+                        id:customImagePath
+                        text:{
+                            if (bellSchedulerBridge.bellImage[0]=="custom"){
+                                bellSchedulerBridge.bellImage[2].substring(bellSchedulerBridge.bellImage[2].lastIndexOf('/')+1)
+                            }else{
+                                ""
+                            }
+                        }
+                        Layout.preferredWidth:250
+                        maximumLength:500
+                        readOnly:true
+                        enabled:customOption.checked?true:false
                     }
 
                     Button{
@@ -149,7 +189,16 @@ Popup {
                 enabled:true
                 Keys.onReturnPressed: applyBtn.clicked()
                 Keys.onEnterPressed: applyBtn.clicked()
-                onClicked:imageSelector.close()
+                onClicked:{
+                    imageSelector.close()
+                    var option=""
+                    if (stockOption.checked){
+                        option="stock"
+                    }else{
+                        option="custom"
+                    }
+                    bellSchedulerBridge.updateImageValues([option,imageList.currentImgIndex,imageFileSelected])
+                }
             }
             
             Button {
@@ -163,8 +212,10 @@ Popup {
                 enabled:true
                 Keys.onReturnPressed: cancelBtn.clicked()
                 Keys.onEnterPressed: cancelBtn.clicked()
-                onClicked:imageSelector.close()
-                
+                onClicked:{
+                    restoreInitValues()
+                    imageSelector.close()
+                }
             }
 
         }
@@ -174,13 +225,49 @@ Popup {
     FileDialog{
         id:imgDialog
         title: "Select and image file"
-        folder:shortcuts.home
+        folder:{
+            if (imageFileSelected!=""){
+                shortcuts.imageFileSelected.substring(0,imageFileSelected.lastIndexOf("/"))
+            }else{
+                shortcuts.home
+            }
+
+        }
         onAccepted:{
+            imageFileSelected=""
             var tmpFile=imgDialog.fileUrl.toString()
             tmpFile=tmpFile.replace(/^(file:\/{2})/,"")
-            customImagePath.text=tmpFile
+            customImagePath.text=tmpFile.substring(tmpFile.lastIndexOf('/')+1)
+            imageFileSelected=tmpFile
+            if (bellSchedulerBridge.checkMimetypeImage(imageFileSelected)){
+                messageLabel.visible=true
+                applyBtn.enabled=false
+                imageFileError=true
+            }else{
+                messageLabel.visible=false
+                applyBtn.enabled=true
+                imageFileError=false
+            }
         }
       
+    }
+
+    function restoreInitValues(){
+
+        imageList.currentImgIndex=bellSchedulerBridge.bellImage[1]
+        imageFileError=false
+        imageFileSelected=false
+        messageLabel.visible=false
+        applyBtn.enabled=true
+        
+        if (bellSchedulerBridge.bellImage[0]=="stock"){
+            stockOption.checked=true
+            customImagePath.text=""
+        }else{
+            customOption.checked=true
+            customImagePath.text=bellSchedulerBridge.bellImage[2].substring(bellSchedulerBridge.bellImage[2].lastIndexOf('/')+1)
+        }
+
     }
   
 }

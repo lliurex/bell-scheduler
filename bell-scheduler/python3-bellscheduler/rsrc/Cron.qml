@@ -8,9 +8,6 @@ GridLayout{
 	rows:2
 	flow: GridLayout.TopToBottom
 
-	property alias clockLayoutEnabled:clockLayout.enabled
-	property alias daysLayoutEnabled:daysLayout.enabled
-	
 	GridLayout {
 		id:clockLayout
 		enabled:true
@@ -22,9 +19,9 @@ GridLayout{
 		Component {
 			id: delegateComponent
 			Label {
-				font.pointSize: 55
-				color: clockLayout.enabled? "#3daee9":"#87cefa"
-				text: formatText(Tumbler.tumbler.count, modelData)
+				font.pointSize: 50
+				color:"#3daee9"
+				text:formatText(Tumbler.tumbler.count,modelData)
 				horizontalAlignment: Text.AlignHCenter
 				verticalAlignment: Text.AlignVCenter
 				MouseArea {
@@ -100,8 +97,8 @@ GridLayout{
 		Text{
 			id:clockSeparator
 	       	Layout.alignment:Qt.AlignCenter
-	       	font.pointSize:55
-			color: clockLayout.enabled? "#3daee9":"#87cefa"
+	       	font.pointSize:50
+			color:"#3daee9"
 			text:":"
 	    }
 	    Rectangle {
@@ -158,7 +155,7 @@ GridLayout{
 				focus: true
 				closePolicy: Popup.NoAutoClose
 				enter: Transition {
-				        NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 }
+					NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 }
 				}
 				exit: Transition {
 					NumberAnimation { property: "opacity"; from: 1.0; to: 0.0 }
@@ -207,16 +204,6 @@ GridLayout{
 					   spacing:8
 
 					   Button {
-					   		id:cancelEditBtn
-						   	display:AbstractButton.TextBesideIcon
-						   	icon.name:"dialog-cancel.svg"
-						   	text:i18nd("bell-scheduler","Cancel")
-						   	Layout.preferredHeight: 40
-						   	onClicked:{
-						   		popupEditHour.close();
-					   		}
-					 	}
-					 	Button {
 							id:applyEditBtn
 						   	display:AbstractButton.TextBesideIcon
 						   	icon.name:"dialog-ok-apply.svg"
@@ -235,6 +222,18 @@ GridLayout{
 						   		
 					   		}
 					 	}
+
+					   	Button {
+					   		id:cancelEditBtn
+						   	display:AbstractButton.TextBesideIcon
+						   	icon.name:"dialog-cancel.svg"
+						   	text:i18nd("bell-scheduler","Cancel")
+						   	Layout.preferredHeight: 40
+						   	onClicked:{
+						   		popupEditHour.close();
+					   		}
+					 	}
+					 	
 					}      
 
 			    }
@@ -244,7 +243,7 @@ GridLayout{
 
 	RowLayout {
 		id: daysLayout
-		enabled:daysLayoutEnabled
+		enabled:true
 	    Layout.alignment:Qt.AlignHCenter
 	    Layout.fillWidth: true
 	    Layout.bottomMargin: 5
@@ -327,7 +326,6 @@ GridLayout{
     function validateEntry(hour,minute){
 
     	if ((hour =="") || (minute=="")){
-    		console.log("Vacio");
     		return false;
     	}else{
     		return true;

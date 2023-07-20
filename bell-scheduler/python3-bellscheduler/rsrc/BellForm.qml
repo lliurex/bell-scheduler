@@ -50,6 +50,7 @@ Rectangle{
                CheckBox {
                     id:enableValidity
                     checked:bellSchedulerBridge.bellValidity[0]
+                    enabled:bellSchedulerBridge.enableBellValidity
                     text:i18nd("bell-scheduler","Validity:")
                     font.pointSize: 10
                     focusPolicy: Qt.NoFocus
@@ -67,7 +68,17 @@ Rectangle{
                     id:editValidityBtn
                     display:AbstractButton.IconOnly
                     icon.name:"document-edit.svg"
-                    enabled:enableValidity.checked?true:false
+                    enabled:{
+                        if (enableValidity.checked){
+                            if (enableValidity.enabled){
+                                true
+                            }else{
+                                false
+                            }
+                        }else{
+                            false
+                        }
+                    }
                     Layout.preferredHeight: 35
                     ToolTip.delay: 1000
                     ToolTip.timeout: 3000
@@ -160,7 +171,7 @@ Rectangle{
                             id:imageSelector
                             xPopUp:-Math.round(imageSelector.width-parent.width/2)
                             yPopUp:-Math.round(parent.height*4.55)
-
+                            
                         }
                     }
                 }
@@ -358,13 +369,42 @@ Rectangle{
             Keys.onEnterPressed: cancelBtn.clicked()
 
             onClicked:{
-               bellSchedulerBridge.goHome()
+               bellSchedulerBridge.cancelBellChanges()
             }
             
         }
     } 
 
-    function getSoundPath(){
+    ChangesDialog{
+        id:settingsChangesDialog
+        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
+        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell")
+        dialogVisible:bellSchedulerBridge.showChangesInBellDialog
+        dialogMsg:i18nd("bell-scheduler","The are pending changes to save.\nDo you want save the changes or discard them?")
+        dialogWidth:400
+        btnAcceptVisible:true
+        btnAcceptText:i18nd("bell-scheduler","Apply")
+        btnDiscardText:i18nd("bell-scheduler","Discard")
+        btnDiscardIcon:"delete.svg"
+        btnCancelText:i18nd("bell-scheduler","Cancel")
+        btnCancelIcon:"dialog-cancel.svg"
+        Connections{
+            target:settingsChangesDialog
+            function onDialogApplyClicked(){
+                bellSchedulerBridge.manageChangesDialog("Accept")
+            }
+            function onDiscardDialogClicked(){
+                bellSchedulerBridge.manageChangesDialog("Discard")           
+            }
+            function onRejectDialogClicked(){
+                closeTimer.stop()
+                bellSchedulerBridge.manageChangesDialog("Cancel")       
+            }
+
+        }
+   }
+
+   function getSoundPath(){
 
         var tmpPath=""
         if (bellSchedulerBridge.bellSound[0]=="file"){

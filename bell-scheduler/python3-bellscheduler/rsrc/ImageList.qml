@@ -9,6 +9,7 @@ Rectangle{
     width:120
     height:120
     border.color: "#d3d3d3"
+    property alias currentImgIndex:imagesSelector.currentIndex
 
     PC3.ScrollView{
         implicitWidth:parent.width
@@ -22,7 +23,7 @@ Rectangle{
             onCurrentIndexChanged:{
                 console.log(imagesSelector.currentIndex)
             }
-            currentIndex:bellSchedulerBridge.bellImage[1]
+            currentIndex:currentImgIndex
             snapMode:ListView.SnapOneItem
             highlightRangeMode: ListView.StrictlyEnforceRange
                   

@@ -26,7 +26,6 @@ class BellManager(object):
 	MISSING_BELL_NAME_ERROR=-1
 	INVALID_SOUND_FILE_ERROR=-2
 	MISSING_SOUND_FILE_ERROR=-3
-	INVALID_IMAGE_FILE_ERROR=-4
 	MISSING_IMAGE_FILE_ERROR=-5
 	MISSING_URL_ERROR=-6
 	MISSING_SOUND_FOLDER_ERROR=-7
@@ -181,8 +180,9 @@ class BellManager(object):
 		self.bellCron=[0,0]
 		self.bellDays=[False,False,False,False,False]
 		self.bellValidity=[False,""]
-		self.validityRangeDate=True
-		self.daysInRange=[]
+		self.bellValidityRangeOption=True
+		self.bellValidityDaysInRange=[]
+		self.enableBellValidity=False
 		self.bellName=""
 		self.bellImage=["stock",1,"/usr/share/bell-scheduler/banners/bell.png",False]
 		self.bellSound=["file","",""]
@@ -271,8 +271,9 @@ class BellManager(object):
 		self.bellCron=[self.currentBellConfig["hour"],self.currentBellConfig["minute"]]
 		self.bellDays=[self.currentBellConfig["weekdays"]["0"],self.currentBellConfig["weekdays"]["1"],self.currentBellConfig["weekdays"]["2"],self.currentBellConfig["weekdays"]["3"],self.currentBellConfig["weekdays"]["4"]]
 		self.bellValidity=[self.currentBellConfig["validity"]["active"],self.currentBellConfig["validity"]["value"]]
-		self.daysInRange=[]
+		self.bellValidityDaysInRange=[]
 		self._getValidityConfig(self.bellValidity[1])
+		self.enableBellValidity=self.checkIfValidityIsEnabled(self.bellDays)
 		self.bellName=self.currentBellConfig["name"]
 		if self.currentBellConfig["image"]["option"]=="stock":
 			imgIndex=self._getImageIndexFromPath(self.currentBellConfig["image"]["path"])
@@ -306,13 +307,23 @@ class BellManager(object):
 
 		if tmpValue!="":
 			if "-" in tmpValue:
-				self.validityRangeDate=True
-				self.daysInRange=self.get_days_inrange(tmpValue)
+				self.bellValidityRangeOption=True
+				self.bellValidityDaysInRange=self.getDaysInRange(tmpValue)
 			else:
-				self.validityRangeDate=False
-				self.daysInRange.append(tmpValue)
+				self.bellValidityRangeOption=False
+				self.bellValidityDaysInRange.append(tmpValue)
 
 	#def _getValidityConfig
+
+	def checkIfValidityIsEnabled(self,daysSelected):
+
+		for item in daysSelected:
+			if item:
+				return True
+
+		return False
+
+	#def checkIfValidityIsEnabled
 	
 	def saveConf(self,info,last_change,action):
 
@@ -392,7 +403,7 @@ class BellManager(object):
 	
 	#def check_data
 	
-	def check_mimetypes(self,file,check):
+	def checkMimetypes(self,file,check):
 
 		mime = MimeTypes()
 		file_mime_type= mime.guess_type(file)
@@ -411,13 +422,9 @@ class BellManager(object):
 			else:
 				error=True
 
-		if error:
-			if check=="audio":
-				return {"result":False,"code":BellManager.INVALID_SOUND_FILE_ERROR,"data":""}
-			else:
-				return {"result":False,"code":BellManager.INVALID_IMAGE_FILE_ERROR,"data":""}				
-		
-	#def check_mimetypes			
+		return error
+
+	#def checkMimetypes			
 				
 	def check_audiofile(self,file,type):
 		
@@ -735,7 +742,7 @@ class BellManager(object):
 		
 		if validity!="":
 			if "-" in validity:
-				days_in_validity=self.get_days_inrange(validity)
+				days_in_validity=self.getDaysInRange(validity)
 			else:
 				days_in_validity.append(validity)
 
@@ -758,7 +765,7 @@ class BellManager(object):
 
 	#def check_validity
 
-	def get_days_inrange(self,day):	
+	def getDaysInRange(self,day):	
 
 		list_days=[]
 		tmp=day.split("-")
@@ -771,7 +778,7 @@ class BellManager(object):
 
 		return list_days	
 
-	#def get_days_inrange
+	#def getDaysInRange
 
 
 							
