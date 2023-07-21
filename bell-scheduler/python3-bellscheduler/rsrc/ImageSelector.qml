@@ -11,8 +11,7 @@ Popup {
     property alias xPopUp:imagePopUp.x
     property alias yPopUp:imagePopUp.y
     property alias customImagePathText:customImagePath.text
-    signal applyButtonClicked
-    property var imageFileSelected:""
+    property string selectedImageFile
     property bool imageFileError:false
 
     width:500
@@ -111,7 +110,7 @@ Popup {
                                     messageLabel.visible=true
                                     applyBtn.enabled=false
                                 }else{
-                                    if (customImagePath.text==""){
+                                    if ((customImagePath.text=="")||(bellSchedulerBridge.bellImage[3])){
                                         applyBtn.enabled=false
                                     }else{
                                         applyBtn.enabled=true
@@ -142,7 +141,11 @@ Popup {
                         id:customImagePath
                         text:{
                             if (bellSchedulerBridge.bellImage[0]=="custom"){
-                                bellSchedulerBridge.bellImage[2].substring(bellSchedulerBridge.bellImage[2].lastIndexOf('/')+1)
+                                if (!bellSchedulerBridge.bellImage[3]){
+                                    bellSchedulerBridge.bellImage[2].substring(bellSchedulerBridge.bellImage[2].lastIndexOf('/')+1)
+                                }else{
+                                    ""
+                                }
                             }else{
                                 ""
                             }
@@ -186,18 +189,25 @@ Popup {
                 icon.name:"dialog-ok.svg"
                 text:i18nd("bell-scheduler","Apply")
                 Layout.preferredHeight:40
-                enabled:true
+                enabled:!bellSchedulerBridge.bellImage[3]
                 Keys.onReturnPressed: applyBtn.clicked()
                 Keys.onEnterPressed: applyBtn.clicked()
                 onClicked:{
-                    imageSelector.close()
                     var option=""
+                    var tmpPath=""
                     if (stockOption.checked){
                         option="stock"
                     }else{
                         option="custom"
                     }
-                    bellSchedulerBridge.updateImageValues([option,imageList.currentImgIndex,imageFileSelected])
+                    if (selectedImageFile!=""){
+                        tmpPath=selectedImageFile
+                    }else{
+                        tmpPath=bellSchedulerBridge.bellImage[2]
+                    }
+                    bellSchedulerBridge.updateImageValues([option,imageList.currentImgIndex,tmpPath])
+                    restoreInitValues()
+                    imageSelector.close()
                 }
             }
             
@@ -226,20 +236,20 @@ Popup {
         id:imgDialog
         title: "Select and image file"
         folder:{
-            if (imageFileSelected!=""){
-                shortcuts.imageFileSelected.substring(0,imageFileSelected.lastIndexOf("/"))
+            if (selectedImageFile!=""){
+                shortcuts.selectedImageFile.substring(0,selectedImageFile.lastIndexOf("/"))
             }else{
                 shortcuts.home
             }
 
         }
         onAccepted:{
-            imageFileSelected=""
+            selectedImageFile=""
             var tmpFile=imgDialog.fileUrl.toString()
             tmpFile=tmpFile.replace(/^(file:\/{2})/,"")
             customImagePath.text=tmpFile.substring(tmpFile.lastIndexOf('/')+1)
-            imageFileSelected=tmpFile
-            if (bellSchedulerBridge.checkMimetypeImage(imageFileSelected)){
+            selectedImageFile=tmpFile
+            if (bellSchedulerBridge.checkMimetypeImage(selectedImageFile)){
                 messageLabel.visible=true
                 applyBtn.enabled=false
                 imageFileError=true
@@ -256,16 +266,20 @@ Popup {
 
         imageList.currentImgIndex=bellSchedulerBridge.bellImage[1]
         imageFileError=false
-        imageFileSelected=false
-        messageLabel.visible=false
-        applyBtn.enabled=true
+        selectedImageFile=""
+        messageLabel.visible=""
+        applyBtn.enabled=!bellSchedulerBridge.bellImage[3]
         
         if (bellSchedulerBridge.bellImage[0]=="stock"){
             stockOption.checked=true
             customImagePath.text=""
         }else{
             customOption.checked=true
-            customImagePath.text=bellSchedulerBridge.bellImage[2].substring(bellSchedulerBridge.bellImage[2].lastIndexOf('/')+1)
+            if (!bellSchedulerBridge.bellImage[3]){
+                customImagePath.text=bellSchedulerBridge.bellImage[2].substring(bellSchedulerBridge.bellImage[2].lastIndexOf('/')+1)
+            }else{
+                customImagePath.text=""
+            }
         }
 
     }

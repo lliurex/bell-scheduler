@@ -24,7 +24,6 @@ class BellManager(object):
 
 	
 	MISSING_BELL_NAME_ERROR=-1
-	INVALID_SOUND_FILE_ERROR=-2
 	MISSING_SOUND_FILE_ERROR=-3
 	MISSING_IMAGE_FILE_ERROR=-5
 	MISSING_URL_ERROR=-6
@@ -52,6 +51,7 @@ class BellManager(object):
 		self.bellsConfigData=[]
 		self.imgNoDispPath="/usr/lib/python3/dist-packages/bellscheduler/rsrc/image_nodisp.svg"
 		self.bannersPath="/usr/share/bell-scheduler/banners"
+		self.soundsPath="/usr/local/share/bellScheduler/sounds"
 		self.imagesConfigData=[]
 		self.getImagesConfig()
 		self.initValues()
@@ -185,7 +185,7 @@ class BellManager(object):
 		self.enableBellValidity=False
 		self.bellName=""
 		self.bellImage=["stock",1,"/usr/share/bell-scheduler/banners/bell.png",False]
-		self.bellSound=["file","",""]
+		self.bellSound=["file","",False,True]
 		self.bellPlay=[0,0]
 		self.bellActive=False
 		self.currentBellConfig={}
@@ -211,6 +211,7 @@ class BellManager(object):
 		self.currentBellConfig["play"]["duration"]=self.bellPlay[0]
 		self.currentBellConfig["play"]["start"]=self.bellPlay[1]
 		self.currentBellConfig["active"]=self.bellActive
+		self.currentBellConfig["soundDefaultPath"]=self.bellSound[3]
 	
 	#def initValues
 
@@ -280,16 +281,16 @@ class BellManager(object):
 		else:
 			imgIndex=1
 		self.bellImage=[self.currentBellConfig["image"]["option"],imgIndex,self.currentBellConfig["image"]["path"],bellToLoad[1]]
-		tmpSoundFilePath=""
-		tmpSoundDirectoryPath=""
+
+		tmpSoundPath=self.currentBellConfig["sound"]["path"]
+		soundDefaultPath=True
 		if self.currentBellConfig["sound"]["option"]=="file":
-			tmpSoundFilePath=self.currentBellConfig["sound"]["path"]
-		else:
-			tmpSoundDirectoryPath=self.currentBellConfig["sound"]["path"]
-		
-		self.bellSound=[self.currentBellConfig["sound"]["option"],tmpSoundFilePath,tmpSoundDirectoryPath]
+			if self.soundsPath not in tmpSoundPath:
+				soundDefaultPath=False
+		self.bellSound=[self.currentBellConfig["sound"]["option"],tmpSoundPath,bellToLoad[2],soundDefaultPath]
 		self.bellPlay=[self.currentBellConfig["play"]["duration"],self.currentBellConfig["play"]["start"]]
 		self.bellActive=self.currentBellConfig["active"]
+		self.currentBellConfig["soundDefaultPath"]=soundDefaultPath
 
 	#def loadBellConfig
 

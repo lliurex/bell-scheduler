@@ -17,6 +17,7 @@ Popup {
     property alias showFoot:footText.visible
     property alias sliderValue:sliderId.value
     signal applyButtonClicked
+    signal cancelButtonClicked
 
     width:popUpWidth
     height:popUpHeight
@@ -81,26 +82,6 @@ Popup {
         }
 
         Button {
-            id:cancelBtn
-            visible:true
-            focus:true
-            display:AbstractButton.TextBesideIcon
-            icon.name:"dialog-cancel.svg"
-            text:i18nd("bell-scheduler","Cancel")
-            height:40
-            enabled:true
-            Keys.onReturnPressed: cancelBtn.clicked()
-            Keys.onEnterPressed: cancelBtn.clicked()
-            anchors.bottom:container.bottom
-            anchors.right:applyBtn.left
-            anchors.rightMargin:10
-            anchors.bottomMargin:25
-
-            onClicked:{
-                sliderPopUp.close()
-            }
-        }
-        Button {
             id:applyBtn
             visible:true
             focus:true
@@ -112,12 +93,31 @@ Popup {
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
             anchors.bottom:container.bottom
-            anchors.right:container.right
-            anchors.rightMargin:20
+            anchors.right:cancelBtn.left
+            anchors.rightMargin:10
             anchors.bottomMargin:25
-       
             onClicked:{
                 applyButtonClicked()
+            }
+        }
+
+        Button {
+            id:cancelBtn
+            visible:true
+            focus:true
+            display:AbstractButton.TextBesideIcon
+            icon.name:"dialog-cancel.svg"
+            text:i18nd("bell-scheduler","Cancel")
+            height:40
+            enabled:true
+            Keys.onReturnPressed: cancelBtn.clicked()
+            Keys.onEnterPressed: cancelBtn.clicked()
+            anchors.bottom:container.bottom
+            anchors.right:container.right
+            anchors.rightMargin:25
+            anchors.bottomMargin:25
+            onClicked:{
+                cancelButtonClicked()
             }
         }
 

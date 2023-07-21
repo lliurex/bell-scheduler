@@ -265,6 +265,11 @@ Rectangle{
                         Connections{
                             target:editStartForm
                             function onApplyButtonClicked(){
+                                bellSchedulerBridge.updatePlayValue([editStartForm.sliderValue,"S"])
+                                editStartForm.close()
+                            }
+                            function onCancelButtonClicked(){
+                                editStartForm.sliderValue=bellSchedulerBridge.bellPlay[1]
                                 editStartForm.close()
                             }
                         }
@@ -317,6 +322,11 @@ Rectangle{
                         Connections{
                             target:editDurationForm
                             function onApplyButtonClicked(){
+                                bellSchedulerBridge.updatePlayValue([editDurationForm.sliderValue,"D"])
+                                editDurationForm.close()
+                            }
+                            function onCancelButtonClicked(){
+                                editDurationForm.sliderValue=bellSchedulerBridge.bellPlay[0]
                                 editDurationForm.close()
                             }
                         }
@@ -407,12 +417,8 @@ Rectangle{
    function getSoundPath(){
 
         var tmpPath=""
-        if (bellSchedulerBridge.bellSound[0]=="file"){
-            var tmpPath=bellSchedulerBridge.bellSound[1]
-        }else{
-            var tmpPath=bellSchedulerBridge.bellSound[2]
-        } 
-
+        tmpPath=bellSchedulerBridge.bellSound[1]
+        
         if (tmpPath==""){
             return i18nd("bell-scheduler","<specify the file/url for the sound>")
         }else{

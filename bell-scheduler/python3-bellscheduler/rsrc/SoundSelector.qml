@@ -10,8 +10,9 @@ Popup {
     id:soundPopUp
     property alias xPopUp:soundPopUp.x
     property alias yPopUp:soundPopUp.y
-    signal applyButtonClicked
-    property string selectedPath
+    property string selectedSoundFile
+    property string selectedSoundFolder
+    property bool soundFileError:false
 
     width:530
     height:390
@@ -41,8 +42,8 @@ Popup {
             enabled:true
             Kirigami.InlineMessage {
                 id: messageLabel
-                visible:true
-                text:"Text test"
+                visible:false
+                text:i18nd("bell-scheduler","Sound file is not correct")
                 type: Kirigami.MessageType.Error
                 Layout.preferredWidth:505
                 Layout.fillWidth:true
@@ -59,7 +60,7 @@ Popup {
                     id:soundOptionsGroup
                 }
                 RowLayout{
-                    id:standarRow
+                    id:fileRow
                     spacing:10
                     Layout.alignment:Qt.AlignLeft
                     Layout.bottomMargin:10
@@ -73,16 +74,40 @@ Popup {
                             }
                         }
                         text:i18nd("bell-scheduler","Sound file")
+                        onToggled:{
+                            if (checked){
+                                if (soundFileError){
+                                    messageLabel.visible=true
+                                    applyBtn.enabled=false
+                                }else{
+                                    if ((filePath.text=="")||(bellSchedulerBridge.bellSound[2])){
+                                        applyBtn.enabled=false
+                                    }else{
+                                        applyBtn.enabled=true
+                                    }
+                                }
+                            }
+                        }
                         ButtonGroup.group:soundOptionsGroup
                         
                     }
-                    Text{
-                        id:soundPath 
-                        text:bellSchedulerBridge.bellSound[1].substring(bellSchedulerBridge.bellSound[1].lastIndexOf('/')+1)
-                        font.family: "Quattrocento Sans Bold"
-                        font.pointSize: 10
-                        Layout.maximumWidth:250
-                        elide:Text.ElideMiddle
+                    TextField{
+                        id:filePath 
+                        text:{
+                            if (bellSchedulerBridge.bellSound[0]=="file"){
+                                if (!bellSchedulerBridge.bellSound[2]){
+                                    bellSchedulerBridge.bellSound[1].substring(bellSchedulerBridge.bellSound[1].lastIndexOf('/')+1)
+                                }else{
+                                    ""
+                                }
+                            }else{
+                                ""
+                            }
+                        }
+                        Layout.preferredWidth:250
+                        maximumLength:500
+                        readOnly:true
+                        enabled:fileOption.checked?true:false
                     }
                     Button{
                         id:fileSelectorBtn
@@ -115,16 +140,36 @@ Popup {
                             }
                         }
                         text:i18nd("bell-scheduler","Random from directory")
+                        onToggled:{
+                            if (checked){
+                                messageLabel.visible=false
+                                if ((folderPath.text=="")||(bellSchedulerBridge.bellSound[2])){
+                                    applyBtn.enabled=false
+                                }else{
+                                    applyBtn.enabled=true
+                                }
+                            }
+                        }
                         ButtonGroup.group:soundOptionsGroup
                         
                     }
-                    Text{
+                    TextField{
                         id:folderPath 
-                        text:bellSchedulerBridge.bellSound[2]
-                        font.family: "Quattrocento Sans Bold"
-                        font.pointSize: 10
-                        Layout.maximumWidth:250
-                        elide:Text.ElideMiddle
+                        text:{
+                            if (bellSchedulerBridge.bellSound[0]=="directory"){
+                                if (!bellSchedulerBridge.bellSound[2]){
+                                    bellSchedulerBridge.bellSound[1]
+                                }else{
+                                    ""
+                                }
+                            }else{
+                                ""
+                            }
+                        }
+                        Layout.preferredWidth:250
+                        maximumLength:500
+                        readOnly:true
+                        enabled:directoryOption.checked?true:false
                     }
 
                     Button{
@@ -142,9 +187,9 @@ Popup {
                     }
                 }
                 CheckBox {
-                    id:bellCopyFilesCb
+                    id:soundDefaultPath
                     text:i18nd("bell-scheduler","Copy the sound file to the internal folder (*)")
-                    checked:true
+                    checked:bellSchedulerBridge.bellSound[3]
                     enabled:fileOption.checked?true:false
                     font.pointSize: 10
                     focusPolicy: Qt.NoFocus
@@ -183,10 +228,31 @@ Popup {
                 icon.name:"dialog-ok.svg"
                 text:i18nd("bell-scheduler","Apply")
                 Layout.preferredHeight:40
-                enabled:true
+                enabled:!bellSchedulerBridge.bellSound[2]
                 Keys.onReturnPressed: applyBtn.clicked()
                 Keys.onEnterPressed: applyBtn.clicked()
-                onClicked:soundSelector.close()
+                onClicked:{
+                    var option=""
+                    var tmpPath=""
+                    if (fileOption.checked){
+                        option="file"
+                        if (selectedSoundFile!=""){
+                            tmpPath=selectedSoundFile
+                        }else{
+                            tmpPath=bellSchedulerBridge.bellSound[1]
+                        }
+                    }else{
+                        option="directory"
+                        if (selectedSoundFolder!=""){
+                            tmpPath=selectedSoundFolder
+                        }else{
+                            tmpPath=bellSchedulerBridge.bellSound[1]
+                        }
+                    }
+                    bellSchedulerBridge.updateSoundValues([option,tmpPath,soundDefaultPath.checked])
+                    restoreInitValues()
+                    soundSelector.close()
+                }
             }
             
             Button {
@@ -200,8 +266,10 @@ Popup {
                 enabled:true
                 Keys.onReturnPressed: cancelBtn.clicked()
                 Keys.onEnterPressed: cancelBtn.clicked()
-                onClicked:soundSelector.close()
-                
+                onClicked:{
+                    restoreInitValues()
+                    soundSelector.close()
+                }                
             }
 
         }
@@ -211,27 +279,81 @@ Popup {
     FileDialog{
         id:soundFileDialog
         title: "Select a sound file"
-        folder:shortcuts.home
+        folder:{
+            if (selectedSoundFile!=""){
+                shortcuts.selectedSoundFile.substring(0,selectedSoundFile.lastIndexOf("/"))
+            }else{
+                shortcuts.home
+            }
+
+        }
         onAccepted:{
-            selectedPath=soundFileDialog.fileUrl.toString()
-            selectedPath=selectedPath.replace(/^(file:\/{2})/,"")
-            console.log(selectedPath)
-            soundPath.text=selectedPath.substring(selectedPath.lastIndexOf('/')+1)
+            selectedSoundFile=""
+            selectedSoundFile=soundFileDialog.fileUrl.toString()
+            selectedSoundFile=selectedSoundFile.replace(/^(file:\/{2})/,"")
+            filePath.text=selectedSoundFile.substring(selectedSoundFile.lastIndexOf('/')+1)
+            if (bellSchedulerBridge.checkMimetypeSound(selectedSoundFile)){
+                messageLabel.visible=true
+                applyBtn.enabled=false
+                soundFileError=true
+            }else{
+                messageLabel.visible=false
+                applyBtn.enabled=true
+                soundFileError=false
+            }
         }
       
     }
     FileDialog{
         id:soundFolderDialog
         title: "Select a folder"
-        folder:shortcuts.home
+        folder:{
+            if (selectedSoundFolder!=""){
+                shortcuts.selectedSoundFolder
+            }else{
+                shortcuts.home
+            }
+        }
         selectFolder:true
         onAccepted:{
-            selectedPath=soundFileDialog.fileUrl.toString()
-            selectedPath=selectedPath.replace(/^(file:\/{2})/,"")
-            console.log(selectedPath)
-            folderPath.text=selectedPath
+            selectedSoundFolder=""
+            selectedSoundFolder=soundFolderDialog.fileUrl.toString()
+            selectedSoundFolder=selectedSoundFolder.replace(/^(file:\/{2})/,"")
+            folderPath.text=selectedSoundFolder
+            messageLabel.visible=false
+            applyBtn.enabled=true
         }
       
     }
+
+    function restoreInitValues(){
+
+        soundFileError=false
+        selectedSoundFile=""
+        selectedSoundFolder=""
+        messageLabel.visible=false
+        soundDefaultPath.checked=bellSchedulerBridge.bellSound[3]
+        applyBtn.enabled=!bellSchedulerBridge.bellSound[2]
+        
+        if (bellSchedulerBridge.bellSound[0]=="file"){
+            fileOption.checked=true
+            folderPath.text=""
+            if (!bellSchedulerBridge.bellSound[2]){
+                filePath.text=bellSchedulerBridge.bellSound[1].substring(bellSchedulerBridge.bellSound[1].lastIndexOf('/')+1)
+            }else{
+                filePath.text=""
+            }
+        }else{
+            directoryOption.checked=true
+            filePath.text=""
+            if (!bellSchedulerBridge.bellSound[2]){
+                folderPath.text=bellSchedulerBridge.bellSound[1]
+            }else{
+                folderPath.text=""
+            }
+        }
+
+    }
+  
   
 }

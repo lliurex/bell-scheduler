@@ -579,7 +579,63 @@ class Bridge(QObject):
 		else:
 			self.changesInBell=False
 
+
 	#def updateImageValues
+
+	@Slot(str,result=bool)
+	def checkMimetypeSound(self,soundPath):
+
+		return Bridge.bellMan.checkMimetypes(soundPath,"audio")
+
+	#def checkMimetypeSound
+
+	@Slot('QVariantList')
+	def updateSoundValues(self,values):
+
+		tmpSound=[]
+		tmpSound.append(values[0])
+		tmpSound.append(values[1])
+		if os.path.exists(values[1]):
+			tmpSound.append(False)
+		else:
+			tmpSound.append(True)
+		tmpSound.append(values[2])
+	
+		if tmpSound!=self.bellSound:
+			self.bellSound=tmpSound
+			self.currentBellConfig["sound"]["option"]=self.bellSound[0]
+			self.currentBellConfig["sound"]["path"]=self.bellSound[1]
+			self.currentBellConfig["soundDefaultPath"]=self.bellSound[3]
+
+		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+			self.changesInBell=True
+		else:
+			self.changesInBell=False
+
+	#def updateSoundValues
+
+	@Slot('QVariantList')
+	def updatePlayValue(self,value):
+
+		tmpValue=[]
+		if value[1]=="S":
+			tmpValue.append(self.bellPlay[0])
+			tmpValue.append(value[0])
+		else:
+			tmpValue.append(value[0])
+			tmpValue.append(self.bellPlay[1])
+
+		if tmpValue!=self.bellPlay:
+			self.bellPlay=tmpValue
+			self.currentBellConfig["play"]["duration"]=self.bellPlay[0]
+			self.currentBellConfig["play"]["start"]=self.bellPlay[1]
+
+		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+			self.changesInBell=True
+		else:
+			self.changesInBell=False
+
+	#def updatePlayValue
 
 	@Slot(str)
 	def manageChangesDialog(self,action):
