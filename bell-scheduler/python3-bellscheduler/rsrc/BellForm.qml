@@ -49,18 +49,21 @@ Rectangle{
 
                CheckBox {
                     id:enableValidity
-                    checked:bellSchedulerBridge.bellValidity[0]
+                    checked:bellSchedulerBridge.bellValidityActive
                     enabled:bellSchedulerBridge.enableBellValidity
                     text:i18nd("bell-scheduler","Validity:")
                     font.pointSize: 10
                     focusPolicy: Qt.NoFocus
                     Keys.onReturnPressed: enableValidity.toggled()
                     Keys.onEnterPressed: enableValidity.toggled()
+                    onToggled:{
+                        bellSchedulerBridge.updateBellValidityActive(checked)
+                    }
                    
                 }
                 Text{
                     id:validityText
-                    text:bellSchedulerBridge.bellValidity[1]
+                    text:bellSchedulerBridge.bellValidityValue
                     font.pointSize: 10
 
                 }
@@ -85,7 +88,24 @@ Rectangle{
                     ToolTip.visible: hovered
                     ToolTip.text:i18nd("bell-scheduler","Click to edit validity")
                     hoverEnabled:true
-                    onClicked:validitySelector.open()
+                    onClicked:validityMenu.open()
+
+                    Menu{
+                        id:validityMenu
+                        y: editValidityBtn.height
+                        x:-(validityMenu.width-editValidityBtn.width/2)
+
+                        MenuItem{
+                            icon.name:"document-edit.svg"
+                            text:i18nd("bell-scheduler","Edit validity")
+                            onClicked:validitySelector.open()
+                        }
+                        MenuItem{
+                            icon.name:"delete.svg"
+                            text:i18nd("bell-scheduler","Delete validity")
+                            onClicked:removeValidityDialog.open()
+                        }
+                    }
                     ValiditySelector{
                         id:validitySelector
                         xPopUp:-Math.round(validitySelector.width-parent.width/2)
@@ -237,7 +257,7 @@ Rectangle{
 
                 Text{
                     id:startValue
-                    text:bellSchedulerBridge.bellPlay[1]
+                    text:bellSchedulerBridge.bellStartIn
                     width:400
                     elide:Text.ElideMiddle
                 }
@@ -261,15 +281,15 @@ Rectangle{
                         headText:i18nd("bell-scheduler","Start in second")
                         footText:""
                         showFoot:false
-                        sliderValue:bellSchedulerBridge.bellPlay[1]
+                        sliderValue:bellSchedulerBridge.bellStartIn
                         Connections{
                             target:editStartForm
                             function onApplyButtonClicked(){
-                                bellSchedulerBridge.updatePlayValue([editStartForm.sliderValue,"S"])
+                                bellSchedulerBridge.updateStartInValue(editStartForm.sliderValue)
                                 editStartForm.close()
                             }
                             function onCancelButtonClicked(){
-                                editStartForm.sliderValue=bellSchedulerBridge.bellPlay[1]
+                                editStartForm.sliderValue=bellSchedulerBridge.bellStartIn
                                 editStartForm.close()
                             }
                         }
@@ -289,8 +309,8 @@ Rectangle{
                 Text{
                     id:durationValue
                     text:{
-                        if (bellSchedulerBridge.bellPlay[0]>0){
-                            bellSchedulerBridge.bellPlay[0]+" "+i18nd("bell-scheduler","seconds")
+                        if (bellSchedulerBridge.bellDuration>0){
+                            bellSchedulerBridge.bellDuration+" "+i18nd("bell-scheduler","seconds")
                         }else{
                             i18nd("bell-scheduler","Full reproduction")
                         }
@@ -318,15 +338,15 @@ Rectangle{
                         headText:i18nd("bell-scheduler","Max. duration")
                         footText:i18nd("bell-scheduler","(!) If duration is 0, the sound will be reproduced in its entirety")
                         showFoot:true
-                        sliderValue:bellSchedulerBridge.bellPlay[0]
+                        sliderValue:bellSchedulerBridge.bellDuration
                         Connections{
                             target:editDurationForm
                             function onApplyButtonClicked(){
-                                bellSchedulerBridge.updatePlayValue([editDurationForm.sliderValue,"D"])
+                                bellSchedulerBridge.updateDurationValue(editDurationForm.sliderValue)
                                 editDurationForm.close()
                             }
                             function onCancelButtonClicked(){
-                                editDurationForm.sliderValue=bellSchedulerBridge.bellPlay[0]
+                                editDurationForm.sliderValue=bellSchedulerBridge.bellDuration
                                 editDurationForm.close()
                             }
                         }
@@ -412,6 +432,32 @@ Rectangle{
             }
 
         }
+   }
+
+   ChangesDialog{
+        id:removeValidityDialog
+        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-question.svg"
+        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell")
+        dialogMsg:i18nd("bell-scheduler","Are you sure you want to delete the alarm validity?")
+        dialogWidth:400
+        btnAcceptVisible:false
+        btnAcceptText:""
+        btnDiscardText:i18nd("bell-scheduler","Accept")
+        btnDiscardIcon:"dialog-ok.svg"
+        btnCancelText:i18nd("bell-scheduler","Cancel")
+        btnCancelIcon:"dialog-cancel.svg"
+        Connections{
+           target:removeValidityDialog
+           function onDiscardDialogClicked(){
+                removeValidityDialog.close()
+                bellSchedulerBridge.updateBellValidityValue(["",true])         
+           }
+           function onRejectDialogClicked(){
+                removeValidityDialog.close()       
+           }
+
+        }
+
    }
 
    function getSoundPath(){

@@ -6,6 +6,8 @@ import QtQuick.Controls.Styles 1.1
 Rectangle {
     width: 325
     height: 250
+    property alias startDate:calendar.startDate
+    property alias stopDate:calendar.stopDate
     property alias initDate:calendar.initDate
     property alias endDate:calendar.endDate
     property alias rangeDate:calendar.rangeDate
@@ -21,14 +23,14 @@ Rectangle {
         weekNumbersVisible: false
         locale:Qt.locale("ca@valencia")
         focus: true
-        property var startDate: undefined
-        property var stopDate: undefined
+        property var startDate: startDate
+        property var stopDate: stopDate
         property var initDate:initDate
         property var endDate:endDate
         property var daysInRange:daysInRange
         property bool rangeDate:rangeDate
 
-        style: CalendarStyle {
+       style: CalendarStyle {
             dayDelegate: Item {
                 readonly property color sameMonthDateTextColor: "#444"
                 readonly property color selectedDateColor: "#3778d0"
@@ -56,6 +58,7 @@ Rectangle {
                             }
                         }
                     }
+                    
                 }
 
             }
@@ -140,6 +143,7 @@ Rectangle {
             }
         }
     }
+
 }
 
 }

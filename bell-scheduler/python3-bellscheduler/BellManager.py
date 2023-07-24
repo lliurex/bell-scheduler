@@ -179,21 +179,23 @@ class BellManager(object):
 
 		self.bellCron=[0,0]
 		self.bellDays=[False,False,False,False,False]
-		self.bellValidity=[False,""]
+		self.bellValidityActive=False
+		self.bellValidityValue=""
 		self.bellValidityRangeOption=True
 		self.bellValidityDaysInRange=[]
 		self.enableBellValidity=False
 		self.bellName=""
 		self.bellImage=["stock",1,"/usr/share/bell-scheduler/banners/bell.png",False]
 		self.bellSound=["file","",False,True]
-		self.bellPlay=[0,0]
+		self.bellStartIn=0
+		self.bellDuration=0
 		self.bellActive=False
 		self.currentBellConfig={}
 		self.currentBellConfig["hour"]=self.bellCron[0]
 		self.currentBellConfig["minute"]=self.bellCron[1]
 		self.currentBellConfig["validity"]={}
-		self.currentBellConfig["validity"]["active"]=self.bellValidity[0]
-		self.currentBellConfig["validity"]["value"]=self.bellValidity[1]
+		self.currentBellConfig["validity"]["active"]=self.bellValidityActive
+		self.currentBellConfig["validity"]["value"]=self.bellValidityValue
 		self.currentBellConfig["weekdays"]={}
 		self.currentBellConfig["weekdays"]["0"]=self.bellDays[0]
 		self.currentBellConfig["weekdays"]["1"]=self.bellDays[1]
@@ -208,8 +210,8 @@ class BellManager(object):
 		self.currentBellConfig["sound"]["option"]=self.bellSound[0]
 		self.currentBellConfig["sound"]["path"]=self.bellSound[1]
 		self.currentBellConfig["play"]={}
-		self.currentBellConfig["play"]["duration"]=self.bellPlay[0]
-		self.currentBellConfig["play"]["start"]=self.bellPlay[1]
+		self.currentBellConfig["play"]["duration"]=self.bellDuration
+		self.currentBellConfig["play"]["start"]=self.bellStartIn
 		self.currentBellConfig["active"]=self.bellActive
 		self.currentBellConfig["soundDefaultPath"]=self.bellSound[3]
 	
@@ -271,9 +273,10 @@ class BellManager(object):
 		self.currentBellConfig=self.bellsConfig[bellToLoad[0]]
 		self.bellCron=[self.currentBellConfig["hour"],self.currentBellConfig["minute"]]
 		self.bellDays=[self.currentBellConfig["weekdays"]["0"],self.currentBellConfig["weekdays"]["1"],self.currentBellConfig["weekdays"]["2"],self.currentBellConfig["weekdays"]["3"],self.currentBellConfig["weekdays"]["4"]]
-		self.bellValidity=[self.currentBellConfig["validity"]["active"],self.currentBellConfig["validity"]["value"]]
+		self.bellValidityActive=self.currentBellConfig["validity"]["active"]
+		self.bellValidityValue=self.currentBellConfig["validity"]["value"]
 		self.bellValidityDaysInRange=[]
-		self._getValidityConfig(self.bellValidity[1])
+		self._getValidityConfig(self.bellValidityValue)
 		self.enableBellValidity=self.checkIfValidityIsEnabled(self.bellDays)
 		self.bellName=self.currentBellConfig["name"]
 		if self.currentBellConfig["image"]["option"]=="stock":
@@ -288,7 +291,8 @@ class BellManager(object):
 			if self.soundsPath not in tmpSoundPath:
 				soundDefaultPath=False
 		self.bellSound=[self.currentBellConfig["sound"]["option"],tmpSoundPath,bellToLoad[2],soundDefaultPath]
-		self.bellPlay=[self.currentBellConfig["play"]["duration"],self.currentBellConfig["play"]["start"]]
+		self.bellStartIn=self.currentBellConfig["play"]["start"]
+		self.bellDuration=self.currentBellConfig["play"]["duration"]
 		self.bellActive=self.currentBellConfig["active"]
 		self.currentBellConfig["soundDefaultPath"]=soundDefaultPath
 
@@ -742,11 +746,8 @@ class BellManager(object):
 		no_match_day=0
 		
 		if validity!="":
-			if "-" in validity:
-				days_in_validity=self.getDaysInRange(validity)
-			else:
-				days_in_validity.append(validity)
-
+			days_in_validity=self.getDaysInRange(validity)
+	
 			for item in days_in_validity:
 				tmp_day=datetime.strptime(item,"%d/%m/%Y")
 				tmp_weekday=tmp_day.weekday()
@@ -769,13 +770,18 @@ class BellManager(object):
 	def getDaysInRange(self,day):	
 
 		list_days=[]
-		tmp=day.split("-")
-		date1=datetime.strptime(tmp[0],'%d/%m/%Y')
-		date2=datetime.strptime(tmp[1],'%d/%m/%Y')
-		delta=date2-date1
-		for i in range(delta.days + 1):
-			tmp_day=(date1 + timedelta(days=i)).strftime('%d/%m/%Y')
-			list_days.append(tmp_day)
+		if day!="":
+			if "-" in day:
+				tmp=day.split("-")
+				date1=datetime.strptime(tmp[0],'%d/%m/%Y')
+				date2=datetime.strptime(tmp[1],'%d/%m/%Y')
+			else:
+				date1=datetime.strptime(day,'%d/%m/%Y')
+				date2=date1
+			delta=date2-date1
+			for i in range(delta.days + 1):
+				tmp_day=(date1 + timedelta(days=i)).strftime('%d/%m/%Y')
+				list_days.append(tmp_day)
 
 		return list_days	
 
