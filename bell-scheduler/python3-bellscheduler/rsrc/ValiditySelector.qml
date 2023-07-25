@@ -54,6 +54,7 @@ Popup {
                 Layout.alignment:Qt.AlignHCenter
                 Layout.preferredWidth:325
                 Layout.topMargin: messageLabel.visible?0:50
+                calendarLocale:bellSchedulerBridge.systemLocale
                 startDate:undefined
                 stopDate:undefined
                 initDate:{

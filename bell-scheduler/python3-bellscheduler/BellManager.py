@@ -53,6 +53,7 @@ class BellManager(object):
 		self.bannersPath="/usr/share/bell-scheduler/banners"
 		self.soundsPath="/usr/local/share/bellScheduler/sounds"
 		self.imagesConfigData=[]
+		self._getSystemLocale()
 		self.getImagesConfig()
 		self.initValues()
 		'''
@@ -75,7 +76,19 @@ class BellManager(object):
 		if self.dbg==1:
 			print("[BELLSCHEDULER]: "+ str(function) + str(msg))
 
-	#def _debug		
+	#def _debug	
+
+	def _getSystemLocale(self):
+
+		language=os.environ["LANGUAGE"]
+
+		if language!="":
+			tmpLang=language.split(":")
+			self.systemLocale=tmpLang[0]
+		else:
+			self.systemLocale=os.environ["LANG"]
+
+	#def _getSystemLocale	
 
 	def syncWithCron(self):
 

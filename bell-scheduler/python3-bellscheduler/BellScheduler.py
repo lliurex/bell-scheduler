@@ -64,6 +64,7 @@ class Bridge(QObject):
 
 		QObject.__init__(self)
 
+		self._systemLocale=Bridge.bellMan.systemLocale
 		self._bellsModel=BellsModel.BellsModel()
 		self._imagesModel=ImagesModel.ImagesModel()
 		self._bellCron=Bridge.bellMan.bellCron
@@ -117,6 +118,12 @@ class Bridge(QObject):
 			self.showLoadErrorMessage=[True,self.gatherInfo.syncWithCron['code']]
 	
 	#def _loadConfig
+
+	def _getSystemLocale(self):
+
+		return self._systemLocale
+
+	#def _getSystemLocale
 
 	def _getBellCron(self):
 
@@ -579,6 +586,12 @@ class Bridge(QObject):
 	@Slot(bool)
 	def updateBellValidityActive(self,value):
 
+		self._updateBellValidityActive(value)
+
+	#updateBellValidityActive
+
+	def _updateBellValidityActive(self,value):
+
 		if value!=self.bellValidityActive:
 			self.bellValidityActive=value
 			self.currentBellConfig["validity"]["active"]=self.bellValidityActive
@@ -588,7 +601,7 @@ class Bridge(QObject):
 		else:
 			self.changesInBell=False
 
-	#updateBellValidityActive
+	#def _updateBellValidityActive
 
 	@Slot('QVariantList')
 	def updateBellValidityValue(self,value):
@@ -599,10 +612,13 @@ class Bridge(QObject):
 			self.bellValidityRangeOption=value[1]
 			self.bellValidityDaysInRange=Bridge.bellMan.getDaysInRange(self.bellValidityValue)
 
-		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
-			self.changesInBell=True
+		if value[0]!="":
+			if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+				self.changesInBell=True
+			else:
+				self.changesInBell=False
 		else:
-			self.changesInBell=False
+			self._updateBellValidityActive(False)
 
 	#def updateBellValidityValue
 
@@ -844,6 +860,7 @@ class Bridge(QObject):
 	on_closeGui=Signal()
 	closeGui=Property(bool,_getCloseGui,_setCloseGui, notify=on_closeGui)
 
+	systemLocale=Property(str,_getSystemLocale,constant=True)
 	imagesModel=Property(QObject,_getImagesModel,constant=True)
 	bellsModel=Property(QObject,_getBellsModel,constant=True)
 

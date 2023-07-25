@@ -6,6 +6,7 @@ import QtQuick.Controls.Styles 1.1
 Rectangle {
     width: 325
     height: 250
+    property alias calendarLocale:calendar.calendarLocale
     property alias startDate:calendar.startDate
     property alias stopDate:calendar.stopDate
     property alias initDate:calendar.initDate
@@ -21,14 +22,15 @@ Rectangle {
         anchors.centerIn:parent
         frameVisible: true
         weekNumbersVisible: false
-        locale:Qt.locale("ca@valencia")
         focus: true
+        property var calendarLocale:calendarLocale
         property var startDate: startDate
         property var stopDate: stopDate
         property var initDate:initDate
         property var endDate:endDate
         property var daysInRange:daysInRange
         property bool rangeDate:rangeDate
+        locale:Qt.locale(calendar.calendarLocale)
 
        style: CalendarStyle {
             dayDelegate: Item {

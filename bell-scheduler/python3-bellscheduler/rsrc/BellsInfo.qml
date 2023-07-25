@@ -5,6 +5,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Rectangle{
+    id:rectLayout
     color:"transparent"
     Text{ 
         text:i18nd("bell-scheduler","Configured bells")
@@ -51,7 +52,36 @@ Rectangle{
         anchors.bottom: parent.bottom
         anchors.fill:parent.fill
         anchors.bottomMargin:15
-        spacing:15
+        spacing:10
+
+        Button {
+            id:backupBtn
+            visible:true
+            focus:true
+            display:AbstractButton.TextBesideIcon
+            icon.name:"backup.svg"
+            text:i18nd("bell-scheduler","Backup options")
+            Layout.preferredHeight:40
+            onClicked:backupMenu.open()
+            
+            Menu{
+                id:backupMenu
+                y: -backupBtn.height*1.7
+                x:(backupMenu.width-backupBtn.width*1.2)
+
+                MenuItem{
+                    icon.name:"document-export.svg"
+                    text:i18nd("bell-scheduler","Generate bell backup")
+                }
+
+                MenuItem{
+                    icon.name:"document-import.svg"
+                    text:i18nd("bell-scheduler","Import bell backup")
+                }
+           
+            }
+           
+        }
 
         Button {
             id:actionsBtn
@@ -59,9 +89,9 @@ Rectangle{
             focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:"configure.svg"
-            text:i18nd("bell-scheduler","Quick actions")
+            text:i18nd("bell-scheduler","Global options")
             Layout.preferredHeight:40
-            Layout.rightMargin:generalBellsLayout.width-applyBtn.width*2.5
+            Layout.rightMargin:rectLayout.width-(newBtn.width+backupBtn.width-35)*2
             onClicked:actionsMenu.open()
             
             Menu{
@@ -87,7 +117,7 @@ Rectangle{
            
         }
         Button {
-            id:applyBtn
+            id:newBtn
             visible:true
             focus:true
             display:AbstractButton.TextBesideIcon

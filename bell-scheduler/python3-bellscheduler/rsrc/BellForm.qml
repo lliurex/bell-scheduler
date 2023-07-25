@@ -64,7 +64,7 @@ Rectangle{
                 Text{
                     id:validityText
                     text:bellSchedulerBridge.bellValidityValue
-                    font.pointSize: 10
+                    font.pointSize:10
 
                 }
                 Button {

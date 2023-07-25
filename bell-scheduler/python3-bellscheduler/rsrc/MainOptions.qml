@@ -11,7 +11,7 @@ GridLayout{
 
     Rectangle{
         width:150
-        Layout.minimumHeight:600
+        /*Layout.minimumHeight:600*/
         Layout.fillHeight:true
         border.color: "#d3d3d3"
 
@@ -35,11 +35,11 @@ GridLayout{
                 }
                 */
             }
+            /*
             MenuOptionBtn {
                 id:backupItem
                 optionText:i18nd("bell-scheduler","Backup")
                 optionIcon:"/usr/share/icons/breeze/actions/22/backup.svg"
-                /*
                 Connections{
                     function onMenuOptionClicked(){
                         if (!onedriveBridge.requiredMigration){
@@ -47,8 +47,8 @@ GridLayout{
                         }
                     }
                 }
-                */
             }
+            */
             MenuOptionBtn {
                 id:holidayItem
                 optionText:i18nd("bell-scheduler","Holiday manager")
@@ -93,6 +93,7 @@ GridLayout{
                     break;
             }
         }
+        /*
         replaceEnter: Transition {
             PropertyAnimation {
                 property: "opacity"
@@ -109,7 +110,7 @@ GridLayout{
                 duration: 600
             }
         }
-
+        */
         Component{
             id:bellsInfoView
             BellsInfo{
