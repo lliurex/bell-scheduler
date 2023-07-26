@@ -55,6 +55,25 @@ class LoadBell(QThread):
 
 #class LoadBell
 
+class CheckData(QThread):
+
+	def __init__(self,*args):
+
+		QThread.__init__(self)
+		self.dataToCheck=args[0]
+		self.ret={}
+
+	#def __init__
+
+	def run(self,*args):
+
+		time.sleep(0.5)
+		self.ret=Bridge.bellMan.checkData(self.dataToCheck)
+
+	#def run
+
+#class CheckData
+
 
 class Bridge(QObject):
 
@@ -87,6 +106,7 @@ class Bridge(QObject):
 		self._closeGui=False
 		self._showMainMessage=[False,"","Ok"]
 		self._showLoadErrorMessage=[False,""]
+		self._showBellFormMessage=[False,"","Ok"]
 		self._showChangesInBellDialog=False
 		self._changesInBell=False
 		Bridge.bellMan.createN4dClient(ticket)
@@ -411,6 +431,20 @@ class Bridge(QObject):
 
 	#def _setShowLoadErrorMessage
 
+	def _getShowBellFormMessage(self):
+
+		return self._showBellFormMessage
+
+	#def _getShowBellFormMessage
+
+	def _setShowBellFormMessage(self,showBellFormMessage):
+
+		if self._showBellFormMessage!=showBellFormMessage:
+			self._showBellFormMessage=showBellFormMessage
+			self.on_showBellFormMessage.emit()
+
+	#def _setShowBellFormMessage
+
 	def _getImagesModel(self):
 
 		return self._imagesModel
@@ -622,10 +656,24 @@ class Bridge(QObject):
 
 	#def updateBellValidityValue
 
+	@Slot(str)
+	def updateBellNameValue(self,value):
+
+		if value!=self.bellName:
+			self.bellName=value
+			self.currentBellConfig["name"]=self.bellName
+
+		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+			self.changesInBell=True
+		else:
+			self.changesInBell=False
+
+	#def updateBellNameValue
+
 	@Slot(str,result=bool)
 	def checkMimetypeImage(self,imagePath):
 
-		return Bridge.bellMan.checkMimetypes(imagePath,"image")
+		return Bridge.bellMan.checkMimetypes(imagePath,"image")["result"]
 
 	#def checkMimetypeImage
 
@@ -657,13 +705,12 @@ class Bridge(QObject):
 		else:
 			self.changesInBell=False
 
-
 	#def updateImageValues
 
 	@Slot(str,result=bool)
 	def checkMimetypeSound(self,soundPath):
 
-		return Bridge.bellMan.checkMimetypes(soundPath,"audio")
+		return Bridge.bellMan.checkMimetypes(soundPath,"audio")["result"]
 
 	#def checkMimetypeSound
 
@@ -707,7 +754,6 @@ class Bridge(QObject):
 	#def updateStartInValue
 
 	@Slot(int)
-
 	def updateDurationValue(self,value):
 
 		if value!=self.bellDuration:
@@ -727,32 +773,67 @@ class Bridge(QObject):
 		self.showChangesInBellDialog=False
 
 		if action=="Accept":
-			self.applyBellChanges()
+			self._applyBellChanges()
 		elif action=="Discard":
-			self.cancelBellChanges()
+			self._cancelBellChanges()
 		elif action=="Cancel":
 			pass
 
 	#def manageChangesDialog
 
+	@Slot()
 	def applyBellChanges(self):
+
+		'''
+		self.closePopUp=[False,3]
+		self.closeGui=True
+		self.moveToStack=1
+		self._manageGoToStack()
+		self._applyBellChanges()
+		'''
+		self._applyBellChanges()
+
+	#def applyBellChanges
+
+	def _applyBellChanges(self):
+
+		self.closePopUp=[False,3]
+		self.closeGui=False
+		self.checkData=CheckData(self.currentBellConfig)
+		self.checkData.start()
+		self.checkData.finished.connect(self._checkDataRet)
+
+	#def _applyBellChanges
+
+	def _checkDataRet(self):
+
+		self.closePopUp=[True,""]
+		self.changesInBell=False
+		
+		if self.checkData.ret["result"]:
+			self.closeGui=True
+			self.moveToStack=1
+			self._manageGoToStack()
+		else:
+			self.showBellFormMessage=[True,self.checkData.ret["code"],"Error"]
+
+	#def _checkDataRet
+
+	@Slot()
+	def cancelBellChanges(self):
+
+		self._cancelBellChanges()
+
+	#def cancellBellChanges
+
+	def _cancelBellChanges(self):
 
 		self.changesInBell=False
 		self.closeGui=True
 		self.moveToStack=1
 		self._manageGoToStack()
 
-	#def applyBellChanges
-
-	@Slot()
-	def cancelBellChanges(self):
-
-		self.changesInBell=False
-		self.closeGui=True
-		self.moveToStack=1
-		self._manageGoToStack()	
-
-	#def cancellBellChanges
+	#def _cancelBellChanges	
 
 	def _manageGoToStack(self):
 
@@ -842,6 +923,8 @@ class Bridge(QObject):
 	on_showMainMessage=Signal()
 	showMainMessage=Property('QVariantList',_getShowMainMessage,_setShowMainMessage, notify=on_showMainMessage)
 	
+	on_showBellFormMessage=Signal()
+	showBellFormMessage=Property('QVariantList',_getShowBellFormMessage,_setShowBellFormMessage, notify=on_showBellFormMessage)
 	on_showLoadErrorMessage=Signal()
 	showLoadErrorMessage=Property('QVariantList',_getShowLoadErrorMessage,_setShowLoadErrorMessage, notify=on_showLoadErrorMessage)
 

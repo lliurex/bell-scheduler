@@ -10,6 +10,7 @@ Rectangle{
     height:120
     border.color: "#d3d3d3"
     property alias currentImgIndex:imagesSelector.currentIndex
+    property alias listEnabled:imagesSelector.enabled
 
     PC3.ScrollView{
         implicitWidth:parent.width
@@ -26,7 +27,7 @@ Rectangle{
             currentIndex:currentImgIndex
             snapMode:ListView.SnapOneItem
             highlightRangeMode: ListView.StrictlyEnforceRange
-                  
+            enabled:listEnabled   
             model:bellSchedulerBridge.imagesModel
            
             delegate:Item{

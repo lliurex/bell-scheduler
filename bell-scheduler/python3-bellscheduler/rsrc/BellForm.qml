@@ -24,9 +24,9 @@ Rectangle{
 
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:true
-            text:"Test text"
-            type:Kirigami.MessageType.Positive
+            visible:bellSchedulerBridge.showBellFormMessage[0]
+            text:getMessageText()
+            type:Kirigami.MessageType.Error
             Layout.minimumWidth:650
             Layout.fillWidth:true
             Layout.topMargin: 40
@@ -149,6 +149,9 @@ Rectangle{
                     horizontalAlignment:TextInput.AlignLeft
                     focus:true
                     implicitWidth:400
+                    onTextChanged:{
+                        bellSchedulerBridge.updateBellNameValue(bellNameEntry.text)
+                    }
                 }
                 Rectangle{
                     id:container
@@ -377,14 +380,12 @@ Rectangle{
             enabled:bellSchedulerBridge.changesInBell
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
-            /*
+            
             onClicked:{
-                applyChanges()
                 closeTimer.stop()
-                wifiControlBridge.applyChanges()
+                bellSchedulerBridge.applyBellChanges()
                 
             }
-            */
         }
         Button {
             id:cancelBtn
@@ -460,6 +461,10 @@ Rectangle{
 
    }
 
+   CustomPopUp{
+        id:waitingPopUp
+   }
+
    function getSoundPath(){
 
         var tmpPath=""
@@ -475,6 +480,42 @@ Rectangle{
             }
 
         }
+
+    }
+
+    function getMessageText(){
+
+         switch (bellSchedulerBridge.showBellFormMessage[1]){
+            case -1:
+                var msg=i18nd("bell-scheduler","You must indicate a name for the alarm");
+                break;
+            case -3:
+                var msg=i18nd("bell-scheduler","You must indicate sound file");
+                break;
+            case -5:
+                var msg=i18nd("bell-scheduler","You must indicate a image file");
+                break;
+            case -7:
+                var msg=i18nd("bell-scheduler","You must indicate a directory");
+                break;
+            case -8:
+                var msg=i18nd("bell-scheduler","The sound file or url indicated is not reproducible");
+                break;
+            case -38:
+                var msg=i18nd("bell-scheduler","The specified folder does not contain playable files");
+                break;
+            case -41:
+                var msg=i18nd("bell-scheduler","Unabled to validated the data");
+                break;
+            case -56:
+                var msg=i18nd("bell-scheduler","Days outside the established validity period have been selected");
+                break;
+          
+            default:
+                var msg=""
+                break
+        }
+        return msg    
 
     }
    

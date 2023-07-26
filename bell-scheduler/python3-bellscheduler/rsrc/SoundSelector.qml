@@ -292,7 +292,7 @@ Popup {
             selectedSoundFile=soundFileDialog.fileUrl.toString()
             selectedSoundFile=selectedSoundFile.replace(/^(file:\/{2})/,"")
             filePath.text=selectedSoundFile.substring(selectedSoundFile.lastIndexOf('/')+1)
-            if (bellSchedulerBridge.checkMimetypeSound(selectedSoundFile)){
+            if (!bellSchedulerBridge.checkMimetypeSound(selectedSoundFile)){
                 messageLabel.visible=true
                 applyBtn.enabled=false
                 soundFileError=true

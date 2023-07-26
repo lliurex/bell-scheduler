@@ -24,7 +24,9 @@ class BellManager(object):
 
 	
 	MISSING_BELL_NAME_ERROR=-1
+	INVALID_SOUND_FILE_ERROR=-2
 	MISSING_SOUND_FILE_ERROR=-3
+	INVALID_IMAGE_FILE_ERROR=-4
 	MISSING_IMAGE_FILE_ERROR=-5
 	MISSING_URL_ERROR=-6
 	MISSING_SOUND_FOLDER_ERROR=-7
@@ -104,7 +106,6 @@ class BellManager(object):
 		result=self.client.BellSchedulerManager.read_conf()
 		self._debug("Read configuration file: ",result)
 		self.bellsConfig=result["data"]
-		print(self.bellsConfig)
 		self.bellsConfigData=[]
 		if result["status"]:
 			self.getBellsConfig()
@@ -354,97 +355,99 @@ class BellManager(object):
 
 	#def saveConf		
 
-	def check_data(self,data):
+	def checkData(self,data):
 		
-		check_validity=None
-		check_image=None
-		check_sound=None
+		checkValidity=None
+		checkImage=None
+		checkSound=None
 
 		if data["name"]=="":
 			return {"result":False,"code":BellManager.MISSING_BELL_NAME_ERROR,"data":""}
 
 		if data["validity"]["active"]:
-			check_validity=self.check_validity(data["weekdays"],data["validity"]["value"])
+			checkValidity=self.checkValidity(data["weekdays"],data["validity"]["value"])
 		
-		if check_validity==None:
-			if data["image"]["option"]=="custom":						
-				if data["image"]["file"]!=None:
-					check_image=self.check_mimetypes(data["image"]["file"],"image")
-					
+		if checkValidity==None:
+			if data["image"]["option"]=="custom":
+				if data["image"]["path"]!=None:
+					checkImage=self.checkMimetypes(data["image"]["path"],"image")
 				else:
 					return {"result":False,"code":BellManager.MISSING_IMAGE_FILE_ERROR,"data":""}
 			
-			if check_image==None:
+			if checkImage==None:
 				if data["sound"]["option"]=="file":
-					if data["sound"]["file"]!=None:
-						check_sound=self.check_mimetypes(data["sound"]["file"],"audio")
+					if data["sound"]["path"]!=None:
+						checkSound=self.checkMimetypes(data["sound"]["path"],"audio")
 						
-						if check_sound==None:
-							return self.check_audiofile(data["sound"]["file"],"file")
+						if checkSound==None:
+							return self.checkAudiofile(data["sound"]["path"],"file")
 						else:
-							return check_sound
+							return checkSound
 					else:
 						return {"result":False,"code":BellManager.MISSING_SOUND_FILE_ERROR,"data":""}
 
 				elif data["sound"]["option"]=="directory":
-					if data["sound"]["file"]==None:
+					if data["sound"]["path"]==None:
 						return {"result":False,"code":BellManager.MISSING_SOUND_FOLDER_ERROR,"data":""}
 					else:
-						self.correct_files=0
-						return self.check_directory(data["sound"]["file"])	
+						self.correctFiles=0
+						return self.checkDirectory(data["sound"]["path"])	
 
 				elif data["sound"]["option"]=="url":			
-					if data["sound"]["file"]=="":
+					if data["sound"]["path"]=="":
 						return {"result":False,"code":BellManager.MISSING_URL_ERROR,"data":""}
 					else:
-						check_connection=self.check_connection()
-						if check_connection:
-							return self.check_audiofile(data["sound"]["file"],"url")
+						checkConnection=self.checkConnection()
+						if checkConnection:
+							return self.checkAudiofile(data["sound"]["path"],"url")
 						else:
 							return {"result":False,"code":BellManager.FAILED_INTERNET_ERROR,"data":""}	
 
 				elif data["sound"]["option"]=="urlslist":				
-					if data["sound"]["file"]!=None:
-						check_connection=self.check_connection()
-						if check_connection:
-							return self.check_list(data["sound"]["file"])
+					if data["sound"]["path"]!=None:
+						checkConnection=self.checkConnection()
+						if checkConnection:
+							return self.checkList(data["sound"]["path"])
 						else:
 							return {"result":False,"code":BellManager.FAILED_INTERNET_ERROR,"data":""}	
 					else:		
 						return {"result":False,"code":BellManager.MISSING_URL_LIST_ERROR,"data":""}
 							
 			else:
-				return check_image
+				return checkImage
 		else:
-			return check_validity			
-				
+			return checkValidity			
 	
-	#def check_data
+	#def checkData
 	
 	def checkMimetypes(self,file,check):
 
 		mime = MimeTypes()
-		file_mime_type= mime.guess_type(file)
+		fileMimeType= mime.guess_type(file)
 		error=False
 		
 		if check=="audio":
-			if file_mime_type[0]!=None:
-				if not 'audio' in file_mime_type[0] and not 'video' in file_mime_type[0]:
+			if fileMimeType[0]!=None:
+				if not 'audio' in fileMimeType[0] and not 'video' in fileMimeType[0]:
 					error=True
 			else:
 				error=True
 		else:
-			if file_mime_type[0]!=None:
-				if not 'image' in file_mime_type[0]: 
+			if fileMimeType[0]!=None:
+				if not 'image' in fileMimeType[0]: 
 					error=True
 			else:
 				error=True
 
-		return error
+		if error:
+			if check=="audio":
+				return {"result":False,"code":BellManager.INVALID_SOUND_FILE_ERROR,"data":""}
+			else:
+				return {"result":False,"code":BellManager.INVALID_IMAGE_FILE_ERROR,"data":""}
 
 	#def checkMimetypes			
 				
-	def check_audiofile(self,file,type):
+	def checkAudiofile(self,file,type):
 		
 		params=' -show_entries stream=codec_type,duration -of compact=p=0:nk=1'
 		
@@ -463,32 +466,31 @@ class BellManager(object):
 			return {"result":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
 	
 	
-	#def check_audiofile	
+	#def checkAudiofile	
 
-	def check_directory(self,directory):
+	def checkDirectory(self,directory):
 
 		path=directory+"/*"
-		content_directory=glob.glob(path)
-		for item in content_directory:
+		contentDirectory=glob.glob(path)
+		for item in contentDirectory:
 			if os.path.isfile(item):
-				print("ARCHIVO: %s"%item)
-				check_file=self.check_mimetypes(item,"audio")
-				if check_file==None:
-					check_run=self.check_audiofile(item,'file')
-					if check_run["result"]:
-						self.correct_files+=1
+				checkFile=self.checkMimetypes(item,"audio")
+				if checkFile==None:
+					checkRun=self.checkAudiofile(item,'file')
+					if checkRun["result"]:
+						self.correctFiles+=1
 			else:
 				if os.path.isdir(item):
-					self.check_directory(item)			
+					self.checkDirectory(item)			
 		
-		if self.correct_files>0:
+		if self.correctFiles>0:
 			return {"result":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
 		else:
 			return {"result":False,"code":BellManager.FOLDER_WITH_INCORRECT_FILES_ERROR,"data":""}
 
 	#def check_directory		
 
-	def check_list(self,url_list):
+	def checkList(self,url_list):
 
 		result=True
 		data=""
@@ -751,38 +753,38 @@ class BellManager(object):
 
 	#def remove_all_bells
 
-	def check_validity(self,weekdays,validity):
+	def checkValidity(self,weekdays,validity):
 
-		days_in_validity=[]
-		weekdays_selected=[]
-		weekdays_validity=[]
-		no_match_day=0
+		daysInValidity=[]
+		weekdaysSelected=[]
+		weekdaysValidity=[]
+		noMatchDay=0
 		
 		if validity!="":
-			days_in_validity=self.getDaysInRange(validity)
+			daysInValidity=self.getDaysInRange(validity)
 	
-			for item in days_in_validity:
-				tmp_day=datetime.strptime(item,"%d/%m/%Y")
-				tmp_weekday=tmp_day.weekday()
-				if tmp_weekday not in weekdays_validity:
-					weekdays_validity.append(tmp_weekday)
+			for item in daysInValidity:
+				tmpDay=datetime.strptime(item,"%d/%m/%Y")
+				tmpWeekday=tmpDay.weekday()
+				if tmpWeekday not in weekdaysValidity:
+					weekdaysValidity.append(tmpWeekday)
 
 			for i in range(len(weekdays)):
-				if weekdays[i]:
-					weekdays_selected.append(i)
+				if weekdays[str(i)]:
+					weekdaysSelected.append(i)
 
-			for item in weekdays_selected:
-				if item not in weekdays_validity:
-					no_match_day+=1
+			for item in weekdaysSelected:
+				if item not in weekdaysValidity:
+					noMatchDay+=1
 
-			if no_match_day>0:
+			if noMatchDay>0:
 				return {"result":False,"code":BellManager.DAY_NOT_IN_VALIDITY_ERROR,"data":""}
 
-	#def check_validity
+	#def checkValidity
 
 	def getDaysInRange(self,day):	
 
-		list_days=[]
+		listDays=[]
 		if day!="":
 			if "-" in day:
 				tmp=day.split("-")
@@ -793,14 +795,11 @@ class BellManager(object):
 				date2=date1
 			delta=date2-date1
 			for i in range(delta.days + 1):
-				tmp_day=(date1 + timedelta(days=i)).strftime('%d/%m/%Y')
-				list_days.append(tmp_day)
+				tmpDay=(date1 + timedelta(days=i)).strftime('%d/%m/%Y')
+				listDays.append(tmpDay)
 
-		return list_days	
+		return listDays	
 
 	#def getDaysInRange
-
-
-							
 
 #class BellManager 		

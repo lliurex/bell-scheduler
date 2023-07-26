@@ -6,7 +6,6 @@ import QtQuick.Layouts 1.15
 
 Rectangle{
     id:rectLayout
-    color:"transparent"
     Text{ 
         text:i18nd("bell-scheduler","Configured bells")
         font.family: "Quattrocento Sans Bold"
@@ -60,14 +59,14 @@ Rectangle{
             focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:"backup.svg"
-            text:i18nd("bell-scheduler","Backup options")
+            text:i18nd("bell-scheduler","Backup")
             Layout.preferredHeight:40
             onClicked:backupMenu.open()
             
             Menu{
                 id:backupMenu
                 y: -backupBtn.height*1.7
-                x:(backupMenu.width-backupBtn.width*1.2)
+                x: backupBtn.width/2
 
                 MenuItem{
                     icon.name:"document-export.svg"
@@ -89,15 +88,15 @@ Rectangle{
             focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:"configure.svg"
-            text:i18nd("bell-scheduler","Global options")
+            text:i18nd("bell-scheduler","Global Options")
             Layout.preferredHeight:40
-            Layout.rightMargin:rectLayout.width-(newBtn.width+backupBtn.width-35)*2
+            Layout.rightMargin:rectLayout.width-(backupBtn.width+actionsBtn.width+newBtn.width+30)
             onClicked:actionsMenu.open()
             
             Menu{
                 id:actionsMenu
                 y: -actionsBtn.height*2.5
-                x:(actionsMenu.width-actionsBtn.width*1.1)
+                x: actionsBtn.width/2
 
                 MenuItem{
                     icon.name:"audio-on.svg"

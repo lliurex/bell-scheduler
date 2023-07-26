@@ -86,6 +86,7 @@ Popup {
                     ImageList{
                         id:imageList
                         currentImgIndex:bellSchedulerBridge.bellImage[1]
+                        listEnabled:stockOption.checked
                     }
                 }
 
@@ -249,7 +250,7 @@ Popup {
             tmpFile=tmpFile.replace(/^(file:\/{2})/,"")
             customImagePath.text=tmpFile.substring(tmpFile.lastIndexOf('/')+1)
             selectedImageFile=tmpFile
-            if (bellSchedulerBridge.checkMimetypeImage(selectedImageFile)){
+            if (!bellSchedulerBridge.checkMimetypeImage(selectedImageFile)){
                 messageLabel.visible=true
                 applyBtn.enabled=false
                 imageFileError=true
