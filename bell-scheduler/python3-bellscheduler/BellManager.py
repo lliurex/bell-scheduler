@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GObject, GLib
 import os
 import json
 import codecs
@@ -16,6 +13,7 @@ import random
 import urllib.request
 import n4d.client
 from datetime import datetime, date,timedelta
+import copy
 import gettext
 _ = gettext.gettext
 
@@ -31,7 +29,7 @@ class BellManager(object):
 	MISSING_URL_ERROR=-6
 	MISSING_SOUND_FOLDER_ERROR=-7
 	SOUND_FILE_URL_NOT_VALID_ERROR=-8
-	SOUND_PATH_UNAVAILABLE=-31
+	BELLS_WITH_ERRORS=-31
 	FOLDER_WITH_INCORRECT_FILES_ERROR=-38
 	MISSING_URL_LIST_ERROR=-39
 	INCORRECT_URL_LIST_ERROR=-40
@@ -41,7 +39,11 @@ class BellManager(object):
 	DAY_NOT_IN_VALIDITY_ERROR=-56
 
 	ACTION_SUCCESSFUL=0
-
+	BELL_REMOVED_SUCCESSFULLY=14
+	BELL_EDITED_SUCCESSFULLY=15
+	BELL_ACTIVATED_SUCCESSFULLY=16
+	BELL_DEACTIVATED_SUCCESSFULLY=17
+	BELL_ADDED_SUCCESSFULLY=18
 
 	def __init__(self):
 
@@ -53,6 +55,7 @@ class BellManager(object):
 		self.bellsConfigData=[]
 		self.imgNoDispPath="/usr/lib/python3/dist-packages/bellscheduler/rsrc/image_nodisp.svg"
 		self.bannersPath="/usr/share/bell-scheduler/banners"
+		self.imagesPath="/usr/local/share/bellScheduler/images"
 		self.soundsPath="/usr/local/share/bellScheduler/sounds"
 		self.imagesConfigData=[]
 		self._getSystemLocale()
@@ -159,6 +162,7 @@ class BellManager(object):
 				tmp["bellActivated"]=self.bellsConfig[item]["active"]
 			else:
 				soundError=True
+				self.loadError=True
 				tmp["bellActivated"]=False
 				self.bellsConfig[item]["active"]=False
 				self.saveConf(self.bellsConfig,item,"active")
@@ -169,7 +173,6 @@ class BellManager(object):
 
 			self.bellsConfigData.append(tmp)
 
-	
 	#def getBellsConfig
 
 	def getImagesConfig(self):
@@ -191,6 +194,7 @@ class BellManager(object):
 
 	def initValues(self):
 
+		self.bellToLoad=""
 		self.bellCron=[0,0]
 		self.bellDays=[False,False,False,False,False]
 		self.bellValidityActive=False
@@ -284,6 +288,7 @@ class BellManager(object):
 
 	def loadBellConfig(self,bellToLoad):
 
+		self.bellToLoad=bellToLoad[0]
 		self.currentBellConfig=self.bellsConfig[bellToLoad[0]]
 		self.bellCron=[self.currentBellConfig["hour"],self.currentBellConfig["minute"]]
 		self.bellDays=[self.currentBellConfig["weekdays"]["0"],self.currentBellConfig["weekdays"]["1"],self.currentBellConfig["weekdays"]["2"],self.currentBellConfig["weekdays"]["3"],self.currentBellConfig["weekdays"]["4"]]
@@ -291,7 +296,7 @@ class BellManager(object):
 		self.bellValidityValue=self.currentBellConfig["validity"]["value"]
 		self.bellValidityDaysInRange=[]
 		self._getValidityConfig(self.bellValidityValue)
-		self.enableBellValidity=self.checkIfValidityIsEnabled(self.bellDays)
+		self.enableBellValidity=self.areDaysChecked(self.currentBellConfig["weekdays"])
 		self.bellName=self.currentBellConfig["name"]
 		if self.currentBellConfig["image"]["option"]=="stock":
 			imgIndex=self._getImageIndexFromPath(self.currentBellConfig["image"]["path"])
@@ -334,15 +339,15 @@ class BellManager(object):
 
 	#def _getValidityConfig
 
-	def checkIfValidityIsEnabled(self,daysSelected):
+	def areDaysChecked(self,daysSelected):
 
-		for item in daysSelected:
-			if item:
+		for item in range(len(daysSelected)):
+			if daysSelected[str(item)]:
 				return True
-
+		
 		return False
 
-	#def checkIfValidityIsEnabled
+	#def areDaysChecked
 	
 	def saveConf(self,info,last_change,action):
 
@@ -358,8 +363,8 @@ class BellManager(object):
 	def checkData(self,data):
 		
 		checkValidity=None
-		checkImage=None
-		checkSound=None
+		checkImage={"result":True,"code":"","data":""}
+		checkSound={"result":True,"code":"","data":""}
 
 		if data["name"]=="":
 			return {"result":False,"code":BellManager.MISSING_BELL_NAME_ERROR,"data":""}
@@ -374,12 +379,12 @@ class BellManager(object):
 				else:
 					return {"result":False,"code":BellManager.MISSING_IMAGE_FILE_ERROR,"data":""}
 			
-			if checkImage==None:
+			if checkImage["result"]:
 				if data["sound"]["option"]=="file":
 					if data["sound"]["path"]!=None:
 						checkSound=self.checkMimetypes(data["sound"]["path"],"audio")
 						
-						if checkSound==None:
+						if checkSound["result"]:
 							return self.checkAudiofile(data["sound"]["path"],"file")
 						else:
 							return checkSound
@@ -419,7 +424,7 @@ class BellManager(object):
 			return checkValidity			
 	
 	#def checkData
-	
+
 	def checkMimetypes(self,file,check):
 
 		mime = MimeTypes()
@@ -444,6 +449,8 @@ class BellManager(object):
 				return {"result":False,"code":BellManager.INVALID_SOUND_FILE_ERROR,"data":""}
 			else:
 				return {"result":False,"code":BellManager.INVALID_IMAGE_FILE_ERROR,"data":""}
+		else:
+			return {"result":True,"code":"","data":""}
 
 	#def checkMimetypes			
 				
@@ -465,7 +472,6 @@ class BellManager(object):
 		else:
 			return {"result":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
 	
-	
 	#def checkAudiofile	
 
 	def checkDirectory(self,directory):
@@ -475,7 +481,7 @@ class BellManager(object):
 		for item in contentDirectory:
 			if os.path.isfile(item):
 				checkFile=self.checkMimetypes(item,"audio")
-				if checkFile==None:
+				if checkFile["result"]:
 					checkRun=self.checkAudiofile(item,'file')
 					if checkRun["result"]:
 						self.correctFiles+=1
@@ -610,7 +616,135 @@ class BellManager(object):
 		except:
 			return False	
 
-	#def check_connection		
+	#def check_connection
+
+	def saveData(self,data):
+
+		ret=[False,""]
+		origImgPath=""
+		origSoundPath=""
+		activeBell=False
+		bellsConfig=copy.deepcopy(self.bellsConfig)
+		orderKeys=[]
+
+		if self.bellToLoad!="":
+			order=self.bellToLoad
+			action="edit"
+		else:
+			if len(bellsConfig)>0:
+				keys=bellsConfig.keys()
+				for item in keys:
+					orderKeys.append(int(item))
+
+				order=str(int(max(orderKeys))+1)
+			else:
+				order="1"
+
+			action="add"
+
+		bellsConfig[order]={}
+		bellsConfig[order]["hour"]=data["hour"]
+		bellsConfig[order]["minute"]=data["minute"]
+		bellsConfig[order]["weekdays"]=data["weekdays"]
+		
+		if data["validity"]["value"]=="":
+			data["validity"]["active"]=False
+
+		bellsConfig[order]["validity"]=data["validity"]
+		bellsConfig[order]["name"]=data["name"]
+
+		if data["image"]["option"]=="custom":
+			origImgPath=data["image"]["path"]
+			destImgPath=os.path.join(self.imagesPath,os.path.basename(origImgPath))
+			data["image"]["path"]=destImgPath
+
+		bellsConfig[order]["image"]=data["image"]
+
+		if data["sound"]["option"]=="file":
+			if data["soundDefaultPath"]:
+				origSoundPath=data["sound"]["path"]
+				destSoundPath=os.path.join(self.soundsPath,os.path.basename(origSoundPath))
+				data["sound"]["path"]=destSoundPath
+
+		bellsConfig[order]["sound"]=data["sound"]
+
+		bellsConfig[order]["play"]=data["play"]
+
+		if self.areDaysChecked(data["weekdays"]):
+			if action=="edit":
+				activeBell=data["active"]
+			else:
+				activeBell=True
+		else:
+			activeBell=False
+
+		bellsConfig[order]["active"]=activeBell
+		retCopy=self._copyMediaFiles(origImgPath,origSoundPath)
+
+		if retCopy["status"]:
+			retSave=self.saveConf(bellsConfig,order,action)
+			if retSave["status"]:
+				retReadConfig=self.readConf()
+				if retReadConfig["status"]:
+					if action=="edit":
+						ret=[True,BellManager.BELL_EDITED_SUCCESSFULLY]
+					else:
+						ret=[True,BellManager.BELL_ADDED_SUCCESSFULLY]
+				else:
+					ret=[False,retReadConfig["code"]]
+			else:
+				ret=[False,retSave["code"]]
+		else:
+			ret=[False,retCopy["code"]]	
+
+		return ret	
+
+	#def saveData
+
+	def changeBellStatus(self,bellToEdit,status):
+
+		self.bellsConfig[bellToEdit]["active"]=status
+		ret=self.saveConf(self.bellsConfig,bellToEdit,"active")
+
+		if ret["status"]:
+			self._updateBellsConfigData("bellActivated",status,bellToEdit)
+			if status:
+				return [True,BellManager.BELL_ACTIVATED_SUCCESSFULLY]
+			else:
+				return [True,BellManager.BELL_DEACTIVATED_SUCCESSFULLY]
+		else:
+			return [False,ret["code"]]
+
+	#def changeBellStatus
+
+	def _updateBellsConfigData(self,param,value,bellId):
+
+		for item in self.bellsConfigData:
+			if item["id"]==bellId:
+				if item[param]!=value:
+					item[param]=value
+				break
+
+	#def _updateBellsConfigData
+
+	def removeBell(self,bellToRemove):
+
+		bellsConfig=copy.deepcopy(self.bellsConfig)
+		bellsConfig.pop(bellToRemove)
+		ret=self.saveConf(bellsConfig,bellToRemove,"remove")
+
+		if ret["status"]:
+			self.bellsConfig=bellsConfig
+			for i in range(len(self.bellsConfigData)-1,-1,-1):
+				if self.bellsConfigData[i]["id"]==bellToRemove:
+					self.bellsConfigData.pop(i)
+					break
+			return [True,BellManager.BELL_REMOVED_SUCCESSFULLY]
+		else:
+			return [False,ret["code"]]
+
+	#def removeBell
+
 			
 	def getOrderBell(self,info=None):
 	
@@ -686,14 +820,13 @@ class BellManager(object):
 
 	#def formatTime	
 
-	def copy_media_files(self,image,sound):
+	def _copyMediaFiles(self,image,sound):
 
-		#Old n4d:result=self.n4d.copy_media_files(self.credentials,'BellSchedulerManager',image,sound)
 		result=self.client.BellSchedulerManager.copy_media_files(image,sound)
-		self._debug("Copy files: ",result)
+		self._debug("Copy Media files: ",result)
 		return result
 
-	#def copy_media_files	
+	#def _copyMediaFiles	
 
 
 	def export_bells_conf(self,dest_file):
@@ -801,5 +934,7 @@ class BellManager(object):
 		return listDays	
 
 	#def getDaysInRange
+
+
 
 #class BellManager 		

@@ -110,9 +110,15 @@ Components.ListItem{
                     id:validityText
                     text:bellValidity
                     font.family:"Quattrocento Sans Bold"
-                    color:bellFr? "#3366cc":"#A0A0A0"
+                    color:bellValidityActivated?"#3366cc":"#A0A0A0"
                     font.pointSize:11
-                    visible:bellValidityActivated?true:false
+                    visible:{
+                        if (bellValidity!=""){
+                            true
+                        }else{
+                            false
+                        }
+                    }
                     anchors.horizontalCenter:parent.horizontalCenter
                 }
             }
@@ -199,6 +205,7 @@ Components.ListItem{
                         icon.name:bellActivated?"audio-volume-muted.svg":"audio-on.svg"
                         text:bellActivated?i18nd("bell-scheduler","Disable bell"):i18nd("bell-scheduler","Enable bell")
                         enabled:isSoundError?false:true
+                        onClicked:bellSchedulerBridge.changeBellStatus([bellId,!bellActivated])
                     }
 
                     MenuItem{
@@ -209,6 +216,7 @@ Components.ListItem{
                     MenuItem{
                         icon.name:"delete.svg"
                         text:i18nd("bell-scheduler","Delete the bell")
+                        onClicked:bellSchedulerBridge.removeBell(bellId)
                     }
                 }
             }

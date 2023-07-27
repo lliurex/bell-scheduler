@@ -14,6 +14,7 @@ from . import ImagesModel
 
 NEW_BELL_CONFIG=1
 LOAD_BELL_CONFIG=2
+CHANGE_BELL_STATUS=5
 
 class GatherInfo(QThread):
 
@@ -74,6 +75,62 @@ class CheckData(QThread):
 
 #class CheckData
 
+class SaveData(QThread):
+
+	def __init__(self,*args):
+
+		QThread.__init__(self)
+		self.dataToSave=args[0]
+		self.ret=[]
+
+	#def __init__
+
+	def run(self,*args):
+
+		time.sleep(0.5)
+		self.ret=Bridge.bellMan.saveData(self.dataToSave)
+
+	#def run
+
+#class SaveData
+
+class ChangeBellStatus(QThread):
+
+	def __init__(self,*args):
+
+		QThread.__init__(self)
+		self.data=args[0]
+		self.ret=[]
+
+	#def __init__
+
+	def run(self,*args):
+
+		time.sleep(0.5)
+		self.ret=Bridge.bellMan.changeBellStatus(self.data[0],self.data[1])
+
+	#def run
+
+#class ChangeBellStatus
+
+class RemoveBell(QThread):
+
+	def __init__(self,*args):
+
+		QThread.__init__(self)
+		self.bellToRemove=args[0]
+		self.ret=[]
+
+	#def __init__
+
+	def run(self,*args):
+
+		time.sleep(0.5)
+		self.ret=Bridge.bellMan.removeBell(self.bellToRemove)
+
+	#def run
+
+#class RemoveBell
 
 class Bridge(QObject):
 
@@ -109,6 +166,7 @@ class Bridge(QObject):
 		self._showBellFormMessage=[False,"","Ok"]
 		self._showChangesInBellDialog=False
 		self._changesInBell=False
+		self._showRemoveBellDialog=False
 		Bridge.bellMan.createN4dClient(ticket)
 		self.initBridge()
 
@@ -131,7 +189,7 @@ class Bridge(QObject):
 				self._updateBellsModel()
 				self._updateImagesModel()
 				if Bridge.bellMan.loadError:
-					self.showMainMessage=[True,Bridge.bellMan.SOUND_PATH_UNAVAILABLE,"Error"]
+					self.showMainMessage=[True,Bridge.bellMan.BELLS_WITH_ERRORS,"Error"]
 			else:
 				self.showLoadErrorMessage=[True,self.gatherInfo.readConf['code']]
 		else:
@@ -397,6 +455,20 @@ class Bridge(QObject):
 
 	#def _setChangesInBell
 
+	def _getShowRemoveBellDialog(self):
+
+		return self._showRemoveBellDialog
+
+	#def _getShowRemoveBellDialog
+
+	def _setShowRemoveBellDialog(self,showRemoveBellDialog):
+
+		if self._showRemoveBellDialog!=showRemoveBellDialog:
+			self._showRemoveBellDialog=showRemoveBellDialog
+			self.on_showRemoveBellDialog.emit()
+
+	#def _setShowRemoveBellDialog
+
 	def _getBellsModel(self):
 
 		return self._bellsModel
@@ -529,6 +601,8 @@ class Bridge(QObject):
 		self.bellSound=Bridge.bellMan.bellSound
 		self.bellStartIn=Bridge.bellMan.bellStartIn
 		self.bellDuration=Bridge.bellMan.bellDuration
+		self.showBellFormMessage=[False,"","Ok"]
+		self.changesInBell=False
 
 	#def _initializeVars
 
@@ -608,7 +682,7 @@ class Bridge(QObject):
 				self.bellDays[4]=values[1]
 				self.currentBellConfig["weekdays"]["4"]=self.bellDays[4]
 
-		self.enableBellValidity=Bridge.bellMan.checkIfValidityIsEnabled(self.bellDays)
+		self.enableBellValidity=Bridge.bellMan.areDaysChecked(self.currentBellConfig["weekdays"])
 		
 		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
 			self.changesInBell=True
@@ -784,13 +858,6 @@ class Bridge(QObject):
 	@Slot()
 	def applyBellChanges(self):
 
-		'''
-		self.closePopUp=[False,3]
-		self.closeGui=True
-		self.moveToStack=1
-		self._manageGoToStack()
-		self._applyBellChanges()
-		'''
 		self._applyBellChanges()
 
 	#def applyBellChanges
@@ -807,17 +874,33 @@ class Bridge(QObject):
 
 	def _checkDataRet(self):
 
-		self.closePopUp=[True,""]
-		self.changesInBell=False
-		
 		if self.checkData.ret["result"]:
-			self.closeGui=True
-			self.moveToStack=1
-			self._manageGoToStack()
+			self.closePopUp=[False,4]
+			self.saveData=SaveData(self.currentBellConfig)
+			self.saveData.start()
+			self.saveData.finished.connect(self._saveDataRet)
+
 		else:
+			self.closePopUp=[True,""]
 			self.showBellFormMessage=[True,self.checkData.ret["code"],"Error"]
 
 	#def _checkDataRet
+
+	def _saveDataRet(self):
+
+		if self.saveData.ret[0]:
+			self._updateBellsModel()
+			self.showMainMessage=[True,self.saveData.ret[1],"Ok"]
+		else:
+			self.showMainMessage=[True,self.saveData.ret[1],"Error"]	
+
+		self.closePopUp=[True,""]
+		self.changesInBell=False
+		self.closeGui=True
+		self.moveToStack=1
+		self._manageGoToStack()
+
+	#def _saveDataRet
 
 	@Slot()
 	def cancelBellChanges(self):
@@ -833,7 +916,71 @@ class Bridge(QObject):
 		self.moveToStack=1
 		self._manageGoToStack()
 
-	#def _cancelBellChanges	
+	#def _cancelBellChanges
+
+	@Slot('QVariantList')
+	def changeBellStatus(self,data):
+
+		self.closeGui=False
+		self.closePopUp=[False,CHANGE_BELL_STATUS]
+		self.changeStatus=ChangeBellStatus(data)
+		self.changeStatus.start()
+		self.changeStatus.finished.connect(self._changeBellStatusRet)
+
+	#def changeBellStatus
+
+	def _changeBellStatusRet(self):
+
+		if self.changeStatus.ret[0]:
+			self._updateBellsModelInfo('bellActivated')
+			self.showMainMessage=[True,self.changeStatus.ret[1],"Ok"]
+		else:
+			self.showMainMessage=[True,self.changeStatus.ret[1],"Error"]
+
+		self.closePopUp=[True,""]
+		self.closeGui=True
+
+	#def _changeBellStatusRet
+
+	@Slot(str)
+	def removeBell(self,bellToRemove):
+
+		self.bellToRemove=bellToRemove
+		self.showRemoveBellDialog=True
+
+	#def removeBell
+
+	@Slot(str)
+	def manageRemoveBellDialog(self,response):
+
+		self.showRemoveBellDialog=False
+		if response=="Accept":
+			self._launchRemoveBellProcess()
+
+	#def manageRemoveBellDialog
+
+	def _launchRemoveBellProcess(self):
+
+		self.closeGui=False
+		self.closePopUp=[False,6]
+		self.removeBellProcess=RemoveBell(self.bellToRemove)
+		self.removeBellProcess.start()
+		self.removeBellProcess.finished.connect(self._removeBellProcessRet)
+
+	#def _launchRemoveBellProcess
+
+	def _removeBellProcessRet(self):
+
+		if self.removeBellProcess.ret[0]:
+			self._updateBellsModel()
+			self.showMainMessage=[True,self.removeBellProcess.ret[1],"Ok"]
+		else:
+			self.showMainMessage=[False,self.removeBellProcess.ret[1],"Error"]
+
+		self.closePopUp=[True,""]
+		self.closeGui=True
+
+	#def _removeBellProcessRet
 
 	def _manageGoToStack(self):
 
@@ -939,6 +1086,9 @@ class Bridge(QObject):
 
 	on_changesInBell=Signal()
 	changesInBell=Property(bool,_getChangesInBell,_setChangesInBell,notify=on_changesInBell)
+
+	on_showRemoveBellDialog=Signal()
+	showRemoveBellDialog=Property(bool,_getShowRemoveBellDialog,_setShowRemoveBellDialog,notify=on_showRemoveBellDialog)
 
 	on_closeGui=Signal()
 	closeGui=Property(bool,_getCloseGui,_setCloseGui, notify=on_closeGui)

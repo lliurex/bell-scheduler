@@ -133,11 +133,69 @@ Rectangle{
         id:loadBellForm
     }
 
+    ChangesDialog{
+        id:removeBellDialog
+        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-question.svg"
+        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell")
+        dialogMsg:i18nd("bell-scheduler","Do you want delete the bell?")
+        dialogVisible:bellSchedulerBridge.showRemoveBellDialog
+        dialogWidth:400
+        btnAcceptVisible:false
+        btnAcceptText:""
+        btnDiscardText:i18nd("bell-scheduler","Accept")
+        btnDiscardIcon:"dialog-ok.svg"
+        btnCancelText:i18nd("bell-scheduler","Cancel")
+        btnCancelIcon:"dialog-cancel.svg"
+        Connections{
+           target:removeBellDialog
+           function onDiscardDialogClicked(){
+                bellSchedulerBridge.manageRemoveBellDialog('Accept')         
+           }
+           function onRejectDialogClicked(){
+                bellSchedulerBridge.manageRemoveBellDialog('Cancel')       
+           }
+
+        }
+    }
+
     function getTextMessage(msgCode){
         switch (msgCode){
+            case -19:
+                var msg=i18nd("bell-scheduler","Unabled to edit the Bell due to problems with cron sync")
+                break;
+            case -20:
+                var msg=i18nd("bell-scheduler","Unabled to create the Bell due to problems with cron sync")
+                break;
+            case -21:
+                var msg=i18nd("bell-scheduler","Unabled to delete the Bell due to problems with cron sync")
+                break;
+            case -22:
+                var msg=i18nd("bell-scheduler","Unabled to activate the Bell due to problems with cron sync")
+                break;
+            case -23:
+                var msg=i18nd("bell-scheduler","Unabled to deactivate the Bell due to problems with cron sync")
+                break;
+            case -24:
+                var msg=i18nd("bell-scheduler","Unabled to copy image and/or sound file to work directory")
+                break;
             case -31:
                 var msg=i18nd("bell-scheduler","Detected alarms with errors")
                 break;
+            case 14:
+                var msg=i18nd("bell-scheduler","Bell deleted successfully")
+                break;
+            case 15:
+                var msg=i18nd("bell-scheduler","Bell edited successfully")
+                break;
+            case 16:
+                var msg=i18nd("bell-scheduler","Bell activated successfully")
+                break;
+            case 17:
+                var msg=i18nd("bell-scheduler","Bell deactivated successfully")
+                break;
+            case 18:
+                var msg=i18nd("bell-scheduler","Bell created successfully")
+                break
             default:
                 var msg=""
                 break;

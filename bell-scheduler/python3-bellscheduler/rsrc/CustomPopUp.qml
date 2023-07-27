@@ -54,10 +54,19 @@ Popup {
                 break;
             case 2:
                 var msg=i18nd("bell-scheduler","Loading bell info. Wait a moment...");
-                break
+                break;
             case 3:
                 var msg=i18nd("bell-scheduler","Validating the data entered...")
-                break
+                break;
+            case 4:
+                var msg=i18nd("bell-scheduler","Saving the data entered...")
+                break;
+            case 5:
+                var msg=i18nd("bell-scheduler","Changing bell status...")
+                break;
+            case 6:
+                var msg=i18nd("bell-scheduler","Removing bell...")
+                break;
             default:
                 var msg=""
                 break;
