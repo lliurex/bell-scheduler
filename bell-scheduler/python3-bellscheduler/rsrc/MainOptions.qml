@@ -68,13 +68,11 @@ GridLayout{
                 id:helpItem
                 optionText:i18nd("bell-scheduler","Help")
                 optionIcon:"/usr/share/icons/breeze/actions/22/help-contents.svg"
-                /*
                 Connections{
                     function onMenuOptionClicked(){
-                        onedriveBridge.openHelp();
+                        bellSchedulerBridge.openHelp();
                     }
                 }
-                */
             }
         }
     }

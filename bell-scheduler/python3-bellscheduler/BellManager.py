@@ -44,6 +44,9 @@ class BellManager(object):
 	BELL_ACTIVATED_SUCCESSFULLY=16
 	BELL_DEACTIVATED_SUCCESSFULLY=17
 	BELL_ADDED_SUCCESSFULLY=18
+	BELLS_ALREADY_ACTIVATED=53
+	BELLS_ALREADY_DEACTIVATED=54
+	BELLS_ALREADY_REMOVED=55
 
 	def __init__(self):
 
@@ -374,14 +377,14 @@ class BellManager(object):
 		
 		if checkValidity==None:
 			if data["image"]["option"]=="custom":
-				if data["image"]["path"]!=None:
+				if data["image"]["path"]!="":
 					checkImage=self.checkMimetypes(data["image"]["path"],"image")
 				else:
 					return {"result":False,"code":BellManager.MISSING_IMAGE_FILE_ERROR,"data":""}
 			
 			if checkImage["result"]:
 				if data["sound"]["option"]=="file":
-					if data["sound"]["path"]!=None:
+					if data["sound"]["path"]!="":
 						checkSound=self.checkMimetypes(data["sound"]["path"],"audio")
 						
 						if checkSound["result"]:
@@ -392,7 +395,7 @@ class BellManager(object):
 						return {"result":False,"code":BellManager.MISSING_SOUND_FILE_ERROR,"data":""}
 
 				elif data["sound"]["option"]=="directory":
-					if data["sound"]["path"]==None:
+					if data["sound"]["path"]=="":
 						return {"result":False,"code":BellManager.MISSING_SOUND_FOLDER_ERROR,"data":""}
 					else:
 						self.correctFiles=0
@@ -701,21 +704,48 @@ class BellManager(object):
 
 	#def saveData
 
-	def changeBellStatus(self,bellToEdit,status):
+	def changeBellStatus(self,allBells,active,bellToEdit=None):
 
-		self.bellsConfig[bellToEdit]["active"]=status
-		ret=self.saveConf(self.bellsConfig,bellToEdit,"active")
-
-		if ret["status"]:
-			self._updateBellsConfigData("bellActivated",status,bellToEdit)
-			if status:
-				return [True,BellManager.BELL_ACTIVATED_SUCCESSFULLY]
+		if allBells:
+			if self._checkBellStatus(active):
+				retChangeStatus=self.changeActivationStatus(active)
+				if retChangeStatus['status']:
+					retReadConfig=self.readConf()
+					if retReadConfig["status"]:
+						return [True,retChangeStatus["code"]]
+					else:
+						return [False,retReadConfig["code"]]
+				else:
+					return [False,retChangeStatus["code"]]
 			else:
-				return [True,BellManager.BELL_DEACTIVATED_SUCCESSFULLY]
+				if active:
+					return [True,BellManager.BELLS_ALREADY_ACTIVATED]
+				else:
+					return [True,BellManager.BELLS_ALREADY_DEACTIVATED]
 		else:
-			return [False,ret["code"]]
+			self.bellsConfig[bellToEdit]["active"]=active
+			ret=self.saveConf(self.bellsConfig,bellToEdit,"active")
+
+			if ret["status"]:
+				self._updateBellsConfigData("bellActivated",active,bellToEdit)
+				if active:
+					return [True,BellManager.BELL_ACTIVATED_SUCCESSFULLY]
+				else:
+					return [True,BellManager.BELL_DEACTIVATED_SUCCESSFULLY]
+			else:
+				return [False,ret["code"]]
 
 	#def changeBellStatus
+
+	def _checkBellStatus(self,active):
+
+		if len(self.bellsConfig)>0:
+			for item in self.bellsConfig:
+				if self.bellsConfig[item]["active"]!=active:
+					return True
+		return False			
+
+	#def _checkBellStatus
 
 	def _updateBellsConfigData(self,param,value,bellId):
 
@@ -727,25 +757,38 @@ class BellManager(object):
 
 	#def _updateBellsConfigData
 
-	def removeBell(self,bellToRemove):
+	def removeBell(self,allBells,bellToRemove=None):
 
-		bellsConfig=copy.deepcopy(self.bellsConfig)
-		bellsConfig.pop(bellToRemove)
-		ret=self.saveConf(bellsConfig,bellToRemove,"remove")
-
-		if ret["status"]:
-			self.bellsConfig=bellsConfig
-			for i in range(len(self.bellsConfigData)-1,-1,-1):
-				if self.bellsConfigData[i]["id"]==bellToRemove:
-					self.bellsConfigData.pop(i)
-					break
-			return [True,BellManager.BELL_REMOVED_SUCCESSFULLY]
+		if allBells:
+			if len(self.bellsConfig)>0:
+				retRemove=self.removeAllBells()
+				if retRemove['status']:
+					retReadConfig=self.readConf()
+					if retReadConfig["status"]:
+						return [True,retRemove["code"]]
+					else:
+						return [False,retReadConfig["code"]]
+				else:
+					return [False, retRemove["code"]]
+			else:
+				return [True,BellManager.BELLS_ALREADY_REMOVED]
 		else:
-			return [False,ret["code"]]
+			bellsConfig=copy.deepcopy(self.bellsConfig)
+			bellsConfig.pop(bellToRemove)
+			ret=self.saveConf(bellsConfig,bellToRemove,"remove")
+
+			if ret["status"]:
+				self.bellsConfig=bellsConfig
+				for i in range(len(self.bellsConfigData)-1,-1,-1):
+					if self.bellsConfigData[i]["id"]==bellToRemove:
+						self.bellsConfigData.pop(i)
+						break
+				return [True,BellManager.BELL_REMOVED_SUCCESSFULLY]
+			else:
+				return [False,ret["code"]]
 
 	#def removeBell
 
-			
 	def getOrderBell(self,info=None):
 	
 		tmp=[]
@@ -829,16 +872,15 @@ class BellManager(object):
 	#def _copyMediaFiles	
 
 
-	def export_bells_conf(self,dest_file):
+	def exportBellsConfig(self,destFile):
 
 		user=os.environ["USER"]
-		#Old n4d: result=self.n4d.export_bells_conf(self.credentials,'BellSchedulerManager',dest_file,user)
-		result=self.client.BellSchedulerManager.export_bells_conf(dest_file,user)
+		result=self.client.BellSchedulerManager.export_bells_conf(destFile,user)
 		self._debug("Export bells conf : ",result)
+		
 		return result
 
-	#def export_bells_conf	
-
+	#def exportBellsConf	
 
 	def import_bells_conf(self,orig_file,backup):
 		user=os.environ["USER"]
@@ -868,23 +910,27 @@ class BellManager(object):
 
 	#def enable_holiday	
 
-	def change_activation_status(self,action):
+	def changeActivationStatus(self,active):
 
-		#Old n4d: result=self.n4d.change_activation_status(self.credentials,'BellSchedulerManager',action)
+		if active:
+			action="activate"
+		else:
+			action="deactivate"
+
 		result=self.client.BellSchedulerManager.change_activation_status(action)
 		self._debug("Activation/Deactivation process: ",result)	
+		
 		return result
 
-	#def change_activation_status	
+	#def changeActivationStatus	
 
-	def remove_all_bells(self):
+	def removeAllBells(self):
 
-		#Old n4d: result=self.n4d.remove_all_bells(self.credentials,'BellSchedulerManager')
 		result=self.client.BellSchedulerManager.remove_all_bells()
 		self._debug("Remove all bells process: ",result)	
 		return result
 
-	#def remove_all_bells
+	#def removeAllBells
 
 	def checkValidity(self,weekdays,validity):
 
@@ -935,6 +981,23 @@ class BellManager(object):
 
 	#def getDaysInRange
 
+	def checkGlobalOptionStatus(self):
 
+		if len(self.bellsConfig)>0:
+			return True
+		else:
+			return False
+			
+	#def checkGlobalOptionStatus
+
+	def checkIfAreBellsWithDirectory(self):
+
+		for item in self.bellsConfig:
+			if self.bellsConfig[item]["sound"]["option"]=="directory":
+				return True
+
+		return False
+
+	#def checkIfAreBellsWithRandom
 
 #class BellManager 		

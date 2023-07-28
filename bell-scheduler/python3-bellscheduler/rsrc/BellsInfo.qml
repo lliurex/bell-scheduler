@@ -3,6 +3,7 @@ import org.kde.kirigami 2.16 as Kirigami
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Dialogs 1.3
 
 Rectangle{
     id:rectLayout
@@ -71,6 +72,14 @@ Rectangle{
                 MenuItem{
                     icon.name:"document-export.svg"
                     text:i18nd("bell-scheduler","Generate bell backup")
+                    enabled:bellSchedulerBridge.enableGlobalOptions
+                    onClicked:{
+                        if (bellSchedulerBridge.showExportBellsWarning){
+                            exportBellDialog.open()
+                        }else{
+                            exportDialog.open()
+                        }
+                    }
                 }
 
                 MenuItem{
@@ -91,6 +100,7 @@ Rectangle{
             text:i18nd("bell-scheduler","Global Options")
             Layout.preferredHeight:40
             Layout.rightMargin:rectLayout.width-(backupBtn.width+actionsBtn.width+newBtn.width+30)
+            enabled:bellSchedulerBridge.enableGlobalOptions
             onClicked:actionsMenu.open()
             
             Menu{
@@ -101,16 +111,20 @@ Rectangle{
                 MenuItem{
                     icon.name:"audio-on.svg"
                     text:i18nd("bell-scheduler","Enable alls bells")
+                    onClicked:bellSchedulerBridge.changeBellStatus([true,true])
                 }
 
                 MenuItem{
                     icon.name:"audio-volume-muted.svg"
                     text:i18nd("bell-scheduler","Disable all bells")
+                    onClicked:bellSchedulerBridge.changeBellStatus([true,false])
+
                 }
 
                 MenuItem{
                     icon.name:"delete.svg"
                     text:i18nd("bell-scheduler","Delete alls bells")
+                    onClicked:bellSchedulerBridge.removeBell([true])
                 }
             }
            
@@ -135,15 +149,22 @@ Rectangle{
 
     ChangesDialog{
         id:removeBellDialog
-        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-question.svg"
-        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell")
-        dialogMsg:i18nd("bell-scheduler","Do you want delete the bell?")
-        dialogVisible:bellSchedulerBridge.showRemoveBellDialog
+        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
+        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell List")
+        dialogMsg:{
+            if (bellSchedulerBridge.showRemoveBellDialog[1]){
+                i18nd("bell-scheduler","All bells will be deleted. Do yo want to continue?")
+            }else{
+                i18nd("bell-scheduler","The bell will be deleted. Do yo want to continue?")
+            }
+        }
+        dialogVisible:bellSchedulerBridge.showRemoveBellDialog[0]
         dialogWidth:400
         btnAcceptVisible:false
         btnAcceptText:""
         btnDiscardText:i18nd("bell-scheduler","Accept")
         btnDiscardIcon:"dialog-ok.svg"
+        btnDiscardVisible:true
         btnCancelText:i18nd("bell-scheduler","Cancel")
         btnCancelIcon:"dialog-cancel.svg"
         Connections{
@@ -156,6 +177,43 @@ Rectangle{
            }
 
         }
+    }
+
+    ChangesDialog{
+        id:exportBellDialog
+        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-information.svg"
+        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell List")
+        dialogMsg:i18nd("bell-scheduler","Alarms have been detected with random selection of sound files from a folder.\nRemember that this folder will not be included in the export made.\nIf the folder is not saved manually, when the export is restored, the alarms that\nuse it will be deactivated")
+        dialogWidth:600
+        btnAcceptVisible:false
+        btnAcceptText:""
+        btnDiscardVisible:false
+        btnCancelText:i18nd("bell-scheduler","Accept")
+        btnCancelIcon:"dialog-ok.svg"
+        Connections{
+           target:exportBellDialog
+           function onRejectDialogClicked(){
+                exportBellDialog.close()
+                exportDialog.open()         
+           }
+
+        }
+
+    }
+
+    FileDialog{
+        id:exportDialog
+        title: i18nd("bell-scheduler","Please choose a file to save bells list")
+        folder:shortcuts.home
+        selectExisting:false
+        nameFilters:["Zip files (*zip)"]
+        onAccepted:{
+            var selectedPath=""
+            selectedPath=exportDialog.fileUrl.toString()
+            selectedPath=selectedPath.replace(/^(file:\/{2})/,"")
+            bellSchedulerBridge.exportBellsConfig(selectedPath)
+         }
+      
     }
 
     function getTextMessage(msgCode){
@@ -181,6 +239,9 @@ Rectangle{
             case -31:
                 var msg=i18nd("bell-scheduler","Detected alarms with errors")
                 break;
+            case 11:
+                var msg=i18nd("bell-scheduler","Backup generated successfully")
+                break;
             case 14:
                 var msg=i18nd("bell-scheduler","Bell deleted successfully")
                 break;
@@ -196,6 +257,24 @@ Rectangle{
             case 18:
                 var msg=i18nd("bell-scheduler","Bell created successfully")
                 break
+            case 46:
+                var msg=i18nd("bell-scheduler","The bells have been activated successfully")
+                break;
+            case 47:
+                var msg=i18nd("bell-scheduler","The bells have been deactivated successfully")
+                break;
+            case 51:
+                var msg=i18nd("bell-scheduler","The bells have been removed successfully")
+                break;
+            case 53:
+                var msg=i18nd("bell-scheduler","Bells already activated. Nothing to do")
+                break;
+            case 54:
+                var msg=i18nd("bell-scheduler","Bells already deactivated. Nothing to do")
+                break;
+            case 55:
+                var msg=i18nd("bell-scheduler","Bells alreday removed. Nothing to do")
+                break;
             default:
                 var msg=""
                 break;

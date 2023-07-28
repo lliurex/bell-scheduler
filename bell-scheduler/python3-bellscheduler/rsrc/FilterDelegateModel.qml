@@ -24,13 +24,15 @@ DelegateModel {
 	filterOnGroup:"visible"
 
 	function update(){
-		allItems.setGroups(0,allItems.count,[ "all"]);
-		for (let index = 0; index < allItems.count; index++) {
-            let item = allItems.get(index).model;
-            let visible = item[role].toLowerCase().includes(search.toLowerCase());
-            if (!visible) continue;
-            allItems.setGroups(index, 1, [ "all", "visible" ]);
-        }
+		if (allItems.count>0){
+			allItems.setGroups(0,allItems.count,[ "all"]);
+			for (let index = 0; index < allItems.count; index++) {
+	            let item = allItems.get(index).model;
+	            let visible = item[role].toLowerCase().includes(search.toLowerCase());
+	            if (!visible) continue;
+	            allItems.setGroups(index, 1, [ "all", "visible" ]);
+	        }
+	   }
 
 	}
 	Component.onCompleted: Qt.callLater(update)

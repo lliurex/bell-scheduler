@@ -55,11 +55,13 @@ GridLayout{
         property int currentOption:bellSchedulerBridge.bellCurrentOption
         Layout.fillWidth:true
         Layout.fillHeight: true
-        initialItem:bellView
+        initialItem:emptyView
 
         onCurrentOptionChanged:{
             switch(currentOption){
                 case 0:
+                    manageView.replace(emptyView)
+                case 1:
                     manageView.replace(bellView)
             }
 
@@ -78,6 +80,13 @@ GridLayout{
                 from: 1
                 to:0
                 duration: 600
+            }
+        }
+
+        Component{
+            id:emptyView
+            Item{
+                id:emptyPanel
             }
         }
 

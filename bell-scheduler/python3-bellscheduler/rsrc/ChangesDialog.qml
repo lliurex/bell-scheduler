@@ -14,6 +14,7 @@ Dialog {
     property alias btnAcceptVisible:dialogApplyBtn.visible
     property alias btnAcceptText:dialogApplyBtn.text
     property alias btnDiscardText:dialogDiscardBtn.text
+    property alias btnDiscardVisible:dialogDiscardBtn.visible
     property alias btnDiscardIcon:dialogDiscardBtn.icon.name
     property alias btnCancelText:dialogCancelBtn.text
     property alias btnCancelIcon:dialogCancelBtn.icon.name
@@ -76,6 +77,7 @@ Dialog {
                 display:AbstractButton.TextBesideIcon
                 icon.name:btnDiscardIcon
                 text: btnDiscardText
+                visible:btnDiscardVisible
                 focus:true
                 font.family: "Quattrocento Sans Bold"
                 font.pointSize: 10

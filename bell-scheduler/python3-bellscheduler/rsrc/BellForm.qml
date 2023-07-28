@@ -417,6 +417,7 @@ Rectangle{
         btnAcceptText:i18nd("bell-scheduler","Apply")
         btnDiscardText:i18nd("bell-scheduler","Discard")
         btnDiscardIcon:"delete.svg"
+        btnDiscardVisible:true
         btnCancelText:i18nd("bell-scheduler","Cancel")
         btnCancelIcon:"dialog-cancel.svg"
         Connections{

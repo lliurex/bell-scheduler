@@ -56,16 +56,31 @@ Popup {
                 var msg=i18nd("bell-scheduler","Loading bell info. Wait a moment...");
                 break;
             case 3:
-                var msg=i18nd("bell-scheduler","Validating the data entered...")
+                var msg=i18nd("bell-scheduler","Validating the data entered. Wait a moment...")
                 break;
             case 4:
-                var msg=i18nd("bell-scheduler","Saving the data entered...")
+                var msg=i18nd("bell-scheduler","Saving the data entered. Wait a moment...")
                 break;
             case 5:
-                var msg=i18nd("bell-scheduler","Changing bell status...")
+                var msg=i18nd("bell-scheduler","Activating the bell. Wait a moment...")
                 break;
             case 6:
-                var msg=i18nd("bell-scheduler","Removing bell...")
+                var msg=i18nd("bell-scheduler","Activating all bells. Wait a moment...")
+                break;
+            case 7:
+                var msg=i18nd("bell-scheduler","Deactivating the bell. Wait a moment...")
+                break;
+            case 8:
+                var msg=i18nd("bell-scheduler","Deactivating all bells. Wait a moment...")
+                break;
+            case 9:
+                var msg=i18nd("bell-scheduler","Removing the bell. Wait a moment...")
+                break;
+            case 10:
+                var msg=i18nd("bell-scheduler","Removing all bells. Wait a moment...")
+                break;
+            case 11:
+                var msg=i18nd("bell-scheduler","Exporting bells configuration. Wait a moment...")
                 break;
             default:
                 var msg=""

@@ -253,7 +253,7 @@ Popup {
                 messageLabel.text=i18nd("bell-scheduler","You must indicate the two dates of range")
                 return false
             }else{
-                if (day1Entry.text>=day2Entry.text){
+                if (Date.fromLocaleString(Qt.locale(),day1Entry.text,"dd/MM/yyyy")>=Date.fromLocaleString(Qt.locale(),day2Entry.text,"dd/MM/yyyyy")){
                     messageLabel.visible=true
                     messageLabel.text=i18nd("bell-scheduler","Last date in range must be major than init date")
                     return false

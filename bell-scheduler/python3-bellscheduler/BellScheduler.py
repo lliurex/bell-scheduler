@@ -14,7 +14,15 @@ from . import ImagesModel
 
 NEW_BELL_CONFIG=1
 LOAD_BELL_CONFIG=2
-CHANGE_BELL_STATUS=5
+CHECK_DATA=3
+SAVE_DATA=4
+ACTIVE_BELL=5
+ACTIVE_ALL_BELLS=6
+DEACTIVE_BELL=7
+DEACTIVE_ALLS_BELLS=8
+REMOVING_BELL=9
+REMOVING_ALL_BELLS=10
+EXPORT_BELLS_CONFIG=11
 
 class GatherInfo(QThread):
 
@@ -99,7 +107,9 @@ class ChangeBellStatus(QThread):
 	def __init__(self,*args):
 
 		QThread.__init__(self)
-		self.data=args[0]
+		self.allBells=args[0]
+		self.active=args[1]
+		self.bellToEdit=args[2]
 		self.ret=[]
 
 	#def __init__
@@ -107,7 +117,7 @@ class ChangeBellStatus(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellMan.changeBellStatus(self.data[0],self.data[1])
+		self.ret=Bridge.bellMan.changeBellStatus(self.allBells,self.active,self.bellToEdit)
 
 	#def run
 
@@ -118,7 +128,8 @@ class RemoveBell(QThread):
 	def __init__(self,*args):
 
 		QThread.__init__(self)
-		self.bellToRemove=args[0]
+		self.allBells=args[0]
+		self.bellToRemove=args[1]
 		self.ret=[]
 
 	#def __init__
@@ -126,11 +137,31 @@ class RemoveBell(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellMan.removeBell(self.bellToRemove)
+		self.ret=Bridge.bellMan.removeBell(self.allBells,self.bellToRemove)
 
 	#def run
 
 #class RemoveBell
+
+class GenerateBackup(QThread):
+
+	def __init__(self,*args):
+
+		QThread.__init__(self)
+		self.exportPath=args[0]
+		self.ret=[]
+
+	#def __init__
+
+	def run(self,*args):
+
+		time.sleep(0.5)
+		self.ret=Bridge.bellMan.exportBellsConfig(self.exportPath)
+
+	#def run
+
+
+#class GenerateBackup
 
 class Bridge(QObject):
 
@@ -166,7 +197,9 @@ class Bridge(QObject):
 		self._showBellFormMessage=[False,"","Ok"]
 		self._showChangesInBellDialog=False
 		self._changesInBell=False
-		self._showRemoveBellDialog=False
+		self._showRemoveBellDialog=[False,False]
+		self._enableGlobalOptions=False
+		self._showExportBellsWarning=False
 		Bridge.bellMan.createN4dClient(ticket)
 		self.initBridge()
 
@@ -185,11 +218,13 @@ class Bridge(QObject):
 
 		if self.gatherInfo.syncWithCron['status']:
 			if self.gatherInfo.readConf['status']:
-				self.currentStack=1
 				self._updateBellsModel()
 				self._updateImagesModel()
+				self.enableGlobalOptions=Bridge.bellMan.checkGlobalOptionStatus()
+				self.showExportBellsWarning=Bridge.bellMan.checkIfAreBellsWithDirectory()
 				if Bridge.bellMan.loadError:
 					self.showMainMessage=[True,Bridge.bellMan.BELLS_WITH_ERRORS,"Error"]
+				self.currentStack=1
 			else:
 				self.showLoadErrorMessage=[True,self.gatherInfo.readConf['code']]
 		else:
@@ -517,6 +552,34 @@ class Bridge(QObject):
 
 	#def _setShowBellFormMessage
 
+	def _getEnableGlobalOptions(self):
+
+		return self._enableGlobalOptions
+
+	#def _getEnableGlobalOptions
+
+	def _setEnableGlobalOptions(self,enableGlobalOptions):
+
+		if self._enableGlobalOptions!=enableGlobalOptions:
+			self._enableGlobalOptions=enableGlobalOptions
+			self.on_enableGlobalOptions.emit()
+
+	#def _setEnableGlobalOptions
+
+	def _getShowExportBellsWarning(self):
+
+		return self._showExportBellsWarning
+
+	#def _getShowExportBellsWarning
+
+	def _setShowExportBellsWarning(self,showExportBellsWarning):
+
+		if self._showExportBellsWarning!=showExportBellsWarning:
+			self._showExportBellsWarning=showExportBellsWarning
+			self.on_showExportBellsWarning.emit()
+
+	#def _setShowExportBellsWarning
+
 	def _getImagesModel(self):
 
 		return self._imagesModel
@@ -549,7 +612,7 @@ class Bridge(QObject):
 
 	def _updateBellsModelInfo(self,param):
 
-		updatedInfo=Bridge.onedriveMan.bellsConfigData
+		updatedInfo=Bridge.bellMan.bellsConfigData
 		if len(updatedInfo)>0:
 			for i in range(len(updatedInfo)):
 				index=self._bellsModel.index(i)
@@ -583,7 +646,7 @@ class Bridge(QObject):
 		self._initializeVars()
 		self.closePopUp=[True,""]
 		self.currentStack=2
-		self.bellCurrentOption=0
+		self.bellCurrentOption=1
 
 	#def _addNewBellRet
 
@@ -612,6 +675,7 @@ class Bridge(QObject):
 		if not self.changesInBell:
 			self.currentStack=1
 			self.mainCurrentOption=0
+			self.bellCurrentOption=0
 			self.moveToStack=""
 		else:
 			self.showChangesInBellDialog=True
@@ -635,7 +699,7 @@ class Bridge(QObject):
 		self._initializeVars()
 		self.closePopUp=[True,""]
 		self.currentStack=2
-		self.bellCurrentOption=0
+		self.bellCurrentOption=1
 
 	#def _loadBellRet
 
@@ -864,7 +928,7 @@ class Bridge(QObject):
 
 	def _applyBellChanges(self):
 
-		self.closePopUp=[False,3]
+		self.closePopUp=[False,CHECK_DATA]
 		self.closeGui=False
 		self.checkData=CheckData(self.currentBellConfig)
 		self.checkData.start()
@@ -875,7 +939,7 @@ class Bridge(QObject):
 	def _checkDataRet(self):
 
 		if self.checkData.ret["result"]:
-			self.closePopUp=[False,4]
+			self.closePopUp=[False,SAVE_DATA]
 			self.saveData=SaveData(self.currentBellConfig)
 			self.saveData.start()
 			self.saveData.finished.connect(self._saveDataRet)
@@ -894,11 +958,13 @@ class Bridge(QObject):
 		else:
 			self.showMainMessage=[True,self.saveData.ret[1],"Error"]	
 
-		self.closePopUp=[True,""]
+		self.enableGlobalOptions=Bridge.bellMan.checkGlobalOptionStatus()
+		self.showExportBellsWarning=Bridge.bellMan.checkIfAreBellsWithDirectory()
 		self.changesInBell=False
 		self.closeGui=True
 		self.moveToStack=1
 		self._manageGoToStack()
+		self.closePopUp=[True,""]
 
 	#def _saveDataRet
 
@@ -922,8 +988,24 @@ class Bridge(QObject):
 	def changeBellStatus(self,data):
 
 		self.closeGui=False
-		self.closePopUp=[False,CHANGE_BELL_STATUS]
-		self.changeStatus=ChangeBellStatus(data)
+		self.changeAllBells=data[0]
+		active=data[1]
+		if self.changeAllBells:
+			bellToEdit=None
+		else:
+			bellToEdit=data[2]
+		if self.changeAllBells:
+			if active:
+				self.closePopUp=[False,ACTIVE_ALL_BELLS]
+			else:
+				self.closePopUp=[False,DEACTIVE_ALLS_BELLS]
+		else:
+			if active:
+				self.closePopUp=[False,ACTIVE_BELL]
+			else:
+				self.closePopUp=[False,DEACTIVE_BELL]
+
+		self.changeStatus=ChangeBellStatus(self.changeAllBells,active,bellToEdit)
 		self.changeStatus.start()
 		self.changeStatus.finished.connect(self._changeBellStatusRet)
 
@@ -932,7 +1014,10 @@ class Bridge(QObject):
 	def _changeBellStatusRet(self):
 
 		if self.changeStatus.ret[0]:
-			self._updateBellsModelInfo('bellActivated')
+			if self.changeAllBells:
+				self._updateBellsModel()
+			else:
+				self._updateBellsModelInfo('bellActivated')
 			self.showMainMessage=[True,self.changeStatus.ret[1],"Ok"]
 		else:
 			self.showMainMessage=[True,self.changeStatus.ret[1],"Error"]
@@ -942,18 +1027,23 @@ class Bridge(QObject):
 
 	#def _changeBellStatusRet
 
-	@Slot(str)
-	def removeBell(self,bellToRemove):
+	@Slot('QVariantList')
+	def removeBell(self,data):
 
-		self.bellToRemove=bellToRemove
-		self.showRemoveBellDialog=True
+		self.removeAllBells=data[0]
+		if self.removeAllBells:
+			self.bellToRemove=None
+		else:
+			self.bellToRemove=data[1]
+
+		self.showRemoveBellDialog=[True,self.removeAllBells]
 
 	#def removeBell
 
 	@Slot(str)
 	def manageRemoveBellDialog(self,response):
 
-		self.showRemoveBellDialog=False
+		self.showRemoveBellDialog=[False,False]
 		if response=="Accept":
 			self._launchRemoveBellProcess()
 
@@ -962,8 +1052,12 @@ class Bridge(QObject):
 	def _launchRemoveBellProcess(self):
 
 		self.closeGui=False
-		self.closePopUp=[False,6]
-		self.removeBellProcess=RemoveBell(self.bellToRemove)
+		if self.removeAllBells:
+			self.closePopUp=[False,REMOVING_ALL_BELLS]
+		else:
+			self.closePopUp=[False,REMOVING_BELL]
+
+		self.removeBellProcess=RemoveBell(self.removeAllBells,self.bellToRemove)
 		self.removeBellProcess.start()
 		self.removeBellProcess.finished.connect(self._removeBellProcessRet)
 
@@ -977,10 +1071,35 @@ class Bridge(QObject):
 		else:
 			self.showMainMessage=[False,self.removeBellProcess.ret[1],"Error"]
 
+		self.enableGlobalOptions=Bridge.bellMan.checkGlobalOptionStatus()
 		self.closePopUp=[True,""]
 		self.closeGui=True
 
 	#def _removeBellProcessRet
+
+	@Slot(str)
+	def exportBellsConfig(self,exportPath):
+
+		self.closeGui=False
+		self.closePopUp=[False,EXPORT_BELLS_CONFIG]
+		self.generateBackup=GenerateBackup(exportPath)
+		self.generateBackup.start()
+		self.generateBackup.finished.connect(self._exportBellsConfigRet)
+
+	#def exportBellsConfig
+
+	def _exportBellsConfigRet(self):
+
+		if self.generateBackup.ret["status"]:
+			self.showMainMessage=[True,self.generateBackup.ret["code"],"Ok"]
+		else:
+			self.showMainMessage=[True,self.generateBackup.ret["code"],"Error"]
+		
+		self.closeGui=True
+		self.closePopUp=[True,""]			
+
+
+	#def _exportBellsConfigRet
 
 	def _manageGoToStack(self):
 
@@ -993,9 +1112,8 @@ class Bridge(QObject):
 
 	@Slot()
 	def openHelp(self):
-		lang=os.environ["LANG"]
-
-		if 'valencia' in lang:
+		
+		if 'valencia' in Bridge.bellMan.systemLocale:
 			self.help_cmd='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Bell-Scheduler.'
 		else:
 			self.help_cmd='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Bell-Scheduler'
@@ -1072,6 +1190,7 @@ class Bridge(QObject):
 	
 	on_showBellFormMessage=Signal()
 	showBellFormMessage=Property('QVariantList',_getShowBellFormMessage,_setShowBellFormMessage, notify=on_showBellFormMessage)
+	
 	on_showLoadErrorMessage=Signal()
 	showLoadErrorMessage=Property('QVariantList',_getShowLoadErrorMessage,_setShowLoadErrorMessage, notify=on_showLoadErrorMessage)
 
@@ -1088,7 +1207,13 @@ class Bridge(QObject):
 	changesInBell=Property(bool,_getChangesInBell,_setChangesInBell,notify=on_changesInBell)
 
 	on_showRemoveBellDialog=Signal()
-	showRemoveBellDialog=Property(bool,_getShowRemoveBellDialog,_setShowRemoveBellDialog,notify=on_showRemoveBellDialog)
+	showRemoveBellDialog=Property('QVariantList',_getShowRemoveBellDialog,_setShowRemoveBellDialog,notify=on_showRemoveBellDialog)
+
+	on_enableGlobalOptions=Signal()
+	enableGlobalOptions=Property(bool,_getEnableGlobalOptions,_setEnableGlobalOptions,notify=on_enableGlobalOptions)
+
+	on_showExportBellsWarning=Signal()
+	showExportBellsWarning=Property(bool,_getShowExportBellsWarning,_setShowExportBellsWarning,notify=on_showExportBellsWarning)
 
 	on_closeGui=Signal()
 	closeGui=Property(bool,_getCloseGui,_setCloseGui, notify=on_closeGui)
