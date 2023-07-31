@@ -140,103 +140,20 @@ GridLayout{
 			ToolTip.visible: hovered
 			ToolTip.text:i18nd("bell-scheduler","Click to edit shutdown time with keyboard ")
 			onClicked:{
-				hourEntry.text=formatEditText(hoursTumbler.currentIndex),
-				minuteEntry.text=formatEditText(minutesTumbler.currentIndex),
-				popupEditHour.open();
+				timeSelector.open()
 			}
-			Popup {
-				id: popupEditHour
-				x: Math.round(parent.width/ 2)
-       			y: Math.round(parent.height)
-				rightMargin:popupEditHour.width
-				width: 205
-				height: 170
-				modal: true
-				focus: true
-				closePolicy: Popup.NoAutoClose
-				enter: Transition {
-					NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 }
+			TimeSelector{
+				id:timeSelector
+				hourEntry:formatEditText(hoursTumbler.currentIndex)
+				minuteEntry:formatEditText(minutesTumbler.currentIndex)
+				Connections{
+					target:timeSelector
+					function onTimeApplyClicked(hourValue,minuteValue){
+						hoursTumbler.currentIndex=hourValue
+						minutesTumbler.currentIndex=minuteValue
+					}
 				}
-				exit: Transition {
-					NumberAnimation { property: "opacity"; from: 1.0; to: 0.0 }
-    			}
-				GridLayout{
-					id:popupGrid
-					rows:3
-					flow: GridLayout.TopToBottom
-					RowLayout {
-						id: popupHourLayout
-					    Layout.alignment:Qt.AlignHCenter
-					    Layout.fillWidth: true
-					    Layout.bottomMargin: 10
-					    spacing:4
-				    	TextField{
-				    		id: hourEntry
-				    		validator: RegExpValidator { regExp: /([0-1][0-9]|2[0-3])/ }
-				    		implicitWidth: 70
-				    		horizontalAlignment: TextInput.AlignHCenter
-				    		color:"#3daee9"
-				    		font.pointSize: 40
-				    	}
 
-				    	Text{
-							font.pointSize:40
-							color:"#3daee9"
-							text:":"
-				    	}
-				    	
-				    	TextField{
-				    		id: minuteEntry
-				    		validator: RegExpValidator { regExp: /[0-5][0-9]/ }
-				    		implicitWidth: 70
-				    		horizontalAlignment: TextInput.AlignHCenter
-				    		color:"#3daee9"
-				    		font.pointSize: 40
-				    	}
-				    }
-
-			    	RowLayout {
-					   id: footPopup
-					   Layout.fillWidth: true
-					   Layout.bottomMargin: 10
-
-					   Layout.alignment:Qt.AlignHCenter
-					   spacing:8
-
-					   Button {
-							id:applyEditBtn
-						   	display:AbstractButton.TextBesideIcon
-						   	icon.name:"dialog-ok-apply.svg"
-						   	text:i18nd("bell-scheduler","Apply")
-						   	Layout.preferredHeight: 40
-						   	onClicked:{
-						   		if (validateEntry(hourEntry.text,minuteEntry.text)){
-						   			hoursTumbler.currentIndex=hourEntry.text,
-						   			minutesTumbler.currentIndex=minuteEntry.text,
-									delay(1000, function() {
-										popupEditHour.close();
-							        })
-							    }else{
-							    	popupEditHour.close();
-							    }
-						   		
-					   		}
-					 	}
-
-					   	Button {
-					   		id:cancelEditBtn
-						   	display:AbstractButton.TextBesideIcon
-						   	icon.name:"dialog-cancel.svg"
-						   	text:i18nd("bell-scheduler","Cancel")
-						   	Layout.preferredHeight: 40
-						   	onClicked:{
-						   		popupEditHour.close();
-					   		}
-					 	}
-					 	
-					}      
-
-			    }
 			}
 		} 
 	}	

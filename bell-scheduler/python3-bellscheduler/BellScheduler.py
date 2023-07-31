@@ -23,6 +23,8 @@ DEACTIVE_ALLS_BELLS=8
 REMOVING_BELL=9
 REMOVING_ALL_BELLS=10
 EXPORT_BELLS_CONFIG=11
+IMPORT_BELLS_CONFIG=12
+RECOVERY_BELLS_CONFIG=13
 
 class GatherInfo(QThread):
 
@@ -160,8 +162,45 @@ class GenerateBackup(QThread):
 
 	#def run
 
-
 #class GenerateBackup
+
+class ImportBackup(QThread):
+
+	def __init__(self,*args):
+
+		QThread.__init__(self)
+		self.importPath=args[0]
+		self.ret=[]
+
+	#def __init__
+
+	def run(self,*args):
+
+		time.sleep(0.5)
+		self.ret=Bridge.bellMan.importBellBackup(self.importPath)
+
+	#def run
+
+#class ImportBackup
+
+class RecoveryConfig(QThread):
+
+	def __init__(self,*args):
+
+		QThread.__init__(self)
+		self.recoveryPath=args[0]
+		self.ret=[]
+
+	#def __init__
+
+	def run(self,*args):
+
+		time.sleep(0.5)
+		self.ret=Bridge.bellMan.recoveryBellBackup(self.recoveryPath)
+
+	#def run
+
+#class RecoveryConfig
 
 class Bridge(QObject):
 
@@ -191,7 +230,7 @@ class Bridge(QObject):
 		self._bellCurrentOption=0
 		self._closePopUp=[True,""]
 		self.moveToStack=""
-		self._closeGui=False
+		self._closeGui=True
 		self._showMainMessage=[False,"","Ok"]
 		self._showLoadErrorMessage=[False,""]
 		self._showBellFormMessage=[False,"","Ok"]
@@ -208,6 +247,7 @@ class Bridge(QObject):
 	def initBridge(self):
 
 		self.currentStack=0
+		self.closeGui=False
 		self.gatherInfo=GatherInfo()
 		self.gatherInfo.start()
 		self.gatherInfo.finished.connect(self._loadConfig)
@@ -216,6 +256,7 @@ class Bridge(QObject):
 	
 	def _loadConfig(self):
 
+		self.closeGui=True
 		if self.gatherInfo.syncWithCron['status']:
 			if self.gatherInfo.readConf['status']:
 				self._updateBellsModel()
@@ -634,6 +675,7 @@ class Bridge(QObject):
 	def addNewBell(self):
 
 		self.closePopUp=[False,NEW_BELL_CONFIG]
+		self.showMainMessage=[False,"","Ok"]
 		self.newBell=LoadBell(True,"")
 		self.newBell.start()
 		self.newBell.finished.connect(self._addNewBellRet)
@@ -687,6 +729,7 @@ class Bridge(QObject):
 	def loadBell(self,bellToLoad):
 
 		self.closePopUp=[False,LOAD_BELL_CONFIG]
+		self.showMainMessage=[False,"","Ok"]
 		self.editBell=LoadBell(False,bellToLoad)
 		self.editBell.start()
 		self.editBell.finished.connect(self._loadBellRet)
@@ -988,6 +1031,7 @@ class Bridge(QObject):
 	def changeBellStatus(self,data):
 
 		self.closeGui=False
+		self.showMainMessage=[False,"","Ok"]
 		self.changeAllBells=data[0]
 		active=data[1]
 		if self.changeAllBells:
@@ -1030,6 +1074,7 @@ class Bridge(QObject):
 	@Slot('QVariantList')
 	def removeBell(self,data):
 
+		self.showMainMessage=[False,"","Ok"]
 		self.removeAllBells=data[0]
 		if self.removeAllBells:
 			self.bellToRemove=None
@@ -1081,6 +1126,7 @@ class Bridge(QObject):
 	def exportBellsConfig(self,exportPath):
 
 		self.closeGui=False
+		self.showMainMessage=[False,"","Ok"]
 		self.closePopUp=[False,EXPORT_BELLS_CONFIG]
 		self.generateBackup=GenerateBackup(exportPath)
 		self.generateBackup.start()
@@ -1100,6 +1146,43 @@ class Bridge(QObject):
 
 
 	#def _exportBellsConfigRet
+
+	@Slot(str)
+	def importBellsConfig(self,importPath):
+
+		self.closeGui=False
+		self.showMainMessage=[False,"","Ok"]
+		self.closePopUp=[False,IMPORT_BELLS_CONFIG]
+		self.importBackup=ImportBackup(importPath)
+		self.importBackup.start()
+		self.importBackup.finished.connect(self._importBackupRet)
+
+	#def importBellsConfig
+
+	def _importBackupRet(self):
+
+		if self.importBackup.ret[0]:
+			self._updateBellsModel()
+			self.closeGui=True
+			self.closePopUp=[True,""]
+			self.showMainMessage=[True,self.importBackup.ret[1],"Ok"]
+
+		else:
+			self.closePopUp=[False,RECOVERY_BELLS_CONFIG]
+			self.recoveryConfig=RecoveryConfig(self.importBackup.ret[1])
+			self.recoveryConfig.start()
+			self.recoveryConfig.finished.connect(self._recoveryConfigRet)		
+
+	#def _importBackupRet
+
+	def _recoveryConfigRet(self):
+
+		self._updateBellsModel()
+		self.closePopUp=[True,""]
+		self.closeGui=True
+		self.showMainMessage=[True,self.recoveryConfig.ret[1],"Error"]
+
+	#def _recoveryConfigRet
 
 	def _manageGoToStack(self):
 
@@ -1138,8 +1221,6 @@ class Bridge(QObject):
 		if self.changesInBell:
 			self.closeGui=False
 			self.showChangesInBellDialog=True
-		else:
-			self.closeGui=True
 
 	#def closeBellScheduler
 	

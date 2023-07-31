@@ -8,17 +8,17 @@ import QtQuick.Dialogs 1.3
 Popup {
 
     id:imagePopUp
-    property alias xPopUp:imagePopUp.x
-    property alias yPopUp:imagePopUp.y
+    /*property alias xPopUp:imagePopUp.x
+    property alias yPopUp:imagePopUp.y*/
     property alias customImagePathText:customImagePath.text
     property string selectedImageFile
     property bool imageFileError:false
 
     width:500
     height:350
-    x:xPopUp
-    y:yPopUp
-    /*anchors.centerIn: Overlay.overlay*/
+    /*x:xPopUp
+    y:yPopUp*/
+    anchors.centerIn: Overlay.overlay
     modal:true
     focus:true
     closePolicy:Popup.NoAutoClose
@@ -29,7 +29,7 @@ Popup {
         height:imagePopUp.height
         color:"transparent"
         Text{ 
-            text:i18nd("bell-scheduler","Image selection")
+            text:i18nd("bell-scheduler","Edit image for bell")
             font.family: "Quattrocento Sans Bold"
             font.pointSize: 16
         }

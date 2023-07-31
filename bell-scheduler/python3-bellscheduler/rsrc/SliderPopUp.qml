@@ -10,8 +10,8 @@ Popup {
     id:sliderPopUp
     property alias popUpWidth:sliderPopUp.width
     property alias popUpHeight:sliderPopUp.height
-    property alias xPopUp:sliderPopUp.x
-    property alias yPopUp:sliderPopUp.y
+    /*property alias xPopUp:sliderPopUp.x
+    property alias yPopUp:sliderPopUp.y*/
     property alias headText:headText.text
     property alias footText:footText.text
     property alias showFoot:footText.visible
@@ -21,9 +21,9 @@ Popup {
 
     width:popUpWidth
     height:popUpHeight
-    x:xPopUp
-    y:yPopUp
-    /*anchors.centerIn: Overlay.overlay*/
+    /*x:xPopUp
+    y:yPopUp*/
+    anchors.centerIn: Overlay.overlay
     modal:true
     focus:true
     closePolicy:Popup.NoAutoClose
@@ -55,9 +55,12 @@ Popup {
             anchors.top:headText.bottom
             anchors.topMargin:25
             focus:true
+            onValueChanged:{
+                sliderEntry.text=sliderId.value
+            }
 
         }
-
+        /*
         PC3.Label {
             text:sliderId.value
             font.pointSize: 14
@@ -65,6 +68,22 @@ Popup {
             anchors.topMargin:10
             anchors.bottomMargin:20
             anchors.horizontalCenter:parent.horizontalCenter
+        }
+        */
+        TextField{
+            id: sliderEntry
+            validator: RegExpValidator { regExp: /([0-9][0-9][0-9])/ }
+            implicitWidth: 70
+            text:sliderId.value
+            horizontalAlignment: TextInput.AlignHCenter
+            anchors.top:sliderId.bottom
+            anchors.topMargin:10
+            anchors.bottomMargin:20
+            anchors.horizontalCenter:parent.horizontalCenter
+            font.pointSize: 14
+            onTextChanged:{
+                timerSlider.restart()
+            }
         }
 
         Text{ 
@@ -98,6 +117,9 @@ Popup {
             anchors.bottomMargin:25
             onClicked:{
                 applyButtonClicked()
+                if (sliderEntry.text==""){
+                    sliderEntry.text=sliderId.value
+                }
             }
         }
 
@@ -130,10 +152,11 @@ Popup {
             if (k === Qt.Key_Minus){
                 sliderId.value=sliderId.value-1
             }
+            /*
             if (k >= Qt.Key_0 && k <= Qt.Key_9) {
                 duration=duration+(k - Qt.Key_0)
                 timerSlider.restart()
-            }
+            }*/
             event.accepted = true;
         }
     
@@ -146,11 +169,18 @@ Popup {
         }
     }    
     function setNewValue(){
-        var newValue=parseInt(container.duration)
-        if (newValue>=0 && newValue<=600){
-            sliderId.value = newValue
+        if (sliderEntry.text!=""){
+            var newValue=parseInt(sliderEntry.text)
+            if (newValue>=0 && newValue<=600){
+                sliderId.value = newValue
+            }else{
+                if (newValue>600){
+                    sliderId.value=600
+                }
+            }
+        }else{
+            sliderId.value=0
         }
-        container.duration=""
         
     }
 }

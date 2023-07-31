@@ -29,6 +29,7 @@ class BellManager(object):
 	MISSING_URL_ERROR=-6
 	MISSING_SOUND_FOLDER_ERROR=-7
 	SOUND_FILE_URL_NOT_VALID_ERROR=-8
+	RECOVERY_BELLS_CONFIG=-9
 	BELLS_WITH_ERRORS=-31
 	FOLDER_WITH_INCORRECT_FILES_ERROR=-38
 	MISSING_URL_LIST_ERROR=-39
@@ -62,7 +63,7 @@ class BellManager(object):
 		self.soundsPath="/usr/local/share/bellScheduler/sounds"
 		self.imagesConfigData=[]
 		self._getSystemLocale()
-		self.getImagesConfig()
+		self._getImagesConfig()
 		self.initValues()
 		'''
 		context=ssl._create_unverified_context()
@@ -114,15 +115,15 @@ class BellManager(object):
 		self.bellsConfig=result["data"]
 		self.bellsConfigData=[]
 		if result["status"]:
-			self.getBellsConfig()
+			self._getBellsConfig()
 	
 		return result
 
 	#def readConf	
 
-	def getBellsConfig(self):
+	def _getBellsConfig(self):
 
-		orderBells=self.getOrderBell()
+		orderBells=self._getOrderBell()
 
 		for item in orderBells:
 			soundError=False
@@ -168,7 +169,7 @@ class BellManager(object):
 				self.loadError=True
 				tmp["bellActivated"]=False
 				self.bellsConfig[item]["active"]=False
-				self.saveConf(self.bellsConfig,item,"active")
+				self._saveConf(self.bellsConfig,item,"active")
  
 			tmp["metaInfo"]=search
 			tmp["isSoundError"]=soundError
@@ -176,9 +177,9 @@ class BellManager(object):
 
 			self.bellsConfigData.append(tmp)
 
-	#def getBellsConfig
+	#def _getBellsConfig
 
-	def getImagesConfig(self):
+	def _getImagesConfig(self):
 
 		self.imagesConfigData=[]
 
@@ -193,7 +194,7 @@ class BellManager(object):
 				tmp["imageSource"]="%s/%s"%(self.bannersPath,item)
 				self.imagesConfigData.append(tmp)
 
-	#def getImagesConfig
+	#def _getImagesConfig
 
 	def initValues(self):
 
@@ -352,7 +353,7 @@ class BellManager(object):
 
 	#def areDaysChecked
 	
-	def saveConf(self,info,last_change,action):
+	def _saveConf(self,info,last_change,action):
 
 		self.bellsConfig=info
 		change=str(last_change)
@@ -361,7 +362,7 @@ class BellManager(object):
 		self._debug("Save configuration file: ",result)
 		return result
 
-	#def saveConf		
+	#def _saveConf		
 
 	def checkData(self,data):
 		
@@ -685,7 +686,7 @@ class BellManager(object):
 		retCopy=self._copyMediaFiles(origImgPath,origSoundPath)
 
 		if retCopy["status"]:
-			retSave=self.saveConf(bellsConfig,order,action)
+			retSave=self._saveConf(bellsConfig,order,action)
 			if retSave["status"]:
 				retReadConfig=self.readConf()
 				if retReadConfig["status"]:
@@ -724,7 +725,7 @@ class BellManager(object):
 					return [True,BellManager.BELLS_ALREADY_DEACTIVATED]
 		else:
 			self.bellsConfig[bellToEdit]["active"]=active
-			ret=self.saveConf(self.bellsConfig,bellToEdit,"active")
+			ret=self._saveConf(self.bellsConfig,bellToEdit,"active")
 
 			if ret["status"]:
 				self._updateBellsConfigData("bellActivated",active,bellToEdit)
@@ -761,7 +762,7 @@ class BellManager(object):
 
 		if allBells:
 			if len(self.bellsConfig)>0:
-				retRemove=self.removeAllBells()
+				retRemove=self._removeAllBells()
 				if retRemove['status']:
 					retReadConfig=self.readConf()
 					if retReadConfig["status"]:
@@ -775,7 +776,7 @@ class BellManager(object):
 		else:
 			bellsConfig=copy.deepcopy(self.bellsConfig)
 			bellsConfig.pop(bellToRemove)
-			ret=self.saveConf(bellsConfig,bellToRemove,"remove")
+			ret=self._saveConf(bellsConfig,bellToRemove,"remove")
 
 			if ret["status"]:
 				self.bellsConfig=bellsConfig
@@ -789,11 +790,11 @@ class BellManager(object):
 
 	#def removeBell
 
-	def getOrderBell(self,info=None):
+	def _getOrderBell(self,info=None):
 	
 		tmp=[]
-		order_bells=[]
-		current_day=date.today().strftime('%d/%m/%Y')
+		orderBells=[]
+		currentDay=date.today().strftime('%d/%m/%Y')
 		if info==None:
 			if len(self.bellsConfig)>0:
 				for item in self.bellsConfig:
@@ -802,15 +803,15 @@ class BellManager(object):
 					try:
 						if (self.bellsConfig[item]["validity"]["value"]!=""):
 							if "-" in self.bellsConfig[item]["validity"]["value"]:
-								date_toformat=self.bellsConfig[item]["validity"]["value"].split("-")[0]
-								datef=datetime.strptime(date_toformat,"%d/%m/%Y")
+								dateToFormat=self.bellsConfig[item]["validity"]["value"].split("-")[0]
+								datef=datetime.strptime(dateToFormat,"%d/%m/%Y")
 							else:
-								date_toformat=self.bellsConfig[item]["validity"]["value"]
-								datef=datetime.strptime(date_toformat,"%d/%m/%Y")
+								dateToFormat=self.bellsConfig[item]["validity"]["value"]
+								datef=datetime.strptime(dateToFormat,"%d/%m/%Y")
 						else:
-							datef=datetime.strptime(current_day,"%d/%m/%Y")
+							datef=datetime.strptime(currentDay,"%d/%m/%Y")
 					except:
-						datef=datetime.strptime(current_day,"%d/%m/%Y")
+						datef=datetime.strptime(currentDay,"%d/%m/%Y")
 
 					x=()
 					x=item,time_f,datef
@@ -823,28 +824,27 @@ class BellManager(object):
 				try:
 					if (info[item]["validity"]["value"]!=""):
 						if "-" in info[item]["validity"]["value"]:
-							date_toformat=info[item]["validity"]["value"].split("-")[0]
-							datef=datetime.strptime(date_toformat,"%d/%m/%Y")
+							dateToFormat=info[item]["validity"]["value"].split("-")[0]
+							datef=datetime.strptime(dateToFormat,"%d/%m/%Y")
 						else:
-							date_toformat=info[item]["validity"]["value"]
-							datef=datetime.strptime(date_toformat,"%d/%m/%Y")
+							dateToFormat=info[item]["validity"]["value"]
+							datef=datetime.strptime(dateToFormat,"%d/%m/%Y")
 					else:
-						datef=datetime.strptime(current_day,"%d/%m/%Y")
+						datef=datetime.strptime(currentDay,"%d/%m/%Y")
 				except:
-					datef=datetime.strptime(current_day,"%d/%m/%Y")
+					datef=datetime.strptime(currentDay,"%d/%m/%Y")
 				x=()
 				x=item,time_f,datef
 				tmp.append(x)		
 
 		tmp.sort(key=lambda bell:(bell[1],bell[2]))
 		for item in tmp:
-			order_bells.append(item[0])
+			orderBells.append(item[0])
 
-		return order_bells	
+		return orderBells	
 
-	#def getOrderBells
+	#def _getOrderBells
 	
-
 	def formatTime(self,item):
 	
 		time=[]
@@ -871,7 +871,6 @@ class BellManager(object):
 
 	#def _copyMediaFiles	
 
-
 	def exportBellsConfig(self,destFile):
 
 		user=os.environ["USER"]
@@ -880,26 +879,58 @@ class BellManager(object):
 		
 		return result
 
-	#def exportBellsConf	
+	#def exportBellsConf
 
-	def import_bells_conf(self,orig_file,backup):
+	def importBellBackup(self,origFile):
+
+		backup=True
+		resultImport=self._importBellsConfifg(origFile,backup)
+
+		if resultImport['status']:
+			retReadConfig=self.readConf()
+			if retReadConfig["status"]:
+				return [True,resultImport["code"]]
+			else:
+				return [False,retReadConfig["code"]]
+		else:
+			return [False,resultImport["data"]]
+
+	#def importBellBackup
+
+	def _importBellsConfifg(self,origFile,backup):
+		
 		user=os.environ["USER"]
-		#Old n4d: result=self.n4d.import_bells_conf(self.credentials,'BellSchedulerManager',orig_file,user,backup)
-		result=self.client.BellSchedulerManager.import_bells_conf(orig_file,user,backup)
-		self._debug("Import bells conf: ",result)	
+		result=self.client.BellSchedulerManager.import_bells_conf(origFile,user,backup)
+		self._debug("Import bells config: ",result)	
+		
 		return result
 
-	#def import_bells_conf	
+	#def importBellsConfig
 
+	def recoveryBellBackup(self,origFile):
 
-	def recovery_bells_conf(self,orig_file,backup):
+		backup=False
+		resultRecovery=self._recoveryBellsConfig(origFile,backup)
+		retReadConfig=self.readConf()
+		if resultRecovery["status"]:
+			if retReadConfig["status"]:
+				return [False,BellManager,RECOVERY_BELLS_CONFIG]
+			else:
+				return [False,retReadConfig["code"]]
+		else:
+			return [False,resultRecovery["code"]]
+
+	#def recoveryBellBackup
+
+	def _recoveryBellsConfig(self,origFile,backup):
+		
 		user=os.environ["USER"]
-		#Old n4d: result=self.n4d.import_bells_conf(self.credentials,'BellSchedulerManager',orig_file,user,backup)
-		result=self.client.BellSchedulerManager.import_bells_conf(orig_file,user,backup)
-		self._debug("Recovery bells conf: ",result)	
+		result=self.client.BellSchedulerManager.import_bells_conf(origFile,user,backup)
+		self._debug("Recovery bells config: ",result)	
+		
 		return result
 
-	#def recovery_bells_conf	
+	#def recoveryBellsConfig	
 
 	def enable_holiday_control(self,action):
 
@@ -924,10 +955,11 @@ class BellManager(object):
 
 	#def changeActivationStatus	
 
-	def removeAllBells(self):
+	def _removeAllBells(self):
 
 		result=self.client.BellSchedulerManager.remove_all_bells()
 		self._debug("Remove all bells process: ",result)	
+		
 		return result
 
 	#def removeAllBells

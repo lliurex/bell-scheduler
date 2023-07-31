@@ -17,8 +17,10 @@ ApplicationWindow {
     minimumWidth: mainLayout.Layout.minimumWidth + 2 * margin
     minimumHeight: mainLayout.Layout.minimumHeight + 2 * margin
     Component.onCompleted: {
-        x = Screen.width / 2 - width / 2
-        y = Screen.height / 2 - height/0.4
+        console.log(width)
+        console.log(height)
+        x = Screen.width / 2  - minimumWidth/2
+        y = Screen.height / 2 - minimumHeight/2
     }
 
     onClosing: {
@@ -63,9 +65,7 @@ ApplicationWindow {
         StackView {
             id: mainView
             property int currentIndex:bellSchedulerBridge.currentStack
-            Layout.minimumWidth: 932
-            Layout.preferredWidth: 932
-            Layout.alignment:Qt.AlignHCenter
+            Layout.alignment:Qt.AlignHCenter|Qt.AlignVCenter
             Layout.leftMargin:0
             Layout.fillWidth:true
             Layout.fillHeight: true
@@ -83,6 +83,7 @@ ApplicationWindow {
                         break;
                 }
             }
+            /*
             replaceEnter: Transition {
                 PropertyAnimation {
                     property: "opacity"
@@ -99,7 +100,7 @@ ApplicationWindow {
                     duration: 600
                 }
             }
-
+            */
             Component{
                 id:loadView
                 LoadWaiting{

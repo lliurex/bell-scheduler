@@ -7,11 +7,14 @@ import QtQuick.Dialogs 1.3
 
 Rectangle{
     id:rectLayout
+    color:"transparent"
     Text{ 
         text:i18nd("bell-scheduler","Configured bells")
         font.family: "Quattrocento Sans Bold"
         font.pointSize: 16
     }
+
+    property var backupAction:undefined
 
     GridLayout{
         id:generalBellsLayout
@@ -74,10 +77,15 @@ Rectangle{
                     text:i18nd("bell-scheduler","Generate bell backup")
                     enabled:bellSchedulerBridge.enableGlobalOptions
                     onClicked:{
+                        
+                        backupAction="export"
+                        backupFileDialog.title=i18nd("bell-scheduler","Please choose a file to save bells list")
+                        backupFileDialog.selectExisting=false
+                        
                         if (bellSchedulerBridge.showExportBellsWarning){
-                            exportBellDialog.open()
+                           exportBellDialog.open()
                         }else{
-                            exportDialog.open()
+                            backupFileDialog.open()
                         }
                     }
                 }
@@ -85,6 +93,14 @@ Rectangle{
                 MenuItem{
                     icon.name:"document-import.svg"
                     text:i18nd("bell-scheduler","Import bell backup")
+                    onClicked:{
+
+                        backupAction="import"
+                        backupFileDialog.title=i18nd("bell-scheduler","Please choose a file to load bells list")
+                        backupFileDialog.selectExisting=true
+                        importBellDialog.open()
+
+                    }
                 }
            
             }
@@ -194,7 +210,34 @@ Rectangle{
            target:exportBellDialog
            function onRejectDialogClicked(){
                 exportBellDialog.close()
-                exportDialog.open()         
+                backupFileDialog.open()         
+           }
+
+        }
+
+    }
+
+     ChangesDialog{
+        id:importBellDialog
+        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
+        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell List")
+        dialogMsg:i18nd("bell-scheduler","New bells configuration will be loaded and replace the existing configuration.\nDo you want to continue?")
+        dialogWidth:600
+        btnAcceptVisible:false
+        btnAcceptText:""
+        btnDiscardVisible:true
+        btnDiscardText:i18nd("bell-scheduler","Accept")
+        btnDiscardIcon:"dialog-ok.svg"
+        btnCancelText:i18nd("bell-scheduler","Cancel")
+        btnCancelIcon:"dialog-cancel.svg"
+        Connections{
+           target:importBellDialog
+           function onDiscardDialogClicked(){
+                importBellDialog.close()
+                backupFileDialog.open()
+           }
+           function onRejectDialogClicked(){
+                importBellDialog.close()
            }
 
         }
@@ -202,22 +245,31 @@ Rectangle{
     }
 
     FileDialog{
-        id:exportDialog
-        title: i18nd("bell-scheduler","Please choose a file to save bells list")
+        id:backupFileDialog
         folder:shortcuts.home
-        selectExisting:false
         nameFilters:["Zip files (*zip)"]
         onAccepted:{
             var selectedPath=""
-            selectedPath=exportDialog.fileUrl.toString()
+            selectedPath=backupFileDialog.fileUrl.toString()
             selectedPath=selectedPath.replace(/^(file:\/{2})/,"")
-            bellSchedulerBridge.exportBellsConfig(selectedPath)
-         }
+            switch(backupAction){
+                case "export":
+                    bellSchedulerBridge.exportBellsConfig(selectedPath)
+                    break;
+                case "import":
+                    bellSchedulerBridge.importBellsConfig(selectedPath)
+                    break;
+            }
+
+        }
       
     }
 
     function getTextMessage(msgCode){
         switch (msgCode){
+            case -9:
+                var msg=i18nd("bell-scheduler","Backup has errors. Unabled to load it")
+                break;
             case -19:
                 var msg=i18nd("bell-scheduler","Unabled to edit the Bell due to problems with cron sync")
                 break;
@@ -238,6 +290,9 @@ Rectangle{
                 break;
             case -31:
                 var msg=i18nd("bell-scheduler","Detected alarms with errors")
+                break;
+            case 10:
+                var msg=i18nd("bell-scheduler","Backup loaded successfully")
                 break;
             case 11:
                 var msg=i18nd("bell-scheduler","Backup generated successfully")

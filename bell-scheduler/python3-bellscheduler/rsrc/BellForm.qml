@@ -56,6 +56,16 @@ Rectangle{
                     focusPolicy: Qt.NoFocus
                     Keys.onReturnPressed: enableValidity.toggled()
                     Keys.onEnterPressed: enableValidity.toggled()
+                    ToolTip.delay: 1000
+                    ToolTip.timeout: 3000
+                    ToolTip.visible: hovered
+                    ToolTip.text:{
+                        if (enableValidity.checked){
+                            i18nd("bell-scheduler","Click to deactive the alarm validity period")
+                        }else{
+                            i18nd("bell-scheduler","Click to active the alarm validity period")
+                        }
+                    }
                     onToggled:{
                         bellSchedulerBridge.updateBellValidityActive(checked)
                     }
@@ -108,10 +118,9 @@ Rectangle{
                     }
                     ValiditySelector{
                         id:validitySelector
-                        xPopUp:-Math.round(validitySelector.width-parent.width/2)
-                        yPopUp:-Math.round(parent.height*4.55)
-
-                        }
+                        /*xPopUp:-Math.round(validitySelector.width-parent.width/2)
+                        yPopUp:-Math.round(parent.height*4.55)*/
+                    }
                 }
 
             }
@@ -192,9 +201,8 @@ Rectangle{
 
                         ImageSelector{
                             id:imageSelector
-                            xPopUp:-Math.round(imageSelector.width-parent.width/2)
-                            yPopUp:-Math.round(parent.height*4.55)
-                            
+                            /*xPopUp:-Math.round(imageSelector.width-parent.width/2)
+                            yPopUp:-Math.round(parent.height*4.55)*/
                         }
                     }
                 }
@@ -205,19 +213,25 @@ Rectangle{
                 text:i18nd("bell-Scheduler","Current option for sound: ")
                 Layout.alignment:Qt.AlignRight
             }
+            Text{
+                id:soundOption
+                text:{
+                    if (bellSchedulerBridge.bellSound[0]=="file"){
+                        i18nd("bell-scheduler","Sound file")
+                    }else{
+                        i18nd("bell-scheduler","Random from directory")
+                    }
+                }
+            }
+            Text{
+            }
             RowLayout{
                 Layout.alignment:Qt.AlignLeft
                 spacing:10
 
                 Text{
-                    id:soundOption
-                    text:{
-                        if (bellSchedulerBridge.bellSound[0]=="file"){
-                            i18nd("bell-scheduler","Sound file")+": "
-                        }else{
-                            i18nd("bell-scheduler","Random from directory")+": "
-                        }
-                    }
+                    id:soundPathText
+                    text:i18nd("bell-scheduler","Resource:")
                 }
 
                 Text{
@@ -241,14 +255,12 @@ Rectangle{
                     }
                     SoundSelector{
                         id:soundSelector
-                        xPopUp:-Math.round(soundSelector.width-parent.width/2)
-                        yPopUp:-Math.round(soundSelector.height)
-
-
+                        /*xPopUp:-Math.round(soundSelector.width-parent.width/2)
+                        yPopUp:-Math.round(soundSelector.height)*/
                     }
                 }
+            }                
 
-            }
             Text{
                 id:startOption
                 text:i18nd("bell-scheduler","Start in second")+":"
@@ -278,10 +290,10 @@ Rectangle{
                     SliderPopUp{
                         id:editStartForm
                         popUpWidth:300
-                        popUpHeight:190
-                        xPopUp:Math.round(parent.width/ 2)
-                        yPopUp:-Math.round(editStartForm.popUpHeight)
-                        headText:i18nd("bell-scheduler","Start in second")
+                        popUpHeight:210
+                        /*xPopUp:Math.round(parent.width/ 2)
+                        yPopUp:-Math.round(editStartForm.popUpHeight)*/
+                        headText:i18nd("bell-scheduler","Edit when the alarm starts")
                         footText:""
                         showFoot:false
                         sliderValue:bellSchedulerBridge.bellStartIn
@@ -335,10 +347,10 @@ Rectangle{
                     SliderPopUp{
                         id:editDurationForm
                         popUpWidth:350
-                        popUpHeight:230
-                        xPopUp:Math.round(parent.width/ 2)
-                        yPopUp:-Math.round(editDurationForm.popUpHeight)
-                        headText:i18nd("bell-scheduler","Max. duration")
+                        popUpHeight:245
+                        /*xPopUp:Math.round(parent.width/ 2)
+                        yPopUp:-Math.round(editDurationForm.popUpHeight)*/
+                        headText:i18nd("bell-scheduler","Edit bell duration")
                         footText:i18nd("bell-scheduler","(!) If duration is 0, the sound will be reproduced in its entirety")
                         showFoot:true
                         sliderValue:bellSchedulerBridge.bellDuration
