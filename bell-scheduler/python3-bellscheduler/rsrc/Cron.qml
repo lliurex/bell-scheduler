@@ -138,7 +138,7 @@ GridLayout{
 			ToolTip.delay: 1000
 			ToolTip.timeout: 3000
 			ToolTip.visible: hovered
-			ToolTip.text:i18nd("bell-scheduler","Click to edit shutdown time with keyboard ")
+			ToolTip.text:i18nd("bell-scheduler","Click to edit time with keyboard ")
 			onClicked:{
 				timeSelector.open()
 			}

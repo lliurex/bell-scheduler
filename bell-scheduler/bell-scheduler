@@ -8,14 +8,72 @@ import sys
 
 class Tunnel(QObject):
 
+	def __init__(self):
+
+		QObject.__init__(self)
+		self.clearCache()
+
+	#def __init__
+
+		def clearCache(self):
+
+		clear=False
+		user=os.environ["USER"]
+		versionFile="/home/%s/.config/bell-scheduler.conf"%user
+		cachePath1="/home/%s/.cache/bell-scheduler"%user
+		cachePath2="/home/%s/.cache/bell-scheduler-gui.py"%user
+		installedVersion=self.getPackageVersion()
+
+		if installedVersion!="":
+			if not os.path.exists(versionFile):
+				with open(versionFile,'w') as fd:
+					fd.write(installedVersion)
+
+				clear=True
+
+			else:
+				with open(versionFile,'r') as fd:
+					fileVersion=fd.readline()
+					fd.close()
+
+				if fileVersion!=installedVersion:
+					with open(versionFile,'w') as fd:
+						fd.write(installedVersion)
+						fd.close()
+					clear=True
+		else:
+			clear=True
+		
+		if clear:
+			if os.path.exists(cachePath1):
+				shutil.rmtree(cachePath1)
+			if os.path.exists(cachePath2):
+				shutil.rmtree(cachePath2)
+
+	#def clearCache
+
+	def getPackageVersion(self):
+
+		packageVersionFile="/var/lib/bell-scheduler/version"
+		pkgVersion=""
+
+		if os.path.exists(packageVersionFile):
+			with open(packageVersionFile,'r') as fd:
+				pkgVersion=fd.readline()
+				fd.close()
+
+		return pkgVersion
+
+	#def getPackageVersion
+
 	@Slot(str)
-	def on_ticket(self, ticket):
+	def onTicket(self, ticket):
 		
 		ticket=ticket.replace(' ','##U+0020##')
 		os.system("/usr/sbin/bell-scheduler-gui %s &"%ticket)
 		app.quit()
 
-	#def on_ticket
+	#def onTicket
 
 #class Tunnel
 

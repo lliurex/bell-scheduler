@@ -17,8 +17,6 @@ ApplicationWindow {
     minimumWidth: mainLayout.Layout.minimumWidth + 2 * margin
     minimumHeight: mainLayout.Layout.minimumHeight + 2 * margin
     Component.onCompleted: {
-        console.log(width)
-        console.log(height)
         x = Screen.width / 2  - minimumWidth/2
         y = Screen.height / 2 - minimumHeight/2
     }
@@ -121,6 +119,11 @@ ApplicationWindow {
             }
         }
 
+    }
+
+
+    CustomPopUp{
+        id:waitingPopUp
     }
 
     Timer{

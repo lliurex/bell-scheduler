@@ -159,9 +159,10 @@ Rectangle{
         }
     }
 
+    /*
     CustomPopUp{
         id:loadBellForm
-    }
+    }*/
 
     ChangesDialog{
         id:removeBellDialog
@@ -270,6 +271,9 @@ Rectangle{
             case -9:
                 var msg=i18nd("bell-scheduler","Backup has errors. Unabled to load it")
                 break;
+            case -12:
+                var msg=i18nd("bell-scheduler","Unable to generate backup")
+                break
             case -19:
                 var msg=i18nd("bell-scheduler","Unabled to edit the Bell due to problems with cron sync")
                 break;
@@ -290,6 +294,21 @@ Rectangle{
                 break;
             case -31:
                 var msg=i18nd("bell-scheduler","Detected alarms with errors")
+                break;
+            case -36:
+                var msg=i18nd("bell-scheduler","Unabled to apply changes due to problems with cron sync")
+                break;
+            case -37:
+                var msg=i18nd("bell-scheduler","Unabled to load bell list due to problems with cron sync")
+                break;
+            case -48:
+                var msg=i18nd("bell-scheduler","It is not possible to activate all bells")
+                break;
+            case -49:
+                var msg=i18nd("bell-scheduler","It is not possible to deactivate all bells")
+                break;
+            case -52:
+                var msg=i18nd("bell-scheduler","It is not possible to remove all bells")
                 break;
             case 10:
                 var msg=i18nd("bell-scheduler","Backup loaded successfully")

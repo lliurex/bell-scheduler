@@ -182,10 +182,14 @@ Rectangle{
                                 "/usr/lib/python3/dist-packages/bellscheduler/rsrc/image_nodisp.svg"
                             }
                         }
+                        ToolTip.delay: 1000
+                        ToolTip.timeout: 3000
+                        ToolTip.visible:mouseAreaImg.containsMouse?true:false 
+                        ToolTip.text:i18nd("bell-scheduler","Clic to edit the image")
                         clip:true
                         anchors.centerIn:parent
                         MouseArea {
-                            id: mouseAreaHour
+                            id: mouseAreaImg
                             anchors.fill: parent
                             hoverEnabled: true
                             onEntered: {
@@ -263,7 +267,7 @@ Rectangle{
 
             Text{
                 id:startOption
-                text:i18nd("bell-scheduler","Start in second")+":"
+                text:i18nd("bell-scheduler","Start in second:")
                 Layout.alignment:Qt.AlignRight
             }
             RowLayout{
@@ -314,7 +318,7 @@ Rectangle{
             }
             Text{
                 id:durationOption
-                text:i18nd("bell-scheduler","Max. duration")+":"
+                text:i18nd("bell-scheduler","Max. duration:")
                 Layout.alignment:Qt.AlignRight
             }
             RowLayout{
@@ -347,7 +351,7 @@ Rectangle{
                     SliderPopUp{
                         id:editDurationForm
                         popUpWidth:350
-                        popUpHeight:245
+                        popUpHeight:250
                         /*xPopUp:Math.round(parent.width/ 2)
                         yPopUp:-Math.round(editDurationForm.popUpHeight)*/
                         headText:i18nd("bell-scheduler","Edit bell duration")
@@ -473,11 +477,11 @@ Rectangle{
         }
 
    }
-
+   /*
    CustomPopUp{
         id:waitingPopUp
    }
-
+   */
    function getSoundPath(){
 
         var tmpPath=""

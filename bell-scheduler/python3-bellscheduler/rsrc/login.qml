@@ -18,7 +18,7 @@ Rectangle {
         /*anchors.centerIn: parent*/
         
         onLogged: {
-            tunnel.on_ticket(ticket);
+            tunnel.onTicket(ticket);
         }
     }
 }
