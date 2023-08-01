@@ -113,6 +113,13 @@ Rectangle{
                         MenuItem{
                             icon.name:"delete.svg"
                             text:i18nd("bell-scheduler","Delete validity")
+                            enabled:{
+                                if (bellSchedulerBridge.bellValidityValue!=""){
+                                    true
+                                }else{
+                                    false
+                                }
+                            }
                             onClicked:removeValidityDialog.open()
                         }
                     }
@@ -293,7 +300,7 @@ Rectangle{
                     onClicked:editStartForm.open()
                     SliderPopUp{
                         id:editStartForm
-                        popUpWidth:300
+                        popUpWidth:370
                         popUpHeight:210
                         /*xPopUp:Math.round(parent.width/ 2)
                         yPopUp:-Math.round(editStartForm.popUpHeight)*/
@@ -454,9 +461,9 @@ Rectangle{
 
    ChangesDialog{
         id:removeValidityDialog
-        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-question.svg"
+        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
         dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell")
-        dialogMsg:i18nd("bell-scheduler","Are you sure you want to delete the alarm validity?")
+        dialogMsg:i18nd("bell-scheduler","The alarm validity will be deleted\nDo you want to continue?")
         dialogWidth:400
         btnAcceptVisible:false
         btnAcceptText:""

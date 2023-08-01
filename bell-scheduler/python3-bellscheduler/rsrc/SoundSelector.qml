@@ -14,8 +14,8 @@ Popup {
     property string selectedSoundFolder
     property bool soundFileError:false
 
-    width:530
-    height:390
+    width:580
+    height:400
     /*x:xPopUp
     y:yPopUp*/
     anchors.centerIn: Overlay.overlay
@@ -45,7 +45,7 @@ Popup {
                 visible:false
                 text:i18nd("bell-scheduler","Sound file is not correct")
                 type: Kirigami.MessageType.Error
-                Layout.preferredWidth:505
+                Layout.minimumWidth:560
                 Layout.fillWidth:true
                 Layout.topMargin: 40
             }
@@ -200,7 +200,7 @@ Popup {
                 }
                 Text{ 
                     id:footText
-                    text:i18nd("bell-scheduler","(*) Checking this option the sound file will be copied to the internal folder.\n It will be this file that is used to reproduce the alarm. In addition, if alarms are exported the file will be included in the export. It is recommended to mark it")
+                    text:i18nd("bell-scheduler","(*) Checking this option the sound file will be copied to the internal folder.It will be this file that is used to reproduce the alarm. In addition, if alarms are exported the file will be included in the export. It is recommended to mark it")
                     font.family: "Quattrocento Sans Bold"
                     font.pointSize: 10
                     Layout.leftMargin:10

@@ -170,13 +170,13 @@ Rectangle{
         dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell List")
         dialogMsg:{
             if (bellSchedulerBridge.showRemoveBellDialog[1]){
-                i18nd("bell-scheduler","All bells will be deleted. Do yo want to continue?")
+                i18nd("bell-scheduler","All bells will be deleted.\nDo yo want to continue?")
             }else{
-                i18nd("bell-scheduler","The bell will be deleted. Do yo want to continue?")
+                i18nd("bell-scheduler","The bell will be deleted.\nDo yo want to continue?")
             }
         }
         dialogVisible:bellSchedulerBridge.showRemoveBellDialog[0]
-        dialogWidth:400
+        dialogWidth:300
         btnAcceptVisible:false
         btnAcceptText:""
         btnDiscardText:i18nd("bell-scheduler","Accept")
@@ -201,7 +201,7 @@ Rectangle{
         dialogIcon:"/usr/share/icons/breeze/status/64/dialog-information.svg"
         dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell List")
         dialogMsg:i18nd("bell-scheduler","Alarms have been detected with random selection of sound files from a folder.\nRemember that this folder will not be included in the export made.\nIf the folder is not saved manually, when the export is restored, the alarms that\nuse it will be deactivated")
-        dialogWidth:600
+        dialogWidth:640
         btnAcceptVisible:false
         btnAcceptText:""
         btnDiscardVisible:false

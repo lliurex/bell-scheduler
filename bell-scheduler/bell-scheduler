@@ -5,6 +5,7 @@ from PySide2.QtCore import QUrl, QObject, Slot, Signal,Property
 import os
 import subprocess
 import sys
+import shutil
 
 class Tunnel(QObject):
 
@@ -15,7 +16,7 @@ class Tunnel(QObject):
 
 	#def __init__
 
-		def clearCache(self):
+	def clearCache(self):
 
 		clear=False
 		user=os.environ["USER"]

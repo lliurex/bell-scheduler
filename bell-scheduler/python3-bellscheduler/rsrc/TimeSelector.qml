@@ -11,7 +11,7 @@ Popup {
     property alias minuteEntry:minuteEntry.text
     signal timeApplyClicked (hour:string,minute:string)
 
-    width:300
+    width:320
     height:200
     anchors.centerIn: Overlay.overlay
     modal:true
