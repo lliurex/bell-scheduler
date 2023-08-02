@@ -70,7 +70,7 @@ GridLayout{
                 optionIcon:"/usr/share/icons/breeze/actions/22/help-contents.svg"
                 Connections{
                     function onMenuOptionClicked(){
-                        bellSchedulerBridge.openHelp();
+                        mainStackBridge.openHelp();
                     }
                 }
             }
@@ -79,7 +79,7 @@ GridLayout{
 
     StackView {
         id: optionsView
-        property int currentIndex:bellSchedulerBridge.mainCurrentOption
+        property int currentIndex:mainStackBridge.mainCurrentOption
         Layout.fillWidth:true
         Layout.fillHeight:true
         initialItem:bellsInfoView

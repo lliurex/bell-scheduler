@@ -24,7 +24,7 @@ Rectangle{
 
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:bellSchedulerBridge.showBellFormMessage[0]
+            visible:bellStackBridge.showBellFormMessage[0]
             text:getMessageText()
             type:Kirigami.MessageType.Error
             Layout.minimumWidth:650
@@ -49,8 +49,8 @@ Rectangle{
 
                CheckBox {
                     id:enableValidity
-                    checked:bellSchedulerBridge.bellValidityActive
-                    enabled:bellSchedulerBridge.enableBellValidity
+                    checked:bellStackBridge.bellValidityActive
+                    enabled:bellStackBridge.enableBellValidity
                     text:i18nd("bell-scheduler","Validity:")
                     font.pointSize: 10
                     focusPolicy: Qt.NoFocus
@@ -67,13 +67,13 @@ Rectangle{
                         }
                     }
                     onToggled:{
-                        bellSchedulerBridge.updateBellValidityActive(checked)
+                        bellStackBridge.updateBellValidityActive(checked)
                     }
                    
                 }
                 Text{
                     id:validityText
-                    text:bellSchedulerBridge.bellValidityValue
+                    text:bellStackBridge.bellValidityValue
                     font.pointSize:10
 
                 }
@@ -114,7 +114,7 @@ Rectangle{
                             icon.name:"delete.svg"
                             text:i18nd("bell-scheduler","Delete validity")
                             enabled:{
-                                if (bellSchedulerBridge.bellValidityValue!=""){
+                                if (bellStackBridge.bellValidityValue!=""){
                                     true
                                 }else{
                                     false
@@ -161,12 +161,12 @@ Rectangle{
 
                 TextField{
                     id:bellNameEntry
-                    text:bellSchedulerBridge.bellName
+                    text:bellStackBridge.bellName
                     horizontalAlignment:TextInput.AlignLeft
                     focus:true
                     implicitWidth:400
                     onTextChanged:{
-                        bellSchedulerBridge.updateBellNameValue(bellNameEntry.text)
+                        bellStackBridge.updateBellNameValue(bellNameEntry.text)
                     }
                 }
                 Rectangle{
@@ -183,8 +183,8 @@ Rectangle{
                         height:80
                         fillMode:Image.PreserveAspectFit
                         source:{
-                            if (!bellSchedulerBridge.bellImage[3]){
-                                bellSchedulerBridge.bellImage[2]
+                            if (!bellStackBridge.bellImage[3]){
+                                bellStackBridge.bellImage[2]
                             }else{
                                 "/usr/lib/python3/dist-packages/bellscheduler/rsrc/image_nodisp.svg"
                             }
@@ -227,7 +227,7 @@ Rectangle{
             Text{
                 id:soundOption
                 text:{
-                    if (bellSchedulerBridge.bellSound[0]=="file"){
+                    if (bellStackBridge.bellSound[0]=="file"){
                         i18nd("bell-scheduler","Sound file")
                     }else{
                         i18nd("bell-scheduler","Random from directory")
@@ -283,7 +283,7 @@ Rectangle{
 
                 Text{
                     id:startValue
-                    text:bellSchedulerBridge.bellStartIn
+                    text:bellStackBridge.bellStartIn
                     width:400
                     elide:Text.ElideMiddle
                 }
@@ -307,15 +307,15 @@ Rectangle{
                         headText:i18nd("bell-scheduler","Edit when the alarm starts")
                         footText:""
                         showFoot:false
-                        sliderValue:bellSchedulerBridge.bellStartIn
+                        sliderValue:bellStackBridge.bellStartIn
                         Connections{
                             target:editStartForm
                             function onApplyButtonClicked(){
-                                bellSchedulerBridge.updateStartInValue(editStartForm.sliderValue)
+                                bellStackBridge.updateStartInValue(editStartForm.sliderValue)
                                 editStartForm.close()
                             }
                             function onCancelButtonClicked(){
-                                editStartForm.sliderValue=bellSchedulerBridge.bellStartIn
+                                editStartForm.sliderValue=bellStackBridge.bellStartIn
                                 editStartForm.close()
                             }
                         }
@@ -335,8 +335,8 @@ Rectangle{
                 Text{
                     id:durationValue
                     text:{
-                        if (bellSchedulerBridge.bellDuration>0){
-                            bellSchedulerBridge.bellDuration+" "+i18nd("bell-scheduler","seconds")
+                        if (bellStackBridge.bellDuration>0){
+                            bellStackBridge.bellDuration+" "+i18nd("bell-scheduler","seconds")
                         }else{
                             i18nd("bell-scheduler","Full reproduction")
                         }
@@ -364,15 +364,15 @@ Rectangle{
                         headText:i18nd("bell-scheduler","Edit bell duration")
                         footText:i18nd("bell-scheduler","(!) If duration is 0, the sound will be reproduced in its entirety")
                         showFoot:true
-                        sliderValue:bellSchedulerBridge.bellDuration
+                        sliderValue:bellStackBridge.bellDuration
                         Connections{
                             target:editDurationForm
                             function onApplyButtonClicked(){
-                                bellSchedulerBridge.updateDurationValue(editDurationForm.sliderValue)
+                                bellStackBridge.updateDurationValue(editDurationForm.sliderValue)
                                 editDurationForm.close()
                             }
                             function onCancelButtonClicked(){
-                                editDurationForm.sliderValue=bellSchedulerBridge.bellDuration
+                                editDurationForm.sliderValue=bellStackBridge.bellDuration
                                 editDurationForm.close()
                             }
                         }
@@ -400,13 +400,13 @@ Rectangle{
             icon.name:"dialog-ok.svg"
             text:i18nd("bell-scheduler","Apply")
             Layout.preferredHeight:40
-            enabled:bellSchedulerBridge.changesInBell
+            enabled:bellStackBridge.changesInBell
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
             
             onClicked:{
                 closeTimer.stop()
-                bellSchedulerBridge.applyBellChanges()
+                bellStackBridge.applyBellChanges()
                 
             }
         }
@@ -418,12 +418,12 @@ Rectangle{
             icon.name:"dialog-cancel.svg"
             text:i18nd("bell-scheduler","Cancel")
             Layout.preferredHeight: 40
-            enabled:bellSchedulerBridge.changesInBell
+            enabled:bellStackBridge.changesInBell
             Keys.onReturnPressed: cancelBtn.clicked()
             Keys.onEnterPressed: cancelBtn.clicked()
 
             onClicked:{
-               bellSchedulerBridge.cancelBellChanges()
+               bellStackBridge.cancelBellChanges()
             }
             
         }
@@ -433,7 +433,7 @@ Rectangle{
         id:settingsChangesDialog
         dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
         dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell")
-        dialogVisible:bellSchedulerBridge.showChangesInBellDialog
+        dialogVisible:bellStackBridge.showChangesInBellDialog
         dialogMsg:i18nd("bell-scheduler","The are pending changes to save.\nDo you want save the changes or discard them?")
         dialogWidth:400
         btnAcceptVisible:true
@@ -446,14 +446,14 @@ Rectangle{
         Connections{
             target:settingsChangesDialog
             function onDialogApplyClicked(){
-                bellSchedulerBridge.manageChangesDialog("Accept")
+                bellStackBridge.manageChangesDialog("Accept")
             }
             function onDiscardDialogClicked(){
-                bellSchedulerBridge.manageChangesDialog("Discard")           
+                bellStackBridge.manageChangesDialog("Discard")           
             }
             function onRejectDialogClicked(){
                 closeTimer.stop()
-                bellSchedulerBridge.manageChangesDialog("Cancel")       
+                bellStackBridge.manageChangesDialog("Cancel")       
             }
 
         }
@@ -475,7 +475,7 @@ Rectangle{
            target:removeValidityDialog
            function onDiscardDialogClicked(){
                 removeValidityDialog.close()
-                bellSchedulerBridge.updateBellValidityValue(["",true])         
+                bellStackBridge.updateBellValidityValue(["",true])         
            }
            function onRejectDialogClicked(){
                 removeValidityDialog.close()       
@@ -492,12 +492,12 @@ Rectangle{
    function getSoundPath(){
 
         var tmpPath=""
-        tmpPath=bellSchedulerBridge.bellSound[1]
+        tmpPath=bellStackBridge.bellSound[1]
         
         if (tmpPath==""){
             return i18nd("bell-scheduler","<specify the file/url for the sound>")
         }else{
-            if (bellSchedulerBridge.bellSound[0]=="file"){
+            if (bellStackBridge.bellSound[0]=="file"){
                 return tmpPath.substring(tmpPath.lastIndexOf('/')+1)
             }else{
                 return tmpPath
@@ -509,7 +509,7 @@ Rectangle{
 
     function getMessageText(){
 
-         switch (bellSchedulerBridge.showBellFormMessage[1]){
+         switch (bellStackBridge.showBellFormMessage[1]){
             case -1:
                 var msg=i18nd("bell-scheduler","You must indicate a name for the alarm");
                 break;

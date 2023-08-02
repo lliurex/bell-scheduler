@@ -67,7 +67,7 @@ Popup {
                     RadioButton{
                         id:fileOption
                         checked:{
-                            if (bellSchedulerBridge.bellSound[0]=="file"){
+                            if (bellStackBridge.bellSound[0]=="file"){
                                 true
                             }else{
                                 false
@@ -80,7 +80,7 @@ Popup {
                                     messageLabel.visible=true
                                     applyBtn.enabled=false
                                 }else{
-                                    if ((filePath.text=="")||(bellSchedulerBridge.bellSound[2])){
+                                    if ((filePath.text=="")||(bellStackBridge.bellSound[2])){
                                         applyBtn.enabled=false
                                     }else{
                                         applyBtn.enabled=true
@@ -94,9 +94,9 @@ Popup {
                     TextField{
                         id:filePath 
                         text:{
-                            if (bellSchedulerBridge.bellSound[0]=="file"){
-                                if (!bellSchedulerBridge.bellSound[2]){
-                                    bellSchedulerBridge.bellSound[1].substring(bellSchedulerBridge.bellSound[1].lastIndexOf('/')+1)
+                            if (bellStackBridge.bellSound[0]=="file"){
+                                if (!bellStackBridge.bellSound[2]){
+                                    bellStackBridge.bellSound[1].substring(bellStackBridge.bellSound[1].lastIndexOf('/')+1)
                                 }else{
                                     ""
                                 }
@@ -133,7 +133,7 @@ Popup {
                     RadioButton{
                         id:directoryOption
                         checked:{
-                            if (bellSchedulerBridge.bellSound[0]=="directory"){
+                            if (bellStackBridge.bellSound[0]=="directory"){
                                 true
                             }else{
                                 false
@@ -143,7 +143,7 @@ Popup {
                         onToggled:{
                             if (checked){
                                 messageLabel.visible=false
-                                if ((folderPath.text=="")||(bellSchedulerBridge.bellSound[2])){
+                                if ((folderPath.text=="")||(bellStackBridge.bellSound[2])){
                                     applyBtn.enabled=false
                                 }else{
                                     applyBtn.enabled=true
@@ -156,9 +156,9 @@ Popup {
                     TextField{
                         id:folderPath 
                         text:{
-                            if (bellSchedulerBridge.bellSound[0]=="directory"){
-                                if (!bellSchedulerBridge.bellSound[2]){
-                                    bellSchedulerBridge.bellSound[1]
+                            if (bellStackBridge.bellSound[0]=="directory"){
+                                if (!bellStackBridge.bellSound[2]){
+                                    bellStackBridge.bellSound[1]
                                 }else{
                                     ""
                                 }
@@ -189,7 +189,7 @@ Popup {
                 CheckBox {
                     id:soundDefaultPath
                     text:i18nd("bell-scheduler","Copy the sound file to the internal folder (*)")
-                    checked:bellSchedulerBridge.bellSound[3]
+                    checked:bellStackBridge.bellSound[3]
                     enabled:fileOption.checked?true:false
                     font.pointSize: 10
                     focusPolicy: Qt.NoFocus
@@ -228,7 +228,7 @@ Popup {
                 icon.name:"dialog-ok.svg"
                 text:i18nd("bell-scheduler","Apply")
                 Layout.preferredHeight:40
-                enabled:!bellSchedulerBridge.bellSound[2]
+                enabled:!bellStackBridge.bellSound[2]
                 Keys.onReturnPressed: applyBtn.clicked()
                 Keys.onEnterPressed: applyBtn.clicked()
                 onClicked:{
@@ -239,17 +239,17 @@ Popup {
                         if (selectedSoundFile!=""){
                             tmpPath=selectedSoundFile
                         }else{
-                            tmpPath=bellSchedulerBridge.bellSound[1]
+                            tmpPath=bellStackBridge.bellSound[1]
                         }
                     }else{
                         option="directory"
                         if (selectedSoundFolder!=""){
                             tmpPath=selectedSoundFolder
                         }else{
-                            tmpPath=bellSchedulerBridge.bellSound[1]
+                            tmpPath=bellStackBridge.bellSound[1]
                         }
                     }
-                    bellSchedulerBridge.updateSoundValues([option,tmpPath,soundDefaultPath.checked])
+                    bellStackBridge.updateSoundValues([option,tmpPath,soundDefaultPath.checked])
                     restoreInitValues()
                     soundSelector.close()
                 }
@@ -292,7 +292,7 @@ Popup {
             selectedSoundFile=soundFileDialog.fileUrl.toString()
             selectedSoundFile=selectedSoundFile.replace(/^(file:\/{2})/,"")
             filePath.text=selectedSoundFile.substring(selectedSoundFile.lastIndexOf('/')+1)
-            if (!bellSchedulerBridge.checkMimetypeSound(selectedSoundFile)){
+            if (!bellStackBridge.checkMimetypeSound(selectedSoundFile)){
                 messageLabel.visible=true
                 applyBtn.enabled=false
                 soundFileError=true
@@ -332,22 +332,22 @@ Popup {
         selectedSoundFile=""
         selectedSoundFolder=""
         messageLabel.visible=false
-        soundDefaultPath.checked=bellSchedulerBridge.bellSound[3]
-        applyBtn.enabled=!bellSchedulerBridge.bellSound[2]
+        soundDefaultPath.checked=bellStackBridge.bellSound[3]
+        applyBtn.enabled=!bellStackBridge.bellSound[2]
         
-        if (bellSchedulerBridge.bellSound[0]=="file"){
+        if (bellStackBridge.bellSound[0]=="file"){
             fileOption.checked=true
             folderPath.text=""
-            if (!bellSchedulerBridge.bellSound[2]){
-                filePath.text=bellSchedulerBridge.bellSound[1].substring(bellSchedulerBridge.bellSound[1].lastIndexOf('/')+1)
+            if (!bellStackBridge.bellSound[2]){
+                filePath.text=bellStackBridge.bellSound[1].substring(bellStackBridge.bellSound[1].lastIndexOf('/')+1)
             }else{
                 filePath.text=""
             }
         }else{
             directoryOption.checked=true
             filePath.text=""
-            if (!bellSchedulerBridge.bellSound[2]){
-                folderPath.text=bellSchedulerBridge.bellSound[1]
+            if (!bellStackBridge.bellSound[2]){
+                folderPath.text=bellStackBridge.bellSound[1]
             }else{
                 folderPath.text=""
             }

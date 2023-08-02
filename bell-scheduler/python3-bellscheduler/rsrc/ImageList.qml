@@ -28,7 +28,7 @@ Rectangle{
             snapMode:ListView.SnapOneItem
             highlightRangeMode: ListView.StrictlyEnforceRange
             enabled:listEnabled   
-            model:bellSchedulerBridge.imagesModel
+            model:bellStackBridge.imagesModel
            
             delegate:Item{
                 width:90

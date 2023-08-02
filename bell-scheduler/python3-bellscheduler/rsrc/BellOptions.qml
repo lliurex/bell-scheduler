@@ -20,7 +20,7 @@ GridLayout{
             optionIcon:"/usr/share/icons/breeze/actions/24/arrow-left.svg"
             Connections{
                 function onMenuOptionClicked(){
-                    bellSchedulerBridge.goHome();
+                    bellStackBridge.goHome();
                 }
             }
         }  
@@ -41,7 +41,7 @@ GridLayout{
                     optionIcon:"/usr/share/icons/breeze/status/22/appointment-reminder.svg"
                     Connections{
                         function onMenuOptionClicked(){
-                            bellSchedulerBridge.moveToManageOption(0)
+                            bellStackBridge.moveToManageOption(0)
                         }
                     }
                 }
@@ -52,7 +52,7 @@ GridLayout{
 
     StackView {
         id: manageView
-        property int currentOption:bellSchedulerBridge.bellCurrentOption
+        property int currentOption:bellStackBridge.bellCurrentOption
         Layout.fillWidth:true
         Layout.fillHeight: true
         initialItem:emptyView

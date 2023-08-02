@@ -16,7 +16,7 @@ Rectangle{
         RowLayout{
             Layout.fillWidth: true
             Layout.alignment:Qt.AlignHCenter
-            visible:!bellSchedulerBridge.showLoadErrorMessage[0]
+            visible:!mainStackBridge.showLoadErrorMessage[0]
 
             Rectangle{
                 color:"transparent"
@@ -33,7 +33,7 @@ Rectangle{
         RowLayout{
             Layout.fillWidth: true
             Layout.alignment:Qt.AlignHCenter
-            visible:!bellSchedulerBridge.showLoadErrorMessage[0]
+            visible:!mainStackBridge.showLoadErrorMessage[0]
 
             Text{
                 id:loadtext
@@ -45,8 +45,8 @@ Rectangle{
         }
         Kirigami.InlineMessage {
             id: errorLabel
-            visible:bellSchedulerBridge.showLoadErrorMessage[0]
-            text:getMsgText(bellSchedulerBridge.showLoadErrorMessage[1])
+            visible:mainStackBridge.showLoadErrorMessage[0]
+            text:getMsgText(mainStackBridge.showLoadErrorMessage[1])
             type:Kirigami.MessageType.Error;
             Layout.minimumWidth:960
             Layout.fillWidth:true

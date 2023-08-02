@@ -23,9 +23,9 @@ ApplicationWindow {
 
     onClosing: {
         close.accepted=closing;
-        bellSchedulerBridge.closeBellScheduler()
+        mainStackBridge.closeBellScheduler()
         delay(100, function() {
-            if (bellSchedulerBridge.closeGui){
+            if (mainStackBridge.closeGui){
                 closing=true,
                 closeTimer.stop(),           
                 mainWindow.close();
@@ -62,7 +62,7 @@ ApplicationWindow {
 
         StackView {
             id: mainView
-            property int currentIndex:bellSchedulerBridge.currentStack
+            property int currentIndex:mainStackBridge.currentStack
             Layout.alignment:Qt.AlignHCenter|Qt.AlignVCenter
             Layout.leftMargin:0
             Layout.fillWidth:true

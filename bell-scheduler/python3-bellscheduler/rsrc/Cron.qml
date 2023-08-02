@@ -81,7 +81,7 @@ GridLayout{
 		    	width:80
 	            height:80
 	            model: 24
-	            currentIndex:bellSchedulerBridge.bellCron[0]
+	            currentIndex:bellStackBridge.bellCron[0]
 	            delegate:delegateComponent 
 	            visibleItemCount:1
 	            hoverEnabled:true
@@ -90,7 +90,7 @@ GridLayout{
 	            ToolTip.visible: hovered
 	            ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the hour")
 	            onCurrentIndexChanged: {
-	            	bellSchedulerBridge.updateClockValues(["H",hoursTumbler.currentIndex]);
+	            	bellStackBridge.updateClockValues(["H",hoursTumbler.currentIndex]);
 	            } 
 	        }       
 		}
@@ -113,7 +113,7 @@ GridLayout{
 	    		height:80
 	    		width:80
 	    		model: 60
-	    		currentIndex:bellSchedulerBridge.bellCron[1]
+	    		currentIndex:bellStackBridge.bellCron[1]
 	    		delegate: delegateComponent
 	    		visibleItemCount:1
 	    		hoverEnabled:true
@@ -122,7 +122,7 @@ GridLayout{
 	    	 	ToolTip.visible: hovered
 	    	 	ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the minutes")
 	    		onCurrentIndexChanged: {
-	    			bellSchedulerBridge.updateClockValues(["M",minutesTumbler.currentIndex]);
+	    			bellStackBridge.updateClockValues(["M",minutesTumbler.currentIndex]);
 	    		}
 	    	}
 		} 
@@ -168,11 +168,11 @@ GridLayout{
 
 	    DayButton {
 	      	id:mondaybtn
-			dayBtnChecked:bellSchedulerBridge.bellDays[0]
+			dayBtnChecked:bellStackBridge.bellDays[0]
 			dayBtnText:i18nd("bell-scheduler","Monday")
 			Connections{
 				function onDayBtnClicked(value){
-					bellSchedulerBridge.updateWeekDaysValues(["MO",value]);	
+					bellStackBridge.updateWeekDaysValues(["MO",value]);	
 				}
 			}
 					
@@ -180,22 +180,22 @@ GridLayout{
 				
 		DayButton {
 	       	id:tuesdaybtn
-			dayBtnChecked:bellSchedulerBridge.bellDays[1]
+			dayBtnChecked:bellStackBridge.bellDays[1]
 			dayBtnText:i18nd("bell-scheduler","Tuesday")
 			Connections{
 				function onDayBtnClicked(value){
-					bellSchedulerBridge.updateWeekDaysValues(["TU",value]);
+					bellStackBridge.updateWeekDaysValues(["TU",value]);
 				}
 			}
 		}
 		
 		DayButton {
 			id:wednesdaybtn
-			dayBtnChecked:bellSchedulerBridge.bellDays[2]
+			dayBtnChecked:bellStackBridge.bellDays[2]
 			dayBtnText:i18nd("bell-scheduler","Wednesday")
 			Connections{
 				function onDayBtnClicked(value){
-					bellSchedulerBridge.updateWeekDaysValues(["WE",value]);
+					bellStackBridge.updateWeekDaysValues(["WE",value]);
 				}
 			}
 			
@@ -203,22 +203,22 @@ GridLayout{
 				
 		DayButton {
 			id:thursdaybtn
-			dayBtnChecked:bellSchedulerBridge.bellDays[3]
+			dayBtnChecked:bellStackBridge.bellDays[3]
 			dayBtnText:i18nd("bell-scheduler","Thursday")
 			Connections{
 				function onDayBtnClicked(value){
-					bellSchedulerBridge.updateWeekDaysValues(["TH",value]);
+					bellStackBridge.updateWeekDaysValues(["TH",value]);
 				}
 			}
 		}
 			
 		DayButton {
 			id:fridaybtn
-			dayBtnChecked:bellSchedulerBridge.bellDays[4]
+			dayBtnChecked:bellStackBridge.bellDays[4]
 			dayBtnText:i18nd("bell-scheduler","Friday")
 			Connections{
 				function onDayBtnClicked(value){
-					bellSchedulerBridge.updateWeekDaysValues(["FR",value]);
+					bellStackBridge.updateWeekDaysValues(["FR",value]);
 				}
 			}
 		}

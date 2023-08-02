@@ -54,7 +54,7 @@ Popup {
                 Layout.alignment:Qt.AlignHCenter
                 Layout.preferredWidth:325
                 Layout.topMargin: messageLabel.visible?0:50
-                calendarLocale:bellSchedulerBridge.systemLocale
+                calendarLocale:mainStackBridge.systemLocale
                 startDate:undefined
                 stopDate:undefined
                 initDate:{
@@ -72,7 +72,7 @@ Popup {
                     }
                 }
                 rangeDate:rangeDate.checked
-                daysInRange:bellSchedulerBridge.bellValidityDaysInRange
+                daysInRange:bellStackBridge.bellValidityDaysInRange
                 Connections{
                     target:calendar
                     function onGetSelectedDate(info){
@@ -107,7 +107,7 @@ Popup {
                     Layout.bottomMargin:10
                     RadioButton{
                         id:singleDate
-                        checked:!bellSchedulerBridge.bellValidityRangeOption
+                        checked:!bellStackBridge.bellValidityRangeOption
                         text:i18nd("bell-scheduler","Day:")
                         ButtonGroup.group:dateOptionsGroup
                             
@@ -115,8 +115,8 @@ Popup {
                     TextField{
                         id:dayText 
                         text:{
-                            if (!bellSchedulerBridge.bellValidityRangeOption){
-                                 bellSchedulerBridge.bellValidityDaysInRange[0]
+                            if (!bellStackBridge.bellValidityRangeOption){
+                                 bellStackBridge.bellValidityDaysInRange[0]
                             }else{
                                 ""
                             }
@@ -138,7 +138,7 @@ Popup {
                     Layout.bottomMargin:10
                     RadioButton{
                         id:rangeDate
-                        checked:bellSchedulerBridge.bellValidityRangeOption
+                        checked:bellStackBridge.bellValidityRangeOption
                         text:i18nd("bell-scheduler","From:")
                         ButtonGroup.group:dateOptionsGroup
                             
@@ -146,9 +146,9 @@ Popup {
                     TextField{
                         id:day1Entry 
                         text:{
-                            if (bellSchedulerBridge.bellValidityRangeOption){
-                                if (bellSchedulerBridge.bellValidityDaysInRange.length>0){
-                                    bellSchedulerBridge.bellValidityDaysInRange[0]
+                            if (bellStackBridge.bellValidityRangeOption){
+                                if (bellStackBridge.bellValidityDaysInRange.length>0){
+                                    bellStackBridge.bellValidityDaysInRange[0]
                                 }else{
                                     ""
                                 }
@@ -169,9 +169,9 @@ Popup {
                     TextField{
                         id:day2Entry 
                         text:{
-                           if (bellSchedulerBridge.bellValidityRangeOption){
-                                if (bellSchedulerBridge.bellValidityDaysInRange.length>0){
-                                    bellSchedulerBridge.bellValidityDaysInRange[ bellSchedulerBridge.bellValidityDaysInRange.length-1]
+                           if (bellStackBridge.bellValidityRangeOption){
+                                if (bellStackBridge.bellValidityDaysInRange.length>0){
+                                    bellStackBridge.bellValidityDaysInRange[ bellStackBridge.bellValidityDaysInRange.length-1]
                                 }else{
                                     ""
                                 }
@@ -218,7 +218,7 @@ Popup {
                         }else{
                             tmpValue=dayText.text
                         }
-                        bellSchedulerBridge.updateBellValidityValue([tmpValue,rangeDate.checked])
+                        bellStackBridge.updateBellValidityValue([tmpValue,rangeDate.checked])
                         restoreInitValues()
                         validitySelector.close()
                     }
@@ -270,11 +270,11 @@ Popup {
 
     function restoreInitValues(){
 
-        if (bellSchedulerBridge.bellValidityRangeOption){
+        if (bellStackBridge.bellValidityRangeOption){
             dayText.text=""
-            if (bellSchedulerBridge.bellValidityDaysInRange.length>0){
-                day1Entry.text=bellSchedulerBridge.bellValidityDaysInRange[0]
-                day2Entry.text=bellSchedulerBridge.bellValidityDaysInRange[ bellSchedulerBridge.bellValidityDaysInRange.length-1]
+            if (bellStackBridge.bellValidityDaysInRange.length>0){
+                day1Entry.text=bellStackBridge.bellValidityDaysInRange[0]
+                day2Entry.text=bellStackBridge.bellValidityDaysInRange[ bellStackBridge.bellValidityDaysInRange.length-1]
             }else{
                 day1Entry.text=""
                 day2Entry.text=""
@@ -284,14 +284,14 @@ Popup {
         }else{
             day1Entry.text=""
             day2Entry.text=""
-            dayText.text=bellSchedulerBridge.bellValidityDaysInRange[0]
+            dayText.text=bellStackBridge.bellValidityDaysInRange[0]
             calendar.initDate=dayText.text
             calendar.endDate=""
         }
         calendar.startDate=undefined
         calendar.stopDate=undefined
-        calendar.daysInRange=bellSchedulerBridge.bellValidityDaysInRange
-        rangeDate.checked=bellSchedulerBridge.bellValidityRangeOption
+        calendar.daysInRange=bellStackBridge.bellValidityDaysInRange
+        rangeDate.checked=bellStackBridge.bellValidityRangeOption
 
     }
 

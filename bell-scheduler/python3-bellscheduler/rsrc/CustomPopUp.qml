@@ -10,7 +10,7 @@ Popup {
     anchors.centerIn: Overlay.overlay
     modal:true
     focus:true
-    visible:!bellSchedulerBridge.closePopUp[0]
+    visible:!mainStackBridge.closePopUp[0]
     closePolicy:Popup.NoAutoClose
 
     GridLayout{
@@ -48,7 +48,7 @@ Popup {
     }
 
     function getTextMessage(){
-        switch (bellSchedulerBridge.closePopUp[1]){
+        switch (mainStackBridge.closePopUp[1]){
             case 1:
                 var msg=i18nd("bell-scheduler","Loading basic configuration. Wait a moment...");
                 break;

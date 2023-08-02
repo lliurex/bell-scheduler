@@ -27,9 +27,9 @@ Rectangle{
         enabled:true
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:bellSchedulerBridge.showMainMessage[0]
-            text:getTextMessage(bellSchedulerBridge.showMainMessage[1])
-            type:getTypeMessage(bellSchedulerBridge.showMainMessage[2])
+            visible:mainStackBridge.showMainMessage[0]
+            text:getTextMessage(mainStackBridge.showMainMessage[1])
+            type:getTypeMessage(mainStackBridge.showMainMessage[2])
             Layout.minimumWidth:650
             Layout.fillWidth:true
             Layout.topMargin: 40
@@ -44,7 +44,7 @@ Rectangle{
             
             BellsList{
                 id:bellsList
-                bellsModel:bellSchedulerBridge.bellsModel
+                bellsModel:mainStackBridge.bellsModel
                 Layout.fillHeight:true
                 Layout.fillWidth:true
             }
@@ -75,14 +75,14 @@ Rectangle{
                 MenuItem{
                     icon.name:"document-export.svg"
                     text:i18nd("bell-scheduler","Generate bell backup")
-                    enabled:bellSchedulerBridge.enableGlobalOptions
+                    enabled:mainStackBridge.enableGlobalOptions
                     onClicked:{
                         
                         backupAction="export"
                         backupFileDialog.title=i18nd("bell-scheduler","Please choose a file to save bells list")
                         backupFileDialog.selectExisting=false
                         
-                        if (bellSchedulerBridge.showExportBellsWarning){
+                        if (mainStackBridge.showExportBellsWarning){
                            exportBellDialog.open()
                         }else{
                             backupFileDialog.open()
@@ -116,7 +116,7 @@ Rectangle{
             text:i18nd("bell-scheduler","Global Options")
             Layout.preferredHeight:40
             Layout.rightMargin:rectLayout.width-(backupBtn.width+actionsBtn.width+newBtn.width+30)
-            enabled:bellSchedulerBridge.enableGlobalOptions
+            enabled:mainStackBridge.enableGlobalOptions
             onClicked:actionsMenu.open()
             
             Menu{
@@ -127,20 +127,20 @@ Rectangle{
                 MenuItem{
                     icon.name:"audio-on.svg"
                     text:i18nd("bell-scheduler","Enable alls bells")
-                    onClicked:bellSchedulerBridge.changeBellStatus([true,true])
+                    onClicked:mainStackBridge.changeBellStatus([true,true])
                 }
 
                 MenuItem{
                     icon.name:"audio-volume-muted.svg"
                     text:i18nd("bell-scheduler","Disable all bells")
-                    onClicked:bellSchedulerBridge.changeBellStatus([true,false])
+                    onClicked:mainStackBridge.changeBellStatus([true,false])
 
                 }
 
                 MenuItem{
                     icon.name:"delete.svg"
                     text:i18nd("bell-scheduler","Delete alls bells")
-                    onClicked:bellSchedulerBridge.removeBell([true])
+                    onClicked:mainStackBridge.removeBell([true])
                 }
             }
            
@@ -155,7 +155,7 @@ Rectangle{
             Layout.preferredHeight:40
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
-            onClicked:bellSchedulerBridge.addNewBell() 
+            onClicked:bellStackBridge.addNewBell() 
         }
     }
 
@@ -169,13 +169,13 @@ Rectangle{
         dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
         dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell List")
         dialogMsg:{
-            if (bellSchedulerBridge.showRemoveBellDialog[1]){
+            if (mainStackBridge.showRemoveBellDialog[1]){
                 i18nd("bell-scheduler","All bells will be deleted.\nDo yo want to continue?")
             }else{
                 i18nd("bell-scheduler","The bell will be deleted.\nDo yo want to continue?")
             }
         }
-        dialogVisible:bellSchedulerBridge.showRemoveBellDialog[0]
+        dialogVisible:mainStackBridge.showRemoveBellDialog[0]
         dialogWidth:300
         btnAcceptVisible:false
         btnAcceptText:""
@@ -187,10 +187,10 @@ Rectangle{
         Connections{
            target:removeBellDialog
            function onDiscardDialogClicked(){
-                bellSchedulerBridge.manageRemoveBellDialog('Accept')         
+                mainStackBridge.manageRemoveBellDialog('Accept')         
            }
            function onRejectDialogClicked(){
-                bellSchedulerBridge.manageRemoveBellDialog('Cancel')       
+                mainStackBridge.manageRemoveBellDialog('Cancel')       
            }
 
         }
@@ -255,10 +255,10 @@ Rectangle{
             selectedPath=selectedPath.replace(/^(file:\/{2})/,"")
             switch(backupAction){
                 case "export":
-                    bellSchedulerBridge.exportBellsConfig(selectedPath)
+                    mainStackBridge.exportBellsConfig(selectedPath)
                     break;
                 case "import":
-                    bellSchedulerBridge.importBellsConfig(selectedPath)
+                    mainStackBridge.importBellsConfig(selectedPath)
                     break;
             }
 

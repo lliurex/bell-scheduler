@@ -81,7 +81,7 @@ Popup {
                 icon.name:"dialog-ok.svg"
                 text:i18nd("bell-scheduler","Apply")
                 Layout.preferredHeight:40
-                enabled:!bellSchedulerBridge.bellImage[3]
+                enabled:!bellStackBridge.bellImage[3]
                 Keys.onReturnPressed: applyBtn.clicked()
                 Keys.onEnterPressed: applyBtn.clicked()
                 onClicked:{

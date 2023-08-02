@@ -204,18 +204,18 @@ Components.ListItem{
                         icon.name:bellActivated?"audio-volume-muted.svg":"audio-on.svg"
                         text:bellActivated?i18nd("bell-scheduler","Disable bell"):i18nd("bell-scheduler","Enable bell")
                         enabled:isSoundError?false:true
-                        onClicked:bellSchedulerBridge.changeBellStatus([false,!bellActivated,bellId])
+                        onClicked:mainStackBridge.changeBellStatus([false,!bellActivated,bellId])
                     }
 
                     MenuItem{
                         icon.name:"document-edit.svg"
                         text:i18nd("bell-scheduler","Edit bell")
-                        onClicked:bellSchedulerBridge.loadBell([bellId,isImgError,isSoundError])
+                        onClicked:bellStackBridge.loadBell([bellId,isImgError,isSoundError])
                     }
                     MenuItem{
                         icon.name:"delete.svg"
                         text:i18nd("bell-scheduler","Delete the bell")
-                        onClicked:bellSchedulerBridge.removeBell([false,bellId])
+                        onClicked:mainStackBridge.removeBell([false,bellId])
                     }
                 }
             }

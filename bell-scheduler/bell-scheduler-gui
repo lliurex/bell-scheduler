@@ -6,14 +6,17 @@ from PySide2.QtGui import QIcon
 from PySide2.QtQml import QQmlApplicationEngine
 
 import sys
-from bellscheduler import BellScheduler
+from bellscheduler.Core import Core
+c=Core.get_core()
 
 app = QApplication()
 engine = QQmlApplicationEngine()
 engine.clearComponentCache()
 context=engine.rootContext()
-bellSchedulerBridge=BellScheduler.Bridge(sys.argv[1])
-context.setContextProperty("bellSchedulerBridge", bellSchedulerBridge)
+mainStackBridge=c.mainStack
+bellStackBridge=c.bellStack
+context.setContextProperty("mainStackBridge", mainStackBridge)
+context.setContextProperty("bellStackBridge", bellStackBridge)
 
 url = QUrl("/usr/lib/python3/dist-packages/bellscheduler/rsrc/bell-scheduler.qml")
 

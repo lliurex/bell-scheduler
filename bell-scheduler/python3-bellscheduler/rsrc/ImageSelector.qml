@@ -67,7 +67,7 @@ Popup {
                     RadioButton{
                         id:stockOption
                         checked:{
-                            if (bellSchedulerBridge.bellImage[0]=="stock"){
+                            if (bellStackBridge.bellImage[0]=="stock"){
                                 true
                             }else{
                                 false
@@ -85,7 +85,7 @@ Popup {
                     }
                     ImageList{
                         id:imageList
-                        currentImgIndex:bellSchedulerBridge.bellImage[1]
+                        currentImgIndex:bellStackBridge.bellImage[1]
                         listEnabled:stockOption.checked
                     }
                 }
@@ -98,7 +98,7 @@ Popup {
                     RadioButton{
                         id:customOption
                         checked:{
-                            if (bellSchedulerBridge.bellImage[0]=="custom"){
+                            if (bellStackBridge.bellImage[0]=="custom"){
                                 true
                             }else{
                                 false
@@ -111,7 +111,7 @@ Popup {
                                     messageLabel.visible=true
                                     applyBtn.enabled=false
                                 }else{
-                                    if ((customImagePath.text=="")||(bellSchedulerBridge.bellImage[3])){
+                                    if ((customImagePath.text=="")||(bellStackBridge.bellImage[3])){
                                         applyBtn.enabled=false
                                     }else{
                                         applyBtn.enabled=true
@@ -125,8 +125,8 @@ Popup {
                     Text{
                         id:customImagePath 
                         text:{
-                            if (bellSchedulerBridge.bellImage[0]=="custom"){
-                                bellSchedulerBridge.bellImage[2].substring(bellSchedulerBridge.bellImage[2].lastIndexOf('/')+1)
+                            if (bellStackBridge.bellImage[0]=="custom"){
+                                bellStackBridge.bellImage[2].substring(bellStackBridge.bellImage[2].lastIndexOf('/')+1)
                             }else{
                                 ""
                             }
@@ -141,9 +141,9 @@ Popup {
                     TextField{
                         id:customImagePath
                         text:{
-                            if (bellSchedulerBridge.bellImage[0]=="custom"){
-                                if (!bellSchedulerBridge.bellImage[3]){
-                                    bellSchedulerBridge.bellImage[2].substring(bellSchedulerBridge.bellImage[2].lastIndexOf('/')+1)
+                            if (bellStackBridge.bellImage[0]=="custom"){
+                                if (!bellStackBridge.bellImage[3]){
+                                    bellStackBridge.bellImage[2].substring(bellStackBridge.bellImage[2].lastIndexOf('/')+1)
                                 }else{
                                     ""
                                 }
@@ -190,7 +190,7 @@ Popup {
                 icon.name:"dialog-ok.svg"
                 text:i18nd("bell-scheduler","Apply")
                 Layout.preferredHeight:40
-                enabled:!bellSchedulerBridge.bellImage[3]
+                enabled:!bellStackBridge.bellImage[3]
                 Keys.onReturnPressed: applyBtn.clicked()
                 Keys.onEnterPressed: applyBtn.clicked()
                 onClicked:{
@@ -204,9 +204,9 @@ Popup {
                     if (selectedImageFile!=""){
                         tmpPath=selectedImageFile
                     }else{
-                        tmpPath=bellSchedulerBridge.bellImage[2]
+                        tmpPath=bellStackBridge.bellImage[2]
                     }
-                    bellSchedulerBridge.updateImageValues([option,imageList.currentImgIndex,tmpPath])
+                    bellStackBridge.updateImageValues([option,imageList.currentImgIndex,tmpPath])
                     restoreInitValues()
                     imageSelector.close()
                 }
@@ -250,7 +250,7 @@ Popup {
             tmpFile=tmpFile.replace(/^(file:\/{2})/,"")
             customImagePath.text=tmpFile.substring(tmpFile.lastIndexOf('/')+1)
             selectedImageFile=tmpFile
-            if (!bellSchedulerBridge.checkMimetypeImage(selectedImageFile)){
+            if (!bellStackBridge.checkMimetypeImage(selectedImageFile)){
                 messageLabel.visible=true
                 applyBtn.enabled=false
                 imageFileError=true
@@ -265,19 +265,19 @@ Popup {
 
     function restoreInitValues(){
 
-        imageList.currentImgIndex=bellSchedulerBridge.bellImage[1]
+        imageList.currentImgIndex=bellStackBridge.bellImage[1]
         imageFileError=false
         selectedImageFile=""
         messageLabel.visible=""
-        applyBtn.enabled=!bellSchedulerBridge.bellImage[3]
+        applyBtn.enabled=!bellStackBridge.bellImage[3]
         
-        if (bellSchedulerBridge.bellImage[0]=="stock"){
+        if (bellStackBridge.bellImage[0]=="stock"){
             stockOption.checked=true
             customImagePath.text=""
         }else{
             customOption.checked=true
-            if (!bellSchedulerBridge.bellImage[3]){
-                customImagePath.text=bellSchedulerBridge.bellImage[2].substring(bellSchedulerBridge.bellImage[2].lastIndexOf('/')+1)
+            if (!bellStackBridge.bellImage[3]){
+                customImagePath.text=bellStackBridge.bellImage[2].substring(bellStackBridge.bellImage[2].lastIndexOf('/')+1)
             }else{
                 customImagePath.text=""
             }
