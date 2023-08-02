@@ -148,9 +148,13 @@ class BellManager(object):
 			tmp["fr"]=self.bellsConfig[item]["weekdays"]["4"]
 			if tmp["fr"]:
 				search+=self._getDayToSearch(4)
-			tmp["validity"]=self.bellsConfig[item]["validity"]["value"]
-			search+=tmp["validity"]
-			tmp["validityActivated"]=self.bellsConfig[item]["validity"]["active"]
+			try:
+				tmp["validity"]=self.bellsConfig[item]["validity"]["value"]
+				search+=tmp["validity"]
+				tmp["validityActivated"]=self.bellsConfig[item]["validity"]["active"]
+			except:
+				tmp["validity"]=""
+				tmp["validityActivated"]=False
 			if os.path.exists(self.bellsConfig[item]["image"]["path"]):
 				tmp["img"]=self.bellsConfig[item]["image"]["path"]
 			else:
@@ -296,8 +300,15 @@ class BellManager(object):
 		self.currentBellConfig=self.bellsConfig[bellToLoad[0]]
 		self.bellCron=[self.currentBellConfig["hour"],self.currentBellConfig["minute"]]
 		self.bellDays=[self.currentBellConfig["weekdays"]["0"],self.currentBellConfig["weekdays"]["1"],self.currentBellConfig["weekdays"]["2"],self.currentBellConfig["weekdays"]["3"],self.currentBellConfig["weekdays"]["4"]]
-		self.bellValidityActive=self.currentBellConfig["validity"]["active"]
-		self.bellValidityValue=self.currentBellConfig["validity"]["value"]
+		try:
+			self.bellValidityActive=self.currentBellConfig["validity"]["active"]
+			self.bellValidityValue=self.currentBellConfig["validity"]["value"]
+		except:
+			self.currentBellConfig["validity"]={}
+			self.currentBellConfig["validity"]["active"]=False
+			self.currentBellConfig["validity"]["value"]=""
+			self.bellValidityActive=False
+			self.bellValidityValue=""
 		self.bellValidityDaysInRange=[]
 		self._getValidityConfig(self.bellValidityValue)
 		self.enableBellValidity=self.areDaysChecked(self.currentBellConfig["weekdays"])
