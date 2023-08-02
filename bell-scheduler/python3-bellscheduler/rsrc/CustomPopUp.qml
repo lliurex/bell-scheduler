@@ -88,6 +88,12 @@ Popup {
             case 13:
                 var msg=i18nd("bell-scheduler","Revovering previous bells configuration. Wait a moment...")
                 break;
+            case 14:
+                var msg=i18nd("bell-scheduler","Deactivating holiday control. Wait a moment...")
+                break;
+            case 15:
+                var msg=i18nd("bell-scheduler","Activating holiday control. Wait a moment...")
+                break;
             default:
                 var msg=""
                 break;

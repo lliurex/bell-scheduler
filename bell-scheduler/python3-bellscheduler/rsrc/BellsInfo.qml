@@ -115,7 +115,6 @@ Rectangle{
             icon.name:"configure.svg"
             text:i18nd("bell-scheduler","Global Options")
             Layout.preferredHeight:40
-            Layout.rightMargin:rectLayout.width-(backupBtn.width+actionsBtn.width+newBtn.width+30)
             enabled:mainStackBridge.enableGlobalOptions
             onClicked:actionsMenu.open()
             
@@ -144,6 +143,19 @@ Rectangle{
                 }
             }
            
+        }
+        Button {
+            id:holidadyBtn
+            visible:true
+            focus:true
+            display:AbstractButton.TextBesideIcon
+            icon.name:mainStackBridge.isHolidayControlEnabled?"kt-stop.svg":"kt-start.svg"
+            text:mainStackBridge.isHolidayControlEnabled?i18nd("bell-scheduler","Disable holiday control"):i18nd("bell-scheduler","Enable holiday control")
+            Layout.preferredHeight:40
+            Layout.rightMargin:rectLayout.width-(backupBtn.width+actionsBtn.width+holidadyBtn.width+newBtn.width+40)
+            Keys.onReturnPressed: applyBtn.clicked()
+            Keys.onEnterPressed: applyBtn.clicked()
+            onClicked:mainStackBridge.manageHolidayControl()
         }
         Button {
             id:newBtn
@@ -330,6 +342,12 @@ Rectangle{
                 break;
             case 18:
                 var msg=i18nd("bell-scheduler","Bell created successfully")
+                break
+            case 34:
+                var msg=i18nd("bell-scheduler","Holiday control deactivated successfully")
+                break
+            case 35:
+                var msg=i18nd("bell-scheduler","Holiday control activated successfully")
                 break
             case 46:
                 var msg=i18nd("bell-scheduler","The bells have been activated successfully")

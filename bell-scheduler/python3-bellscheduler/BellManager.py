@@ -56,6 +56,7 @@ class BellManager(object):
 		self.dbg=0
 		self.credentials=[]
 		self.server='localhost'
+		self.holidayToken="/etc/bellScheduler/enabled_holiday_token"
 		self.bellsConfigData=[]
 		self.imgNoDispPath="/usr/lib/python3/dist-packages/bellscheduler/rsrc/image_nodisp.svg"
 		self.bannersPath="/usr/share/bell-scheduler/banners"
@@ -943,15 +944,6 @@ class BellManager(object):
 
 	#def recoveryBellsConfig	
 
-	def enable_holiday_control(self,action):
-
-		#Old n4d: result=self.n4d.enable_holiday_control(self.credentials,'BellSchedulerManager',action)
-		result=self.client.BellSchedulerManager.enable_holiday_control(action)
-		self._debug("Enable holiday control: ",result)	
-		return result
-
-	#def enable_holiday	
-
 	def changeActivationStatus(self,active):
 
 		if active:
@@ -1042,5 +1034,23 @@ class BellManager(object):
 		return False
 
 	#def checkIfAreBellsWithRandom
+
+	def checkHolidayManagerStatus(self):
+
+		if os.path.exists(self.holidayToken):
+			return True
+		else:
+			return False
+
+	#def checkHolidayManagerStatus
+
+	def enableHolidayControl(self,action):
+
+		result=self.client.BellSchedulerManager.enable_holiday_control(action)
+		self._debug("Enable holiday control: ",result)	
+		
+		return result
+
+	#def enableHolidayControl	
 
 #class BellManager 		

@@ -19,6 +19,8 @@ REMOVING_ALL_BELLS=10
 EXPORT_BELLS_CONFIG=11
 IMPORT_BELLS_CONFIG=12
 RECOVERY_BELLS_CONFIG=13
+DISABLE_HOLIDAY_CONTROL=14
+ENABLE_HOLIDAY_CONTROL=15
 
 class GatherInfo(QThread):
 
@@ -137,6 +139,25 @@ class RecoveryConfig(QThread):
 
 #class RecoveryConfig
 
+class EnableHolidayControl(QThread):
+
+	def __init__(self,*args):
+
+		QThread.__init__(self)
+		self.action=args[0]
+		self.ret=[]
+
+	#def __init__
+
+	def run(self,*args):
+
+		time.sleep(0.5)
+		self.ret=Bridge.bellMan.enableHolidayControl(self.action)
+
+	#def run
+
+#class EnableHolidayControl
+
 class Bridge(QObject):
 
 	def __init__(self,ticket=None):
@@ -145,8 +166,6 @@ class Bridge(QObject):
 		self.core=Core.Core.get_core()
 		Bridge.bellMan=self.core.bellmanager
 		self._bellsModel=BellsModel.BellsModel()
-		self._systemLocale=Bridge.bellMan.systemLocale
-		self._bellDuration=Bridge.bellMan.bellDuration
 		self._currentStack=0
 		self._mainCurrentOption=0
 		self._closePopUp=[True,""]
@@ -157,6 +176,7 @@ class Bridge(QObject):
 		self._showRemoveBellDialog=[False,False]
 		self._enableGlobalOptions=False
 		self._showExportBellsWarning=False
+		self._isHolidayControlEnabled=False
 		Bridge.bellMan.createN4dClient(sys.argv[1])
 
 	#def _init__
@@ -180,6 +200,8 @@ class Bridge(QObject):
 				self.core.bellStack._updateImagesModel()
 				self.enableGlobalOptions=Bridge.bellMan.checkGlobalOptionStatus()
 				self.showExportBellsWarning=Bridge.bellMan.checkIfAreBellsWithDirectory()
+				self.isHolidayControlEnabled=Bridge.bellMan.checkHolidayManagerStatus()
+				self._systemLocale=Bridge.bellMan.systemLocale
 				if Bridge.bellMan.loadError:
 					self.showMainMessage=[True,Bridge.bellMan.BELLS_WITH_ERRORS,"Error"]
 				self.currentStack=1
@@ -313,6 +335,20 @@ class Bridge(QObject):
 			self.on_showExportBellsWarning.emit()
 
 	#def _setShowExportBellsWarning
+
+	def _getIsHolidayControlEnabled(self):
+
+		return self._isHolidayControlEnabled
+
+	#def _getIsHolidayControlEnabled
+
+	def _setIsHolidayControlEnabled(self,isHolidayControlEnabled):
+
+		if self._isHolidayControlEnabled!=isHolidayControlEnabled:
+			self._isHolidayControlEnabled=isHolidayControlEnabled
+			self.on_isHolidayControlEnabled.emit()
+
+	#def _setIsHolidayControlEnabled
 
 	def _getCloseGui(self):
 
@@ -504,6 +540,37 @@ class Bridge(QObject):
 
 	#def _recoveryConfigRet
 
+	@Slot()
+	def manageHolidayControl(self):
+
+		if self.isHolidayControlEnabled:
+			action="disable"
+			msgCode=DISABLE_HOLIDAY_CONTROL 
+		else:
+			action="enable"
+			msgCode=ENABLE_HOLIDAY_CONTROL
+
+		self.closeGui=False
+		self.showMainMessage=[False,"","Ok"]
+		self.closePopUp=[False,msgCode]
+		self.changeHolidayControl=EnableHolidayControl(action)
+		self.changeHolidayControl.start()
+		self.changeHolidayControl.finished.connect(self._changeHolidayControlRet)
+
+	#def _manageHolidayControl
+
+	def _changeHolidayControlRet(self):
+
+		self.closePopUp=[True,""]
+		self.closeGui=True
+
+		if self.changeHolidayControl.ret["status"]:
+			self.showMainMessage=[True,self.changeHolidayControl.ret["code"],"Ok"]
+		else:
+			self.showMainMessage=[True,self.changeHolidayControl.ret["code"],"Error"]
+
+		self.isHolidayControlEnabled=Bridge.bellMan.checkHolidayManagerStatus()
+
 	def manageGoToStack(self):
 
 		if self.moveToStack!="":
@@ -568,6 +635,9 @@ class Bridge(QObject):
 	on_showExportBellsWarning=Signal()
 	showExportBellsWarning=Property(bool,_getShowExportBellsWarning,_setShowExportBellsWarning,notify=on_showExportBellsWarning)
 
+	on_isHolidayControlEnabled=Signal()
+	isHolidayControlEnabled=Property(bool,_getIsHolidayControlEnabled,_setIsHolidayControlEnabled,notify=on_isHolidayControlEnabled)
+	
 	on_closeGui=Signal()
 	closeGui=Property(bool,_getCloseGui,_setCloseGui, notify=on_closeGui)
 
