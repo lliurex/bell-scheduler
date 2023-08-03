@@ -6,6 +6,7 @@ import sys
 from . import BellManager
 from . import BellStack
 from . import MainStack
+import holidaymanager.HolidayStack as HolidayStack
 
 class Core:
 	
@@ -35,7 +36,8 @@ class Core:
 		self.bellmanager=BellManager.BellManager()
 		self.bellStack=BellStack.Bridge()
 		self.mainStack=MainStack.Bridge()
-	
+		
+		self.holidayStack=HolidayStack.Bridge()
 		self.mainStack.initBridge()
 	
 		

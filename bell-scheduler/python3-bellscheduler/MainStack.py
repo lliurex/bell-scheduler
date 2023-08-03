@@ -158,6 +158,24 @@ class EnableHolidayControl(QThread):
 
 #class EnableHolidayControl
 
+class LoadHoliday(QThread):
+
+	def __init__(self,*args):
+
+		QThread.__init__(self)
+		self.core=Core.Core.get_core()
+
+	#def __init__
+
+	def run(self,*args):
+
+		time.sleep(0.5)
+		self.core.holidayStack.initBridge()
+
+	#def run
+
+#class LoadHoliday
+
 class Bridge(QObject):
 
 	def __init__(self,ticket=None):
@@ -383,6 +401,34 @@ class Bridge(QObject):
 				self._bellsModel.setData(index,param,updatedInfo[i][param])
 
 	#def _updateBellsModelInfo
+
+	@Slot(int)
+	def moveToMainOptions(self,stack):
+
+		if stack==0:
+			self.mainCurrentOption=stack
+		else:
+			self._loadHolidayStack()
+
+	#def moveToMainOptions
+
+	def _loadHolidayStack(self):
+
+		self.closeGui=False
+		self.closePopUp=[False,""]
+		self.loadHolidayConfig=LoadHoliday()
+		self.loadHolidayConfig.start()
+		self.loadHolidayConfig.finished.connect(self._loadHolidayConfigRet)
+
+	#def _loadHolidayStack
+
+	def _loadHolidayConfigRet(self):
+
+		self.closeGui=True
+		self.closePopUp=[True,""]
+		self.mainCurrentOption=1
+
+	#def _loadHolidayConfigRet
 
 	@Slot('QVariantList')
 	def changeBellStatus(self,data):

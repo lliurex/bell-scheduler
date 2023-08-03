@@ -81,7 +81,6 @@ ApplicationWindow {
                         break;
                 }
             }
-            /*
             replaceEnter: Transition {
                 PropertyAnimation {
                     property: "opacity"
@@ -98,7 +97,7 @@ ApplicationWindow {
                     duration: 600
                 }
             }
-            */
+
             Component{
                 id:loadView
                 LoadWaiting{

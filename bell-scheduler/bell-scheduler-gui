@@ -15,8 +15,10 @@ engine.clearComponentCache()
 context=engine.rootContext()
 mainStackBridge=c.mainStack
 bellStackBridge=c.bellStack
+holidayStackBridge=c.holidayStack
 context.setContextProperty("mainStackBridge", mainStackBridge)
 context.setContextProperty("bellStackBridge", bellStackBridge)
+context.setContextProperty("holidayStackBridge",holidayStackBridge)
 
 url = QUrl("/usr/lib/python3/dist-packages/bellscheduler/rsrc/bell-scheduler.qml")
 

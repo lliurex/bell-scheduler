@@ -25,15 +25,13 @@ GridLayout{
                 id:listItem
                 optionText:i18nd("bell-scheduler","Bells")
                 optionIcon:"/usr/share/icons/breeze/status/22/appointment-reminder.svg"
-                /*
+               
                 Connections{
                     function onMenuOptionClicked(){
-                        if (!onedriveBridge.requiredMigration){
-                            onedriveBridge.moveToSpaceOption(0);
-                        }
+                        mainStackBridge.moveToMainOptions(0)
                     }
                 }
-                */
+                
             }
             /*
             MenuOptionBtn {
@@ -53,15 +51,13 @@ GridLayout{
                 id:holidayItem
                 optionText:i18nd("bell-scheduler","Holiday manager")
                 optionIcon:"/usr/share/icons/breeze/actions/22/view-calendar.svg"
-                /*
+                
                 Connections{
                     function onMenuOptionClicked(){
-                        if (!onedriveBridge.requiredMigration){
-                            onedriveBridge.moveToSpaceOption(0);
-                        }
+                        mainStackBridge.moveToMainOptions(1)
                     }
                 }
-                */
+                
             }
 
             MenuOptionBtn {
@@ -89,9 +85,11 @@ GridLayout{
                 case 0:
                     optionsView.replace(bellsInfoView)
                     break;
+                case 1:
+                    optionsView.replace(holidayView)
+                    break;
             }
         }
-        /*
         replaceEnter: Transition {
             PropertyAnimation {
                 property: "opacity"
@@ -108,11 +106,17 @@ GridLayout{
                 duration: 600
             }
         }
-        */
         Component{
             id:bellsInfoView
             BellsInfo{
                 id:bellsInfo
+            }
+        }
+
+        Component{
+            id:holidayView
+            Holiday{
+                id:holidayInfo
             }
         }
         
