@@ -21,6 +21,7 @@ IMPORT_BELLS_CONFIG=12
 RECOVERY_BELLS_CONFIG=13
 DISABLE_HOLIDAY_CONTROL=14
 ENABLE_HOLIDAY_CONTROL=15
+LOADING_HOLIDADY_LIST=116
 
 class GatherInfo(QThread):
 
@@ -415,7 +416,7 @@ class Bridge(QObject):
 	def _loadHolidayStack(self):
 
 		self.closeGui=False
-		self.closePopUp=[False,""]
+		self.closePopUp=[False,LOADING_HOLIDADY_LIST]
 		self.loadHolidayConfig=LoadHoliday()
 		self.loadHolidayConfig.start()
 		self.loadHolidayConfig.finished.connect(self._loadHolidayConfigRet)

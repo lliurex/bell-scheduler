@@ -94,6 +94,9 @@ Popup {
             case 15:
                 var msg=i18nd("bell-scheduler","Activating holiday control. Wait a moment...")
                 break;
+            case 16:
+                var msg=i18nd("bell-scheduler","Loading holiday list. Wait a moment...")
+                break;
             default:
                 var msg=""
                 break;

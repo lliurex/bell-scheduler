@@ -115,8 +115,8 @@ GridLayout{
 
         Component{
             id:holidayView
-            Holiday{
-                id:holidayInfo
+            HolidayManager{
+                id:holidayManager
             }
         }
         

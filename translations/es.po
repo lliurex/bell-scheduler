@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-02 12:24+0200\n"
-"PO-Revision-Date: 2023-08-02 12:28+0200\n"
+"POT-Creation-Date: 2023-08-04 13:43+0200\n"
+"PO-Revision-Date: 2023-08-04 13:44+0200\n"
 "Last-Translator: Weblate Admin <fernandezdeybarra_jua@gva.es>\n"
 "Language-Team: Spanish <http://weblate.lliurex.net/projects/bell-scheduler/"
 "bell-scheduler/es/>\n"
@@ -191,7 +191,7 @@ msgstr ""
 #: bell-scheduler/python3-bellscheduler/rsrc/SliderPopUp.qml:109
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:229
 #: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:82
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:208
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:212
 msgid "Apply"
 msgstr "Aplicar"
 
@@ -204,7 +204,7 @@ msgstr "Aplicar"
 #: bell-scheduler/python3-bellscheduler/rsrc/SliderPopUp.qml:132
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:264
 #: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:106
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:234
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:238
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -594,6 +594,10 @@ msgstr "Desactivando  el control de festivos. Espere un momento..."
 msgid "Activating holiday control. Wait a moment..."
 msgstr "Activando el control de festivos. Espere un momento..."
 
+#: bell-scheduler/python3-bellscheduler/rsrc/CustomPopUp.qml:98
+msgid "Loading holiday list. Wait a moment..."
+msgstr "Cargando la lista de festivos. Espere un momento..."
+
 #: bell-scheduler/python3-bellscheduler/rsrc/ImageSelector.qml:32
 msgid "Edit image for bell"
 msgstr "Editar la imagen para la alarma"
@@ -642,11 +646,11 @@ msgstr "Cargando. Espere un momento..."
 msgid "Unabled to read bells configuration file"
 msgstr "No es posible leer el fichero de configuración de las alarmas"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/MainOptions.qml:54
+#: bell-scheduler/python3-bellscheduler/rsrc/MainOptions.qml:52
 msgid "Holiday manager"
 msgstr "Festivos"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/MainOptions.qml:69
+#: bell-scheduler/python3-bellscheduler/rsrc/MainOptions.qml:65
 msgid "Help"
 msgstr "Ayuda"
 
@@ -698,14 +702,14 @@ msgstr "Dia:"
 msgid "From:"
 msgstr "Del:"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:167
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:169
 msgid "to:"
 msgstr "al:"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:253
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:257
 msgid "You must indicate the two dates of range"
 msgstr "Debe indicar las 2 fechas del rango"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:258
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:262
 msgid "Last date in range must be major than init date"
 msgstr "La última fecha del rango debe ser mayor que la fecha inicial"

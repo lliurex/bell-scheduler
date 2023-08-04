@@ -152,6 +152,8 @@ Popup {
                                 }else{
                                     ""
                                 }
+                            }else{
+                                ""
                             }
                         }
                         font.family: "Quattrocento Sans Bold"
@@ -175,6 +177,8 @@ Popup {
                                 }else{
                                     ""
                                 }
+                            }else{
+                                ""
                             }
                         }
                         font.family: "Quattrocento Sans Bold"
@@ -270,6 +274,11 @@ Popup {
 
     function restoreInitValues(){
 
+        calendar.startDate=undefined
+        calendar.stopDate=undefined
+        calendar.daysInRange=bellStackBridge.bellValidityDaysInRange
+        rangeDate.checked=bellStackBridge.bellValidityRangeOption
+
         if (bellStackBridge.bellValidityRangeOption){
             dayText.text=""
             if (bellStackBridge.bellValidityDaysInRange.length>0){
@@ -279,8 +288,8 @@ Popup {
                 day1Entry.text=""
                 day2Entry.text=""
             }
-            /*calendar.initDate=day1Entry.text
-            calendar.endDate=day2Entry.text*/
+            calendar.initDate=day1Entry.text
+            calendar.endDate=day2Entry.text
         }else{
             day1Entry.text=""
             day2Entry.text=""
@@ -288,11 +297,7 @@ Popup {
             calendar.initDate=dayText.text
             calendar.endDate=""
         }
-        calendar.startDate=undefined
-        calendar.stopDate=undefined
-        calendar.daysInRange=bellStackBridge.bellValidityDaysInRange
-        rangeDate.checked=bellStackBridge.bellValidityRangeOption
-
+    
     }
 
 }
