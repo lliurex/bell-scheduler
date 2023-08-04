@@ -21,7 +21,7 @@ IMPORT_BELLS_CONFIG=12
 RECOVERY_BELLS_CONFIG=13
 DISABLE_HOLIDAY_CONTROL=14
 ENABLE_HOLIDAY_CONTROL=15
-LOADING_HOLIDADY_LIST=116
+LOADING_HOLIDAY_LIST=16
 
 class GatherInfo(QThread):
 
@@ -406,17 +406,18 @@ class Bridge(QObject):
 	@Slot(int)
 	def moveToMainOptions(self,stack):
 
-		if stack==0:
-			self.mainCurrentOption=stack
-		else:
-			self._loadHolidayStack()
+		if self.mainCurrentOption!=stack:
+			if stack==0:
+				self.mainCurrentOption=stack
+			else:
+				self._loadHolidayStack()
 
 	#def moveToMainOptions
 
 	def _loadHolidayStack(self):
 
 		self.closeGui=False
-		self.closePopUp=[False,LOADING_HOLIDADY_LIST]
+		self.closePopUp=[False,LOADING_HOLIDAY_LIST]
 		self.loadHolidayConfig=LoadHoliday()
 		self.loadHolidayConfig.start()
 		self.loadHolidayConfig.finished.connect(self._loadHolidayConfigRet)
