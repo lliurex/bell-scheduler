@@ -655,7 +655,7 @@ class Bridge(QObject):
 
 		if self.core.bellStack.changesInBell:
 			self.closeGui=False
-			self.showChangesInBellDialog=True
+			self.core.bellStack.showChangesInBellDialog=True
 
 	#def closeBellScheduler
 	
