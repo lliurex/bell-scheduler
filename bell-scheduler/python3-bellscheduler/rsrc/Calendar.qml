@@ -13,6 +13,7 @@ Rectangle {
     property alias endDate:calendar.endDate
     property alias rangeDate:calendar.rangeDate
     property alias daysInRange:calendar.daysInRange
+    property alias selectedDate:calendar.selectedDate
     signal getSelectedDate (variant value)
 
     Calendar {
@@ -30,6 +31,7 @@ Rectangle {
         property var endDate:endDate
         property var daysInRange:daysInRange
         property bool rangeDate:rangeDate
+        selectedDate:selectedDate
         locale:Qt.locale(calendar.calendarLocale)
 
        style: CalendarStyle {

@@ -19,6 +19,11 @@ Popup {
     modal:true
     focus:true
     closePolicy:Popup.NoAutoClose
+    onVisibleChanged:{
+        if (visible){
+            loadInitVales()
+        }
+    }
 
     Rectangle{
         id:container
@@ -73,6 +78,7 @@ Popup {
                 }
                 rangeDate:rangeDate.checked
                 daysInRange:bellStackBridge.bellValidityDaysInRange
+                selectedDate:new Date()
                 Connections{
                     target:calendar
                     function onGetSelectedDate(info){
@@ -223,7 +229,6 @@ Popup {
                             tmpValue=dayText.text
                         }
                         bellStackBridge.updateBellValidityValue([tmpValue,rangeDate.checked])
-                        restoreInitValues()
                         validitySelector.close()
                     }
                 }
@@ -241,7 +246,6 @@ Popup {
                 Keys.onReturnPressed: cancelBtn.clicked()
                 Keys.onEnterPressed: cancelBtn.clicked()
                 onClicked:{
-                    restoreInitValues()
                     validitySelector.close()
                 }
                 
@@ -272,7 +276,7 @@ Popup {
         }
     }
 
-    function restoreInitValues(){
+    function loadInitVales(){
 
         calendar.startDate=undefined
         calendar.stopDate=undefined
@@ -284,9 +288,13 @@ Popup {
             if (bellStackBridge.bellValidityDaysInRange.length>0){
                 day1Entry.text=bellStackBridge.bellValidityDaysInRange[0]
                 day2Entry.text=bellStackBridge.bellValidityDaysInRange[ bellStackBridge.bellValidityDaysInRange.length-1]
+                calendar.selectedDate=Date.fromLocaleString(Qt.locale(),day1Entry.text,"dd/MM/yyyy")
+
             }else{
                 day1Entry.text=""
                 day2Entry.text=""
+                calendar.selectedDate=new Date()
+
             }
             calendar.initDate=day1Entry.text
             calendar.endDate=day2Entry.text
@@ -296,6 +304,11 @@ Popup {
             dayText.text=bellStackBridge.bellValidityDaysInRange[0]
             calendar.initDate=dayText.text
             calendar.endDate=""
+            if (dayText!=""){
+                calendar.selectedDate=Date.fromLocaleString(Qt.locale(),dayText.text,"dd/MM/yyyy")
+            }else{
+                calendar.selectedDate=new Date()
+            }
         }
     
     }
