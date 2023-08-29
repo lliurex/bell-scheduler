@@ -7,14 +7,10 @@ import QtQuick.Layouts 1.15
 Popup {
 
     id:validityPopUp
-   /* property alias xPopUp:validityPopUp.x
-    property alias yPopUp:validityPopUp.y*/
     signal applyButtonClicked
 
     width:530
     height:510
-   /* x:xPopUp
-    y:yPopUp*/
     anchors.centerIn: Overlay.overlay
     modal:true
     focus:true
@@ -32,7 +28,6 @@ Popup {
         color:"transparent"
         Text{ 
             text:i18nd("bell-scheduler","Edit bell validity")
-            font.family: "Quattrocento Sans Bold"
             font.pointSize: 16
         }
         GridLayout{

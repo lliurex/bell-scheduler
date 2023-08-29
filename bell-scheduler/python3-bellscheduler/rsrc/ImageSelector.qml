@@ -8,16 +8,12 @@ import QtQuick.Dialogs 1.3
 Popup {
 
     id:imagePopUp
-    /*property alias xPopUp:imagePopUp.x
-    property alias yPopUp:imagePopUp.y*/
     property alias customImagePathText:customImagePath.text
     property string selectedImageFile
     property bool imageFileError:false
 
     width:500
     height:350
-    /*x:xPopUp
-    y:yPopUp*/
     anchors.centerIn: Overlay.overlay
     modal:true
     focus:true
@@ -30,7 +26,6 @@ Popup {
         color:"transparent"
         Text{ 
             text:i18nd("bell-scheduler","Edit image for bell")
-            font.family: "Quattrocento Sans Bold"
             font.pointSize: 16
         }
         GridLayout{
@@ -121,23 +116,6 @@ Popup {
                         }
                         ButtonGroup.group:imageOptionsGroup
                     }
-                    /*
-                    Text{
-                        id:customImagePath 
-                        text:{
-                            if (bellStackBridge.bellImage[0]=="custom"){
-                                bellStackBridge.bellImage[2].substring(bellStackBridge.bellImage[2].lastIndexOf('/')+1)
-                            }else{
-                                ""
-                            }
-                        }
-                        text:customImagePathText
-                        font.family: "Quattrocento Sans Bold"
-                        font.pointSize: 10
-                        Layout.maximumWidth:250
-                        elide:Text.ElideMiddle
-                    }
-                    */
                     TextField{
                         id:customImagePath
                         text:{

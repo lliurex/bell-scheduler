@@ -10,8 +10,6 @@ Popup {
     id:sliderPopUp
     property alias popUpWidth:sliderPopUp.width
     property alias popUpHeight:sliderPopUp.height
-    /*property alias xPopUp:sliderPopUp.x
-    property alias yPopUp:sliderPopUp.y*/
     property alias headText:headText.text
     property alias footText:footText.text
     property alias showFoot:footText.visible
@@ -21,8 +19,6 @@ Popup {
 
     width:popUpWidth
     height:popUpHeight
-    /*x:xPopUp
-    y:yPopUp*/
     anchors.centerIn: Overlay.overlay
     modal:true
     focus:true
@@ -38,7 +34,6 @@ Popup {
         Text{ 
             id:headText
             text:headText
-            font.family: "Quattrocento Sans Bold"
             font.pointSize: 16
             anchors.topMargin:10
             anchors.leftMargin:10
@@ -60,16 +55,6 @@ Popup {
             }
 
         }
-        /*
-        PC3.Label {
-            text:sliderId.value
-            font.pointSize: 14
-            anchors.top:sliderId.bottom
-            anchors.topMargin:10
-            anchors.bottomMargin:20
-            anchors.horizontalCenter:parent.horizontalCenter
-        }
-        */
         TextField{
             id: sliderEntry
             validator: RegExpValidator { regExp: /([0-9][0-9][0-9])/ }
@@ -89,7 +74,6 @@ Popup {
         Text{ 
             id:footText
             text:footText
-            font.family: "Quattrocento Sans Bold"
             font.pointSize: 10
             visible:showFoot
             anchors.bottom:cancelBtn.top

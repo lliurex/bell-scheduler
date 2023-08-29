@@ -10,7 +10,6 @@ Rectangle{
 
     Text{ 
         text:i18nd("bell-scheduler","Edit Bell")
-        font.family: "Quattrocento Sans Bold"
         font.pointSize: 16
     }
 
@@ -125,8 +124,6 @@ Rectangle{
                     }
                     ValiditySelector{
                         id:validitySelector
-                        /*xPopUp:-Math.round(validitySelector.width-parent.width/2)
-                        yPopUp:-Math.round(parent.height*4.55)*/
                     }
                 }
 
@@ -212,8 +209,6 @@ Rectangle{
 
                         ImageSelector{
                             id:imageSelector
-                            /*xPopUp:-Math.round(imageSelector.width-parent.width/2)
-                            yPopUp:-Math.round(parent.height*4.55)*/
                         }
                     }
                 }
@@ -266,8 +261,6 @@ Rectangle{
                     }
                     SoundSelector{
                         id:soundSelector
-                        /*xPopUp:-Math.round(soundSelector.width-parent.width/2)
-                        yPopUp:-Math.round(soundSelector.height)*/
                     }
                 }
             }                
@@ -302,8 +295,6 @@ Rectangle{
                         id:editStartForm
                         popUpWidth:370
                         popUpHeight:210
-                        /*xPopUp:Math.round(parent.width/ 2)
-                        yPopUp:-Math.round(editStartForm.popUpHeight)*/
                         headText:i18nd("bell-scheduler","Edit when the alarm starts")
                         footText:""
                         showFoot:false
@@ -359,8 +350,6 @@ Rectangle{
                         id:editDurationForm
                         popUpWidth:350
                         popUpHeight:250
-                        /*xPopUp:Math.round(parent.width/ 2)
-                        yPopUp:-Math.round(editDurationForm.popUpHeight)*/
                         headText:i18nd("bell-scheduler","Edit bell duration")
                         footText:i18nd("bell-scheduler","(!) If duration is 0, the sound will be reproduced in its entirety")
                         showFoot:true
@@ -484,11 +473,7 @@ Rectangle{
         }
 
    }
-   /*
-   CustomPopUp{
-        id:waitingPopUp
-   }
-   */
+
    function getSoundPath(){
 
         var tmpPath=""

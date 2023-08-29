@@ -38,7 +38,6 @@ Rectangle{
             Text{
                 id:loadtext
                 text:i18nd("bell-scheduler", "Loading. Wait a moment...")
-                font.family: "Quattrocento Sans Bold"
                 font.pointSize: 10
                 Layout.alignment:Qt.AlignHCenter
             }

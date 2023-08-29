@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.15
 
 
 Rectangle {
-    /*property alias structModel:listBells.model*/
     property alias bellsModel:filterModel.model
     property alias listCount:listBells.count
     color:"transparent"

@@ -8,16 +8,12 @@ import QtQuick.Dialogs 1.3
 Popup {
 
     id:soundPopUp
-    /*property alias xPopUp:soundPopUp.x
-    property alias yPopUp:soundPopUp.y*/
     property string selectedSoundFile
     property string selectedSoundFolder
     property bool soundFileError:false
 
     width:580
     height:400
-    /*x:xPopUp
-    y:yPopUp*/
     anchors.centerIn: Overlay.overlay
     modal:true
     focus:true
@@ -30,7 +26,6 @@ Popup {
         color:"transparent"
         Text{ 
             text:i18nd("bell-scheduler","Edit sound for bell")
-            font.family: "Quattrocento Sans Bold"
             font.pointSize: 16
         }
         GridLayout{

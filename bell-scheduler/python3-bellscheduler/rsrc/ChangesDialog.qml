@@ -43,7 +43,6 @@ Dialog {
         Text {
             id:dialogText
             text:dialogMsg
-            font.family: "Quattrocento Sans Bold"
             font.pointSize: 10
             anchors.left:dialogIcon.right
             anchors.verticalCenter:dialogIcon.verticalCenter
@@ -64,7 +63,6 @@ Dialog {
                 text: btnAcceptText
                 focus:true
                 visible:btnAcceptVisible
-                font.family: "Quattrocento Sans Bold"
                 font.pointSize: 10
                 DialogButtonBox.buttonRole: DialogButtonBox.ApplyRole
                 Keys.onReturnPressed: dialogApplyBtn.clicked()
@@ -79,7 +77,6 @@ Dialog {
                 text: btnDiscardText
                 visible:btnDiscardVisible
                 focus:true
-                font.family: "Quattrocento Sans Bold"
                 font.pointSize: 10
                 DialogButtonBox.buttonRole: DialogButtonBox.DestructiveRole
                 Keys.onReturnPressed: dialogDiscardBtn.clicked()
@@ -94,7 +91,6 @@ Dialog {
                 icon.name:btnCancelIcon
                 text: btnCancelText
                 focus:true
-                font.family: "Quattrocento Sans Bold"
                 font.pointSize: 10
                 DialogButtonBox.buttonRole:DialogButtonBox.RejectRole
                 Keys.onReturnPressed: dialogCancelBtn.clicked()

@@ -10,7 +10,6 @@ Rectangle{
     color:"transparent"
     Text{ 
         text:i18nd("bell-scheduler","Configured bells")
-        font.family: "Quattrocento Sans Bold"
         font.pointSize: 16
     }
 
@@ -170,11 +169,6 @@ Rectangle{
             onClicked:bellStackBridge.addNewBell() 
         }
     }
-
-    /*
-    CustomPopUp{
-        id:loadBellForm
-    }*/
 
     ChangesDialog{
         id:removeBellDialog

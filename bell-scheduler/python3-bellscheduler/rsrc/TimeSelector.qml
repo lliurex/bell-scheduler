@@ -25,7 +25,6 @@ Popup {
         color:"transparent"
         Text{ 
             text:i18nd("bell-scheduler","Edit time for bell")
-            font.family: "Quattrocento Sans Bold"
             font.pointSize: 16
         }
         GridLayout{
