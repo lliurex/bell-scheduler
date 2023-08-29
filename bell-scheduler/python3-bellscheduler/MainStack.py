@@ -570,6 +570,7 @@ class Bridge(QObject):
 			self.closeGui=True
 			self.closePopUp=[True,""]
 			self.showMainMessage=[True,self.importBackup.ret[1],"Ok"]
+			self.enableGlobalOptions=Bridge.bellMan.checkGlobalOptionStatus()
 
 		else:
 			self.closePopUp=[False,RECOVERY_BELLS_CONFIG]
@@ -585,6 +586,7 @@ class Bridge(QObject):
 		self.closePopUp=[True,""]
 		self.closeGui=True
 		self.showMainMessage=[True,self.recoveryConfig.ret[1],"Error"]
+		self.enableGlobalOptions=Bridge.bellMan.checkGlobalOptionStatus()
 
 	#def _recoveryConfigRet
 
@@ -650,8 +652,6 @@ class Bridge(QObject):
 
 	@Slot()
 	def closeBellScheduler(self):
-
-		#Bridge.onedriveMan.deleteTempConfig()
 
 		if self.core.bellStack.changesInBell:
 			self.closeGui=False
