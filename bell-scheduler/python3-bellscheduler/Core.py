@@ -37,7 +37,7 @@ class Core:
 		self.bellStack=BellStack.Bridge()
 		self.mainStack=MainStack.Bridge()
 		
-		self.holidayStack=HolidayStack.Bridge()
+		self.holidayStack=HolidayStack.Bridge("Bell-Scheduler")
 		self.mainStack.initBridge()
 	
 		

@@ -66,7 +66,7 @@ Popup {
                     if (rangeDate.checked){
                         day1Entry.text
                     }else{
-                        dayText.text
+                        dayEntry.text
                     }
                 }
                 endDate:{
@@ -89,8 +89,12 @@ Popup {
                             }else{
                                 day2Entry.text=info[0]
                             }
+                            dayEntry.text=""
                         }else{
-                            dayText.text=info[0]
+                            dayEntry.text=info[0]
+                            day1Entry.text=""
+                            day2Entry.text=""
+                            calendar.startDate=undefined
                         }
                     }
                 }
@@ -119,15 +123,7 @@ Popup {
                             
                     }
                     TextField{
-                        id:dayText 
-                        text:{
-                            if (!bellStackBridge.bellValidityRangeOption){
-                                 bellStackBridge.bellValidityDaysInRange[0]
-                            }else{
-                                ""
-                            }
-                        }
-                        font.family: "Quattrocento Sans Bold"
+                        id:dayEntry 
                         font.pointSize: 10
                         horizontalAlignment:TextInput.AlignHCenter
                         readOnly:true
@@ -151,18 +147,6 @@ Popup {
                     }
                     TextField{
                         id:day1Entry 
-                        text:{
-                            if (bellStackBridge.bellValidityRangeOption){
-                                if (bellStackBridge.bellValidityDaysInRange.length>0){
-                                    bellStackBridge.bellValidityDaysInRange[0]
-                                }else{
-                                    ""
-                                }
-                            }else{
-                                ""
-                            }
-                        }
-                        font.family: "Quattrocento Sans Bold"
                         font.pointSize: 10
                         horizontalAlignment:TextInput.AlignHCenter
                         readOnly:true
@@ -176,18 +160,6 @@ Popup {
                     }
                     TextField{
                         id:day2Entry 
-                        text:{
-                           if (bellStackBridge.bellValidityRangeOption){
-                                if (bellStackBridge.bellValidityDaysInRange.length>0){
-                                    bellStackBridge.bellValidityDaysInRange[ bellStackBridge.bellValidityDaysInRange.length-1]
-                                }else{
-                                    ""
-                                }
-                            }else{
-                                ""
-                            }
-                        }
-                        font.family: "Quattrocento Sans Bold"
                         font.pointSize: 10
                         horizontalAlignment:TextInput.AlignHCenter
                         readOnly:true
@@ -226,7 +198,7 @@ Popup {
                         if (rangeDate.checked){
                             tmpValue=day1Entry.text+"-"+day2Entry.text
                         }else{
-                            tmpValue=dayText.text
+                            tmpValue=dayEntry.text
                         }
                         bellStackBridge.updateBellValidityValue([tmpValue,rangeDate.checked])
                         validitySelector.close()
@@ -284,7 +256,7 @@ Popup {
         rangeDate.checked=bellStackBridge.bellValidityRangeOption
 
         if (bellStackBridge.bellValidityRangeOption){
-            dayText.text=""
+            dayEntry.text=""
             if (bellStackBridge.bellValidityDaysInRange.length>0){
                 day1Entry.text=bellStackBridge.bellValidityDaysInRange[0]
                 day2Entry.text=bellStackBridge.bellValidityDaysInRange[ bellStackBridge.bellValidityDaysInRange.length-1]
@@ -301,11 +273,11 @@ Popup {
         }else{
             day1Entry.text=""
             day2Entry.text=""
-            dayText.text=bellStackBridge.bellValidityDaysInRange[0]
-            calendar.initDate=dayText.text
+            dayEntry.text=bellStackBridge.bellValidityDaysInRange[0]
+            calendar.initDate=dayEntry.text
             calendar.endDate=""
-            if (dayText!=""){
-                calendar.selectedDate=Date.fromLocaleString(Qt.locale(),dayText.text,"dd/MM/yyyy")
+            if (dayEntry!=""){
+                calendar.selectedDate=Date.fromLocaleString(Qt.locale(),dayEntry.text,"dd/MM/yyyy")
             }else{
                 calendar.selectedDate=new Date()
             }
