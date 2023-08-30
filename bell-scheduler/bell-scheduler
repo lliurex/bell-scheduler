@@ -20,28 +20,49 @@ class Tunnel(QObject):
 
 		clear=False
 		user=os.environ["USER"]
-		versionFile="/home/%s/.config/bell-scheduler.conf"%user
+		bellVersionFile="/home/%s/.config/bell-scheduler.conf"%user
+		holidayVersionFile="/home/%s/.config/python3-holidaymanager.conf"%user
 		cachePath1="/home/%s/.cache/bell-scheduler"%user
 		cachePath2="/home/%s/.cache/bell-scheduler-gui.py"%user
-		installedVersion=self.getPackageVersion()
+		bellInstalledVersion=self.getPackageVersion("bell")
+		holidayInstalledVersion=self.getPackageVersion("holiday")
 
-		if installedVersion!="":
-			if not os.path.exists(versionFile):
-				with open(versionFile,'w') as fd:
-					fd.write(installedVersion)
+
+		if bellInstalledVersion!="" and holidayInstalledVersion!="":
+
+			if not os.path.exists(bellVersionFile):
+				with open(bellVersionFile,'w') as fd:
+					fd.write(bellInstalledVersion)
+
+				clear=True
+				
+			if not os.path.exists(holidayVersionFile):
+				with open(holidayVersionFile,'w') as fd:
+					fd.write(holidayInstalledVersion)
 
 				clear=True
 
 			else:
-				with open(versionFile,'r') as fd:
+				with open(bellVersionFile,'r') as fd:
 					fileVersion=fd.readline()
 					fd.close()
 
-				if fileVersion!=installedVersion:
-					with open(versionFile,'w') as fd:
-						fd.write(installedVersion)
+				if fileVersion!=bellInstalledVersion:
+					with open(bellVersionFile,'w') as fd:
+						fd.write(bellInstalledVersion)
 						fd.close()
 					clear=True
+				else:
+					with open(holidayVersionFile,'r') as fd:
+						fileVersion=fd.readline()
+						fd.close()
+
+					if fileVersion!=holidayInstalledVersion:
+						with open(holidayVersionFile,'w') as fd:
+							fd.write(holidayInstalledVersion)
+							fd.close()
+						clear=True
+
 		else:
 			clear=True
 		
@@ -53,9 +74,13 @@ class Tunnel(QObject):
 
 	#def clearCache
 
-	def getPackageVersion(self):
+	def getPackageVersion(self,appName):
 
-		packageVersionFile="/var/lib/bell-scheduler/version"
+		if appName=="bell":
+			packageVersionFile="/var/lib/bell-scheduler/version"
+		elif appName=="holiday":
+			packageVersionFile="/var/lib/python3-holidaymanager/version"
+
 		pkgVersion=""
 
 		if os.path.exists(packageVersionFile):
