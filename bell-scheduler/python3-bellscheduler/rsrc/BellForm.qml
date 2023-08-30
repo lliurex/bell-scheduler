@@ -216,16 +216,25 @@ Rectangle{
             }
             Text{
                 id:sound
-                text:i18nd("bell-Scheduler","Current option for sound: ")
+                text:i18nd("bell-scheduler","Current option for sound: ")
                 Layout.alignment:Qt.AlignRight
             }
             Text{
                 id:soundOption
                 text:{
-                    if (bellStackBridge.bellSound[0]=="file"){
+                    switch (bellStackBridge.bellSound[0]){
+                    case "file":
                         i18nd("bell-scheduler","Sound file")
-                    }else{
+                        break;
+                    case "directory":
                         i18nd("bell-scheduler","Random from directory")
+                        break;
+                    case "url":
+                        i18nd("bell-scheduler","YouTube url")
+                        break;
+                    case "urlslist":
+                        i18nd("bell-scheduler","Random from urls list")
+                        break;
                     }
                 }
             }

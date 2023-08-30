@@ -15,6 +15,7 @@ import n4d.client
 from datetime import datetime, date,timedelta
 import copy
 import gettext
+gettext.textdomain("bell-scheduler")
 _ = gettext.gettext
 
 
@@ -250,7 +251,7 @@ class BellManager(object):
 		option=self.bellsConfig[bell]["sound"]["option"]
 		error=False
 		
-		if option!="url":
+		if option!="url" and option!="urlslist":
 			if os.path.exists(path):
 				if option=="file":
 					file=os.path.basename(path)
@@ -263,7 +264,10 @@ class BellManager(object):
 				msg=_("ERROR: File or directory not available")
 				return [error,msg]	
 		else:
-				return [error,path]
+			self.loadError=True
+			error=True
+			msg=_("ERROR: Current option for sound not supported")
+			return [error,msg]
 
 	#def _loadSoundPath
 
