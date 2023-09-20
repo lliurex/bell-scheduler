@@ -57,14 +57,7 @@
                 "teachers"
             ]
         },
-       
-        "update_indicator_token": {
-            "allowed_groups": [
-                "sudo",
-                "admins",
-                "teachers"
-            ]
-        },
+      
         "stop_bell": {
             "allowed_groups": [
                 "*",
