@@ -108,6 +108,7 @@ Popup {
                 Keys.onReturnPressed: cancelBtn.clicked()
                 Keys.onEnterPressed: cancelBtn.clicked()
                 onClicked:{
+                    restoreInitValues()
                     timePopUp.close()
                 }
             }
@@ -135,6 +136,22 @@ Popup {
         timer.repeat = false;
         timer.triggered.connect(cb);
         timer.start();
+    }
+
+    function restoreInitValues(){
+
+        hourEntry.text=formatEditText(bellStackBridge.bellCron[0])
+        minuteEntry.text=formatEditText(bellStackBridge.bellCron[1])
+
+    }
+
+    function formatEditText(value){
+        if (value<10){
+            return "0"+value.toString();
+        }else{
+            return value.toString();
+        }
+
     }
   
 }
