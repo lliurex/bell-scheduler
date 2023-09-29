@@ -1,3 +1,9 @@
+bell-scheduler (0.4.52) focal; urgency=medium
+
+  * Added log file to get bells played
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 29 Sep 2023 11:42:38 +0200
+
 bell-scheduler (0.4.51) focal; urgency=medium
 
   * Fixed play script to escape "'" from sound path.
