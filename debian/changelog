@@ -1,3 +1,9 @@
+bell-scheduler (0.14.53) jammy; urgency=medium
+
+  * Added log to get played bells
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 29 Sep 2023 12:50:15 +0200
+
 bell-scheduler (0.14.52) jammy; urgency=medium
 
   * Changed to compatibility with new taskscheduler
