@@ -7,6 +7,7 @@ import dbus
 import sys
 import json
 from datetime import datetime, date,timedelta
+import syslog
 
 class BellSchedulerPlayer:
 
@@ -45,6 +46,7 @@ class BellSchedulerPlayer:
 				cmd=playCommand
 
 			pc=subprocess.run(cmd,shell=True,check=False)
+			exitCode=pc.returncode
 
 			try:
 				if os.path.exists(self.fileToRemove):
@@ -53,6 +55,15 @@ class BellSchedulerPlayer:
 				pass
 			
 			self._manageToken('remove')
+			try:
+				if len(bellInfo)>0:
+					msg='Bell played. Id: %s - Hour: %s - Name: %s - Exit Code: %s'%(self.bellId,bellInfo[5],bellInfo[6],exitCode)
+				else:
+					msg='Bell played. Id: %s - Error obtaining bell data'%self.bellId
+				syslog.openlog("BELL-SCHEDULER-PLAYER")
+				syslog.syslog(msg)
+			except Exception as e:
+				pass
 			
 			sys.exit(0)
 		
@@ -88,6 +99,9 @@ class BellSchedulerPlayer:
 						except:
 							validity=""
 						bellInfo.append(validity)
+						tmpTime="%s:%s"%(bellsConfig[item]["hour"],bellsConfig[item]["minute"])
+						bellInfo.append(tmpTime)
+						bellInfo.append(bellsConfig[item]["name"])
 						break;
 			except:
 				pass
