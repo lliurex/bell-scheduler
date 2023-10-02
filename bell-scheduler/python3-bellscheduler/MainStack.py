@@ -196,6 +196,7 @@ class Bridge(QObject):
 		self._enableGlobalOptions=False
 		self._showExportBellsWarning=False
 		self._isHolidayControlEnabled=False
+		self.bellSchedulerPlayerLog="/var/log/BELL-SCHEDULER-PLAYER.log"
 		Bridge.bellMan.createN4dClient(sys.argv[1])
 
 	#def _init__
@@ -475,6 +476,15 @@ class Bridge(QObject):
 		self.closeGui=True
 
 	#def _changeBellStatusRet
+
+	@Slot()
+	def openLogFile(self):
+
+		if os.path.exists(self.bellSchedulerPlayerLog):
+			cmd="xdg-open %s"%self.bellSchedulerPlayerLog
+			os.system(cmd)
+
+	#def openLogFile
 
 	@Slot('QVariantList')
 	def removeBell(self,data):

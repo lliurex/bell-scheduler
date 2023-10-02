@@ -136,6 +136,12 @@ Rectangle{
                 }
 
                 MenuItem{
+                    icon.name:"document-preview-archive.svg"
+                    text:i18nd("bell-scheduler","View log file")
+                    onClicked:mainStackBridge.openLogFile()
+                }
+
+                MenuItem{
                     icon.name:"delete.svg"
                     text:i18nd("bell-scheduler","Delete alls bells")
                     onClicked:mainStackBridge.removeBell([true])
