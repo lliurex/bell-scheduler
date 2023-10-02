@@ -1,3 +1,9 @@
+bell-scheduler (0.4.53) focal; urgency=medium
+
+  * Added bell-scheduler-player log file in backup
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 02 Oct 2023 09:26:09 +0200
+
 bell-scheduler (0.4.52) focal; urgency=medium
 
   * Added log file to get bells played
