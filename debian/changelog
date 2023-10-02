@@ -1,3 +1,9 @@
+bell-scheduler (0.4.54) focal; urgency=medium
+
+  * Added option to view bell-scheduler-player log
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 02 Oct 2023 11:41:48 +0200
+
 bell-scheduler (0.4.53) focal; urgency=medium
 
   * Added bell-scheduler-player log file in backup
