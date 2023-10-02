@@ -34,6 +34,7 @@ class MainWindow:
 		self.core=Core.Core.get_core()
 		self.config_dir=os.path.expanduser("/etc/bellScheduler/")
 		self.holiday_token=self.config_dir+"enabled_holiday_token"
+		self.bell_scheduler_player_log="/var/log/BELL-SCHEDULER-PLAYER.log"
 
 
 	#def init
@@ -101,6 +102,27 @@ class MainWindow:
 		deactivate_eb.add(deactivate_label)
 		deactivate_box.add(deactivate_eb)
 		vbox.pack_start(deactivate_box, True, True,8)
+
+		separator_popover=Gtk.Separator()
+		separator_popover.set_name("POPOVER_SEPARATOR")
+		separator_popover.set_margin_left(10)
+		separator_popover.set_margin_right(10)
+		vbox.pack_start(separator_popover,True,True,4)
+
+		log_box=Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+		log_box.set_margin_left(10)
+		log_box.set_margin_right(10)
+		log_eb=Gtk.EventBox()
+		log_eb.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK)
+		log_eb.connect("button-press-event", self.open_log_file)
+		log_eb.connect("motion-notify-event", self.mouse_over_popover)
+		log_eb.connect("leave-notify-event", self.mouse_exit_popover)
+		
+		log_label=Gtk.Label()
+		log_label.set_text(_("View log file"))
+		log_eb.add(log_label)
+		log_box.add(log_eb)
+		vbox.pack_start(log_box, True, True,8)
 
 		separator_popover=Gtk.Separator()
 		separator_popover.set_name("POPOVER_SEPARATOR")
@@ -1033,6 +1055,14 @@ class MainWindow:
 		self.change_activation_status_result=self.core.bellmanager.change_activation_status(self.activation_action)
 
 	#def change_activation_status
+
+	def open_log_file(self,widget,event=None):
+
+		if os.path.exists(self.bell_scheduler_player_log):
+			cmd="xdg-open %s"%self.bell_scheduler_player_log
+			os.system(cmd)
+
+	#def open_log_file
 
 	def remove_all_bells(self,widget,event=None):
 
