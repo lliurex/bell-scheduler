@@ -20,7 +20,7 @@ Rectangle{
         rowSpacing:10
         width:parent.width-10
         anchors.horizontalCenter:parent.horizontalCenter
-
+  
         Kirigami.InlineMessage {
             id: messageLabel
             visible:bellStackBridge.showBellFormMessage[0]
@@ -242,17 +242,24 @@ Rectangle{
             }
             RowLayout{
                 Layout.alignment:Qt.AlignLeft
+                Layout.rightMargin:15
                 spacing:10
 
                 Text{
                     id:soundPathText
                     text:i18nd("bell-scheduler","Resource:")
                 }
-
                 Text{
                     id:soundPath
                     text:getSoundPath()
                     width:400
+                    Layout.fillWidth:{
+                        if (soundPath.width>schedulerGrid.width){
+                            true
+                        }else{
+                            false
+                        }
+                    }
                     elide:Text.ElideMiddle
                 }
                 Button {
@@ -266,14 +273,14 @@ Rectangle{
                     ToolTip.text:i18nd("bell-scheduler","Click to edit sound")
                     hoverEnabled:true
                     onClicked:{
-                        soundSelector.open()
+                       soundSelector.open()
                     }
                     SoundSelector{
                         id:soundSelector
                     }
                 }
-            }                
-
+              }
+    
             Text{
                 id:startOption
                 text:i18nd("bell-scheduler","Start in second:")
@@ -487,17 +494,16 @@ Rectangle{
 
         var tmpPath=""
         tmpPath=bellStackBridge.bellSound[1]
+       
         
         if (tmpPath==""){
-            return i18nd("bell-scheduler","<specify the file/url for the sound>")
+            tmpPath=i18nd("bell-scheduler","<specify the file/url for the sound>")
         }else{
             if (bellStackBridge.bellSound[0]=="file"){
-                return tmpPath.substring(tmpPath.lastIndexOf('/')+1)
-            }else{
-                return tmpPath
+                tmpPath=tmpPath.substring(tmpPath.lastIndexOf('/')+1)
             }
-
         }
+        return tmpPath
 
     }
 
