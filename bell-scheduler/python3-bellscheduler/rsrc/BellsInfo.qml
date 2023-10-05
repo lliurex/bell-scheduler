@@ -119,7 +119,7 @@ Rectangle{
             
             Menu{
                 id:actionsMenu
-                y: -actionsBtn.height*2.5
+                y: -actionsBtn.height*3.2
                 x: actionsBtn.width/2
 
                 MenuItem{
