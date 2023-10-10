@@ -1,3 +1,9 @@
+bell-scheduler (0.14.57) jammy; urgency=medium
+
+  * Fixed BellSchedulerPlayer when 2 or more bells are played simultaneously
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 10 Oct 2023 12:20:29 +0200
+
 bell-scheduler (0.14.56) jammy; urgency=medium
 
   * Fixed widget performance when 2 or more bells are played simultaneously
