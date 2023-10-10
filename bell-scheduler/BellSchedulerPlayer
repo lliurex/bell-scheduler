@@ -139,8 +139,8 @@ class BellSchedulerPlayer:
 			if not os.path.exists(self.tokenFolder):
 				os.mkdir(self.tokenFolder)
 
-			with open(self.tokenPath,'w') as fd:
-				fd.write(self.bellId)
+			with open(self.tokenPath,'a') as fd:
+				fd.write("%s\n"%self.bellId)
 
 		else:
 			if os.path.exists(self.tokenPath):
