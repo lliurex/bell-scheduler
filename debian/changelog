@@ -1,3 +1,9 @@
+bell-scheduler (0.14.58) jammy; urgency=medium
+
+  * Improved BellSchedulerPlayer log details
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 16 Oct 2023 11:31:24 +0200
+
 bell-scheduler (0.14.57) jammy; urgency=medium
 
   * Fixed BellSchedulerPlayer when 2 or more bells are played simultaneously
