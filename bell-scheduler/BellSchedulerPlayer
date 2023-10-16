@@ -45,7 +45,13 @@ class BellSchedulerPlayer:
 			else:
 				cmd=playCommand
 
-			pc=subprocess.run(cmd,shell=True,check=False)
+			pc=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+			pError=pc.communicate()[1].decode().split("\n")
+
+			if len(pError)>1:
+				pError.pop()
+			
+			pError=pError[-1]
 			exitCode=pc.returncode
 
 			try:
@@ -57,7 +63,8 @@ class BellSchedulerPlayer:
 			self._manageToken('remove')
 			try:
 				if len(bellInfo)>0:
-					msg='Bell played. Id: %s - Hour: %s - Name: %s - Exit Code: %s'%(self.bellId,bellInfo[5],bellInfo[6],exitCode)
+					details=pError	
+					msg='Bell played. Id: %s - Hour: %s - Name: %s - Exit Code: %s - Exit Details: %s'%(self.bellId,bellInfo[5],bellInfo[6],exitCode,details)
 				else:
 					msg='Bell played. Id: %s - Error obtaining bell data'%self.bellId
 				syslog.openlog("BELL-SCHEDULER-PLAYER")
@@ -141,6 +148,7 @@ class BellSchedulerPlayer:
 
 			with open(self.tokenPath,'a') as fd:
 				fd.write("%s\n"%self.bellId)
+
 		else:
 			if os.path.exists(self.tokenPath):
 				os.remove(self.tokenPath)
@@ -188,10 +196,10 @@ class BellSchedulerPlayer:
 			if duration>0:
 				fadeOut=int(duration)+int(startTime)-2
 				fadeEffects='-af aformat=channel_layouts=mono -af afade=in:st=%s:d=3,afade=out:st=%s:d=2'%(str(startTime),str(fadeOut))
-				cmd=" ffplay -nodisp -autoexit " + "-ss %s -t %s"%(str(startTime),duration)
+				cmd=" ffplay -nodisp -autoexit -loglevel error " + "-ss %s -t %s"%(str(startTime),duration)
 			else:
 				fadeEffects='-af aformat=channel_layouts=mono '
-				cmd=" ffplay -nodisp -autoexit -ss %s"%str(startTime)
+				cmd=" ffplay -nodisp -autoexit -loglevel error -ss %s"%str(startTime)
 
 			if soundOption in ["directory","urlslist"]:
 				soundPath=self._getSoundPath(soundOption,soundPath)
