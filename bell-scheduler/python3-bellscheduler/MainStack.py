@@ -643,7 +643,7 @@ class Bridge(QObject):
 	@Slot()
 	def openHelp(self):
 		
-		if 'valencia' in Bridge.bellMan.systemLocale:
+		if 'valencia' in self._systemLocale:
 			self.help_cmd='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Bell-Scheduler.'
 		else:
 			self.help_cmd='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Bell-Scheduler'

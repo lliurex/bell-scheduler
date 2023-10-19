@@ -102,12 +102,6 @@ class Bridge(QObject):
 
 	#def _init__
 
-	def _getSystemLocale(self):
-
-		return self._systemLocale
-
-	#def _getSystemLocale
-
 	def _getBellCron(self):
 
 		return self._bellCron

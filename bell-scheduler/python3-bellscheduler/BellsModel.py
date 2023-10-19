@@ -143,4 +143,4 @@ class BellsModel(QtCore.QAbstractListModel):
 	
 	#def clear
 	
-#class SpacesModel
+#class BellsModel
