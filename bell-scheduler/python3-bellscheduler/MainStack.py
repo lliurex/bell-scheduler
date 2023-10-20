@@ -34,9 +34,9 @@ class GatherInfo(QThread):
 	def run(self,*args):
 		
 		time.sleep(1)
-		self.syncWithCron=Bridge.bellMan.syncWithCron()
+		self.syncWithCron=Bridge.bellManager.syncWithCron()
 		if self.syncWithCron:
-			self.readConf=Bridge.bellMan.readConf()
+			self.readConf=Bridge.bellManager.readConf()
 
 	#def run
 
@@ -57,7 +57,7 @@ class ChangeBellStatus(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellMan.changeBellStatus(self.allBells,self.active,self.bellToEdit)
+		self.ret=Bridge.bellManager.changeBellStatus(self.allBells,self.active,self.bellToEdit)
 
 	#def run
 
@@ -77,7 +77,7 @@ class RemoveBell(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellMan.removeBell(self.allBells,self.bellToRemove)
+		self.ret=Bridge.bellManager.removeBell(self.allBells,self.bellToRemove)
 
 	#def run
 
@@ -96,7 +96,7 @@ class GenerateBackup(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellMan.exportBellsConfig(self.exportPath)
+		self.ret=Bridge.bellManager.exportBellsConfig(self.exportPath)
 
 	#def run
 
@@ -115,7 +115,7 @@ class ImportBackup(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellMan.importBellBackup(self.importPath)
+		self.ret=Bridge.bellManager.importBellBackup(self.importPath)
 
 	#def run
 
@@ -134,7 +134,7 @@ class RecoveryConfig(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellMan.recoveryBellBackup(self.recoveryPath)
+		self.ret=Bridge.bellManager.recoveryBellBackup(self.recoveryPath)
 
 	#def run
 
@@ -153,7 +153,7 @@ class EnableHolidayControl(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellMan.enableHolidayControl(self.action)
+		self.ret=Bridge.bellManager.enableHolidayControl(self.action)
 
 	#def run
 
@@ -179,11 +179,11 @@ class LoadHoliday(QThread):
 
 class Bridge(QObject):
 
-	def __init__(self,ticket=None):
+	def __init__(self):
 
 		QObject.__init__(self)
 		self.core=Core.Core.get_core()
-		Bridge.bellMan=self.core.bellmanager
+		Bridge.bellManager=self.core.bellManager
 		self._bellsModel=BellsModel.BellsModel()
 		self._currentStack=0
 		self._mainCurrentOption=0
@@ -197,7 +197,7 @@ class Bridge(QObject):
 		self._showExportBellsWarning=False
 		self._isHolidayControlEnabled=False
 		self.bellSchedulerPlayerLog="/var/log/BELL-SCHEDULER-PLAYER.log"
-		Bridge.bellMan.createN4dClient(sys.argv[1])
+		Bridge.bellManager.createN4dClient(sys.argv[1])
 
 	#def _init__
 
@@ -218,12 +218,12 @@ class Bridge(QObject):
 			if self.gatherInfo.readConf['status']:
 				self._updateBellsModel()
 				self.core.bellStack._updateImagesModel()
-				self.enableGlobalOptions=Bridge.bellMan.checkGlobalOptionStatus()
-				self.showExportBellsWarning=Bridge.bellMan.checkIfAreBellsWithDirectory()
-				self.isHolidayControlEnabled=Bridge.bellMan.checkHolidayManagerStatus()
-				self._systemLocale=Bridge.bellMan.systemLocale
-				if Bridge.bellMan.loadError:
-					self.showMainMessage=[True,Bridge.bellMan.BELLS_WITH_ERRORS,"Error"]
+				self.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
+				self.showExportBellsWarning=Bridge.bellManager.checkIfAreBellsWithDirectory()
+				self.isHolidayControlEnabled=Bridge.bellManager.checkHolidayManagerStatus()
+				self._systemLocale=Bridge.bellManager.systemLocale
+				if Bridge.bellManager.loadError:
+					self.showMainMessage=[True,Bridge.bellManager.BELLS_WITH_ERRORS,"Error"]
 				self.currentStack=1
 			else:
 				self.showLoadErrorMessage=[True,self.gatherInfo.readConf['code']]
@@ -387,7 +387,7 @@ class Bridge(QObject):
 	def _updateBellsModel(self):
 
 		ret=self._bellsModel.clear()
-		bellsEntries=Bridge.bellMan.bellsConfigData
+		bellsEntries=Bridge.bellManager.bellsConfigData
 		for item in bellsEntries:
 			if item["id"]!="":
 				self._bellsModel.appendRow(item["id"],item["cron"],item["mo"],item["tu"],item["we"],item["th"],item["fr"],item["validity"],item["validityActivated"],item["img"],item["name"],item["sound"],item["bellActivated"],item["metaInfo"],item["isSoundError"],item["isImgError"])
@@ -396,7 +396,7 @@ class Bridge(QObject):
 
 	def _updateBellsModelInfo(self,param):
 
-		updatedInfo=Bridge.bellMan.bellsConfigData
+		updatedInfo=Bridge.bellManager.bellsConfigData
 		if len(updatedInfo)>0:
 			for i in range(len(updatedInfo)):
 				index=self._bellsModel.index(i)
@@ -531,7 +531,7 @@ class Bridge(QObject):
 		else:
 			self.showMainMessage=[False,self.removeBellProcess.ret[1],"Error"]
 
-		self.enableGlobalOptions=Bridge.bellMan.checkGlobalOptionStatus()
+		self.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
 		self.closePopUp=[True,""]
 		self.closeGui=True
 
@@ -580,7 +580,7 @@ class Bridge(QObject):
 			self.closeGui=True
 			self.closePopUp=[True,""]
 			self.showMainMessage=[True,self.importBackup.ret[1],"Ok"]
-			self.enableGlobalOptions=Bridge.bellMan.checkGlobalOptionStatus()
+			self.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
 
 		else:
 			self.closePopUp=[False,RECOVERY_BELLS_CONFIG]
@@ -596,7 +596,7 @@ class Bridge(QObject):
 		self.closePopUp=[True,""]
 		self.closeGui=True
 		self.showMainMessage=[True,self.recoveryConfig.ret[1],"Error"]
-		self.enableGlobalOptions=Bridge.bellMan.checkGlobalOptionStatus()
+		self.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
 
 	#def _recoveryConfigRet
 
@@ -629,7 +629,7 @@ class Bridge(QObject):
 		else:
 			self.showMainMessage=[True,self.changeHolidayControl.ret["code"],"Error"]
 
-		self.isHolidayControlEnabled=Bridge.bellMan.checkHolidayManagerStatus()
+		self.isHolidayControlEnabled=Bridge.bellManager.checkHolidayManagerStatus()
 
 	def manageGoToStack(self):
 

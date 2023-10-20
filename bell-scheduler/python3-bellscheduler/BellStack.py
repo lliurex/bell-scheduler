@@ -28,9 +28,9 @@ class LoadBell(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		ret=Bridge.bellMan.initValues()
+		ret=Bridge.bellManager.initValues()
 		if not self.newBell:
-			ret=Bridge.bellMan.loadBellConfig(self.bellInfo)
+			ret=Bridge.bellManager.loadBellConfig(self.bellInfo)
 
 	#def run
 
@@ -49,7 +49,7 @@ class CheckData(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellMan.checkData(self.dataToCheck)
+		self.ret=Bridge.bellManager.checkData(self.dataToCheck)
 
 	#def run
 
@@ -68,7 +68,7 @@ class SaveData(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellMan.saveData(self.dataToSave)
+		self.ret=Bridge.bellManager.saveData(self.dataToSave)
 
 	#def run
 
@@ -81,20 +81,20 @@ class Bridge(QObject):
 
 		QObject.__init__(self)
 		self.core=Core.Core.get_core()
-		Bridge.bellMan=self.core.bellmanager
+		Bridge.bellManager=self.core.bellManager
 		self._imagesModel=ImagesModel.ImagesModel()
-		self._bellCron=Bridge.bellMan.bellCron
-		self._bellDays=Bridge.bellMan.bellDays
-		self._bellValidityActive=Bridge.bellMan.bellValidityActive
-		self._bellValidityValue=Bridge.bellMan.bellValidityValue
+		self._bellCron=Bridge.bellManager.bellCron
+		self._bellDays=Bridge.bellManager.bellDays
+		self._bellValidityActive=Bridge.bellManager.bellValidityActive
+		self._bellValidityValue=Bridge.bellManager.bellValidityValue
 		self._bellValidityRangeOption=True
 		self._bellValidityDaysInRange=[]
 		self._enableBellValidity=False
-		self._bellName=Bridge.bellMan.bellName
-		self._bellImage=Bridge.bellMan.bellImage
-		self._bellSound=Bridge.bellMan.bellSound
-		self._bellStartIn=Bridge.bellMan.bellStartIn
-		self._bellDuration=Bridge.bellMan.bellDuration
+		self._bellName=Bridge.bellManager.bellName
+		self._bellImage=Bridge.bellManager.bellImage
+		self._bellSound=Bridge.bellManager.bellSound
+		self._bellStartIn=Bridge.bellManager.bellStartIn
+		self._bellDuration=Bridge.bellManager.bellDuration
 		self._bellCurrentOption=0
 		self._showBellFormMessage=[False,"","Ok"]
 		self._showChangesInBellDialog=False
@@ -335,7 +335,7 @@ class Bridge(QObject):
 	def _updateImagesModel(self):
 
 		ret=self._imagesModel.clear()
-		imagesEntries=Bridge.bellMan.imagesConfigData
+		imagesEntries=Bridge.bellManager.imagesConfigData
 		for item in imagesEntries:
 			if item["imageSource"]!="":
 				self._imagesModel.appendRow(item["imageSource"])
@@ -355,7 +355,7 @@ class Bridge(QObject):
 
 	def _addNewBellRet(self):
 
-		self.currentBellConfig=copy.deepcopy(Bridge.bellMan.currentBellConfig)
+		self.currentBellConfig=copy.deepcopy(Bridge.bellManager.currentBellConfig)
 		self._initializeVars()
 		self.core.mainStack.closePopUp=[True,""]
 		self.core.mainStack.currentStack=2
@@ -365,18 +365,18 @@ class Bridge(QObject):
 
 	def _initializeVars(self):
 
-		self.bellCron=Bridge.bellMan.bellCron
-		self.bellDays=Bridge.bellMan.bellDays
-		self.bellValidityActive=Bridge.bellMan.bellValidityActive
-		self.bellValidityValue=Bridge.bellMan.bellValidityValue
-		self.bellValidityRangeOption=Bridge.bellMan.bellValidityRangeOption
-		self.bellValidityDaysInRange=Bridge.bellMan.bellValidityDaysInRange
-		self.enableBellValidity=Bridge.bellMan.enableBellValidity
-		self.bellName=Bridge.bellMan.bellName
-		self.bellImage=Bridge.bellMan.bellImage
-		self.bellSound=Bridge.bellMan.bellSound
-		self.bellStartIn=Bridge.bellMan.bellStartIn
-		self.bellDuration=Bridge.bellMan.bellDuration
+		self.bellCron=Bridge.bellManager.bellCron
+		self.bellDays=Bridge.bellManager.bellDays
+		self.bellValidityActive=Bridge.bellManager.bellValidityActive
+		self.bellValidityValue=Bridge.bellManager.bellValidityValue
+		self.bellValidityRangeOption=Bridge.bellManager.bellValidityRangeOption
+		self.bellValidityDaysInRange=Bridge.bellManager.bellValidityDaysInRange
+		self.enableBellValidity=Bridge.bellManager.enableBellValidity
+		self.bellName=Bridge.bellManager.bellName
+		self.bellImage=Bridge.bellManager.bellImage
+		self.bellSound=Bridge.bellManager.bellSound
+		self.bellStartIn=Bridge.bellManager.bellStartIn
+		self.bellDuration=Bridge.bellManager.bellDuration
 		self.showBellFormMessage=[False,"","Ok"]
 		self.changesInBell=False
 
@@ -409,7 +409,7 @@ class Bridge(QObject):
 
 	def _loadBellRet(self):
 
-		self.currentBellConfig=copy.deepcopy(Bridge.bellMan.currentBellConfig)
+		self.currentBellConfig=copy.deepcopy(Bridge.bellManager.currentBellConfig)
 		self._initializeVars()
 		self.core.mainStack.closePopUp=[True,""]
 		self.core.mainStack.currentStack=2
@@ -429,7 +429,7 @@ class Bridge(QObject):
 				self.bellCron[1]=values[1]
 				self.currentBellConfig["minute"]=self.bellCron[1]
 
-		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
@@ -460,9 +460,9 @@ class Bridge(QObject):
 				self.bellDays[4]=values[1]
 				self.currentBellConfig["weekdays"]["4"]=self.bellDays[4]
 
-		self.enableBellValidity=Bridge.bellMan.areDaysChecked(self.currentBellConfig["weekdays"])
+		self.enableBellValidity=Bridge.bellManager.areDaysChecked(self.currentBellConfig["weekdays"])
 		
-		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
@@ -482,7 +482,7 @@ class Bridge(QObject):
 			self.bellValidityActive=value
 			self.currentBellConfig["validity"]["active"]=self.bellValidityActive
 
-		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
@@ -496,10 +496,10 @@ class Bridge(QObject):
 			self.bellValidityValue=value[0]
 			self.currentBellConfig["validity"]["value"]=self.bellValidityValue
 			self.bellValidityRangeOption=value[1]
-			self.bellValidityDaysInRange=Bridge.bellMan.getDaysInRange(self.bellValidityValue)
+			self.bellValidityDaysInRange=Bridge.bellManager.getDaysInRange(self.bellValidityValue)
 
 		if value[0]!="":
-			if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+			if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
 				self.changesInBell=True
 			else:
 				self.changesInBell=False
@@ -515,7 +515,7 @@ class Bridge(QObject):
 			self.bellName=value
 			self.currentBellConfig["name"]=self.bellName
 
-		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
@@ -525,7 +525,7 @@ class Bridge(QObject):
 	@Slot(str,result=bool)
 	def checkMimetypeImage(self,imagePath):
 
-		return Bridge.bellMan.checkMimetypes(imagePath,"image")["result"]
+		return Bridge.bellManager.checkMimetypes(imagePath,"image")["result"]
 
 	#def checkMimetypeImage
 
@@ -537,7 +537,7 @@ class Bridge(QObject):
 		tmpImage.append(values[1])
 
 		if values[0]=="stock":
-			tmpPath=Bridge.bellMan.imagesConfigData[values[1]]["imageSource"]
+			tmpPath=Bridge.bellManager.imagesConfigData[values[1]]["imageSource"]
 		else:
 			tmpPath=values[2]
 		tmpImage.append(tmpPath)
@@ -552,7 +552,7 @@ class Bridge(QObject):
 			self.currentBellConfig["image"]["option"]=self.bellImage[0]
 			self.currentBellConfig["image"]["path"]=self.bellImage[2]
 	
-		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
@@ -562,7 +562,7 @@ class Bridge(QObject):
 	@Slot(str,result=bool)
 	def checkMimetypeSound(self,soundPath):
 
-		return Bridge.bellMan.checkMimetypes(soundPath,"audio")["result"]
+		return Bridge.bellManager.checkMimetypes(soundPath,"audio")["result"]
 
 	#def checkMimetypeSound
 
@@ -584,7 +584,7 @@ class Bridge(QObject):
 			self.currentBellConfig["sound"]["path"]=self.bellSound[1]
 			self.currentBellConfig["soundDefaultPath"]=self.bellSound[3]
 
-		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
@@ -598,7 +598,7 @@ class Bridge(QObject):
 			self.bellStartIn=value
 			self.currentBellConfig["play"]["start"]=self.bellStartIn
 
-		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
@@ -612,7 +612,7 @@ class Bridge(QObject):
 			self.bellDuration=value
 			self.currentBellConfig["play"]["duration"]=self.bellDuration
 
-		if self.currentBellConfig!=Bridge.bellMan.currentBellConfig:
+		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
@@ -672,8 +672,8 @@ class Bridge(QObject):
 		else:
 			self.core.mainStack.showMainMessage=[True,self.saveData.ret[1],"Error"]	
 
-		self.core.mainStack.enableGlobalOptions=Bridge.bellMan.checkGlobalOptionStatus()
-		self.core.mainStack.showExportBellsWarning=Bridge.bellMan.checkIfAreBellsWithDirectory()
+		self.core.mainStack.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
+		self.core.mainStack.showExportBellsWarning=Bridge.bellManager.checkIfAreBellsWithDirectory()
 		self.changesInBell=False
 		self.core.mainStack.closeGui=True
 		self.core.mainStack.moveToStack=1

@@ -33,7 +33,7 @@ class Core:
 	def init(self):
 
 	
-		self.bellmanager=BellManager.BellManager()
+		self.bellManager=BellManager.BellManager()
 		self.bellStack=BellStack.Bridge()
 		self.mainStack=MainStack.Bridge()
 		
