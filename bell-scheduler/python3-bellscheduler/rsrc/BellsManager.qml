@@ -26,9 +26,9 @@ Rectangle{
         enabled:true
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:mainStackBridge.showMainMessage[0]
-            text:getTextMessage(mainStackBridge.showMainMessage[1])
-            type:getTypeMessage(mainStackBridge.showMainMessage[2])
+            visible:bellsOptionsStackBridge.showMainMessage[0]
+            text:getTextMessage(bellsOptionsStackBridge.showMainMessage[1])
+            type:getTypeMessage(bellsOptionsStackBridge.showMainMessage[2])
             Layout.minimumWidth:650
             Layout.fillWidth:true
             Layout.topMargin: 40
@@ -43,7 +43,7 @@ Rectangle{
             
             BellsList{
                 id:bellsList
-                bellsModel:mainStackBridge.bellsModel
+                bellsModel:bellsOptionsStackBridge.bellsModel
                 Layout.fillHeight:true
                 Layout.fillWidth:true
             }
@@ -74,14 +74,14 @@ Rectangle{
                 MenuItem{
                     icon.name:"document-export.svg"
                     text:i18nd("bell-scheduler","Generate bell backup")
-                    enabled:mainStackBridge.enableGlobalOptions
+                    enabled:bellsOptionsStackBridge.enableGlobalOptions
                     onClicked:{
                         
                         backupAction="export"
                         backupFileDialog.title=i18nd("bell-scheduler","Please choose a file to save bells list")
                         backupFileDialog.selectExisting=false
                         
-                        if (mainStackBridge.showExportBellsWarning){
+                        if (bellsOptionsStackBridge.showExportBellsWarning){
                            exportBellDialog.open()
                         }else{
                             backupFileDialog.open()
@@ -114,7 +114,7 @@ Rectangle{
             icon.name:"configure.svg"
             text:i18nd("bell-scheduler","Global Options")
             Layout.preferredHeight:40
-            enabled:mainStackBridge.enableGlobalOptions
+            enabled:bellsOptionsStackBridge.enableGlobalOptions
             onClicked:actionsMenu.open()
             
             Menu{
@@ -125,26 +125,26 @@ Rectangle{
                 MenuItem{
                     icon.name:"audio-on.svg"
                     text:i18nd("bell-scheduler","Enable alls bells")
-                    onClicked:mainStackBridge.changeBellStatus([true,true])
+                    onClicked:bellsOptionsStackBridge.changeBellStatus([true,true])
                 }
 
                 MenuItem{
                     icon.name:"audio-volume-muted.svg"
                     text:i18nd("bell-scheduler","Disable all bells")
-                    onClicked:mainStackBridge.changeBellStatus([true,false])
+                    onClicked:bellsOptionsStackBridge.changeBellStatus([true,false])
 
                 }
 
                 MenuItem{
                     icon.name:"document-preview-archive.svg"
                     text:i18nd("bell-scheduler","View log file")
-                    onClicked:mainStackBridge.openLogFile()
+                    onClicked:bellsOptionsStackBridge.openLogFile()
                 }
 
                 MenuItem{
                     icon.name:"delete.svg"
                     text:i18nd("bell-scheduler","Delete alls bells")
-                    onClicked:mainStackBridge.removeBell([true])
+                    onClicked:bellsOptionsStackBridge.removeBell([true])
                 }
             }
            
@@ -154,13 +154,13 @@ Rectangle{
             visible:true
             focus:true
             display:AbstractButton.TextBesideIcon
-            icon.name:mainStackBridge.isHolidayControlEnabled?"kt-stop.svg":"kt-start.svg"
-            text:mainStackBridge.isHolidayControlEnabled?i18nd("bell-scheduler","Disable holiday control"):i18nd("bell-scheduler","Enable holiday control")
+            icon.name:bellsOptionsStackBridge.isHolidayControlEnabled?"kt-stop.svg":"kt-start.svg"
+            text:bellsOptionsStackBridge.isHolidayControlEnabled?i18nd("bell-scheduler","Disable holiday control"):i18nd("bell-scheduler","Enable holiday control")
             Layout.preferredHeight:40
             Layout.rightMargin:rectLayout.width-(backupBtn.width+actionsBtn.width+holidadyBtn.width+newBtn.width+40)
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
-            onClicked:mainStackBridge.manageHolidayControl()
+            onClicked:bellsOptionsStackBridge.manageHolidayControl()
         }
         Button {
             id:newBtn
@@ -181,13 +181,13 @@ Rectangle{
         dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
         dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell List")
         dialogMsg:{
-            if (mainStackBridge.showRemoveBellDialog[1]){
+            if (bellsOptionsStackBridge.showRemoveBellDialog[1]){
                 i18nd("bell-scheduler","All bells will be deleted.\nDo yo want to continue?")
             }else{
                 i18nd("bell-scheduler","The bell will be deleted.\nDo yo want to continue?")
             }
         }
-        dialogVisible:mainStackBridge.showRemoveBellDialog[0]
+        dialogVisible:bellsOptionsStackBridge.showRemoveBellDialog[0]
         dialogWidth:300
         btnAcceptVisible:false
         btnAcceptText:""
@@ -199,10 +199,10 @@ Rectangle{
         Connections{
            target:removeBellDialog
            function onDiscardDialogClicked(){
-                mainStackBridge.manageRemoveBellDialog('Accept')         
+                bellsOptionsStackBridge.manageRemoveBellDialog('Accept')         
            }
            function onRejectDialogClicked(){
-                mainStackBridge.manageRemoveBellDialog('Cancel')       
+                bellsOptionsStackBridge.manageRemoveBellDialog('Cancel')       
            }
 
         }
@@ -267,10 +267,10 @@ Rectangle{
             selectedPath=selectedPath.replace(/^(file:\/{2})/,"")
             switch(backupAction){
                 case "export":
-                    mainStackBridge.exportBellsConfig(selectedPath)
+                    bellsOptionsStackBridge.exportBellsConfig(selectedPath)
                     break;
                 case "import":
-                    mainStackBridge.importBellsConfig(selectedPath)
+                    bellsOptionsStackBridge.importBellsConfig(selectedPath)
                     break;
             }
 

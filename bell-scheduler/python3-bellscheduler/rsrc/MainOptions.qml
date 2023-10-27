@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.15
 
 
 GridLayout{
-    id: optionsGrid
+    id: mainGrid
     columns: 2
     flow: GridLayout.LeftToRight
     columnSpacing:10
@@ -62,12 +62,12 @@ GridLayout{
         property int currentIndex:mainStackBridge.mainCurrentOption
         Layout.fillWidth:true
         Layout.fillHeight:true
-        initialItem:bellsInfoView
+        initialItem:bellsView
 
         onCurrentIndexChanged:{
             switch(currentIndex){
                 case 0:
-                    optionsView.replace(bellsInfoView)
+                    optionsView.replace(bellsView)
                     break;
                 case 1:
                     optionsView.replace(holidayView)
@@ -91,9 +91,9 @@ GridLayout{
             }
         }
         Component{
-            id:bellsInfoView
-            BellsInfo{
-                id:bellsInfo
+            id:bellsView
+            BellsManager{
+                id:bellsManager
             }
         }
 

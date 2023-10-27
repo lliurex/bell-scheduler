@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.15
 
 
 GridLayout{
-    id: optionsGrid
+    id: bellGrid
     columns: 2
     flow: GridLayout.LeftToRight
     columnSpacing:10

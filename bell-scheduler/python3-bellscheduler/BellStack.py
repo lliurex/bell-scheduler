@@ -332,7 +332,7 @@ class Bridge(QObject):
 
 	#def _getImagesModel	
 
-	def _updateImagesModel(self):
+	def updateImagesModel(self):
 
 		ret=self._imagesModel.clear()
 		imagesEntries=Bridge.bellManager.imagesConfigData
@@ -340,13 +340,13 @@ class Bridge(QObject):
 			if item["imageSource"]!="":
 				self._imagesModel.appendRow(item["imageSource"])
 	
-	#def _updateImagesModel
+	#def updateImagesModel
 
 	@Slot()
 	def addNewBell(self):
 
 		self.core.mainStack.closePopUp=[False,NEW_BELL_CONFIG]
-		self.core.mainStack.showMainMessage=[False,"","Ok"]
+		self.core.bellsOptions.showMainMessage=[False,"","Ok"]
 		self.newBell=LoadBell(True,"")
 		self.newBell.start()
 		self.newBell.finished.connect(self._addNewBellRet)
@@ -400,7 +400,7 @@ class Bridge(QObject):
 	def loadBell(self,bellToLoad):
 
 		self.core.mainStack.closePopUp=[False,LOAD_BELL_CONFIG]
-		self.core.mainStack.showMainMessage=[False,"","Ok"]
+		self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
 		self.editBell=LoadBell(False,bellToLoad)
 		self.editBell.start()
 		self.editBell.finished.connect(self._loadBellRet)
@@ -667,13 +667,13 @@ class Bridge(QObject):
 	def _saveDataRet(self):
 
 		if self.saveData.ret[0]:
-			self.core.mainStack._updateBellsModel()
-			self.core.mainStack.showMainMessage=[True,self.saveData.ret[1],"Ok"]
+			self.core.bellsOptionsStack._updateBellsModel()
+			self.core.bellsOptionsStack.showMainMessage=[True,self.saveData.ret[1],"Ok"]
 		else:
-			self.core.mainStack.showMainMessage=[True,self.saveData.ret[1],"Error"]	
+			self.core.bellsOptionsStack.showMainMessage=[True,self.saveData.ret[1],"Error"]	
 
-		self.core.mainStack.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
-		self.core.mainStack.showExportBellsWarning=Bridge.bellManager.checkIfAreBellsWithDirectory()
+		self.core.bellsOptionsStack.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
+		self.core.bellsOptionsStack.showExportBellsWarning=Bridge.bellManager.checkIfAreBellsWithDirectory()
 		self.changesInBell=False
 		self.core.mainStack.closeGui=True
 		self.core.mainStack.moveToStack=1

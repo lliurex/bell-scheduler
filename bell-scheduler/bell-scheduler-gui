@@ -14,9 +14,11 @@ engine = QQmlApplicationEngine()
 engine.clearComponentCache()
 context=engine.rootContext()
 mainStackBridge=c.mainStack
+bellsOptionsStackBridge=c.bellsOptionsStack
 bellStackBridge=c.bellStack
 holidayStackBridge=c.holidayStack
 context.setContextProperty("mainStackBridge", mainStackBridge)
+context.setContextProperty("bellsOptionsStackBridge", bellsOptionsStackBridge)
 context.setContextProperty("bellStackBridge", bellStackBridge)
 context.setContextProperty("holidayStackBridge",holidayStackBridge)
 

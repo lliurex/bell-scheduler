@@ -204,7 +204,7 @@ Components.ListItem{
                         icon.name:bellActivated?"audio-volume-muted.svg":"audio-on.svg"
                         text:bellActivated?i18nd("bell-scheduler","Disable bell"):i18nd("bell-scheduler","Enable bell")
                         enabled:isSoundError?false:true
-                        onClicked:mainStackBridge.changeBellStatus([false,!bellActivated,bellId])
+                        onClicked:bellsOptionsStackBridge.changeBellStatus([false,!bellActivated,bellId])
                     }
 
                     MenuItem{
@@ -215,7 +215,7 @@ Components.ListItem{
                     MenuItem{
                         icon.name:"delete.svg"
                         text:i18nd("bell-scheduler","Delete the bell")
-                        onClicked:mainStackBridge.removeBell([false,bellId])
+                        onClicked:bellsOptionsStackBridge.removeBell([false,bellId])
                     }
                 }
             }
