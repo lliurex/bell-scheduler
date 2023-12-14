@@ -1,4 +1,3 @@
-import org.kde.plasma.core 2.1 as PlasmaCore
 import org.kde.kirigami 2.16 as Kirigami
 import QtQuick 2.15
 import QtQuick.Controls 2.15

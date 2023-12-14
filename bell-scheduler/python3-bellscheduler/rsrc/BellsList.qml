@@ -1,4 +1,3 @@
-import org.kde.plasma.components 2.0 as Components
 import org.kde.plasma.components 3.0 as PC3
 import org.kde.kirigami 2.16 as Kirigami
 import QtQuick 2.15

@@ -1,9 +1,7 @@
-import org.kde.plasma.core 2.1 as PlasmaCore
 import org.kde.kirigami 2.16 as Kirigami
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import QtQuick.Dialogs 1.3
 
 Popup {
     id:timePopUp
@@ -18,7 +16,12 @@ Popup {
     focus:true
     closePolicy:Popup.NoAutoClose
 
-    Rectangle{
+    background:Rectangle{
+        color:"#ebeced"
+    }
+
+
+    contentItem:Rectangle{
         id:container
         width:timePopUp.width
         height:timePopUp.height
@@ -68,8 +71,6 @@ Popup {
             id:btnBox
             anchors.bottom:parent.bottom
             anchors.right:parent.right
-            anchors.bottomMargin:25
-            anchors.rightMargin:20
             spacing:10
 
             Button {

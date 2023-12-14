@@ -1,4 +1,3 @@
-import org.kde.plasma.core 2.1 as PlasmaCore
 import org.kde.kirigami 2.16 as Kirigami
 import QtQuick 2.15
 import QtQuick.Controls 2.15
@@ -20,8 +19,12 @@ Popup {
             loadInitVales()
         }
     }
+    
+    background:Rectangle{
+        color:"#ebeced"
+    }
 
-    Rectangle{
+    contentItem:Rectangle{
         id:container
         width:validityPopUp.width
         height:validityPopUp.height
@@ -172,8 +175,6 @@ Popup {
             anchors.bottom:parent.bottom
             anchors.right:parent.right
             anchors.topMargin:10
-            anchors.bottomMargin:30
-            anchors.rightMargin:20
             spacing:10
 
             Button {

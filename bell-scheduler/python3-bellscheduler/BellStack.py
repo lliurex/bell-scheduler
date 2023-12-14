@@ -346,7 +346,7 @@ class Bridge(QObject):
 	def addNewBell(self):
 
 		self.core.mainStack.closePopUp=[False,NEW_BELL_CONFIG]
-		self.core.bellsOptions.showMainMessage=[False,"","Ok"]
+		self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
 		self.newBell=LoadBell(True,"")
 		self.newBell.start()
 		self.newBell.finished.connect(self._addNewBellRet)

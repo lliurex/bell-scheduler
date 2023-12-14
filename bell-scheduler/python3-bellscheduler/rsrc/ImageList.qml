@@ -1,8 +1,7 @@
-import QtQuick 2.6
-import QtQuick.Controls 2.6
-import QtQuick.Layouts 1.12
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 import org.kde.plasma.components 3.0 as PC3
-import org.kde.plasma.components 2.0 as Components
 
 
 Rectangle{
@@ -21,9 +20,6 @@ Rectangle{
             id:imagesSelector
             anchors.centerIn:parent
             focus:true
-            onCurrentIndexChanged:{
-                console.log(imagesSelector.currentIndex)
-            }
             currentIndex:currentImgIndex
             snapMode:ListView.SnapOneItem
             highlightRangeMode: ListView.StrictlyEnforceRange

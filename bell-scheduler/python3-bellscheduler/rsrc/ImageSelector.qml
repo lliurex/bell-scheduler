@@ -1,4 +1,3 @@
-import org.kde.plasma.core 2.1 as PlasmaCore
 import org.kde.kirigami 2.16 as Kirigami
 import QtQuick 2.15
 import QtQuick.Controls 2.15
@@ -19,7 +18,11 @@ Popup {
     focus:true
     closePolicy:Popup.NoAutoClose
 
-    Rectangle{
+    background:Rectangle{
+        color:"#ebeced"
+    }
+
+    contentItem:Rectangle{
         id:container
         width:imagePopUp.width
         height:imagePopUp.height
@@ -156,8 +159,6 @@ Popup {
             anchors.bottom:parent.bottom
             anchors.right:parent.right
             anchors.topMargin:10
-            anchors.bottomMargin:25
-            anchors.rightMargin:20
             spacing:10
 
             Button {

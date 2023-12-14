@@ -3,8 +3,6 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import org.kde.plasma.components 3.0 as PC3
 
-
-
 Popup {
 
     id:sliderPopUp
@@ -24,7 +22,11 @@ Popup {
     focus:true
     closePolicy:Popup.NoAutoClose
 
-    Rectangle{
+    background:Rectangle{
+        color:"#ebeced"
+    }
+
+    contentItem:Rectangle{
         id:container
         width:popUpWidth
         height:popUpHeight
@@ -98,7 +100,6 @@ Popup {
             anchors.bottom:container.bottom
             anchors.right:cancelBtn.left
             anchors.rightMargin:10
-            anchors.bottomMargin:25
             onClicked:{
                 applyButtonClicked()
                 if (sliderEntry.text==""){
@@ -120,8 +121,6 @@ Popup {
             Keys.onEnterPressed: cancelBtn.clicked()
             anchors.bottom:container.bottom
             anchors.right:container.right
-            anchors.rightMargin:25
-            anchors.bottomMargin:25
             onClicked:{
                 cancelButtonClicked()
             }
@@ -136,11 +135,6 @@ Popup {
             if (k === Qt.Key_Minus){
                 sliderId.value=sliderId.value-1
             }
-            /*
-            if (k >= Qt.Key_0 && k <= Qt.Key_9) {
-                duration=duration+(k - Qt.Key_0)
-                timerSlider.restart()
-            }*/
             event.accepted = true;
         }
     

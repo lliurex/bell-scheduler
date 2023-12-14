@@ -89,7 +89,7 @@ GridLayout{
                 id:emptyPanel
             }
         }
-
+        
         Component{
             id:bellView
             BellForm{
