@@ -522,7 +522,7 @@ Rectangle{
                 var msg=i18nd("bell-scheduler","You must indicate a directory");
                 break;
             case -8:
-                var msg=i18nd("bell-scheduler","The sound file or url indicated is not reproducible");
+                var msg=i18nd("bell-scheduler","The sound file is not reproducible");
                 break;
             case -38:
                 var msg=i18nd("bell-scheduler","The specified folder does not contain playable files");

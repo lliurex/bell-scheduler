@@ -27,17 +27,12 @@ class BellManager(object):
 	MISSING_SOUND_FILE_ERROR=-3
 	INVALID_IMAGE_FILE_ERROR=-4
 	MISSING_IMAGE_FILE_ERROR=-5
-	MISSING_URL_ERROR=-6
 	MISSING_SOUND_FOLDER_ERROR=-7
 	SOUND_FILE_URL_NOT_VALID_ERROR=-8
 	RECOVERY_BELLS_CONFIG=-9
 	BELLS_WITH_ERRORS=-31
 	FOLDER_WITH_INCORRECT_FILES_ERROR=-38
-	MISSING_URL_LIST_ERROR=-39
-	INCORRECT_URL_LIST_ERROR=-40
 	TIME_OUT_VALIDATION_ERROR=-41
-	FAILED_INTERNET_ERROR=-42
-	URL_FILE_NOT_VALID_ERROR=-43
 	DAY_NOT_IN_VALIDITY_ERROR=-56
 
 	ACTION_SUCCESSFUL=0
@@ -67,10 +62,6 @@ class BellManager(object):
 		self._getSystemLocale()
 		self._getImagesConfig()
 		self.initValues()
-		'''
-		context=ssl._create_unverified_context()
-		self.n4d = n4dclient.ServerProxy("https://"+server+":9779",context=context,allow_none=True)
-		'''
 
 	#def __init__	
 
@@ -80,7 +71,7 @@ class BellManager(object):
 		tk=n4d.client.Ticket(ticket)
 		self.client=n4d.client.Client(ticket=tk)
 
-	#def create_n4dClient
+	#def createN4dClient
 
 	def _debug(self,function,msg):
 
@@ -417,27 +408,7 @@ class BellManager(object):
 					else:
 						self.correctFiles=0
 						return self.checkDirectory(data["sound"]["path"])	
-
-				elif data["sound"]["option"]=="url":			
-					if data["sound"]["path"]=="":
-						return {"result":False,"code":BellManager.MISSING_URL_ERROR,"data":""}
-					else:
-						checkConnection=self.checkConnection()
-						if checkConnection:
-							return self.checkAudiofile(data["sound"]["path"],"url")
-						else:
-							return {"result":False,"code":BellManager.FAILED_INTERNET_ERROR,"data":""}	
-
-				elif data["sound"]["option"]=="urlslist":				
-					if data["sound"]["path"]!=None:
-						checkConnection=self.checkConnection()
-						if checkConnection:
-							return self.checkList(data["sound"]["path"])
-						else:
-							return {"result":False,"code":BellManager.FAILED_INTERNET_ERROR,"data":""}	
-					else:		
-						return {"result":False,"code":BellManager.MISSING_URL_LIST_ERROR,"data":""}
-							
+					
 			else:
 				return checkImage
 		else:
@@ -514,129 +485,7 @@ class BellManager(object):
 		else:
 			return {"result":False,"code":BellManager.FOLDER_WITH_INCORRECT_FILES_ERROR,"data":""}
 
-	#def check_directory		
-
-	def checkList(self,url_list):
-
-		result=True
-		data=""
-		code=BellManager.ACTION_SUCCESSFUL
-		self.url_invalid=[]
-		self.error_lines=[]
-		self.file=url_list
-		self.sync_threads={}
-		self.read_list()
-		self.max_timeout=300
-		self.current_timeout=0
-
-		while self.worker():
-			import time
-			time.sleep(1)
-
-		if self.worker_ret==0:	
-			if len(self.sync_threads)>0:
-				if len(self.url_invalid)>0 or len(self.error_lines):
-					data=self.order_error_lines()
-					result=False
-					code=BellManager.INCORRECT_URL_LIST_ERROR
-			else:
-				result=False
-				code=BellManager.URL_FILE_NOT_VALID_ERROR
-							
-		else:
-			result=False
-			code=BellManager.TIME_OUT_VALIDATION_ERROR
-
-		return {"result":result,"code":code,"data":data}					
-
-	#def check_list		
-	
-	def worker(self):
-
-		self.current_timeout+=1
-		self.worker_ret=1
-		if self.current_timeout > self.max_timeout:
-			self.worker_ret=-1
-			return False
-
-		for i in range(len(self.threads_alive)-1,-1,-1):
-			if not self.threads_alive[i].is_alive():
-				self.threads_alive.pop(i)
-
-		if len(self.threads_alive)>0:
-			return True
-
-		self.worker_ret=0
-		return False
-
-	#def worker
-
-
-	def generate_url_threads(self,item,line_num):
-		
-		id=int(random.random()*1000)		
-		t=threading.Thread(target=self.check_url,args=(id,item,line_num))
-		t.daemon=True
-		t.start()
-		self.sync_threads[id]={}
-		self.sync_threads[id]["thread"]=t
-		return t	
-
-	#def generate_url_threads	
-
-	def read_list(self):
-
-		try:
-			content=open(self.file,'r')
-			self.threads_alive=[]
-			line_num=1
-			if os.stat(self.file).st_size>0:
-				for line in content.readlines():
-					if line!="\n":
-						if line.startswith("http:") or line.startswith("https:"):
-							t=self.generate_url_threads(line,line_num)
-							self.threads_alive.append(t)
-						else:
-							self.error_lines.append(line_num)	
-					line_num+=1
-		except:
-			pass			
-		
-	#def read_list		
-
-	def	check_url(self,id,line,line_num):
-
-		params=' -show_entries stream=codec_type,duration -of compact=p=0:nk=1'
-		cmd='ffprobe -i $(youtube-dl -g "'+line+'" |sed -n 2p) '+params
-		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
-		poutput=p.communicate()[0]
-		if len(poutput)==0:
-			self.url_invalid.append(line_num)
-	
-	#def check_url	
-
-	def order_error_lines(self):
-
-		errors=""
-		
-		error_lines=sorted(self.url_invalid+self.error_lines)	
-		for item in  error_lines:
-			errors=errors+","+str(item)
-
-		return errors[1:]
-
-	#def get_lines_error	
-
-	def check_connection(self):
-	
-		try:
-			res=urllib.request.urlopen("http://lliurex.net")
-			return True
-			
-		except:
-			return False	
-
-	#def check_connection
+	#def checkDirectory		
 
 	def saveData(self,data):
 
