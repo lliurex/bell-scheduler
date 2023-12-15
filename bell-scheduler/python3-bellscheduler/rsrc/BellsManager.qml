@@ -33,21 +33,16 @@ Rectangle{
             Layout.topMargin: 40
         }
         
-        GridLayout{
-            id: optionsGrid
-            rows: 1
-            flow: GridLayout.TopToBottom
-            rowSpacing:10
-            Layout.topMargin: messageLabel.visible?0:40
             
-            BellsList{
-                id:bellsList
-                bellsModel:bellsOptionsStackBridge.bellsModel
-                Layout.fillHeight:true
-                Layout.fillWidth:true
-            }
+        BellsList{
+            id:bellsList
+            bellsModel:bellsOptionsStackBridge.bellsModel
+            Layout.fillHeight:true
+            Layout.fillWidth:true
+            Layout.topMargin: messageLabel.visible?0:40
         }
     }
+    
     RowLayout{
         id:btnBox
         anchors.bottom: parent.bottom
