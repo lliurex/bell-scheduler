@@ -394,7 +394,7 @@ class Bridge(QObject):
 
 		self.core.mainStack.closeGui=False
 		self.showMainMessage=[False,"","Ok"]
-		self.mainStack.closePopUp=[False,IMPORT_BELLS_CONFIG]
+		self.core.mainStack.closePopUp=[False,IMPORT_BELLS_CONFIG]
 		self.importBackup=ImportBackup(importPath)
 		self.importBackup.start()
 		self.importBackup.finished.connect(self._importBackupRet)
