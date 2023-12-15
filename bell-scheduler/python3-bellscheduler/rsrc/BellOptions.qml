@@ -39,12 +39,7 @@ GridLayout{
                     id:infoItem
                     optionText:i18nd("bell-scheluder","Bell")
                     optionIcon:"/usr/share/icons/breeze/status/22/appointment-reminder.svg"
-                    Connections{
-                        function onMenuOptionClicked(){
-                            bellStackBridge.moveToManageOption(0)
-                        }
-                    }
-                }
+                 }
 
             }
         }
