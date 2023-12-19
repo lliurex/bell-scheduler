@@ -42,24 +42,16 @@ class BellSchedulerManager:
 		self.config_dir=os.path.expanduser("/etc/bellScheduler/")
 		self.config_file=self.config_dir+"bell_list"
 		self.holiday_token=self.config_dir+"enabled_holiday_token"
-		self.cron_dir="/etc/scheduler/tasks.d/"
-		self.cron_file=os.path.join(self.cron_dir,"BellScheduler")
-
 		self.images_folder="/usr/local/share/bellScheduler/images"
 		self.sounds_folder="/usr/local/share/bellScheduler/sounds"
 		self.media_files_folder="/usr/local/share/bellScheduler/"
 		self.bell_scheduler_player_log="/var/log/BELL-SCHEDULER-PLAYER.log"
-		
+	
 		self.indicator_token_folder="/tmp/.BellScheduler"
 		self.indicator_token_path=os.path.join(self.indicator_token_folder,"bellscheduler-token")
 		self.cmd_create_token='bellscheduler-token-management create_token '
 		self.cmd_remove_token='bellscheduler-token-management remove_token '
 
-		'''
-		server='localhost'
-		context=ssl._create_unverified_context()
-		self.n4d = n4dclient.ServerProxy("https://"+server+":9779",context=context,allow_none=True)
-		'''
 		self._get_n4d_key()
 		
 		self.core=n4dcore.Core.get_core()
@@ -119,12 +111,10 @@ class BellSchedulerManager:
 		except Exception as e:
 
 			self.bells_config={}
-			#Old n4d: return {"status":False,"msg":"Unabled to read configuration file :" +str(e),"code":25,"data":self.bells_config}
 			result={"status":False,"msg":"Unabled to read configuration file :" +str(e),"code":BellSchedulerManager.READ_CONF_FILE_ERROR,"data":self.bells_config}
 
 		f.close()	
 
-		#Old n4d:return {"status":True,"msg":"Configuration file readed successfuly","code":BellSchedulerManager.READ_CONF_FILE_SUCCESSFUL,"data":self.bells_config}
 		return n4d.responses.build_successful_call_response(result)
 
 	#def read_conf	
@@ -133,7 +123,6 @@ class BellSchedulerManager:
 
 		cron_tasks={}
 		tmp_tasks={}
-		#Old n4d: tasks=self.n4d.get_local_tasks(self.n4dkey,'SchedulerServer')
 		
 		try:
 			tasks=self.core.get_plugin('SchedulerServer').get_local_tasks()
@@ -189,7 +178,6 @@ class BellSchedulerManager:
 				if item not in keys_bells:
 					result=self._delete_from_cron(item)
 					if result.get('status',None)!=0:
-						#Old n4d:return {"status":False,"msg":"Unable to clear alarm from cron file","code":37,"data":""}
 						tmp_result={"status":False,"msg":"Unable to clear alarm from cron file","code":BellSchedulerManager.CRON_SYNC_PROBLEMS_ERROR,"data":""}
 						return n4d.responses.build_successful_call_response(tmp_result)
 	
@@ -203,7 +191,6 @@ class BellSchedulerManager:
 		if changes>0:
 			self._write_conf(bell_tasks,"BellList")
 
-		#Old n4d: return {"status":True,"msg":"Sync with cron sucessfully","code":"","data":bell_tasks}	
 		tmp_result={"status":True,"msg":"Sync with cron sucessfully","code":"","data":bell_tasks}	
 		return n4d.responses.build_successful_call_response(tmp_result)
 				
@@ -216,16 +203,11 @@ class BellSchedulerManager:
 			self.bells_config=info
 			file_to_write=self.config_file
 			msg="Bell list saved successfuly"
-		else:
-			file_to_write=self.cron_file
-			msg="Cron list saved successfuly"
-
 		
 		with codecs.open(file_to_write,'w',encoding="utf-8") as f:
 			json.dump(info,f,ensure_ascii=False)
 			f.close()	
 
-		#Ol N4D:eturn {"status":True,"msg":msg}	
 		result={"status":True,"msg":msg}
 		return n4d.responses.build_successful_call_response(result)
 
@@ -239,7 +221,6 @@ class BellSchedulerManager:
 			if info[last_change]["active"]:
 				turn_on=True
 				tasks_for_cron=self._format_to_cron(info,last_change,action)
-				#Old n4d:result=self.n4d.write_tasks(self.n4dkey,'SchedulerServer','local',tasks_for_cron)
 				try:
 					result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
 				except Exception as e:
@@ -267,6 +248,7 @@ class BellSchedulerManager:
 					tmp_result={"status":False,"action":action,"msg":result.get('return',None),"code":BellSchedulerManager.BELL_DEACTIVATE_ERROR,"data":""}
 			
 			return n4d.responses.build_successful_call_response(tmp_result)	
+	
 	#def save_changes				
 
 	def _get_cron_id(self,last_change):
@@ -293,7 +275,6 @@ class BellSchedulerManager:
 			delete={"status":0,"data":"0"}
 			
 			if id_to_remove["status"]:
-				#OLd n4d:delete=self.n4d.remove_task(self.n4dkey,'SchedulerServer','local','BellScheduler',cron_id,'cmd')
 				try:
 					delete=self.core.get_plugin('SchedulerServer').remove_task('local','BellScheduler',cron_id,'cmd')
 				except Exception as e:
@@ -322,7 +303,6 @@ class BellSchedulerManager:
 			key="0"
 			
 
-		#write_token_command=" && echo "+item+" >>"+self.indicator_token_path+" && "	
 		info_to_cron["BellScheduler"]={}
 		info_to_cron["BellScheduler"][key]={}
 		info_to_cron["BellScheduler"][key]["name"]=info[item]["name"]
@@ -458,17 +438,16 @@ class BellSchedulerManager:
 		
 		try:
 			shutil.copy2(self.config_file,os.path.join(tmp_export,os.path.basename(self.config_file)))
-			if os.path.exists(self.cron_file):
-				shutil.copy2(self.cron_file,os.path.join(tmp_export,os.path.basename(self.cron_file)))
+
 			if os.path.exists(self.holiday_token):
 				shutil.copy2(self.holiday_token,os.path.join(tmp_export,os.path.basename(self.holiday_token)))
 
 			if os.path.exists(self.media_files_folder):
 				shutil.copytree(self.media_files_folder,os.path.join(tmp_export,"media"))
-			
+
 			if os.path.exists(self.bell_scheduler_player_log):
 				shutil.copy2(self.bell_scheduler_player_log,os.path.join(tmp_export,os.path.basename(self.bell_scheduler_player_log)))
-			
+		
 			dest_file=os.path.splitext(dest_file)[0]
 			shutil.make_archive(dest_file, 'zip', tmp_export)
 			if arg!=True:
@@ -510,18 +489,12 @@ class BellSchedulerManager:
 					self.update_config_file(config_file)
 					shutil.copy2(config_file,self.config_dir)
 					f_config.close()
-					cron_file=os.path.join(unzip_tmp,os.path.basename(self.cron_file))
-					if os.path.exists(cron_file):
-						f_cron=open(cron_file)
-						read=json.load(f_cron)
-						shutil.copy2(cron_file,self.cron_dir)
-						f_cron.close()
 					
 				except Exception as e:
 					result={"status":False,"msg":str(e),"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}	
 					return n4d.responses.build_successful_call_response(result)		
 		
-
+		
 				holiday_token=os.path.join(unzip_tmp,os.path.basename(self.holiday_token))	
 
 				if os.path.exists(holiday_token):
@@ -530,7 +503,7 @@ class BellSchedulerManager:
 				else:
 					if os.path.exists(self.holiday_token):
 						os.remove(self.holiday_token)
-
+				
 				if os.path.exists(os.path.join(unzip_tmp,"media/images")):
 					if os.path.exists(self.images_folder):
 						shutil.rmtree(self.images_folder)
@@ -540,20 +513,13 @@ class BellSchedulerManager:
 					if os.path.exists(self.sounds_folder):
 						shutil.rmtree(self.sounds_folder)
 					shutil.copytree(os.path.join(unzip_tmp,"media/sounds"),self.sounds_folder)
-		
-				update_holiday=self.enable_holiday_control(action).get('return',None)	
-				if not update_holiday["status"]:
-					'''
-					update_indicator=self.update_indicator_token().get('return',None)
 
-					if update_indicator["status"]:
-						result={"status":True,"msg":"Bells imported successfully","code":BellSchedulerManager.BELL_IMPORT_SUCCESSFUL,"data":backup_file[1]}
-					else:
-						result={"status":False,"msg":update_indicator["msg"],"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}	
-				else:
-					'''
-					result={"status":False,"msg":update_holiday["msg"],"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}				
 				
+				update_holiday=self.enable_holiday_control(action).get('return',None)	
+				
+				if not update_holiday["status"]:
+					result={"status":False,"msg":update_holiday["msg"],"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}				
+
 				return n4d.responses.build_successful_call_response(result)		
 	
 		except Exception as e:
@@ -564,99 +530,55 @@ class BellSchedulerManager:
 
 	def enable_holiday_control(self,action):
 
-		result=self._update_holiday_control(action)
-		if result['status']:
-			if action=="disable":
-				if os.path.exists(self.holiday_token):
-					os.remove(self.holiday_token)	
-					result={"status":True,"msg":"Holiday token removed","code":BellSchedulerManager.HOLIDAY_DEACTIVATE_SUCCESSFUL,"data":""}
-			else:
-				if not os.path.exists(self.holiday_token):
-					if not os.path.exists(self.config_dir):
-						os.makedirs(self.config_dir)
-					f=open(self.holiday_token,'w')
-					f.close()
-					result={"status":True,"msg":"Holiday token created","code":BellSchedulerManager.HOLIDAY_ACTIVATE_SUCCESSFUL,"data":""}		
-		
-		return n4d.responses.build_successful_call_response(result)		
+		if action=="disable":
+			if os.path.exists(self.holiday_token):
+				os.remove(self.holiday_token)	
+			result={"status":True,"msg":"Holiday token removed","code":BellSchedulerManager.HOLIDAY_DEACTIVATE_SUCCESSFUL,"data":""}
+		else:
+			if not os.path.exists(self.holiday_token):
+				if not os.path.exists(self.config_dir):
+					os.makedirs(self.config_dir)
+				f=open(self.holiday_token,'w')
+				f.close()
+			result={"status":True,"msg":"Holiday token created","code":BellSchedulerManager.HOLIDAY_ACTIVATE_SUCCESSFUL,"data":""}		
+
+		result_cron=self._update_holiday_control(action)
+		if result_cron["status"]:
+			return n4d.responses.build_successful_call_response(result)	
+		else:
+			return n4d.response.build_successfull_call_response(result_cron)			
 
 	#def enable_holiday_control
 
 	def _update_holiday_control(self,action):
 
-		if os.path.exists(self.cron_file):
-			f=open(self.cron_file)
-			try:
-				tasks_cron=json.load(f)
-			except Exception as e:
-				result={"status":False,"msg":str(e),"code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}
-				return n4d.responses.build_successful_call_response(result)
+		bell_list=self.read_conf().get('return',None).get('data',None)
+		errors=0
 
+		for item in bell_list:
+			cont_days=0
+			if bell_list[item]["active"]:
+				tasks_for_cron=self._format_to_cron(bell_list,str(item),"active")
+				try:
+					result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
+				except Exception as e:
+					print("BellSchedulerManager-SchedulerServer: change_activation_status.Error: "+str(e))
+					result={'status':-1}
+								
+				if result.get('status',None)==-1:
+					errors+=1
+					break
 			
-			for item in	tasks_cron["BellScheduler"]:
-				if action=="enable":
-					tasks_cron["BellScheduler"][item]["holidays"]=True
-				
-				else:
-					tasks_cron["BellScheduler"][item]["holidays"]=False
-
-			
-			self._write_conf(tasks_cron,"CronList")
-			try:
-				self.core.get_plugin('SchedulerClient').process_tasks(self.n4dkey)
-				result={"status":True,"msg":"Cron file updated to use holiday manager","code":"","data":""}
-			except Exception as e:
-				print("BellSchedulerManager-SchedulerServer:_update_holiday_control.Error: "+str(e))
-				result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}			
-			
+		if errors==0:
+			result={"status":True,"msg":"Cron file updated to use holiday manager","code":"","data":""}
 		else:
-			result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}			
+			result={"status":False,"msg":" Unable to update cron file to user holiday manager","code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}			
 
 		return result
 
 	#def _update_holiday_control		
 
 
-	def update_indicator_token(self):
-
-
-		if os.path.exists(self.cron_file):
-			f=open(self.cron_file)
-		
-			try:
-				tasks_cron=json.load(f)
-				f.close()
-			except Exception as e:
-				result={"status":False,"msg":str(e),"code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}
-				return n4d.responses.build_successful_call_response(result)
-
-			for item in tasks_cron["BellScheduler"]:
-				if not 'bellscheduler-token-management' in tasks_cron["BellScheduler"][item]["cmd"]:
-					if 'mkdir -p' in tasks_cron["BellScheduler"][item]["cmd"]:
-						write_token_command=self.cmd_create_token+tasks_cron["BellScheduler"][item]["BellId"]+" && "	
-						tmp_cmd=write_token_command+tasks_cron["BellScheduler"][item]["cmd"].split("token &&")[1].split("rm -f")[0]+self.cmd_remove_token+tasks_cron["BellScheduler"][item]["BellId"]
-						tasks_cron["BellScheduler"][item]["cmd"]=tmp_cmd
-					else:	
-						write_token_command=self.cmd_create_token+tasks_cron["BellScheduler"][item]["BellId"]+" && "
-						tmp_cmd=write_token_command+tasks_cron["BellScheduler"][item]["cmd"]+";"+self.cmd_remove_token+tasks_cron["BellScheduler"][item]["BellId"]
-						tasks_cron["BellScheduler"][item]["cmd"]=tmp_cmd
-
-				
-			self._write_conf(tasks_cron,"CronList")
-			try:
-				self.core.get_plugin('SchedulerClient').process_tasks(self.n4dkey)
-				result={"status":True,"msg":"Cron file updated to use indicator","code":"","data":""}
-			except Exception as e:
-				print("BellSchedulerManager-SchedulerServer:update_indicator_token.Error: "+str(e))
-				result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}			
-				
-		else:
-			result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}			
-
-		return n4d.responses.build_successful_call_response(result)
-	
-	#def update_indicator_control
-	
 	def stop_bell(self):
 		
 		cmd_kill=""
@@ -694,20 +616,8 @@ class BellSchedulerManager:
 		if len(lst)>0:
 			for item in lst:
 				bells_pid.append(item)
-				'''
-				processed_line=item.split(" ")
-				tmp_list=[]
-				
-				if len(processed_line) >= 10:
-					for object in processed_line:
-						if object!="":
-							tmp_list.append(object)
-					processed_line=tmp_list
-					
-					if str(processed_line[7])!='/bin/bash':
-						bells_pid.append(processed_line[1])
-				'''
-		result={"status":True,"msg":"","code":"","data":bells_pid}
+	
+			result={"status":True,"msg":"","code":"","data":bells_pid}
 		return result	
 
 	#def get_bells_pid
@@ -749,7 +659,6 @@ class BellSchedulerManager:
 							cont_days+=1
 					if cont_days>0:			
 						tasks_for_cron=self._format_to_cron(bell_list,str(item),"active")
-						#Old n4d:result=self.n4d.write_tasks(self.n4dkey,'SchedulerServer','local',tasks_for_cron)
 						try:
 							result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
 						except Exception as e:
