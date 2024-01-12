@@ -150,6 +150,7 @@ class Bridge(QObject):
 		self._showMainMessage=[False,"","Ok"]
 		self._showRemoveBellDialog=[False,False]
 		self._enableGlobalOptions=False
+		self._enableChangeStatusOptions=[False,False]
 		self._showExportBellsWarning=False
 		self._isHolidayControlEnabled=False
 		self.bellSchedulerPlayerLog="/var/log/BELL-SCHEDULER-PLAYER.log"
@@ -160,6 +161,7 @@ class Bridge(QObject):
 
 		self._updateBellsModel()
 		self.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
+		self.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
 		self.showExportBellsWarning=Bridge.bellManager.checkIfAreBellsWithDirectory()
 		self.isHolidayControlEnabled=Bridge.bellManager.checkHolidayManagerStatus()
 	
@@ -212,6 +214,20 @@ class Bridge(QObject):
 			self.on_enableGlobalOptions.emit()
 
 	#def _setEnableGlobalOptions
+
+	def _getEnableChangeStatusOptions(self):
+
+		return self._enableChangeStatusOptions
+
+	#def _getEnableChangeStatusOptions
+
+	def _setEnableChangeStatusOptions(self,enableChangeStatusOptions):
+
+		if self._enableChangeStatusOptions!=enableChangeStatusOptions:
+			self._enableChangeStatusOptions=enableChangeStatusOptions
+			self.on_enableChangeStatusOptions.emit()
+
+	#def _setEnableChangeStatusOptions
 
 	def _getShowExportBellsWarning(self):
 
@@ -270,19 +286,18 @@ class Bridge(QObject):
 		active=data[1]
 		if self.changeAllBells:
 			bellToEdit=None
-		else:
-			bellToEdit=data[2]
-		if self.changeAllBells:
 			if active:
 				self.core.mainStack.closePopUp=[False,ACTIVE_ALL_BELLS]
 			else:
 				self.core.mainStack.closePopUp=[False,DEACTIVE_ALLS_BELLS]
+		
 		else:
+			bellToEdit=data[2]
 			if active:
 				self.core.mainStack.closePopUp=[False,ACTIVE_BELL]
 			else:
 				self.core.mainStack.closePopUp=[False,DEACTIVE_BELL]
-
+		
 		self.changeStatus=ChangeBellStatus(self.changeAllBells,active,bellToEdit)
 		self.changeStatus.start()
 		self.changeStatus.finished.connect(self._changeBellStatusRet)
@@ -300,6 +315,7 @@ class Bridge(QObject):
 		else:
 			self.showMainMessage=[True,self.changeStatus.ret[1],"Error"]
 
+		self.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
 		self.core.mainStack.closePopUp=[True,""]
 		self.core.mainStack.closeGui=True
 
@@ -469,6 +485,9 @@ class Bridge(QObject):
 
 	on_enableGlobalOptions=Signal()
 	enableGlobalOptions=Property(bool,_getEnableGlobalOptions,_setEnableGlobalOptions,notify=on_enableGlobalOptions)
+
+	on_enableChangeStatusOptions=Signal()
+	enableChangeStatusOptions=Property('QVariantList',_getEnableChangeStatusOptions,_setEnableChangeStatusOptions,notify=on_enableChangeStatusOptions)
 
 	on_showExportBellsWarning=Signal()
 	showExportBellsWarning=Property(bool,_getShowExportBellsWarning,_setShowExportBellsWarning,notify=on_showExportBellsWarning)

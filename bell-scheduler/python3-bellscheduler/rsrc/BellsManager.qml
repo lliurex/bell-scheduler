@@ -119,14 +119,15 @@ Rectangle{
                 MenuItem{
                     icon.name:"audio-on.svg"
                     text:i18nd("bell-scheduler","Enable alls bells")
+                    enabled:!bellsOptionsStackBridge.enableChangeStatusOptions[0]
                     onClicked:bellsOptionsStackBridge.changeBellStatus([true,true])
                 }
 
                 MenuItem{
                     icon.name:"audio-volume-muted.svg"
                     text:i18nd("bell-scheduler","Disable all bells")
+                    enabled:!bellsOptionsStackBridge.enableChangeStatusOptions[1]
                     onClicked:bellsOptionsStackBridge.changeBellStatus([true,false])
-
                 }
 
                 MenuItem{

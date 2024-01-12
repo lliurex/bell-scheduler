@@ -904,6 +904,33 @@ class BellManager(object):
 		
 		return result
 
-	#def enableHolidayControl	
+	#def enableHolidayControl
+
+	def checkChangeStatusBellsOption(self):
+
+		allActivated=False
+		allDeactivated=False
+		countActivated=0
+		countDeactivated=0
+		result=[]
+		
+		if len(self.bellsConfig)>0:
+			for item in self.bellsConfig:
+				if self.bellsConfig[item]['active']:
+					countActivated+=1
+				else:
+					countDeactivated+=1
+
+			if countActivated==0:
+				allDeactivated=True
+
+			if countDeactivated==0:
+				allActivated=True
+
+		result=[allActivated,allDeactivated]
+
+		return result
+
+	#def checkChangeStatusBellsOption	
 
 #class BellManager 		
