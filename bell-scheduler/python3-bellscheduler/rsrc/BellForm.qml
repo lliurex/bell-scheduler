@@ -11,7 +11,11 @@ Rectangle{
         text:i18nd("bell-scheduler","Edit Bell")
         font.pointSize: 16
     }
-
+    Pane{
+        id:formPane
+        anchors.fill:parent
+        focusPolicy:Qt.StrongFocus
+    }
     GridLayout{
         id:generalLayout
         rows:4
@@ -95,7 +99,6 @@ Rectangle{
                     ToolTip.timeout: 3000
                     ToolTip.visible: hovered
                     ToolTip.text:i18nd("bell-scheduler","Click to edit validity")
-                    hoverEnabled:true
                     onClicked:validityMenu.open()
 
                     Menu{
@@ -159,7 +162,6 @@ Rectangle{
                     id:bellNameEntry
                     text:bellStackBridge.bellName
                     horizontalAlignment:TextInput.AlignLeft
-                    focus:true
                     implicitWidth:400
                     onTextChanged:{
                         bellStackBridge.updateBellNameValue(bellNameEntry.text)
@@ -191,17 +193,20 @@ Rectangle{
                         ToolTip.text:i18nd("bell-scheduler","Clic to edit the image")
                         clip:true
                         anchors.centerIn:parent
+                        Keys.onSpacePressed: imageSelector.open()
                         MouseArea {
                             id: mouseAreaImg
                             anchors.fill: parent
                             hoverEnabled: true
                             onEntered: {
                                 container.border.color="#add8e6"
+                                focus=true
                             }
                             onExited: {
                                 container.border.color="#ffffff"
+                                formPane.focus=true
                             }
-                            onClicked:{
+                             onClicked:{
                                 imageSelector.open()
                             }
                         }
@@ -270,7 +275,6 @@ Rectangle{
                     ToolTip.timeout: 3000
                     ToolTip.visible: hovered
                     ToolTip.text:i18nd("bell-scheduler","Click to edit sound")
-                    hoverEnabled:true
                     onClicked:{
                        soundSelector.open()
                     }
@@ -304,7 +308,6 @@ Rectangle{
                     ToolTip.timeout: 3000
                     ToolTip.visible: hovered
                     ToolTip.text:i18nd("bell-scheduler","Click to edit start value")
-                    hoverEnabled:true
                     onClicked:editStartForm.open()
                     SliderPopUp{
                         id:editStartForm
@@ -359,7 +362,6 @@ Rectangle{
                     ToolTip.timeout: 3000
                     ToolTip.visible: hovered
                     ToolTip.text:i18nd("bell-scheduler","Click to edit duration value")
-                    hoverEnabled:true
                     onClicked:editDurationForm.open()
                     SliderPopUp{
                         id:editDurationForm
@@ -399,15 +401,11 @@ Rectangle{
         Button {
             id:applyBtn
             visible:true
-            focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:"dialog-ok.svg"
             text:i18nd("bell-scheduler","Apply")
             Layout.preferredHeight:40
             enabled:bellStackBridge.changesInBell
-            Keys.onReturnPressed: applyBtn.clicked()
-            Keys.onEnterPressed: applyBtn.clicked()
-            
             onClicked:{
                 closeTimer.stop()
                 bellStackBridge.applyBellChanges()
@@ -417,15 +415,11 @@ Rectangle{
         Button {
             id:cancelBtn
             visible:true
-            focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:"dialog-cancel.svg"
             text:i18nd("bell-scheduler","Cancel")
             Layout.preferredHeight: 40
             enabled:bellStackBridge.changesInBell
-            Keys.onReturnPressed: cancelBtn.clicked()
-            Keys.onEnterPressed: cancelBtn.clicked()
-
             onClicked:{
                bellStackBridge.cancelBellChanges()
             }

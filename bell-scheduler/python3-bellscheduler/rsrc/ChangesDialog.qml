@@ -61,12 +61,9 @@ Dialog {
                 display:AbstractButton.TextBesideIcon
                 icon.name:"dialog-ok.svg"
                 text: btnAcceptText
-                focus:true
                 visible:btnAcceptVisible
                 font.pointSize: 10
                 DialogButtonBox.buttonRole: DialogButtonBox.ApplyRole
-                Keys.onReturnPressed: dialogApplyBtn.clicked()
-                Keys.onEnterPressed: dialogApplyBtn.clicked()
 
             }
 
@@ -76,12 +73,8 @@ Dialog {
                 icon.name:btnDiscardIcon
                 text: btnDiscardText
                 visible:btnDiscardVisible
-                focus:true
                 font.pointSize: 10
                 DialogButtonBox.buttonRole: DialogButtonBox.DestructiveRole
-                Keys.onReturnPressed: dialogDiscardBtn.clicked()
-                Keys.onEnterPressed: dialogDiscardBtn.clicked()
-
 
             }
 
@@ -90,11 +83,8 @@ Dialog {
                 display:AbstractButton.TextBesideIcon
                 icon.name:btnCancelIcon
                 text: btnCancelText
-                focus:true
                 font.pointSize: 10
                 DialogButtonBox.buttonRole:DialogButtonBox.RejectRole
-                Keys.onReturnPressed: dialogCancelBtn.clicked()
-                Keys.onEnterPressed: dialogCancelBtn.clicked()
         
             }
 

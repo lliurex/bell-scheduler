@@ -117,7 +117,6 @@ Popup {
                         ToolTip.timeout: 3000
                         ToolTip.visible: hovered
                         ToolTip.text:i18nd("bell-scheduler","Click to select a sound file")
-                        hoverEnabled:true
                         onClicked:soundFileDialog.open()
                     }
                     
@@ -180,7 +179,6 @@ Popup {
                         ToolTip.timeout: 3000
                         ToolTip.visible: hovered
                         ToolTip.text:i18nd("bell-scheduler","Click to select a folder")
-                        hoverEnabled:true
                         onClicked:soundFolderDialog.open()
                     }
                 }
@@ -191,8 +189,6 @@ Popup {
                     enabled:fileOption.checked?true:false
                     font.pointSize: 10
                     focusPolicy: Qt.NoFocus
-                    Keys.onReturnPressed: cdcControlCb.toggled()
-                    Keys.onEnterPressed: cdcControlCb.toggled()
                     Layout.alignment:Qt.AlignLeft
                     Layout.bottomMargin:15
                 }
@@ -219,14 +215,11 @@ Popup {
             Button {
                 id:applyBtn
                 visible:true
-                focus:true
                 display:AbstractButton.TextBesideIcon
                 icon.name:"dialog-ok.svg"
                 text:i18nd("bell-scheduler","Apply")
                 Layout.preferredHeight:40
                 enabled:!bellStackBridge.bellSound[2]
-                Keys.onReturnPressed: applyBtn.clicked()
-                Keys.onEnterPressed: applyBtn.clicked()
                 onClicked:{
                     var option=""
                     var tmpPath=""
@@ -254,14 +247,11 @@ Popup {
             Button {
                 id:cancelBtn
                 visible:true
-                focus:true
                 display:AbstractButton.TextBesideIcon
                 icon.name:"dialog-cancel.svg"
                 text:i18nd("bell-scheduler","Cancel")
                 Layout.preferredHeight: 40
                 enabled:true
-                Keys.onReturnPressed: cancelBtn.clicked()
-                Keys.onEnterPressed: cancelBtn.clicked()
                 onClicked:{
                     restoreInitValues()
                     soundSelector.close()

@@ -26,7 +26,9 @@ Components.ListItem{
     enabled:true
 
     onContainsMouseChanged: {
+
         if (!optionsMenu.activeFocus){
+            listBells.forceActiveFocus()
             if (containsMouse) {
                 let i=0
                 do{

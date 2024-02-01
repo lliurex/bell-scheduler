@@ -76,14 +76,11 @@ Popup {
             Button {
                 id:applyBtn
                 visible:true
-                focus:true
                 display:AbstractButton.TextBesideIcon
                 icon.name:"dialog-ok.svg"
                 text:i18nd("bell-scheduler","Apply")
                 Layout.preferredHeight:40
                 enabled:!bellStackBridge.bellImage[3]
-                Keys.onReturnPressed: applyBtn.clicked()
-                Keys.onEnterPressed: applyBtn.clicked()
                 onClicked:{
                     if (validateEntry(hourEntry.text,minuteEntry.text)){
                         timeApplyClicked(hourEntry.text,minuteEntry.text)
@@ -100,14 +97,11 @@ Popup {
             Button {
                 id:cancelBtn
                 visible:true
-                focus:true
                 display:AbstractButton.TextBesideIcon
                 icon.name:"dialog-cancel.svg"
                 text:i18nd("bell-scheduler","Cancel")
                 Layout.preferredHeight: 40
                 enabled:true
-                Keys.onReturnPressed: cancelBtn.clicked()
-                Keys.onEnterPressed: cancelBtn.clicked()
                 onClicked:{
                     restoreInitValues()
                     timePopUp.close()

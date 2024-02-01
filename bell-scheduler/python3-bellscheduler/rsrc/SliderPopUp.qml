@@ -52,24 +52,111 @@ Popup {
             anchors.top:headText.bottom
             anchors.topMargin:25
             focus:true
+            ToolTip.delay: 1000
+            ToolTip.timeout: 3000
+            ToolTip.visible: hovered
+            ToolTip.text:i18nd("bell-scheduler","Drag to change the the value")
             onValueChanged:{
                 sliderEntry.text=sliderId.value
             }
 
         }
-        TextField{
-            id: sliderEntry
-            validator: RegExpValidator { regExp: /([0-9][0-9][0-9])/ }
-            implicitWidth: 70
-            text:sliderId.value
-            horizontalAlignment: TextInput.AlignHCenter
+        Row{
             anchors.top:sliderId.bottom
             anchors.topMargin:10
             anchors.bottomMargin:20
             anchors.horizontalCenter:parent.horizontalCenter
-            font.pointSize: 14
-            onTextChanged:{
-                timerSlider.restart()
+            spacing:15
+            Rectangle{
+                id:removeContainer
+                width:20
+                height:20
+                border.color: "transparent"
+                border.width:1
+                color:"transparent"
+                anchors.verticalCenter:parent.verticalCenter
+
+                Text{ 
+                    id:removeText
+                    text:"-"
+                    font.pointSize: 20
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.centerIn:removeContainer
+                    ToolTip.delay: 1000
+                    ToolTip.timeout: 3000
+                    ToolTip.visible:mouseAreaRemove.containsMouse?true:false 
+                    ToolTip.text:i18nd("bell-scheduler","Click to decrease value")
+                    MouseArea {
+                        id: mouseAreaRemove
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onEntered: {
+                            focus=true
+                            removeContainer.border.color="#add8e6"
+                        }
+                        onExited: {
+                            sliderId.focus=true
+                            removeContainer.border.color="transparent"
+                        }
+                        onClicked:{
+                              sliderId.value=sliderId.value-1
+                        }
+
+                     }
+                                   
+                }
+            }
+            TextField{
+                id: sliderEntry
+                validator: RegExpValidator { regExp: /([0-9][0-9][0-9])/ }
+                implicitWidth: 70
+                text:sliderId.value
+                horizontalAlignment: TextInput.AlignHCenter
+                font.pointSize: 14
+                ToolTip.delay: 1000
+                ToolTip.timeout: 3000
+                ToolTip.visible: hovered
+                ToolTip.text:i18nd("bell-scheduler","Enter the value you want")
+                onTextChanged:{
+                    timerSlider.restart()
+                }
+            }
+            Rectangle{
+                id:addContainer
+                width:20
+                height:20
+                border.color: "transparent"
+                border.width:1
+                color:"transparent"
+                anchors.verticalCenter:parent.verticalCenter
+                Text{ 
+                    id:addText
+                    text:"+"
+                    font.pointSize: 22
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.centerIn:addContainer
+                    ToolTip.delay: 1000
+                    ToolTip.timeout: 3000
+                    ToolTip.visible:mouseAreaAdd.containsMouse?true:false 
+                    ToolTip.text:i18nd("bell-scheduler","Click to increase value")
+                    MouseArea {
+                        id: mouseAreaAdd
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onEntered: {
+                            focus=true
+                            addContainer.border.color="#add8e6"
+                        }
+                        onExited: {
+                            sliderId.focus=true
+                            addContainer.border.color="transparent"
+                        }
+                        onClicked:{
+                              sliderId.value=sliderId.value+1
+                        }
+                    }
+                          
+                }
             }
         }
 
@@ -89,14 +176,11 @@ Popup {
         Button {
             id:applyBtn
             visible:true
-            focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:"dialog-ok.svg"
             text:i18nd("bell-scheduler","Apply")
             height:40
             enabled:true
-            Keys.onReturnPressed: applyBtn.clicked()
-            Keys.onEnterPressed: applyBtn.clicked()
             anchors.bottom:container.bottom
             anchors.right:cancelBtn.left
             anchors.rightMargin:10
@@ -111,14 +195,11 @@ Popup {
         Button {
             id:cancelBtn
             visible:true
-            focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:"dialog-cancel.svg"
             text:i18nd("bell-scheduler","Cancel")
             height:40
             enabled:true
-            Keys.onReturnPressed: cancelBtn.clicked()
-            Keys.onEnterPressed: cancelBtn.clicked()
             anchors.bottom:container.bottom
             anchors.right:container.right
             onClicked:{

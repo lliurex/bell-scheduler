@@ -14,6 +14,12 @@ Rectangle{
 
     property var backupAction:undefined
 
+    Pane{
+        id:mainPane
+        anchors.fill:parent
+        focusPolicy:Qt.ClickFocus
+    }
+
     GridLayout{
         id:generalBellsLayout
         rows:2
@@ -53,7 +59,6 @@ Rectangle{
         Button {
             id:backupBtn
             visible:true
-            focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:"backup.svg"
             text:i18nd("bell-scheduler","Backup")
@@ -103,14 +108,13 @@ Rectangle{
         Button {
             id:actionsBtn
             visible:true
-            focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:"configure.svg"
             text:i18nd("bell-scheduler","Global Options")
             Layout.preferredHeight:40
             enabled:bellsOptionsStackBridge.enableGlobalOptions
             onClicked:actionsMenu.open()
-            
+
             Menu{
                 id:actionsMenu
                 y: -actionsBtn.height*3.2
@@ -147,26 +151,21 @@ Rectangle{
         Button {
             id:holidadyBtn
             visible:true
-            focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:bellsOptionsStackBridge.isHolidayControlEnabled?"kt-stop.svg":"kt-start.svg"
             text:bellsOptionsStackBridge.isHolidayControlEnabled?i18nd("bell-scheduler","Disable holiday control"):i18nd("bell-scheduler","Enable holiday control")
             Layout.preferredHeight:40
             Layout.rightMargin:rectLayout.width-(backupBtn.width+actionsBtn.width+holidadyBtn.width+newBtn.width+40)
-            Keys.onReturnPressed: applyBtn.clicked()
-            Keys.onEnterPressed: applyBtn.clicked()
             onClicked:bellsOptionsStackBridge.manageHolidayControl()
+       
         }
         Button {
             id:newBtn
             visible:true
-            focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:"list-add.svg"
             text:i18nd("bell-scheduler","New bell")
             Layout.preferredHeight:40
-            Keys.onReturnPressed: applyBtn.clicked()
-            Keys.onEnterPressed: applyBtn.clicked()
             onClicked:bellStackBridge.addNewBell() 
         }
     }
