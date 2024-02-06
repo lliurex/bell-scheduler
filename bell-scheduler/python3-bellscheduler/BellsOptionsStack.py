@@ -150,10 +150,11 @@ class Bridge(QObject):
 		self._showMainMessage=[False,"","Ok"]
 		self._showRemoveBellDialog=[False,False]
 		self._enableGlobalOptions=False
-		self._enableChangeStatusOptions=[False,False]
+		self._enableChangeStatusOptions=[False,False,False]
 		self._showExportBellsWarning=False
 		self._isHolidayControlEnabled=False
 		self.bellSchedulerPlayerLog="/var/log/BELL-SCHEDULER-PLAYER.log"
+		self._filterStatusValue="all"
 
 	#def _init__
 	
@@ -257,6 +258,20 @@ class Bridge(QObject):
 
 	#def _setIsHolidayControlEnabled
 
+	def _getFilterStatusValue(self):
+
+		return self._filterStatusValue
+
+	#def _getFilterStatusValue
+
+	def _setFilterStatusValue(self,filterStatusValue):
+
+		if self._filterStatusValue!=filterStatusValue:
+			self._filterStatusValue=filterStatusValue
+			self.on_filterStatusValue.emit()
+
+	#def _setFilterStatusValue
+
 	def _updateBellsModel(self):
 
 		ret=self._bellsModel.clear()
@@ -276,6 +291,13 @@ class Bridge(QObject):
 				self._bellsModel.setData(index,param,updatedInfo[i][param])
 
 	#def _updateBellsModelInfo
+
+	@Slot(str)
+	def manageStatusFilter(self,value):
+
+		self.filterStatusValue=value
+
+	#def manageStatusFilter
 
 	@Slot('QVariantList')
 	def changeBellStatus(self,data):
@@ -316,6 +338,7 @@ class Bridge(QObject):
 			self.showMainMessage=[True,self.changeStatus.ret[1],"Error"]
 
 		self.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
+		self.filterStatusValue="all"
 		self.core.mainStack.closePopUp=[True,""]
 		self.core.mainStack.closeGui=True
 
@@ -376,6 +399,8 @@ class Bridge(QObject):
 			self.showMainMessage=[False,self.removeBellProcess.ret[1],"Error"]
 
 		self.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
+		self.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
+		self.filterStatusValue="all"
 		self.core.mainStack.closePopUp=[True,""]
 		self.core.mainStack.closeGui=True
 
@@ -425,7 +450,8 @@ class Bridge(QObject):
 			self.core.mainStack.closePopUp=[True,""]
 			self.showMainMessage=[True,self.importBackup.ret[1],"Ok"]
 			self.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
-
+			self.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
+			self.filterStatusValue="all"
 		else:
 			self.core.mainStack.closePopUp=[False,RECOVERY_BELLS_CONFIG]
 			self.recoveryConfig=RecoveryConfig(self.importBackup.ret[1])
@@ -441,6 +467,8 @@ class Bridge(QObject):
 		self.core.mainStack.closeGui=True
 		self.showMainMessage=[True,self.recoveryConfig.ret[1],"Error"]
 		self.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
+		self.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
+		self.filterStatusValue="all"
 
 	#def _recoveryConfigRet
 
@@ -494,7 +522,10 @@ class Bridge(QObject):
 
 	on_isHolidayControlEnabled=Signal()
 	isHolidayControlEnabled=Property(bool,_getIsHolidayControlEnabled,_setIsHolidayControlEnabled,notify=on_isHolidayControlEnabled)
-	
+
+	on_filterStatusValue=Signal()
+	filterStatusValue=Property(str,_getFilterStatusValue,_setFilterStatusValue,notify=on_filterStatusValue)
+
 	bellsModel=Property(QObject,_getBellsModel,constant=True)
 
 #class Bridge

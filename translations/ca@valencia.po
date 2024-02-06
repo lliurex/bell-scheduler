@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-01 10:47+0100\n"
-"PO-Revision-Date: 2024-02-01 10:56+0100\n"
+"POT-Creation-Date: 2024-02-06 14:43+0100\n"
+"PO-Revision-Date: 2024-02-06 14:46+0100\n"
 "Last-Translator: Angels <gimenez_angcam@gva.es>\n"
 "Language-Team: Valencian <http://weblate.lliurex.net/projects/bell-scheduler/"
 "bell-scheduler/ca@valencia/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 2.3\n"
 
 #: bell-scheduler/python3-bellscheduler/BellManager.py:255
 msgid "ERROR: File or directory not available"
@@ -295,10 +295,12 @@ msgid "Bells"
 msgstr "Alarmes"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:31
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:90
 msgid "Search..."
 msgstr "Busca..."
 
 #: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:97
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:158
 msgid "No bell is configured"
 msgstr "No hi ha alarmes configurades"
 
@@ -746,3 +748,19 @@ msgstr "Cal que indiqueu les dues dates de l'interval"
 #: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:228
 msgid "Last date in range must be major than init date"
 msgstr "L'última data de l'interval ha de ser posterior a la data inicial"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:32
+msgid "Click to filter bells by status"
+msgstr "Feu clic per a filtrar les alarmes per estat"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:42
+msgid "Show activated bells "
+msgstr "Mostra les alarmes activades"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:55
+msgid "Show disabled bells"
+msgstr "Mostra les alarmes desactivades"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:67
+msgid "Remove filter"
+msgstr "Elimina el filtre"

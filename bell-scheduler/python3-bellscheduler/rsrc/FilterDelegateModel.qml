@@ -5,8 +5,10 @@ DelegateModel {
 	id:filterModel
 	property string role
 	property string search
+	property string statusFilter
 	onRoleChanged:Qt.callLater(update)
 	onSearchChanged:Qt.callLater(update)
+	onStatusFilterChanged:Qt.callLater(update)
 	
 	groups: [
 		DelegateModelGroup{
@@ -29,7 +31,21 @@ DelegateModel {
 			for (let index = 0; index < allItems.count; index++) {
 	            let item = allItems.get(index).model;
 	            let visible = item[role].toLowerCase().includes(search.toLowerCase());
-	            if (!visible) continue;
+	            let matchStatus=true
+	            if (statusFilter!="all"){
+		            if (statusFilter=="disable"){
+		            	if (item["bellActivated"]){
+		            		matchStatus=false
+		            	}	
+		            }else{
+		            	if (!item["bellActivated"]){
+		            		matchStatus=false
+		            	}
+		            }
+		            
+		        }
+
+	            if (!visible || !matchStatus) continue;
 	            allItems.setGroups(index, 1, [ "all", "visible" ]);
 	        }
 	   }

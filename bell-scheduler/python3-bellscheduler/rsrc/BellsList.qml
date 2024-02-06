@@ -18,21 +18,81 @@ Rectangle {
         rowSpacing:10
         anchors.left:parent.left
         anchors.fill:parent
-
-        PC3.TextField{
-            id:bellSearchEntry
-            font.pointSize:10
-            horizontalAlignment:TextInput.AlignLeft
+        RowLayout{
             Layout.alignment:Qt.AlignRight
-            focus:true
-            width:100
-            visible:true
-            enabled:true
-            placeholderText:i18nd("bell-scheduler","Search...")
-            onTextChanged:{
-                filterModel.update()
+            spacing:10
+            Button{
+                id:statusFilterBtn
+                display:AbstractButton.IconOnly
+                icon.name:"view-filter.svg"
+                enabled:bellsOptionsStackBridge.enableChangeStatusOptions[2]
+                ToolTip.delay: 1000
+                ToolTip.timeout: 3000
+                ToolTip.visible: hovered
+                ToolTip.text:i18nd("bell-scheduler","Click to filter bells by status")
+                onClicked:optionsMenu.open();
+               
+                Menu{
+                    id:optionsMenu
+                    y: statusFilterBtn.height
+                    x:-(optionsMenu.width-statusFilterBtn.width/2)
+
+                    MenuItem{
+                        icon.name:"audio-on.svg"
+                        text:i18nd("bell-scheduler","Show activated bells ")
+                        enabled:{
+                            if (bellsOptionsStackBridge.filterStatusValue!="active"){
+                                true
+                            }else{
+                                false
+                            }
+                        }
+                        onClicked:bellsOptionsStackBridge.manageStatusFilter("active")
+                    }
+
+                    MenuItem{
+                        icon.name:"audio-volume-muted.svg"
+                        text:i18nd("bell-scheduler","Show disabled bells")
+                        enabled:{
+                            if (bellsOptionsStackBridge.filterStatusValue!="disable"){
+                                true
+                            }else{
+                                false
+                            }
+                        }
+                        onClicked:bellsOptionsStackBridge.manageStatusFilter("disable")
+                    }
+                    MenuItem{
+                        icon.name:"kt-remove-filters.svg"
+                        text:i18nd("bell-scheduler","Remove filter")
+                        enabled:{
+                            if (bellsOptionsStackBridge.filterStatusValue!="all"){
+                                true
+                            }else{
+                                false
+                            }
+                        }
+                        onClicked:bellsOptionsStackBridge.manageStatusFilter("all")
+                    }
+                }
+                
             }
-            
+             
+            PC3.TextField{
+                id:bellSearchEntry
+                font.pointSize:10
+                horizontalAlignment:TextInput.AlignLeft
+                Layout.alignment:Qt.AlignRight
+                focus:true
+                width:100
+                visible:true
+                enabled:true
+                placeholderText:i18nd("bell-scheduler","Search...")
+                onTextChanged:{
+                    filterModel.update()
+                }
+                
+            }
         }
 
         Rectangle {
@@ -67,6 +127,7 @@ Rectangle {
                         model:bellsModel
                         role:"metaInfo"
                         search:bellSearchEntry.text.trim()
+                        statusFilter:bellsOptionsStackBridge.filterStatusValue
 
                         delegate: ListDelegateBellItem{
                             width:bellsTable.width
