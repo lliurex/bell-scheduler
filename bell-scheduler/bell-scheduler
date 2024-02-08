@@ -5,17 +5,101 @@ from PySide2.QtCore import QUrl, QObject, Slot, Signal,Property
 import os
 import subprocess
 import sys
+import shutil
 
 class Tunnel(QObject):
 
+	def __init__(self):
+
+		QObject.__init__(self)
+		self.clearCache()
+
+	#def __init__
+
+	def clearCache(self):
+
+		clear=False
+		user=os.environ["USER"]
+		bellVersionFile="/home/%s/.config/bell-scheduler.conf"%user
+		holidayVersionFile="/home/%s/.config/python3-holidaymanager.conf"%user
+		cachePath1="/home/%s/.cache/bell-scheduler"%user
+		cachePath2="/home/%s/.cache/bell-scheduler-gui.py"%user
+		bellInstalledVersion=self.getPackageVersion("bell")
+		holidayInstalledVersion=self.getPackageVersion("holiday")
+
+
+		if bellInstalledVersion!="" and holidayInstalledVersion!="":
+
+			if not os.path.exists(bellVersionFile):
+				with open(bellVersionFile,'w') as fd:
+					fd.write(bellInstalledVersion)
+
+				clear=True
+				
+			if not os.path.exists(holidayVersionFile):
+				with open(holidayVersionFile,'w') as fd:
+					fd.write(holidayInstalledVersion)
+
+				clear=True
+
+			else:
+				with open(bellVersionFile,'r') as fd:
+					fileVersion=fd.readline()
+					fd.close()
+
+				if fileVersion!=bellInstalledVersion:
+					with open(bellVersionFile,'w') as fd:
+						fd.write(bellInstalledVersion)
+						fd.close()
+					clear=True
+				else:
+					with open(holidayVersionFile,'r') as fd:
+						fileVersion=fd.readline()
+						fd.close()
+
+					if fileVersion!=holidayInstalledVersion:
+						with open(holidayVersionFile,'w') as fd:
+							fd.write(holidayInstalledVersion)
+							fd.close()
+						clear=True
+
+		else:
+			clear=True
+		
+		if clear:
+			if os.path.exists(cachePath1):
+				shutil.rmtree(cachePath1)
+			if os.path.exists(cachePath2):
+				shutil.rmtree(cachePath2)
+
+	#def clearCache
+
+	def getPackageVersion(self,appName):
+
+		if appName=="bell":
+			packageVersionFile="/var/lib/bell-scheduler/version"
+		elif appName=="holiday":
+			packageVersionFile="/var/lib/python3-holidaymanager/version"
+
+		pkgVersion=""
+
+		if os.path.exists(packageVersionFile):
+			with open(packageVersionFile,'r') as fd:
+				pkgVersion=fd.readline()
+				fd.close()
+
+		return pkgVersion
+
+	#def getPackageVersion
+
 	@Slot(str)
-	def on_ticket(self, ticket):
+	def onTicket(self, ticket):
 		
 		ticket=ticket.replace(' ','##U+0020##')
 		os.system("/usr/sbin/bell-scheduler-gui %s &"%ticket)
 		app.quit()
 
-	#def on_ticket
+	#def onTicket
 
 #class Tunnel
 
