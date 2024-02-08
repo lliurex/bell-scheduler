@@ -1,3 +1,9 @@
+bell-scheduler (0.15) jammy; urgency=medium
+
+  * Migrated to PySide2-QML
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 08 Feb 2024 09:08:50 +0100
+
 bell-scheduler (0.14.58) jammy; urgency=medium
 
   * Improved BellSchedulerPlayer log details
