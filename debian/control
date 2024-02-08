@@ -11,12 +11,12 @@ Build-Depends: debhelper (>=10),
 	       zero-dev
 Standards-Version: 4.1.2
 Homepage: http://lliurex.net
-Vcs-Browser: https://svn.lliurex.net/xenial/bell-scheduler
+Vcs-Browser: https://svn.lliurex.net/jammy/bell-scheduler
 
 Package: bell-scheduler
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, n4d-bellscheduler (= ${binary:Version}),youtube-dl,n4d-qt-agent,python3-n4d-client,python3-holidaymanager, ffmpeg, python3-pyside2.qtqml, python3-pyside2.qtwidgets, python3-pyside2.qtquick
-Recommends: bell-scheduler-indicator (= ${binary:Version}), bell-scheduler-zerocenter-files(= ${binary:Version})
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, n4d-bellscheduler (= ${binary:Version}),n4d-qt-agent,python3-n4d-client,python3-holidaymanager, ffmpeg, python3-pyside2.qtqml, python3-pyside2.qtwidgets, python3-pyside2.qtquick,python3-pyside2.qtgui,python3-pyside2.qtquickwidgets
+Recommends: bell-scheduler-zerocenter-files(= ${binary:Version}),bell-scheduler-indicator(> 0.14.58)
 Description:Bell Schededuler GUI package
   Provides the gui to program alarms
 
@@ -27,12 +27,6 @@ Depends: ${misc:Depends}, ${python3:Depends},n4d-taskscheduler-server (>=1.0.5),
 Description: Bell Scheduler plugin
   Plugins supporting bell-scheduler functionality 
 
-Package: bell-scheduler-indicator
-Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends},python3-pyinotify,n4d-bellscheduler (= ${binary:Version}), python3-n4d-client
-Description: Bell Scheduler menu bar indicator
-  Provides a indicator to menu bar that allows to stop the alarm
-  
 Package: bell-scheduler-zerocenter-files
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, zero-center
