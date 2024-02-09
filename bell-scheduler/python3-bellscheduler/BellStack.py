@@ -673,6 +673,7 @@ class Bridge(QObject):
 			self.core.bellsOptionsStack.showMainMessage=[True,self.saveData.ret[1],"Error"]	
 
 		self.core.bellsOptionsStack.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
+		self.core.bellsOptionsStack.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
 		self.core.bellsOptionsStack.showExportBellsWarning=Bridge.bellManager.checkIfAreBellsWithDirectory()
 		self.changesInBell=False
 		self.core.mainStack.closeGui=True
