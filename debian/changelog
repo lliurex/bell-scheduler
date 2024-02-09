@@ -1,3 +1,9 @@
+bell-scheduler (0.15.1) jammy; urgency=medium
+
+  * Fixed filter by status performance
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 09 Feb 2024 11:49:02 +0100
+
 bell-scheduler (0.15) jammy; urgency=medium
 
   * Migrated to PySide2-QML
