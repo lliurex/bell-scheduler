@@ -929,6 +929,8 @@ class BellManager(object):
 			if countDeactivated==0:
 				allActivated=True
 				enableStatusFilter=False
+		else:
+			enableStatusFilter=False
 
 		result=[allActivated,allDeactivated,enableStatusFilter]
 
