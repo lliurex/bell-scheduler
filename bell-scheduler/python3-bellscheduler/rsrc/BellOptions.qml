@@ -37,7 +37,7 @@ GridLayout{
 
                 MenuOptionBtn {
                     id:infoItem
-                    optionText:i18nd("bell-scheluder","Bell")
+                    optionText:i18nd("bell-scheduler","Bell")
                     optionIcon:"/usr/share/icons/breeze/status/22/appointment-reminder.svg"
                  }
 

@@ -520,6 +520,9 @@ class BellSchedulerManager:
 				if not update_holiday["status"]:
 					result={"status":False,"msg":update_holiday["msg"],"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}				
 
+				else:
+					result={"status":True,"msg":"Bells imported successfully","code":BellSchedulerManager.BELL_IMPORT_SUCCESSFUL,"data":""}
+		
 				return n4d.responses.build_successful_call_response(result)		
 	
 		except Exception as e:

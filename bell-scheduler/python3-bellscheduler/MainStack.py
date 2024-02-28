@@ -173,8 +173,14 @@ class Bridge(QObject):
 
 		if self.mainCurrentOption!=stack:
 			if stack==0:
+				self.core.holidayStack.showMainMessage=[False,"","Ok"]
+				self.core.bellsOptionsStack.enableHolidayControl=Bridge.bellManager.checkIfAreHolidaysConfigured()
 				self.mainCurrentOption=stack
+				if not self.core.bellsOptionsStack.enableHolidayControl:
+					if self.core.bellsOptionsStack.isHolidayControlActive:
+						self.core.bellsOptionsStack.manageHolidayControl()
 			else:
+				self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
 				self._loadHolidayStack()
 
 	#def moveToMainOptions	
