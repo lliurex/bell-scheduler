@@ -14,12 +14,6 @@ Rectangle{
 
     property var backupAction:undefined
 
-    Pane{
-        id:mainPane
-        anchors.fill:parent
-        focusPolicy:Qt.ClickFocus
-    }
-
     GridLayout{
         id:generalBellsLayout
         rows:2
@@ -152,8 +146,9 @@ Rectangle{
             id:holidadyBtn
             visible:true
             display:AbstractButton.TextBesideIcon
-            icon.name:bellsOptionsStackBridge.isHolidayControlEnabled?"kt-stop.svg":"kt-start.svg"
-            text:bellsOptionsStackBridge.isHolidayControlEnabled?i18nd("bell-scheduler","Disable holiday control"):i18nd("bell-scheduler","Enable holiday control")
+            icon.name:bellsOptionsStackBridge.isHolidayControlActive?"kt-stop.svg":"kt-start.svg"
+            text:bellsOptionsStackBridge.isHolidayControlActive?i18nd("bell-scheduler","Disable holiday control"):i18nd("bell-scheduler","Enable holiday control")
+            enabled:bellsOptionsStackBridge.enableHolidayControl
             Layout.preferredHeight:40
             Layout.rightMargin:rectLayout.width-(backupBtn.width+actionsBtn.width+holidadyBtn.width+newBtn.width+40)
             onClicked:bellsOptionsStackBridge.manageHolidayControl()

@@ -897,14 +897,22 @@ class BellManager(object):
 
 	#def checkHolidayManagerStatus
 
-	def enableHolidayControl(self,action):
+	def checkIfAreHolidaysConfigured(self,):
+
+		result=self.client.HolidayListManager.are_days_configured()
+	
+		return result["status"]
+
+	#def checkIfAreHolidaysConfigured
+
+	def changeHolidayControl(self,action):
 
 		result=self.client.BellSchedulerManager.enable_holiday_control(action)
-		self._debug("Enable holiday control: ",result)	
+		self._debug("Change holiday control: ",result)	
 		
 		return result
 
-	#def enableHolidayControl
+	#def changeHolidayControl
 
 	def checkChangeStatusBellsOption(self):
 

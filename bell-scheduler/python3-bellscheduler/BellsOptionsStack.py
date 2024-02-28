@@ -120,7 +120,7 @@ class RecoveryConfig(QThread):
 
 #class RecoveryConfig
 
-class EnableHolidayControl(QThread):
+class ChangeHolidayControl(QThread):
 
 	def __init__(self,*args):
 
@@ -133,11 +133,11 @@ class EnableHolidayControl(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellManager.enableHolidayControl(self.action)
+		self.ret=Bridge.bellManager.changeHolidayControl(self.action)
 
 	#def run
 
-#class EnableHolidayControl
+#class ChangeHolidayControl
 
 class Bridge(QObject):
 
@@ -152,7 +152,8 @@ class Bridge(QObject):
 		self._enableGlobalOptions=False
 		self._enableChangeStatusOptions=[False,False,False]
 		self._showExportBellsWarning=False
-		self._isHolidayControlEnabled=False
+		self._isHolidayControlActive=False
+		self._enableHolidayControl=False
 		self.bellSchedulerPlayerLog="/var/log/BELL-SCHEDULER-PLAYER.log"
 		self._filterStatusValue="all"
 
@@ -164,7 +165,8 @@ class Bridge(QObject):
 		self.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
 		self.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
 		self.showExportBellsWarning=Bridge.bellManager.checkIfAreBellsWithDirectory()
-		self.isHolidayControlEnabled=Bridge.bellManager.checkHolidayManagerStatus()
+		self.isHolidayControlActive=Bridge.bellManager.checkHolidayManagerStatus()
+		self.enableHolidayControl=Bridge.bellManager.checkIfAreHolidaysConfigured()
 	
 	#def loadConfig
 
@@ -244,19 +246,33 @@ class Bridge(QObject):
 
 	#def _setShowExportBellsWarning
 
-	def _getIsHolidayControlEnabled(self):
+	def _getIsHolidayControlActive(self):
 
-		return self._isHolidayControlEnabled
+		return self._isHolidayControlActive
 
-	#def _getIsHolidayControlEnabled
+	#def _getIsHolidayControlActive
 
-	def _setIsHolidayControlEnabled(self,isHolidayControlEnabled):
+	def _setIsHolidayControlActive(self,isHolidayControlActive):
 
-		if self._isHolidayControlEnabled!=isHolidayControlEnabled:
-			self._isHolidayControlEnabled=isHolidayControlEnabled
-			self.on_isHolidayControlEnabled.emit()
+		if self._isHolidayControlActive!=isHolidayControlActive:
+			self._isHolidayControlActive=isHolidayControlActive
+			self.on_isHolidayControlActive.emit()
 
-	#def _setIsHolidayControlEnabled
+	#def _setIsHolidayControlActive
+
+	def _getEnableHolidayControl(self):
+
+		return self._enableHolidayControl
+
+	#def _getEnableHolidayControl
+
+	def _setEnableHolidayControl(self,enableHolidayControl):
+
+		if self._enableHolidayControl!=enableHolidayControl:
+			self._enableHolidayControl=enableHolidayControl
+			self.on_enableHolidayControl.emit()
+
+	#def _setEnableHolidayControl
 
 	def _getFilterStatusValue(self):
 
@@ -475,7 +491,7 @@ class Bridge(QObject):
 	@Slot()
 	def manageHolidayControl(self):
 
-		if self.isHolidayControlEnabled:
+		if self.isHolidayControlActive:
 			action="disable"
 			msgCode=DISABLE_HOLIDAY_CONTROL 
 		else:
@@ -485,7 +501,7 @@ class Bridge(QObject):
 		self.core.mainStack.closeGui=False
 		self.showMainMessage=[False,"","Ok"]
 		self.core.mainStack.closePopUp=[False,msgCode]
-		self.changeHolidayControl=EnableHolidayControl(action)
+		self.changeHolidayControl=ChangeHolidayControl(action)
 		self.changeHolidayControl.start()
 		self.changeHolidayControl.finished.connect(self._changeHolidayControlRet)
 
@@ -501,7 +517,7 @@ class Bridge(QObject):
 		else:
 			self.showMainMessage=[True,self.changeHolidayControl.ret["code"],"Error"]
 
-		self.isHolidayControlEnabled=Bridge.bellManager.checkHolidayManagerStatus()
+		self.isHolidayControlActive=Bridge.bellManager.checkHolidayManagerStatus()
 
 	#def _changeHolidayControlRet
 	
@@ -520,8 +536,11 @@ class Bridge(QObject):
 	on_showExportBellsWarning=Signal()
 	showExportBellsWarning=Property(bool,_getShowExportBellsWarning,_setShowExportBellsWarning,notify=on_showExportBellsWarning)
 
-	on_isHolidayControlEnabled=Signal()
-	isHolidayControlEnabled=Property(bool,_getIsHolidayControlEnabled,_setIsHolidayControlEnabled,notify=on_isHolidayControlEnabled)
+	on_isHolidayControlActive=Signal()
+	isHolidayControlActive=Property(bool,_getIsHolidayControlActive,_setIsHolidayControlActive,notify=on_isHolidayControlActive)
+
+	on_enableHolidayControl=Signal()
+	enableHolidayControl=Property(bool,_getEnableHolidayControl,_setEnableHolidayControl,notify=on_enableHolidayControl)
 
 	on_filterStatusValue=Signal()
 	filterStatusValue=Property(str,_getFilterStatusValue,_setFilterStatusValue,notify=on_filterStatusValue)
