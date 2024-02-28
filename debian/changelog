@@ -1,3 +1,10 @@
+bell-scheduler (0.15.2) jammy; urgency=medium
+
+  * Improved performance
+  * Fixed minor bugs in feedback messages
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 28 Feb 2024 16:24:36 +0100
+
 bell-scheduler (0.15.1) jammy; urgency=medium
 
   * Fixed filter by status performance
