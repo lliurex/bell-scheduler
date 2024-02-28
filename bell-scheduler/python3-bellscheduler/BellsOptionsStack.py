@@ -162,13 +162,18 @@ class Bridge(QObject):
 	def loadConfig(self):
 
 		self._updateBellsModel()
+		self.showExportBellsWarning=Bridge.bellManager.checkIfAreBellsWithDirectory()
+		self._manageOptions()	
+	#def loadConfig
+
+	def _manageOptions(self):
+
 		self.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
 		self.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
-		self.showExportBellsWarning=Bridge.bellManager.checkIfAreBellsWithDirectory()
 		self.isHolidayControlActive=Bridge.bellManager.checkHolidayManagerStatus()
 		self.enableHolidayControl=Bridge.bellManager.checkIfAreHolidaysConfigured()
-	
-	#def loadConfig
+
+	#def _manageOptions
 
 	def _getShowRemoveBellDialog(self):
 
@@ -414,8 +419,7 @@ class Bridge(QObject):
 		else:
 			self.showMainMessage=[False,self.removeBellProcess.ret[1],"Error"]
 
-		self.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
-		self.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
+		self._manageOptions()
 		self.filterStatusValue="all"
 		self.core.mainStack.closePopUp=[True,""]
 		self.core.mainStack.closeGui=True
@@ -465,8 +469,7 @@ class Bridge(QObject):
 			self.core.mainStack.closeGui=True
 			self.core.mainStack.closePopUp=[True,""]
 			self.showMainMessage=[True,self.importBackup.ret[1],"Ok"]
-			self.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
-			self.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
+			self._manageOptions()
 			self.filterStatusValue="all"
 		else:
 			self.core.mainStack.closePopUp=[False,RECOVERY_BELLS_CONFIG]
@@ -482,8 +485,7 @@ class Bridge(QObject):
 		self.core.mainStack.closePopUp=[True,""]
 		self.core.mainStack.closeGui=True
 		self.showMainMessage=[True,self.recoveryConfig.ret[1],"Error"]
-		self.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
-		self.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
+		self._manageOptions()
 		self.filterStatusValue="all"
 
 	#def _recoveryConfigRet
