@@ -468,7 +468,10 @@ class Bridge(QObject):
 			self._updateBellsModel()
 			self.core.mainStack.closeGui=True
 			self.core.mainStack.closePopUp=[True,""]
-			self.showMainMessage=[True,self.importBackup.ret[1],"Ok"]
+			if Bridge.bellManager.loadError:
+				self.showMainMessage=[True,Bridge.bellManager.BELLS_WITH_ERRORS,"Error"]
+			else:
+				self.showMainMessage=[True,self.importBackup.ret[1],"Ok"]
 			self._manageOptions()
 			self.filterStatusValue="all"
 		else:
