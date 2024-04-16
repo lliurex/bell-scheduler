@@ -1,7 +1,7 @@
 [Desktop Entry]
 Actions=createBellWithFile;
 Type=Service
-MimeType=audio/*;video/;
+MimeType=audio/*;video/*;
 X-KDE-MaxNumberOfUrls=1
 
 [Desktop Action createBellWithFile]
