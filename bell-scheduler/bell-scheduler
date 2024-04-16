@@ -96,7 +96,10 @@ class Tunnel(QObject):
 	def onTicket(self, ticket):
 		
 		ticket=ticket.replace(' ','##U+0020##')
-		os.system("/usr/sbin/bell-scheduler-gui %s &"%ticket)
+		if len(sys.argv)==1:
+			os.system("/usr/sbin/bell-scheduler-gui %s &"%ticket)
+		elif len(sys.argv)==2:
+			os.system("/usr/sbin/bell-scheduler-gui %s %s &"%(ticket,sys.argv[1]))
 		app.quit()
 
 	#def onTicket

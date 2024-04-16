@@ -1,0 +1,21 @@
+[Desktop Entry]
+Actions=createBellWithFile;
+Type=Service
+MimeType=audio/*;video/;
+X-KDE-MaxNumberOfUrls=1
+
+[Desktop Action createBellWithFile]
+Icon=bell-scheduler
+TryExec=/usr/sbin/bell-scheduler
+Exec=/usr/sbin/bell-scheduler %u
+Name=Add bell with Bell-Scheduler
+Name[es]=Añadir alarma con Bell-Scheduler
+Name[ca@valencia]=Afig alarma amb Bell-Scheduler
+Name[ca]=Afig alarma amb Bell-Scheduler
+
+Comment=Add bell with Bell-Scheduler
+Comment[es]=Añadir alarma con Bell-Scheduler
+Comment[ca@valencia]=Afig alarma amb Bell-Scheduler
+Comment[ca]=Afig alarma amb Bell-Scheduler
+
+

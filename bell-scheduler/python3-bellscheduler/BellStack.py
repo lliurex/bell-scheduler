@@ -343,10 +343,12 @@ class Bridge(QObject):
 	#def updateImagesModel
 
 	@Slot()
-	def addNewBell(self):
+	def addNewBell(self,soundFile=None):
 
-		self.core.mainStack.closePopUp=[False,NEW_BELL_CONFIG]
-		self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
+		self.fileFromMenu=soundFile
+		if self.fileFromMenu==None:
+			self.core.mainStack.closePopUp=[False,NEW_BELL_CONFIG]
+			self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
 		self.newBell=LoadBell(True,"")
 		self.newBell.start()
 		self.newBell.finished.connect(self._addNewBellRet)
@@ -357,7 +359,14 @@ class Bridge(QObject):
 
 		self.currentBellConfig=copy.deepcopy(Bridge.bellManager.currentBellConfig)
 		self._initializeVars()
-		self.core.mainStack.closePopUp=[True,""]
+		if self.fileFromMenu==None:
+			self.core.mainStack.closePopUp=[True,""]
+		else:
+			tmpSound=[]
+			tmpSound.append("file")
+			tmpSound.append(sys.argv[2])
+			tmpSound.append(True)
+			self.updateSoundValues(tmpSound)
 		self.core.mainStack.currentStack=2
 		self.bellCurrentOption=1
 
@@ -576,6 +585,7 @@ class Bridge(QObject):
 			tmpSound.append(False)
 		else:
 			tmpSound.append(True)
+
 		tmpSound.append(values[2])
 	
 		if tmpSound!=self.bellSound:

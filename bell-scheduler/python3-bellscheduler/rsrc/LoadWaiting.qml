@@ -63,6 +63,9 @@ Rectangle{
             case -37:
                 var msg=i18nd("bell-scheduler","Unabled to load bell list due to problems with cron sync")
                 break;
+            case -38:
+                var msg=i18nd("bell-scheduler","Unabled to create a bell with selected file")
+                break;
             default:
                 var msg=""
                 break;
