@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-16 15:54+0200\n"
+"POT-Creation-Date: 2024-04-17 12:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -91,110 +91,118 @@ msgstr ""
 msgid "Fri"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:11
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:14
+msgid "New Bell"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:17
 msgid "Edit Bell"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:56
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:20
+msgid "New Bell (duplicate)"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:64
 msgid "Validity:"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:66
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:74
 msgid "Click to deactive the alarm validity period"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:68
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:76
 msgid "Click to active the alarm validity period"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:101
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:109
 msgid "Click to edit validity"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:111
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:119
 msgid "Edit validity"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:116
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:124
 msgid "Delete validity"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:154
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:162
 msgid "Name:"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:193
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:201
 msgid "Clic to edit the image"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:223
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:230
 msgid "Current option for sound: "
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:231
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:238
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:74
 msgid "Sound file"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:234
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:241
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:139
 msgid "Random from directory"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:237
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:244
 msgid "YouTube url"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:240
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:247
 msgid "Random from urls list"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:254
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:261
 msgid "Resource:"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:277
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:284
 msgid "Click to edit sound"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:289
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:296
 msgid "Start in second:"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:310
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:317
 msgid "Click to edit start value"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:316
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:323
 msgid "Edit when the alarm starts"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:337
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:344
 msgid "Max. duration:"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:348
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:355
 msgid "seconds"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:350
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:357
 msgid "Full reproduction"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:364
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:371
 msgid "Click to edit duration value"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:370
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:377
 msgid "Edit bell duration"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:371
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:378
 msgid "(!) If duration is 0, the sound will be reproduced in its entirety"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:406
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:438
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:413
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:445
 #: bell-scheduler/python3-bellscheduler/rsrc/ImageSelector.qml:168
 #: bell-scheduler/python3-bellscheduler/rsrc/SliderPopUp.qml:181
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:220
@@ -203,9 +211,9 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:420
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:442
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:470
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:427
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:449
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:477
 #: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:186
 #: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:233
 #: bell-scheduler/python3-bellscheduler/rsrc/ImageSelector.qml:195
@@ -216,68 +224,68 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:433
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:463
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:440
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:470
 #: bell-scheduler/python3-bellscheduler/rsrc/BellOptions.qml:40
 msgid "Bell"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:435
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:442
 msgid ""
 "The are pending changes to save.\n"
 "Do you want save the changes or discard them?"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:439
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:446
 msgid "Discard"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:464
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:471
 msgid ""
 "The alarm validity will be deleted\n"
 "Do you want to continue?"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:468
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:475
 #: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:183
 #: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:209
 #: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:231
 msgid "Accept"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:493
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:500
 msgid "<specify the file/url for the sound>"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:507
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:514
 msgid "You must indicate a name for the alarm"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:510
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:517
 msgid "You must indicate sound file"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:513
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:520
 msgid "You must indicate a image file"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:516
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:523
 msgid "You must indicate a directory"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:519
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:526
 msgid "The sound file is not reproducible"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:522
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:529
 msgid "The specified folder does not contain playable files"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:525
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:532
 msgid "Unabled to validated the data"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:528
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:535
 msgid "Days outside the established validity period have been selected"
 msgstr ""
 
@@ -594,6 +602,10 @@ msgstr ""
 msgid "Loading holiday list. Wait a moment..."
 msgstr ""
 
+#: bell-scheduler/python3-bellscheduler/rsrc/CustomPopUp.qml:101
+msgid "Duplicating bell info. Wait a moment..."
+msgstr ""
+
 #: bell-scheduler/python3-bellscheduler/rsrc/ImageSelector.qml:31
 msgid "Edit image for bell"
 msgstr ""
@@ -631,6 +643,10 @@ msgid "Edit bell"
 msgstr ""
 
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:224
+msgid "Duplicate bell"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:236
 msgid "Delete the bell"
 msgstr ""
 

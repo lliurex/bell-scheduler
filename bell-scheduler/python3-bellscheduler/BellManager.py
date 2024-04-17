@@ -290,9 +290,10 @@ class BellManager(object):
 
 	#def _getDayToSearch
 
-	def loadBellConfig(self,bellToLoad):
+	def loadBellConfig(self,bellToLoad,duplicateBell):
 
-		self.bellToLoad=bellToLoad[0]
+		if not duplicateBell:
+			self.bellToLoad=bellToLoad[0]
 		self.currentBellConfig=self.bellsConfig[bellToLoad[0]]
 		self.bellCron=[self.currentBellConfig["hour"],self.currentBellConfig["minute"]]
 		self.bellDays=[self.currentBellConfig["weekdays"]["0"],self.currentBellConfig["weekdays"]["1"],self.currentBellConfig["weekdays"]["2"],self.currentBellConfig["weekdays"]["3"],self.currentBellConfig["weekdays"]["4"]]

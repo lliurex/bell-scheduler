@@ -12,6 +12,7 @@ from . import ImagesModel
 
 NEW_BELL_CONFIG=1
 LOAD_BELL_CONFIG=2
+DUPLICATE_BELL_CONFIG=17
 CHECK_DATA=3
 SAVE_DATA=4
 
@@ -22,6 +23,7 @@ class LoadBell(QThread):
 		QThread.__init__(self)
 		self.newBell=args[0]
 		self.bellInfo=args[1]
+		self.duplicateBell=args[2]
 
 	#def __init__
 
@@ -30,7 +32,7 @@ class LoadBell(QThread):
 		time.sleep(0.5)
 		ret=Bridge.bellManager.initValues()
 		if not self.newBell:
-			ret=Bridge.bellManager.loadBellConfig(self.bellInfo)
+			ret=Bridge.bellManager.loadBellConfig(self.bellInfo,self.duplicateBell)
 
 	#def run
 
@@ -99,6 +101,7 @@ class Bridge(QObject):
 		self._showBellFormMessage=[False,"","Ok"]
 		self._showChangesInBellDialog=False
 		self._changesInBell=False
+		self._actionType="add"
 
 	#def _init__
 
@@ -326,6 +329,20 @@ class Bridge(QObject):
 
 	#def _setShowBellFormMessage
 
+	def _getActionType(self):
+
+		return self._actionType
+
+	#def _getActionType
+
+	def _setActionType(self,actionType):
+
+		if self._actionType!=actionType:
+			self._actionType=actionType
+			self.on_actionType.emit()
+
+	#def _setActionType
+
 	def _getImagesModel(self):
 
 		return self._imagesModel
@@ -346,10 +363,12 @@ class Bridge(QObject):
 	def addNewBell(self,soundFile=None):
 
 		self.fileFromMenu=soundFile
+		duplicateBell=False
+		actionType="add"
 		if self.fileFromMenu==None:
 			self.core.mainStack.closePopUp=[False,NEW_BELL_CONFIG]
 			self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
-		self.newBell=LoadBell(True,"")
+		self.newBell=LoadBell(True,"",duplicateBell)
 		self.newBell.start()
 		self.newBell.finished.connect(self._addNewBellRet)
 
@@ -410,7 +429,9 @@ class Bridge(QObject):
 
 		self.core.mainStack.closePopUp=[False,LOAD_BELL_CONFIG]
 		self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
-		self.editBell=LoadBell(False,bellToLoad)
+		duplicateBell=False
+		self.actionType="edit"
+		self.editBell=LoadBell(False,bellToLoad,duplicateBell)
 		self.editBell.start()
 		self.editBell.finished.connect(self._loadBellRet)
 
@@ -425,6 +446,29 @@ class Bridge(QObject):
 		self.bellCurrentOption=1
 
 	#def _loadBellRet
+
+	@Slot('QVariantList')
+	def duplicateBell(self,bellToDuplicate):
+
+		self.core.mainStack.closePopUp=[False,DUPLICATE_BELL_CONFIG]
+		self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
+		self.actionType="duplicate"
+		duplicateBell=True
+		self.cloneBell=LoadBell(False,bellToDuplicate,duplicateBell)
+		self.cloneBell.start()
+		self.cloneBell.finished.connect(self._duplicateBellRet)
+
+	#def duplicateBell
+
+	def _duplicateBellRet(self):
+
+		self.currentBellConfig=copy.deepcopy(Bridge.bellManager.currentBellConfig)
+		self._initializeVars()
+		self.core.mainStack.closePopUp=[True,""]
+		self.core.mainStack.currentStack=2
+		self.bellCurrentOption=1
+
+	#def _duplicateBellRet
 
 	@Slot('QVariantList')
 	def updateClockValues(self,values):
@@ -756,6 +800,9 @@ class Bridge(QObject):
 
 	on_changesInBell=Signal()
 	changesInBell=Property(bool,_getChangesInBell,_setChangesInBell,notify=on_changesInBell)
+
+	on_actionType=Signal()
+	actionType=Property(str,_getActionType,_setActionType,notify=on_actionType)
 
 	imagesModel=Property(QObject,_getImagesModel,constant=True)
 
