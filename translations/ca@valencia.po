@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-06 14:43+0100\n"
-"PO-Revision-Date: 2024-02-06 14:46+0100\n"
+"POT-Creation-Date: 2024-04-18 11:00+0200\n"
+"PO-Revision-Date: 2024-04-18 11:05+0200\n"
 "Last-Translator: Angels <gimenez_angcam@gva.es>\n"
 "Language-Team: Valencian <http://weblate.lliurex.net/projects/bell-scheduler/"
 "bell-scheduler/ca@valencia/>\n"
@@ -19,186 +19,194 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 3.0.1\n"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:255
+#: bell-scheduler/python3-bellscheduler/BellManager.py:256
 msgid "ERROR: File or directory not available"
 msgstr "ERROR: el fitxer o la carpeta no estan disponibles"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:260
+#: bell-scheduler/python3-bellscheduler/BellManager.py:261
 msgid "ERROR: Current option for sound not supported"
 msgstr "ERROR: L'opció actual de so no està suportada"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:269
+#: bell-scheduler/python3-bellscheduler/BellManager.py:270
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:172
 msgid "Monday"
 msgstr "Dilluns"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:270
+#: bell-scheduler/python3-bellscheduler/BellManager.py:271
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:82
 msgid "M"
 msgstr "Dl."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:273
+#: bell-scheduler/python3-bellscheduler/BellManager.py:274
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:184
 msgid "Tuesday"
 msgstr "Dimarts"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:274
+#: bell-scheduler/python3-bellscheduler/BellManager.py:275
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:89
 msgid "T"
 msgstr "Dt."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:275
+#: bell-scheduler/python3-bellscheduler/BellManager.py:276
 msgid "Tue"
 msgstr "Dt."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:277
+#: bell-scheduler/python3-bellscheduler/BellManager.py:278
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:195
 msgid "Wednesday"
 msgstr "Dimecres"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:278
+#: bell-scheduler/python3-bellscheduler/BellManager.py:279
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:96
 msgid "W"
 msgstr "Dc."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:279
+#: bell-scheduler/python3-bellscheduler/BellManager.py:280
 msgid "Wed"
 msgstr "Dc."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:281
+#: bell-scheduler/python3-bellscheduler/BellManager.py:282
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:207
 msgid "Thursday"
 msgstr "Dijous"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:282
+#: bell-scheduler/python3-bellscheduler/BellManager.py:283
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:103
 msgid "R"
 msgstr "Dj."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:283
+#: bell-scheduler/python3-bellscheduler/BellManager.py:284
 msgid "Thu"
 msgstr "Dj."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:285
+#: bell-scheduler/python3-bellscheduler/BellManager.py:286
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:218
 msgid "Friday"
 msgstr "Divendres"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:286
+#: bell-scheduler/python3-bellscheduler/BellManager.py:287
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:110
 msgid "F"
 msgstr "Dv."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:287
+#: bell-scheduler/python3-bellscheduler/BellManager.py:288
 msgid "Fri"
 msgstr "Dv."
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:11
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:14
+msgid "New Bell"
+msgstr "Nova alarma"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:17
 msgid "Edit Bell"
 msgstr "Edita l'alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:56
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:20
+msgid "New Bell (duplicate)"
+msgstr "Nova alarma (duplicada)"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:64
 msgid "Validity:"
 msgstr "Període de vigència:"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:66
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:74
 msgid "Click to deactive the alarm validity period"
 msgstr "Feu clic per a desactivar el període de vigència de l'alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:68
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:76
 msgid "Click to active the alarm validity period"
 msgstr "Feu clic per a activar el període de vigència de l'alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:101
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:109
 msgid "Click to edit validity"
 msgstr "Feu clic per a gestionar el període de vigència de l'alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:111
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:119
 msgid "Edit validity"
 msgstr "Edita el període de vigència"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:116
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:124
 msgid "Delete validity"
 msgstr "Elimina el període de vigència"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:154
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:162
 msgid "Name:"
 msgstr "Nom:"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:193
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:201
 msgid "Clic to edit the image"
 msgstr "Feu clic per a editar la imatge"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:223
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:230
 msgid "Current option for sound: "
 msgstr "Opció actual per al so: "
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:231
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:238
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:74
 msgid "Sound file"
 msgstr "Fitxer de so"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:234
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:241
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:139
 msgid "Random from directory"
 msgstr "Fitxer aleatori d'un directori"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:237
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:244
 msgid "YouTube url"
 msgstr "URL de YouTube"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:240
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:247
 msgid "Random from urls list"
 msgstr "URL aleatori d'una llista"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:254
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:261
 msgid "Resource:"
 msgstr "Recurs:"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:277
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:284
 msgid "Click to edit sound"
 msgstr "Feu clic per a editar el so"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:289
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:296
 msgid "Start in second:"
 msgstr "Inicia en el segon:"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:310
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:317
 msgid "Click to edit start value"
 msgstr "Feu clic per a editar l'inici de l'alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:316
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:323
 msgid "Edit when the alarm starts"
 msgstr "Edita quan comença l'alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:337
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:344
 msgid "Max. duration:"
 msgstr "Duració màxima:"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:348
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:355
 msgid "seconds"
 msgstr "segons"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:350
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:357
 msgid "Full reproduction"
 msgstr "Reproducció completa"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:364
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:371
 msgid "Click to edit duration value"
 msgstr "Feu cllic per a editar la duració de l'alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:370
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:377
 msgid "Edit bell duration"
 msgstr "Edita la duració de l'alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:371
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:378
 msgid "(!) If duration is 0, the sound will be reproduced in its entirety"
 msgstr "(!) Si la duració indicada és 0, el so es reproduirà completament"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:406
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:438
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:413
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:445
 #: bell-scheduler/python3-bellscheduler/rsrc/ImageSelector.qml:168
 #: bell-scheduler/python3-bellscheduler/rsrc/SliderPopUp.qml:181
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:220
@@ -207,11 +215,11 @@ msgstr "(!) Si la duració indicada és 0, el so es reproduirà completament"
 msgid "Apply"
 msgstr "Aplica"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:420
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:442
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:470
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:191
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:238
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:427
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:449
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:477
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:186
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:233
 #: bell-scheduler/python3-bellscheduler/rsrc/ImageSelector.qml:195
 #: bell-scheduler/python3-bellscheduler/rsrc/SliderPopUp.qml:200
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:252
@@ -220,25 +228,26 @@ msgstr "Aplica"
 msgid "Cancel"
 msgstr "Cancel·la"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:433
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:463
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:440
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:470
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:496
 #: bell-scheduler/python3-bellscheduler/rsrc/BellOptions.qml:40
 msgid "Bell"
 msgstr "Alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:435
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:442
 msgid ""
 "The are pending changes to save.\n"
 "Do you want save the changes or discard them?"
 msgstr ""
 "Hi ha canvis pendents de guardar.\n"
-"Desitja guardar els canvis o descartar-los?"
+"Voleu guardar els canvis o descartar-los?"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:439
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:446
 msgid "Discard"
 msgstr "Descarta"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:464
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:471
 msgid ""
 "The alarm validity will be deleted\n"
 "Do you want to continue?"
@@ -246,46 +255,62 @@ msgstr ""
 "El periode de vigència de l'alarma serà eliminat.\n"
 "Voleu continuar?"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:468
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:188
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:214
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:236
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:475
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:183
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:209
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:231
 msgid "Accept"
 msgstr "Acepta"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:493
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:497
+msgid ""
+"There are already alarms programmed for the same time and days.\n"
+"Do you wish to continue?"
+msgstr ""
+"Ja hi ha alarmes programades per a la mateixa hora i dies.\n"
+"Voleu continuar?"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:502
+msgid "Yes"
+msgstr "Si"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:504
+msgid "No"
+msgstr "No"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:526
 msgid "<specify the file/url for the sound>"
 msgstr "<especifica el fitxer/URL per al so>"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:507
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:540
 msgid "You must indicate a name for the alarm"
 msgstr "Indiqueu un nom per a l'alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:510
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:543
 msgid "You must indicate sound file"
 msgstr "Indiqueu un fitxer de so"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:513
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:546
 msgid "You must indicate a image file"
 msgstr "Indiqueu un fitxer d'imatge"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:516
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:549
 msgid "You must indicate a directory"
 msgstr "Indiqueu un directori"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:519
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:552
 msgid "The sound file is not reproducible"
 msgstr "El fitxer de so indicats no es poden reproduir"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:522
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:555
 msgid "The specified folder does not contain playable files"
 msgstr "La carpeta especificada no conté fitxers reproduïbles"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:525
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:558
 msgid "Unabled to validated the data"
 msgstr "No és possible validar les dades"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:528
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:561
 msgid "Days outside the established validity period have been selected"
 msgstr "S'han seleccionat dies fora del període de vigència establit"
 
@@ -294,12 +319,26 @@ msgstr "S'han seleccionat dies fora del període de vigència establit"
 msgid "Bells"
 msgstr "Alarmes"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:31
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:32
+msgid "Click to filter bells by status"
+msgstr "Feu clic per a filtrar les alarmes per estat"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:42
+msgid "Show activated bells "
+msgstr "Mostra les alarmes activades"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:55
+msgid "Show disabled bells"
+msgstr "Mostra les alarmes desactivades"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:67
+msgid "Remove filter"
+msgstr "Elimina el filtre"
+
 #: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:90
 msgid "Search..."
 msgstr "Busca..."
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:97
 #: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:158
 msgid "No bell is configured"
 msgstr "No hi ha alarmes configurades"
@@ -308,65 +347,65 @@ msgstr "No hi ha alarmes configurades"
 msgid "Configured bells"
 msgstr "Alarmes configurades"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:64
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:58
 msgid "Backup"
 msgstr "Còpia de seguretat"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:75
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:69
 msgid "Generate bell backup"
 msgstr "Genera còpia de seguretat"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:80
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:74
 msgid "Please choose a file to save bells list"
 msgstr "Seleccioneu un fitxer per a guardar la llista d'alarmes"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:93
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:87
 msgid "Import bell backup"
 msgstr "Importa còpia de seguretat"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:97
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:91
 msgid "Please choose a file to load bells list"
 msgstr "Seleccioneu un fitxer per a carregar la llista d'alarmes"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:113
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:107
 msgid "Global Options"
 msgstr "Opcions globals"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:125
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:119
 msgid "Enable alls bells"
 msgstr "Activa totes les alarmes"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:132
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:126
 msgid "Disable all bells"
 msgstr "Desactiva totes les alarmes"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:139
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:133
 msgid "View log file"
 msgstr "Vore l'arxiu del log"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:145
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:139
 msgid "Delete alls bells"
 msgstr "Elimina totes les alarmes"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:156
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:150
 msgid "Disable holiday control"
 msgstr "Desactiva el control de festius"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:156
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:150
 msgid "Enable holiday control"
 msgstr "Activa el control de festius"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:167
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:162
 msgid "New bell"
 msgstr "Nova alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:176
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:208
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:230
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:171
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:203
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:225
 msgid "Bell List"
 msgstr "Llista d'alarmes"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:179
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:174
 msgid ""
 "All bells will be deleted.\n"
 "Do yo want to continue?"
@@ -374,7 +413,7 @@ msgstr ""
 "Totes les alarmes seran eliminades.\n"
 " Voleu continuar?"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:181
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:176
 msgid ""
 "The bell will be deleted.\n"
 "Do yo want to continue?"
@@ -382,7 +421,7 @@ msgstr ""
 "L'alarma serà eliminada.\n"
 "Voleu continuar?"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:209
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:204
 msgid ""
 "Alarms have been detected with random selection of sound files from a "
 "folder.\n"
@@ -398,7 +437,7 @@ msgstr ""
 "les alarmes que\n"
 "la utilitzen es desactivaran"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:231
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:226
 msgid ""
 "New bells configuration will be loaded and replace the existing "
 "configuration.\n"
@@ -408,134 +447,134 @@ msgstr ""
 "ha. \n"
 "Voleu continuar?"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:278
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:273
 msgid "Backup has errors. Unabled to load it"
 msgstr "La còpia de seguretat conté errors. No és possible carregar-lo"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:281
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:276
 msgid "Unable to generate backup"
 msgstr "No és possible generar la còpia de seguretat"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:284
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:279
 msgid "Unabled to edit the Bell due to problems with cron sync"
 msgstr ""
 "No es pot editar l'alarma a causa de problemes amb la sincronització amb el "
 "cron"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:287
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:282
 msgid "Unabled to create the Bell due to problems with cron sync"
 msgstr ""
 "No es pot crear l'alarma a causa de problemes amb la sincronització amb el "
 "cron"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:290
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:285
 msgid "Unabled to delete the Bell due to problems with cron sync"
 msgstr ""
 "No es pot eliminar l'alarma a causa de problemes amb la sincronització amb "
 "el cron"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:293
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:288
 msgid "Unabled to activate the Bell due to problems with cron sync"
 msgstr ""
 "No es pot activar l'alarma a causa de problemes amb la sincronització amb el "
 "cron"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:296
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:291
 msgid "Unabled to deactivate the Bell due to problems with cron sync"
 msgstr ""
 "No es pot desactivar l'alarma a causa de problemes amb la sincronització amb "
 "el cron"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:299
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:294
 msgid "Unabled to copy image and/or sound file to work directory"
 msgstr "No es pot copiar el fitxer d'imatge i/o so en el directori de treball"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:302
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:297
 msgid "Detected alarms with errors"
 msgstr "S'han detectat alarmes amb errors"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:305
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:300
 msgid "Unabled to apply changes due to problems with cron sync"
 msgstr ""
 "No s'han pogut aplicar els canvis a causa de problemes amb la sincronització "
 "amb el cron"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:308
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:303
 #: bell-scheduler/python3-bellscheduler/rsrc/LoadWaiting.qml:64
 msgid "Unabled to load bell list due to problems with cron sync"
 msgstr ""
 "No s'ha pogut carregar la llista d'alarmes a causa de problemes amb la "
 "sincronització amb el cron"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:311
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:306
 msgid "It is not possible to activate all bells"
 msgstr "No és possible activar totes les alarmes"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:314
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:309
 msgid "It is not possible to deactivate all bells"
 msgstr "No és possible desactivar totes les alarmes"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:317
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:312
 msgid "It is not possible to remove all bells"
 msgstr "No és possible eliminar totes les alarmes"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:320
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:315
 msgid "Backup loaded successfully"
 msgstr "La còpia de seguretat s'ha carregat correctament"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:323
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:318
 msgid "Backup generated successfully"
 msgstr "La còpia de seguretat s'ha creat correctament"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:326
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:321
 msgid "Bell deleted successfully"
 msgstr "L'alarma s'ha eliminat correctament"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:329
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:324
 msgid "Bell edited successfully"
 msgstr "L'alarma s'ha editat correctament"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:332
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:327
 msgid "Bell activated successfully"
 msgstr "L'alarma s'ha activat correctament"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:335
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:330
 msgid "Bell deactivated successfully"
 msgstr "L'alarma s'ha desactivat correctament"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:338
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:333
 msgid "Bell created successfully"
 msgstr "L'alarma s'ha creat correctament"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:341
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:336
 msgid "Holiday control deactivated successfully"
 msgstr "El control de festius s'ha desactivat correctament"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:344
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:339
 msgid "Holiday control activated successfully"
 msgstr "El control de festius s'ha activat correctament"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:347
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:342
 msgid "The bells have been activated successfully"
 msgstr "S'han activat les alarmes correctament"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:350
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:345
 msgid "The bells have been deactivated successfully"
 msgstr "S'han desactivat les alarmes correctament"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:353
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:348
 msgid "The bells have been removed successfully"
 msgstr "S'han eliminat les alarmes correctament"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:356
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:351
 msgid "Bells already activated. Nothing to do"
 msgstr "Les alarmes ja estan activades. Res a fer"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:359
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:354
 msgid "Bells already deactivated. Nothing to do"
 msgstr "Les alarmes ja estan desactivades. Res a fer"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:362
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsManager.qml:357
 msgid "Bells alreday removed. Nothing to do"
 msgstr "Les alarmes ja estan eliminades. Res a fer"
 
@@ -617,6 +656,10 @@ msgstr "S'està activant el control de festius. Espereu un moment..."
 msgid "Loading holiday list. Wait a moment..."
 msgstr "S'està carregant la llista de festius. Espereu un moment..."
 
+#: bell-scheduler/python3-bellscheduler/rsrc/CustomPopUp.qml:101
+msgid "Duplicating bell info. Wait a moment..."
+msgstr "S'està duplicant l'alarma. Espereu un moment..."
+
 #: bell-scheduler/python3-bellscheduler/rsrc/ImageSelector.qml:31
 msgid "Edit image for bell"
 msgstr "Edita la imatge per l'alarma"
@@ -654,6 +697,10 @@ msgid "Edit bell"
 msgstr "Edita l'alarma"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:224
+msgid "Duplicate bell"
+msgstr "Duplica l'alarma"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:236
 msgid "Delete the bell"
 msgstr "Elimina l'alarma"
 
@@ -664,6 +711,10 @@ msgstr "S'està carregant. Espereu un moment..."
 #: bell-scheduler/python3-bellscheduler/rsrc/LoadWaiting.qml:61
 msgid "Unabled to read bells configuration file"
 msgstr "No es pot llegir el fitxer de configuració de les alarmes"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/LoadWaiting.qml:67
+msgid "Unabled to create a bell with selected file"
+msgstr "No és possible crear l'alarma amb el fitxer seleccionat"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/MainOptions.qml:37
 msgid "Holiday manager"
@@ -748,19 +799,3 @@ msgstr "Cal que indiqueu les dues dates de l'interval"
 #: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:228
 msgid "Last date in range must be major than init date"
 msgstr "L'última data de l'interval ha de ser posterior a la data inicial"
-
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:32
-msgid "Click to filter bells by status"
-msgstr "Feu clic per a filtrar les alarmes per estat"
-
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:42
-msgid "Show activated bells "
-msgstr "Mostra les alarmes activades"
-
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:55
-msgid "Show disabled bells"
-msgstr "Mostra les alarmes desactivades"
-
-#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:67
-msgid "Remove filter"
-msgstr "Elimina el filtre"

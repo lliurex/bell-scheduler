@@ -44,6 +44,7 @@ class BellManager(object):
 	BELLS_ALREADY_ACTIVATED=53
 	BELLS_ALREADY_DEACTIVATED=54
 	BELLS_ALREADY_REMOVED=55
+	BELL_DUPLICATE=56
 
 	def __init__(self):
 
@@ -290,9 +291,10 @@ class BellManager(object):
 
 	#def _getDayToSearch
 
-	def loadBellConfig(self,bellToLoad):
+	def loadBellConfig(self,bellToLoad,duplicateBell):
 
-		self.bellToLoad=bellToLoad[0]
+		if not duplicateBell:
+			self.bellToLoad=bellToLoad[0]
 		self.currentBellConfig=self.bellsConfig[bellToLoad[0]]
 		self.bellCron=[self.currentBellConfig["hour"],self.currentBellConfig["minute"]]
 		self.bellDays=[self.currentBellConfig["weekdays"]["0"],self.currentBellConfig["weekdays"]["1"],self.currentBellConfig["weekdays"]["2"],self.currentBellConfig["weekdays"]["3"],self.currentBellConfig["weekdays"]["4"]]
@@ -944,6 +946,64 @@ class BellManager(object):
 
 		return result
 
-	#def checkChangeStatusBellsOption	
+	#def checkChangeStatusBellsOption
+
+	def checkDuplicateBellCron(self,data):
+
+		duplicateWeekDays=False
+		duplicateValidity=False
+		today=datetime.today()
+
+		currentTimer=[data["hour"],data["minute"]]
+		currentWeekDays=[data["weekdays"]["0"],data["weekdays"]["1"],data["weekdays"]["2"],data["weekdays"]["3"],data["weekdays"]["4"]]
+		currentValidity=[data["validity"]["active"],data["validity"]["value"]]
+		currentDays=self.getDaysInRange(currentValidity[1])
+
+		for item in self.bellsConfig:
+			if item!=self.bellToLoad:
+				tmpTimer=[self.bellsConfig[item]["hour"],self.bellsConfig[item]["minute"]]
+				if tmpTimer==currentTimer:
+					duplicateWeekDays=False
+					tmpWeekDays=[self.bellsConfig[item]["weekdays"]["0"],self.bellsConfig[item]["weekdays"]["1"],self.bellsConfig[item]["weekdays"]["2"],self.bellsConfig[item]["weekdays"]["3"],self.bellsConfig[item]["weekdays"]["4"]]
+					for i in range(len(currentWeekDays)):
+						if currentWeekDays[i]:
+							if tmpWeekDays[i]:
+								duplicateWeekDays=True
+								break
+					if duplicateWeekDays:
+						tmpValidity=[self.bellsConfig[item]["validity"]["active"],self.bellsConfig[item]["validity"]["value"]]
+						tmpDays=self.getDaysInRange(tmpValidity[1])
+						if currentValidity==tmpValidity:
+							duplicateValidity=True
+						else:
+							if not currentValidity[0] and not tmpValidity[0]:
+								duplicateValidity=True
+							else:
+								if len(currentDays)>0:
+									if len(tmpDays)>0:
+										for day in currentDays:
+											if day in tmpDays:
+												duplicateValidity=True
+												break
+									else:
+										for day in currentDays:
+											if today < datetime.strptime(day,'%d/%m/%Y'):
+												duplicateValidity=True
+												break
+								else:
+									if len(tmpDays)>0:
+										for day in tmpDays:
+											if today < datetime.strptime(day,'%d/%m/%Y'):
+												duplicateValidity=True
+												break
+									else:
+										duplicateValidity=True
+
+						if duplicateValidity:
+							return {"result":False,"code":BellManager.BELL_DUPLICATE,"data":""}
+		
+		return {"result":True,"code":"","data":""}
+
+	#def checkDuplicateBellCron	
 
 #class BellManager 		

@@ -8,14 +8,22 @@ Rectangle{
     color:"transparent"
 
     Text{ 
-        text:i18nd("bell-scheduler","Edit Bell")
+        text:{
+            switch(bellStackBridge.actionType){
+                case "add":
+                    i18nd("bell-scheduler","New Bell")
+                    break;
+                case "edit":
+                    i18nd("bell-scheduler","Edit Bell")
+                    break;
+                case "duplicate":
+                    i18nd("bell-scheduler","New Bell (duplicate)")
+                    break;
+            }
+        }
         font.pointSize: 16
     }
-    Pane{
-        id:formPane
-        anchors.fill:parent
-        focusPolicy:Qt.StrongFocus
-    }
+    
     GridLayout{
         id:generalLayout
         rows:4
@@ -204,7 +212,6 @@ Rectangle{
                             }
                             onExited: {
                                 container.border.color="#ffffff"
-                                formPane.focus=true
                             }
                              onClicked:{
                                 imageSelector.open()
@@ -480,6 +487,32 @@ Rectangle{
            }
 
         }
+
+   }
+
+   ChangesDialog{
+        id:bellDuplicateDialog
+        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
+        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell")
+        dialogMsg:i18nd("bell-scheduler","There are already alarms programmed for the same time and days.\nDo you wish to continue?")
+        dialogVisible:bellStackBridge.showBellDuplicateDialog
+        dialogWidth:500
+        btnAcceptVisible:false
+        btnAcceptText:""
+        btnDiscardText:i18nd("bell-scheduler","Yes")
+        btnDiscardIcon:"dialog-ok.svg"
+        btnCancelText:i18nd("bell-scheduler","No")
+        btnCancelIcon:"dialog-cancel.svg"
+        Connections{
+           target:bellDuplicateDialog
+           function onDiscardDialogClicked(){
+                bellStackBridge.manageDuplicateDialog(true)         
+           }
+           function onRejectDialogClicked(){
+                bellStackBridge.manageDuplicateDialog(false)      
+           }
+
+        }      
 
    }
 

@@ -12,6 +12,7 @@ from . import ImagesModel
 
 NEW_BELL_CONFIG=1
 LOAD_BELL_CONFIG=2
+DUPLICATE_BELL_CONFIG=17
 CHECK_DATA=3
 SAVE_DATA=4
 
@@ -22,6 +23,7 @@ class LoadBell(QThread):
 		QThread.__init__(self)
 		self.newBell=args[0]
 		self.bellInfo=args[1]
+		self.duplicateBell=args[2]
 
 	#def __init__
 
@@ -30,7 +32,7 @@ class LoadBell(QThread):
 		time.sleep(0.5)
 		ret=Bridge.bellManager.initValues()
 		if not self.newBell:
-			ret=Bridge.bellManager.loadBellConfig(self.bellInfo)
+			ret=Bridge.bellManager.loadBellConfig(self.bellInfo,self.duplicateBell)
 
 	#def run
 
@@ -42,15 +44,18 @@ class CheckData(QThread):
 
 		QThread.__init__(self)
 		self.dataToCheck=args[0]
-		self.ret={}
+		self.retData={}
+		self.retDuplicate={}
 
 	#def __init__
 
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellManager.checkData(self.dataToCheck)
-
+		self.retData=Bridge.bellManager.checkData(self.dataToCheck)
+		if self.retData:
+			self.retDuplicate=Bridge.bellManager.checkDuplicateBellCron(self.dataToCheck)
+		
 	#def run
 
 #class CheckData
@@ -99,6 +104,8 @@ class Bridge(QObject):
 		self._showBellFormMessage=[False,"","Ok"]
 		self._showChangesInBellDialog=False
 		self._changesInBell=False
+		self._actionType="add"
+		self._showBellDuplicateDialog=False
 
 	#def _init__
 
@@ -326,6 +333,34 @@ class Bridge(QObject):
 
 	#def _setShowBellFormMessage
 
+	def _getActionType(self):
+
+		return self._actionType
+
+	#def _getActionType
+
+	def _setActionType(self,actionType):
+
+		if self._actionType!=actionType:
+			self._actionType=actionType
+			self.on_actionType.emit()
+
+	#def _setActionType
+
+	def _getShowBellDuplicateDialog(self):
+
+		return self._showBellDuplicateDialog
+
+	#def _getShowBellDuplicateDialog
+
+	def _setShowBellDuplicateDialog(self,showBellDuplicateDialog):
+
+		if self._showBellDuplicateDialog!=showBellDuplicateDialog:
+			self._showBellDuplicateDialog=showBellDuplicateDialog
+			self.on_showBellDuplicateDialog.emit()
+
+	#def _setShowBellDuplicateDialog
+
 	def _getImagesModel(self):
 
 		return self._imagesModel
@@ -343,11 +378,15 @@ class Bridge(QObject):
 	#def updateImagesModel
 
 	@Slot()
-	def addNewBell(self):
+	def addNewBell(self,soundFile=None):
 
-		self.core.mainStack.closePopUp=[False,NEW_BELL_CONFIG]
-		self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
-		self.newBell=LoadBell(True,"")
+		self.fileFromMenu=soundFile
+		duplicateBell=False
+		actionType="add"
+		if self.fileFromMenu==None:
+			self.core.mainStack.closePopUp=[False,NEW_BELL_CONFIG]
+			self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
+		self.newBell=LoadBell(True,"",duplicateBell)
 		self.newBell.start()
 		self.newBell.finished.connect(self._addNewBellRet)
 
@@ -357,7 +396,14 @@ class Bridge(QObject):
 
 		self.currentBellConfig=copy.deepcopy(Bridge.bellManager.currentBellConfig)
 		self._initializeVars()
-		self.core.mainStack.closePopUp=[True,""]
+		if self.fileFromMenu==None:
+			self.core.mainStack.closePopUp=[True,""]
+		else:
+			tmpSound=[]
+			tmpSound.append("file")
+			tmpSound.append(sys.argv[2])
+			tmpSound.append(True)
+			self.updateSoundValues(tmpSound)
 		self.core.mainStack.currentStack=2
 		self.bellCurrentOption=1
 
@@ -401,7 +447,9 @@ class Bridge(QObject):
 
 		self.core.mainStack.closePopUp=[False,LOAD_BELL_CONFIG]
 		self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
-		self.editBell=LoadBell(False,bellToLoad)
+		duplicateBell=False
+		self.actionType="edit"
+		self.editBell=LoadBell(False,bellToLoad,duplicateBell)
 		self.editBell.start()
 		self.editBell.finished.connect(self._loadBellRet)
 
@@ -416,6 +464,29 @@ class Bridge(QObject):
 		self.bellCurrentOption=1
 
 	#def _loadBellRet
+
+	@Slot('QVariantList')
+	def duplicateBell(self,bellToDuplicate):
+
+		self.core.mainStack.closePopUp=[False,DUPLICATE_BELL_CONFIG]
+		self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
+		self.actionType="duplicate"
+		duplicateBell=True
+		self.cloneBell=LoadBell(False,bellToDuplicate,duplicateBell)
+		self.cloneBell.start()
+		self.cloneBell.finished.connect(self._duplicateBellRet)
+
+	#def duplicateBell
+
+	def _duplicateBellRet(self):
+
+		self.currentBellConfig=copy.deepcopy(Bridge.bellManager.currentBellConfig)
+		self._initializeVars()
+		self.core.mainStack.closePopUp=[True,""]
+		self.core.mainStack.currentStack=2
+		self.bellCurrentOption=1
+
+	#def _duplicateBellRet
 
 	@Slot('QVariantList')
 	def updateClockValues(self,values):
@@ -576,6 +647,7 @@ class Bridge(QObject):
 			tmpSound.append(False)
 		else:
 			tmpSound.append(True)
+
 		tmpSound.append(values[2])
 	
 		if tmpSound!=self.bellSound:
@@ -652,17 +724,36 @@ class Bridge(QObject):
 
 	def _checkDataRet(self):
 
-		if self.checkData.ret["result"]:
-			self.core.mainStack.closePopUp=[False,SAVE_DATA]
-			self.saveData=SaveData(self.currentBellConfig)
-			self.saveData.start()
-			self.saveData.finished.connect(self._saveDataRet)
-
+		if self.checkData.retData["result"]:
+			if self.checkData.retDuplicate["result"]:
+				self.saveDataChanges()
+			else:
+				self.core.mainStack.closePopUp=[True,""]
+				self.showBellDuplicateDialog=True
 		else:
 			self.core.mainStack.closePopUp=[True,""]
-			self.showBellFormMessage=[True,self.checkData.ret["code"],"Error"]
+			self.showBellFormMessage=[True,self.checkData.retData["code"],"Error"]
 
 	#def _checkDataRet
+
+	@Slot(bool)
+
+	def manageDuplicateDialog(self,response):
+
+		self.showBellDuplicateDialog=False
+		if response:
+			self.saveDataChanges()
+
+	#def manageDuplicateDialog
+
+	def saveDataChanges(self):
+
+		self.core.mainStack.closePopUp=[False,SAVE_DATA]
+		self.saveData=SaveData(self.currentBellConfig)
+		self.saveData.start()
+		self.saveData.finished.connect(self._saveDataRet)
+
+	#def saveData
 
 	def _saveDataRet(self):
 
@@ -746,6 +837,12 @@ class Bridge(QObject):
 
 	on_changesInBell=Signal()
 	changesInBell=Property(bool,_getChangesInBell,_setChangesInBell,notify=on_changesInBell)
+
+	on_actionType=Signal()
+	actionType=Property(str,_getActionType,_setActionType,notify=on_actionType)
+
+	on_showBellDuplicateDialog=Signal()
+	showBellDuplicateDialog=Property(bool,_getShowBellDuplicateDialog,_setShowBellDuplicateDialog,notify=on_showBellDuplicateDialog)
 
 	imagesModel=Property(QObject,_getImagesModel,constant=True)
 

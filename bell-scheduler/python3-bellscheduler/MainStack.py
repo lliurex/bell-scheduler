@@ -8,6 +8,7 @@ import copy
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+CREATE_BELL_FROM_MENU_ERROR=-38
 LOADING_HOLIDAY_LIST=16
 
 class GatherInfo(QThread):
@@ -82,9 +83,15 @@ class Bridge(QObject):
 				self.core.bellsOptionsStack.loadConfig()
 				self.core.bellStack.updateImagesModel()
 				self._systemLocale=Bridge.bellManager.systemLocale
-				if Bridge.bellManager.loadError:
-					self.core.bellsOptionsStack.showMainMessage=[True,Bridge.bellManager.BELLS_WITH_ERRORS,"Error"]
-				self.currentStack=1
+				if len(sys.argv)<3:
+					if Bridge.bellManager.loadError:
+						self.core.bellsOptionsStack.showMainMessage=[True,Bridge.bellManager.BELLS_WITH_ERRORS,"Error"]
+					self.currentStack=1
+				else:
+					if os.path.exists(sys.argv[2]):
+						self.core.bellStack.addNewBell(sys.argv[2])
+					else:
+						self.showLoadErrorMessage=[True,CREATE_BELL_FROM_MENU_ERROR]
 			else:
 				self.showLoadErrorMessage=[True,self.gatherInfo.readConf['code']]
 		else:

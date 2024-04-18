@@ -220,6 +220,18 @@ Components.ListItem{
                         onClicked:bellStackBridge.loadBell([bellId,isImgError,isSoundError])
                     }
                     MenuItem{
+                        icon.name:"xml-node-duplicate.svg"
+                        text:i18nd("bell-scheduler","Duplicate bell")
+                        enabled:{
+                            if ((isSoundError) || (isImgError)) {
+                                false
+                            }else{
+                                true
+                            }
+                        }
+                        onClicked:bellStackBridge.duplicateBell([bellId,isImgError,isSoundError])
+                    }
+                    MenuItem{
                         icon.name:"delete.svg"
                         text:i18nd("bell-scheduler","Delete the bell")
                         onClicked:bellsOptionsStackBridge.removeBell([false,bellId])

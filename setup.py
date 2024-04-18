@@ -49,7 +49,7 @@ if __name__ == '__main__':
 		package_data = {'bellscheduler':['rsrc/*']},
 		data_files = [('bin',['bell-scheduler/BellSchedulerPlayer']),('sbin',['bell-scheduler/bell-scheduler']),
 				  ('sbin',['bell-scheduler/bell-scheduler-gui']),
-			      ('share/bell-scheduler/banners',listdir),
+			      ('share/bell-scheduler/banners',listdir),('share/kio/servicemenus',['bell-scheduler/data-files/create_bell_with_file.desktop'])
 			      ] + polist ,
 		classifiers=[
 			'Development Status :: 4 - Beta',
