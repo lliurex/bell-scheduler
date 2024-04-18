@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-17 12:40+0200\n"
-"PO-Revision-Date: 2024-04-17 12:43+0200\n"
+"POT-Creation-Date: 2024-04-18 11:00+0200\n"
+"PO-Revision-Date: 2024-04-18 11:05+0200\n"
 "Last-Translator: Angels <gimenez_angcam@gva.es>\n"
 "Language-Team: Valencian <http://weblate.lliurex.net/projects/bell-scheduler/"
 "bell-scheduler/ca@valencia/>\n"
@@ -21,77 +21,77 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Poedit 3.0.1\n"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:255
+#: bell-scheduler/python3-bellscheduler/BellManager.py:256
 msgid "ERROR: File or directory not available"
 msgstr "ERROR: el fitxer o la carpeta no estan disponibles"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:260
+#: bell-scheduler/python3-bellscheduler/BellManager.py:261
 msgid "ERROR: Current option for sound not supported"
 msgstr "ERROR: L'opció actual de so no està suportada"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:269
+#: bell-scheduler/python3-bellscheduler/BellManager.py:270
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:172
 msgid "Monday"
 msgstr "Dilluns"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:270
+#: bell-scheduler/python3-bellscheduler/BellManager.py:271
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:82
 msgid "M"
 msgstr "Dl."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:273
+#: bell-scheduler/python3-bellscheduler/BellManager.py:274
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:184
 msgid "Tuesday"
 msgstr "Dimarts"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:274
+#: bell-scheduler/python3-bellscheduler/BellManager.py:275
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:89
 msgid "T"
 msgstr "Dt."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:275
+#: bell-scheduler/python3-bellscheduler/BellManager.py:276
 msgid "Tue"
 msgstr "Dt."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:277
+#: bell-scheduler/python3-bellscheduler/BellManager.py:278
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:195
 msgid "Wednesday"
 msgstr "Dimecres"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:278
+#: bell-scheduler/python3-bellscheduler/BellManager.py:279
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:96
 msgid "W"
 msgstr "Dc."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:279
+#: bell-scheduler/python3-bellscheduler/BellManager.py:280
 msgid "Wed"
 msgstr "Dc."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:281
+#: bell-scheduler/python3-bellscheduler/BellManager.py:282
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:207
 msgid "Thursday"
 msgstr "Dijous"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:282
+#: bell-scheduler/python3-bellscheduler/BellManager.py:283
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:103
 msgid "R"
 msgstr "Dj."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:283
+#: bell-scheduler/python3-bellscheduler/BellManager.py:284
 msgid "Thu"
 msgstr "Dj."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:285
+#: bell-scheduler/python3-bellscheduler/BellManager.py:286
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:218
 msgid "Friday"
 msgstr "Divendres"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:286
+#: bell-scheduler/python3-bellscheduler/BellManager.py:287
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:110
 msgid "F"
 msgstr "Dv."
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:287
+#: bell-scheduler/python3-bellscheduler/BellManager.py:288
 msgid "Fri"
 msgstr "Dv."
 
@@ -230,6 +230,7 @@ msgstr "Cancel·la"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:440
 #: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:470
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:496
 #: bell-scheduler/python3-bellscheduler/rsrc/BellOptions.qml:40
 msgid "Bell"
 msgstr "Alarma"
@@ -240,7 +241,7 @@ msgid ""
 "Do you want save the changes or discard them?"
 msgstr ""
 "Hi ha canvis pendents de guardar.\n"
-"Desitja guardar els canvis o descartar-los?"
+"Voleu guardar els canvis o descartar-los?"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:446
 msgid "Discard"
@@ -261,39 +262,55 @@ msgstr ""
 msgid "Accept"
 msgstr "Acepta"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:500
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:497
+msgid ""
+"There are already alarms programmed for the same time and days.\n"
+"Do you wish to continue?"
+msgstr ""
+"Ja hi ha alarmes programades per a la mateixa hora i dies.\n"
+"Voleu continuar?"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:502
+msgid "Yes"
+msgstr "Si"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:504
+msgid "No"
+msgstr "No"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:526
 msgid "<specify the file/url for the sound>"
 msgstr "<especifica el fitxer/URL per al so>"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:514
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:540
 msgid "You must indicate a name for the alarm"
 msgstr "Indiqueu un nom per a l'alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:517
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:543
 msgid "You must indicate sound file"
 msgstr "Indiqueu un fitxer de so"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:520
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:546
 msgid "You must indicate a image file"
 msgstr "Indiqueu un fitxer d'imatge"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:523
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:549
 msgid "You must indicate a directory"
 msgstr "Indiqueu un directori"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:526
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:552
 msgid "The sound file is not reproducible"
 msgstr "El fitxer de so indicats no es poden reproduir"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:529
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:555
 msgid "The specified folder does not contain playable files"
 msgstr "La carpeta especificada no conté fitxers reproduïbles"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:532
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:558
 msgid "Unabled to validated the data"
 msgstr "No és possible validar les dades"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:535
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:561
 msgid "Days outside the established validity period have been selected"
 msgstr "S'han seleccionat dies fora del període de vigència establit"
 

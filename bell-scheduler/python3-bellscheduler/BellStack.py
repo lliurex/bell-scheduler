@@ -44,15 +44,18 @@ class CheckData(QThread):
 
 		QThread.__init__(self)
 		self.dataToCheck=args[0]
-		self.ret={}
+		self.retData={}
+		self.retDuplicate={}
 
 	#def __init__
 
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellManager.checkData(self.dataToCheck)
-
+		self.retData=Bridge.bellManager.checkData(self.dataToCheck)
+		if self.retData:
+			self.retDuplicate=Bridge.bellManager.checkDuplicateBellCron(self.dataToCheck)
+		
 	#def run
 
 #class CheckData
@@ -102,6 +105,7 @@ class Bridge(QObject):
 		self._showChangesInBellDialog=False
 		self._changesInBell=False
 		self._actionType="add"
+		self._showBellDuplicateDialog=False
 
 	#def _init__
 
@@ -342,6 +346,20 @@ class Bridge(QObject):
 			self.on_actionType.emit()
 
 	#def _setActionType
+
+	def _getShowBellDuplicateDialog(self):
+
+		return self._showBellDuplicateDialog
+
+	#def _getShowBellDuplicateDialog
+
+	def _setShowBellDuplicateDialog(self,showBellDuplicateDialog):
+
+		if self._showBellDuplicateDialog!=showBellDuplicateDialog:
+			self._showBellDuplicateDialog=showBellDuplicateDialog
+			self.on_showBellDuplicateDialog.emit()
+
+	#def _setShowBellDuplicateDialog
 
 	def _getImagesModel(self):
 
@@ -706,17 +724,36 @@ class Bridge(QObject):
 
 	def _checkDataRet(self):
 
-		if self.checkData.ret["result"]:
-			self.core.mainStack.closePopUp=[False,SAVE_DATA]
-			self.saveData=SaveData(self.currentBellConfig)
-			self.saveData.start()
-			self.saveData.finished.connect(self._saveDataRet)
-
+		if self.checkData.retData["result"]:
+			if self.checkData.retDuplicate["result"]:
+				self.saveDataChanges()
+			else:
+				self.core.mainStack.closePopUp=[True,""]
+				self.showBellDuplicateDialog=True
 		else:
 			self.core.mainStack.closePopUp=[True,""]
-			self.showBellFormMessage=[True,self.checkData.ret["code"],"Error"]
+			self.showBellFormMessage=[True,self.checkData.retData["code"],"Error"]
 
 	#def _checkDataRet
+
+	@Slot(bool)
+
+	def manageDuplicateDialog(self,response):
+
+		self.showBellDuplicateDialog=False
+		if response:
+			self.saveDataChanges()
+
+	#def manageDuplicateDialog
+
+	def saveDataChanges(self):
+
+		self.core.mainStack.closePopUp=[False,SAVE_DATA]
+		self.saveData=SaveData(self.currentBellConfig)
+		self.saveData.start()
+		self.saveData.finished.connect(self._saveDataRet)
+
+	#def saveData
 
 	def _saveDataRet(self):
 
@@ -803,6 +840,9 @@ class Bridge(QObject):
 
 	on_actionType=Signal()
 	actionType=Property(str,_getActionType,_setActionType,notify=on_actionType)
+
+	on_showBellDuplicateDialog=Signal()
+	showBellDuplicateDialog=Property(bool,_getShowBellDuplicateDialog,_setShowBellDuplicateDialog,notify=on_showBellDuplicateDialog)
 
 	imagesModel=Property(QObject,_getImagesModel,constant=True)
 

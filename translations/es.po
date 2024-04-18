@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-17 12:40+0200\n"
-"PO-Revision-Date: 2024-04-17 12:41+0200\n"
+"POT-Creation-Date: 2024-04-18 11:00+0200\n"
+"PO-Revision-Date: 2024-04-18 11:02+0200\n"
 "Last-Translator: Weblate Admin <fernandezdeybarra_jua@gva.es>\n"
 "Language-Team: Spanish <http://weblate.lliurex.net/projects/bell-scheduler/"
 "bell-scheduler/es/>\n"
@@ -20,77 +20,77 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Poedit 3.0.1\n"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:255
+#: bell-scheduler/python3-bellscheduler/BellManager.py:256
 msgid "ERROR: File or directory not available"
 msgstr "ERROR: El archivo o directorio no está disponible"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:260
+#: bell-scheduler/python3-bellscheduler/BellManager.py:261
 msgid "ERROR: Current option for sound not supported"
 msgstr "ERROR: La opción actual para el sonido no está soportada"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:269
+#: bell-scheduler/python3-bellscheduler/BellManager.py:270
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:172
 msgid "Monday"
 msgstr "Lunes"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:270
+#: bell-scheduler/python3-bellscheduler/BellManager.py:271
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:82
 msgid "M"
 msgstr "L"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:273
+#: bell-scheduler/python3-bellscheduler/BellManager.py:274
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:184
 msgid "Tuesday"
 msgstr "Martes"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:274
+#: bell-scheduler/python3-bellscheduler/BellManager.py:275
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:89
 msgid "T"
 msgstr "M"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:275
+#: bell-scheduler/python3-bellscheduler/BellManager.py:276
 msgid "Tue"
 msgstr "Ma"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:277
+#: bell-scheduler/python3-bellscheduler/BellManager.py:278
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:195
 msgid "Wednesday"
 msgstr "Miércoles"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:278
+#: bell-scheduler/python3-bellscheduler/BellManager.py:279
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:96
 msgid "W"
 msgstr "X"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:279
+#: bell-scheduler/python3-bellscheduler/BellManager.py:280
 msgid "Wed"
 msgstr "Mie"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:281
+#: bell-scheduler/python3-bellscheduler/BellManager.py:282
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:207
 msgid "Thursday"
 msgstr "Jueves"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:282
+#: bell-scheduler/python3-bellscheduler/BellManager.py:283
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:103
 msgid "R"
 msgstr "J"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:283
+#: bell-scheduler/python3-bellscheduler/BellManager.py:284
 msgid "Thu"
 msgstr "Ju"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:285
+#: bell-scheduler/python3-bellscheduler/BellManager.py:286
 #: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:218
 msgid "Friday"
 msgstr "Viernes"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:286
+#: bell-scheduler/python3-bellscheduler/BellManager.py:287
 #: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:110
 msgid "F"
 msgstr "V"
 
-#: bell-scheduler/python3-bellscheduler/BellManager.py:287
+#: bell-scheduler/python3-bellscheduler/BellManager.py:288
 msgid "Fri"
 msgstr "Vie"
 
@@ -230,6 +230,7 @@ msgstr "Cancelar"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:440
 #: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:470
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:496
 #: bell-scheduler/python3-bellscheduler/rsrc/BellOptions.qml:40
 msgid "Bell"
 msgstr "Alarma"
@@ -261,39 +262,55 @@ msgstr ""
 msgid "Accept"
 msgstr "Aceptar"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:500
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:497
+msgid ""
+"There are already alarms programmed for the same time and days.\n"
+"Do you wish to continue?"
+msgstr ""
+"Ya hay alarmas programadas para la misma hora y dias.\n"
+"¿Desea continuar?"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:502
+msgid "Yes"
+msgstr "Si"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:504
+msgid "No"
+msgstr "No"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:526
 msgid "<specify the file/url for the sound>"
 msgstr "<especificar el archivo/url para el sonido>"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:514
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:540
 msgid "You must indicate a name for the alarm"
 msgstr "Debe indicar un nombre para la alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:517
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:543
 msgid "You must indicate sound file"
 msgstr "Debe indicar un archivo para el sonido"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:520
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:546
 msgid "You must indicate a image file"
 msgstr "Debe indicar un archivo para la imagen"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:523
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:549
 msgid "You must indicate a directory"
 msgstr "Debe indicar una carpeta"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:526
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:552
 msgid "The sound file is not reproducible"
 msgstr "El archivo de sonido indicada no es reproducible"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:529
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:555
 msgid "The specified folder does not contain playable files"
 msgstr "La carpeta especificada no contiene archivos reproducibles"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:532
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:558
 msgid "Unabled to validated the data"
 msgstr "No es posible validar los datos"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:535
+#: bell-scheduler/python3-bellscheduler/rsrc/BellForm.qml:561
 msgid "Days outside the established validity period have been selected"
 msgstr "Se han seleccionado dias fuera del periodo de vigencia establecido"
 

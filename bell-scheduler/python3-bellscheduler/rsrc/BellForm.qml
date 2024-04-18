@@ -490,6 +490,32 @@ Rectangle{
 
    }
 
+   ChangesDialog{
+        id:bellDuplicateDialog
+        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
+        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell")
+        dialogMsg:i18nd("bell-scheduler","There are already alarms programmed for the same time and days.\nDo you wish to continue?")
+        dialogVisible:bellStackBridge.showBellDuplicateDialog
+        dialogWidth:500
+        btnAcceptVisible:false
+        btnAcceptText:""
+        btnDiscardText:i18nd("bell-scheduler","Yes")
+        btnDiscardIcon:"dialog-ok.svg"
+        btnCancelText:i18nd("bell-scheduler","No")
+        btnCancelIcon:"dialog-cancel.svg"
+        Connections{
+           target:bellDuplicateDialog
+           function onDiscardDialogClicked(){
+                bellStackBridge.manageDuplicateDialog(true)         
+           }
+           function onRejectDialogClicked(){
+                bellStackBridge.manageDuplicateDialog(false)      
+           }
+
+        }      
+
+   }
+
    function getSoundPath(){
 
         var tmpPath=""
