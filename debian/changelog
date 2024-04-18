@@ -1,3 +1,10 @@
+bell-scheduler (0.15.4) jammy; urgency=medium
+
+  * Added option to duplicate bell
+  * Added option to create bell by left clicking on audio/video file 
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 18 Apr 2024 11:41:57 +0200
+
 bell-scheduler (0.15.3) jammy; urgency=medium
 
   * Show message if imported backup has bells with errors
