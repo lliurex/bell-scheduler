@@ -28,16 +28,9 @@ Components.ListItem{
     onContainsMouseChanged: {
 
         if (!optionsMenu.activeFocus){
-            listBells.forceActiveFocus()
             if (containsMouse) {
-                let i=0
-                do{
-                    listBells.currentIndex=index-i
-                    i+=1
-
-                }while (!listBellItem.ListView.isCurrentItem)
-
-            } else {
+                listBells.currentIndex=filterModel.visibleElements.indexOf(index)
+            }else {
                 listBells.currentIndex = -1
             }
         }
