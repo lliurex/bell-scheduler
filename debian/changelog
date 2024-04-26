@@ -1,3 +1,9 @@
+bell-scheduler (0.15.5) jammy; urgency=medium
+
+  * Fixed scroll when filter/search is applied
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 26 Apr 2024 12:45:21 +0200
+
 bell-scheduler (0.15.4) jammy; urgency=medium
 
   * Added option to duplicate bell
