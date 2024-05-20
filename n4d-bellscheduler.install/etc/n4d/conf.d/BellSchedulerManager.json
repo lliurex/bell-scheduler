@@ -85,6 +85,19 @@
                 "admins",
                 "teachers"
             ]
+        },
+        "read_audio_device_config":{
+            "allowed_groups":[
+                "*",
+                "anonymous"
+            ]
+        },
+        "write_audio_device_config":{
+            "allowed_groups":[
+                "sudo",
+                "admins",
+                "teachers"
+            ]
         }
     }
 }

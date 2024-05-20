@@ -27,6 +27,7 @@ class BellSchedulerManager:
 	CHANGE_ACTIVATION_STATUS_ERROR=-48
 	CHANGE_DEACTIVATION_STATUS_ERROR=-49
 	REMOVE_ALL_BELLS_ERROR=-52
+	AUDIO_DEVICE_CONFIG_CHANGED_ERROR=-53
 
 	READ_CONF_FILE_SUCCESSFUL=0
 	BELL_EXPORT_SUCCESSFUL=11
@@ -36,6 +37,8 @@ class BellSchedulerManager:
 	CHANGE_ACTIVATION_STATUS_SUCCESSFUL=46
 	CHANGE_DEACTIVATION_STATUS_SUCCESSFUL=47
 	REMOVE_ALL_BELLS_SUCCESSFUL=51
+	AUDIO_DEVICE_CONFIG_READED=52
+	AUDIO_DEVICE_CONFIG_CHANGED_SUCCCESS=53
 
 	def __init__(self):
 
@@ -51,7 +54,7 @@ class BellSchedulerManager:
 		self.indicator_token_path=os.path.join(self.indicator_token_folder,"bellscheduler-token")
 		self.cmd_create_token='bellscheduler-token-management create_token '
 		self.cmd_remove_token='bellscheduler-token-management remove_token '
-		self.cron_file="/etc/cron.d/localBellScheduler"
+		self.audiodevice_config_file=self.config_dir+"audio_device"
 
 		self._get_n4d_key()
 		
@@ -715,7 +718,37 @@ class BellSchedulerManager:
 
 		return n4d.responses.build_successful_call_response(result_remove)
 
-	#def remove_all_bells	
+	#def remove_all_bells
+
+	def read_audio_device_config(self):
+
+		audio_device_config=""
+		if os.path.exists(self.audiodevice_config_file):
+			with open(self.audiodevice_config_file,'r') as fd:
+				audio_device_config=fd.readline()
+
+		result={"status":True,msg:"Current audio device config readed","code":BellSchedulerManager.AUDIO_DEVICE_CONFIG_READED,"data":audio_device_config}
+
+		return n4d.responses.build_successful_call_response(result)
+
+	#def read_audio_device_config
+
+	def write_audio_device_config(self,data):
+
+		try:
+			if data!="":
+				with open(self.audiodevice_config_file,'w') as fd:
+					fd.write("%sdata\n"%(data))
+			else:
+				if os.path.exists(self.audiodevice_config_file):
+					os.remove(self.audiodevice_config_file)
+		
+			result={"status":True,msg:"Audio device changed successfully","code":BellSchedulerManager.AUDIO_DEVICE_CONFIG_CHANGED_SUCCCESS,"data":""}
+
+		except Exception as e:
+			result={"status":False,msg:"Audio device changed error","code":BellSchedulerManager.AUDIO_DEVICE_CONFIG_CHANGED_ERROR,"data":str(e)}
+
+		return n4d.responses.build_successful_call_response(result)
 
 #def BellSchedulerManager
 	

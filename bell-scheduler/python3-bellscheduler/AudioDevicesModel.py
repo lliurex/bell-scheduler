@@ -5,7 +5,7 @@ from PySide2 import QtCore, QtGui, QtQml
 
 class AudioDevicesModel(QtCore.QAbstractListModel):
 
-	IdAuidoDeviceRole= QtCore.Qt.UserRole + 1000
+	IdAudioDeviceRole= QtCore.Qt.UserRole + 1000
 	NameAudioDeviceRole=QtCore.Qt.UserRole + 1001
 
 	def __init__(self,parent=None):

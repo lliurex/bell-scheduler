@@ -103,7 +103,7 @@ Rectangle{
             id:actionsBtn
             visible:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"configure.svg"
+            icon.name:"run-build.svg"
             text:i18nd("bell-scheduler","Global Options")
             Layout.preferredHeight:40
             enabled:bellsOptionsStackBridge.enableGlobalOptions
@@ -143,16 +143,38 @@ Rectangle{
            
         }
         Button {
-            id:holidadyBtn
+            id:settingsBtn
             visible:true
             display:AbstractButton.TextBesideIcon
-            icon.name:bellsOptionsStackBridge.isHolidayControlActive?"kt-stop.svg":"kt-start.svg"
-            text:bellsOptionsStackBridge.isHolidayControlActive?i18nd("bell-scheduler","Disable holiday control"):i18nd("bell-scheduler","Enable holiday control")
-            enabled:bellsOptionsStackBridge.enableHolidayControl
+            icon.name:"configure.svg"
+            text:i18nd("bell-scheduler","Settings")
+            enabled:bellsOptionsStackBridge.enableGlobalOptions
             Layout.preferredHeight:40
-            Layout.rightMargin:rectLayout.width-(backupBtn.width+actionsBtn.width+holidadyBtn.width+newBtn.width+40)
-            onClicked:bellsOptionsStackBridge.manageHolidayControl()
-       
+            Layout.rightMargin:rectLayout.width-(backupBtn.width+actionsBtn.width+settingsBtn.width+newBtn.width+40)
+            onClicked:settingsMenu.open()
+
+            Menu{
+                id:settingsMenu
+                y: -settingsBtn.height*1.7
+                x: settingsBtn.width/2
+
+                MenuItem{
+                    icon.name:bellsOptionsStackBridge.isHolidayControlActive?"kt-stop.svg":"kt-start.svg"
+                    text:bellsOptionsStackBridge.isHolidayControlActive?i18nd("bell-scheduler","Disable holiday control"):i18nd("bell-scheduler","Enable holiday control")
+                    enabled:bellsOptionsStackBridge.enableHolidayControl
+                    onClicked:bellsOptionsStackBridge.manageHolidayControl()
+                 }
+                 MenuItem{
+                    icon.name:"audio-card.svg"
+                    text:i18nd("bell-scheduler","Audio output configuration")
+                    enabled:bellsOptionsStackBridge.enableAudioDeviceConfiguration
+                    onClicked:audioDevicesSelector.open()
+                    AudioDevicesSelector{
+                        id:audioDevicesSelector
+                    }
+
+                 }
+            }
         }
         Button {
             id:newBtn

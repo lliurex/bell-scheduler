@@ -61,6 +61,8 @@ class BellManager(object):
 		self.soundsPath="/usr/local/share/bellScheduler/sounds"
 		self.imagesConfigData=[]
 		self.audioDevicesData=[]
+		self.currentAudioDevice=""
+		self.enableAudioDeviceConfiguration=False
 		self._getSystemLocale()
 		self._getImagesConfig()
 		self._getAudioDevices()
@@ -112,7 +114,8 @@ class BellManager(object):
 		self.bellsConfigData=[]
 		if result["status"]:
 			self._getBellsConfig()
-	
+		self._getAudioDeviceConfig()
+		
 		return result
 
 	#def readConf	
@@ -1008,6 +1011,29 @@ class BellManager(object):
 
 	#def checkDuplicateBellCron	
 
+	def _getAudioDeviceConfig(self):
+
+		result=self.client.BellSchedulerManager.read_audio_device_config(action)
+		self._debug("Read audio device config: ",result)
+		return result
+		if result["data"]!="":
+			for i in range(len(self.audioDevicesData)):
+				if self.audioDevicesData[i]["code"]==result:
+					self.currentAudioDevice=i
+				break
+
+	#def _getAudioDeviceConfig
+
+	def writeAudioDeviceConfig(self,data):
+
+		result=self.client.BellSchedulerManager.write_audio_device_config(action)
+
+		self._debug("Write audio device config:",result)
+
+		return result
+
+	#def writeAudioDeviceConfig
+	
 	def _getAudioDevices(self):
 
 		self.audioDevicesData=[]
@@ -1019,7 +1045,6 @@ class BellManager(object):
 		for item in poutput:
 			if ":" in item and "," in item:
 				tmpItem=item.split(", ")
-				print(tmpItem)
 				if len(tmpItem)==2:
 					tmpDevice={}
 					tmpCard=tmpItem[0].split(":")
@@ -1032,6 +1057,12 @@ class BellManager(object):
 					tmpDevice["nameAudioDevice"]="%s-%s"%(tmpCardName,tmpDispName)
 					self.audioDevicesData.append(tmpDevice)
 
+		if len(self.audioDevicesData)>1:
+			tmpDevice={}
+			tmpDevice["idAudioDevice"]="default"
+			tmpDevice["nameAudioDevice"]=_("Default audio ouput")
+			self.audioDevicesData.insert(0,tmpDevice)
+			self.enableAudioDeviceConfiguration=True
 
 	#def _getAudioDevices()
 	
