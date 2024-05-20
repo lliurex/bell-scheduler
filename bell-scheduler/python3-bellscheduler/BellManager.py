@@ -60,8 +60,10 @@ class BellManager(object):
 		self.imagesPath="/usr/local/share/bellScheduler/images"
 		self.soundsPath="/usr/local/share/bellScheduler/sounds"
 		self.imagesConfigData=[]
+		self.audioDevicesData=[]
 		self._getSystemLocale()
 		self._getImagesConfig()
+		self._getAudioDevices()
 		self.initValues()
 
 	#def __init__	
@@ -1006,4 +1008,31 @@ class BellManager(object):
 
 	#def checkDuplicateBellCron	
 
+	def _getAudioDevices(self):
+
+		self.audioDevicesData=[]
+
+		cmd="aplay -l"
+		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
+		poutput=p.communicate()[0].decode().split("\n")
+
+		for item in poutput:
+			if ":" in item and "," in item:
+				tmpItem=item.split(", ")
+				print(tmpItem)
+				if len(tmpItem)==2:
+					tmpDevice={}
+					tmpCard=tmpItem[0].split(":")
+					tmpCardCode=tmpCard[0].split(" ")[1]
+					tmpCardName=tmpCard[1]
+					tmpDisp=tmpItem[1].split(":")
+					tmpDispCode=tmpDisp[0].split(" ")[1]
+					tmpDispName=tmpDisp[1]
+					tmpDevice["idAudioDevice"]="hw:%s,%s"%(tmpCardCode,tmpDispCode)
+					tmpDevice["nameAudioDevice"]="%s-%s"%(tmpCardName,tmpDispName)
+					self.audioDevicesData.append(tmpDevice)
+
+
+	#def _getAudioDevices()
+	
 #class BellManager 		
