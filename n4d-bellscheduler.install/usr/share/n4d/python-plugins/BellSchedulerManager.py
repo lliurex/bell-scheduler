@@ -38,7 +38,7 @@ class BellSchedulerManager:
 	CHANGE_DEACTIVATION_STATUS_SUCCESSFUL=47
 	REMOVE_ALL_BELLS_SUCCESSFUL=51
 	AUDIO_DEVICE_CONFIG_READED=52
-	AUDIO_DEVICE_CONFIG_CHANGED_SUCCCESS=53
+	AUDIO_DEVICE_CONFIG_CHANGED_SUCCCESS=58
 
 	def __init__(self):
 
@@ -725,9 +725,9 @@ class BellSchedulerManager:
 		audio_device_config=""
 		if os.path.exists(self.audiodevice_config_file):
 			with open(self.audiodevice_config_file,'r') as fd:
-				audio_device_config=fd.readline()
+				audio_device_config=fd.readline().strip()
 
-		result={"status":True,msg:"Current audio device config readed","code":BellSchedulerManager.AUDIO_DEVICE_CONFIG_READED,"data":audio_device_config}
+		result={"status":True,"msg":"Current audio device config readed","code":BellSchedulerManager.AUDIO_DEVICE_CONFIG_READED,"data":audio_device_config}
 
 		return n4d.responses.build_successful_call_response(result)
 
@@ -738,15 +738,15 @@ class BellSchedulerManager:
 		try:
 			if data!="":
 				with open(self.audiodevice_config_file,'w') as fd:
-					fd.write("%sdata\n"%(data))
+					fd.write("%s\n"%(data))
 			else:
 				if os.path.exists(self.audiodevice_config_file):
 					os.remove(self.audiodevice_config_file)
 		
-			result={"status":True,msg:"Audio device changed successfully","code":BellSchedulerManager.AUDIO_DEVICE_CONFIG_CHANGED_SUCCCESS,"data":""}
+			result={"status":True,"msg":"Audio device changed successfully","code":BellSchedulerManager.AUDIO_DEVICE_CONFIG_CHANGED_SUCCCESS,"data":""}
 
 		except Exception as e:
-			result={"status":False,msg:"Audio device changed error","code":BellSchedulerManager.AUDIO_DEVICE_CONFIG_CHANGED_ERROR,"data":str(e)}
+			result={"status":False,"msg":"Audio device changed error","code":BellSchedulerManager.AUDIO_DEVICE_CONFIG_CHANGED_ERROR,"data":str(e)}
 
 		return n4d.responses.build_successful_call_response(result)
 

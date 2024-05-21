@@ -45,6 +45,7 @@ class BellManager(object):
 	BELLS_ALREADY_DEACTIVATED=54
 	BELLS_ALREADY_REMOVED=55
 	BELL_DUPLICATE=56
+	AUDIO_DEVICE_ALREADY_CONFIGURATED=57
 
 	def __init__(self):
 
@@ -61,8 +62,9 @@ class BellManager(object):
 		self.soundsPath="/usr/local/share/bellScheduler/sounds"
 		self.imagesConfigData=[]
 		self.audioDevicesData=[]
-		self.currentAudioDevice=""
+		self.currentAudioDevice=0
 		self.enableAudioDeviceConfiguration=False
+		self.isAudioDeviceConfigurated=False
 		self._getSystemLocale()
 		self._getImagesConfig()
 		self._getAudioDevices()
@@ -1013,23 +1015,37 @@ class BellManager(object):
 
 	def _getAudioDeviceConfig(self):
 
-		result=self.client.BellSchedulerManager.read_audio_device_config(action)
+		result=self.client.BellSchedulerManager.read_audio_device_config()
 		self._debug("Read audio device config: ",result)
-		return result
 		if result["data"]!="":
+			self.isAudioDeviceConfigurated=True
 			for i in range(len(self.audioDevicesData)):
-				if self.audioDevicesData[i]["code"]==result:
+				if self.audioDevicesData[i]["value"]==result["data"]:
 					self.currentAudioDevice=i
-				break
+					break
+		else:
+			self.isAudioDeviceConfigurated=False
+			self.currentAudioDevice=0
 
 	#def _getAudioDeviceConfig
 
-	def writeAudioDeviceConfig(self,data):
+	def changeAudioDeviceControl(self,status,audioDevice):
 
-		result=self.client.BellSchedulerManager.write_audio_device_config(action)
+		newAudioConfigurationStatus=status
+		newAudioDeviceValue=audioDevice
+		if newAudioConfigurationStatus!=self.isAudioDeviceConfigurated or newAudioDeviceValue!=self.currentAudioDevice:
+			if not newAudioConfigurationStatus:
+				newValue=""
+			else:
+				newValue=self.audioDevicesData[newAudioDeviceValue]["value"]
 
-		self._debug("Write audio device config:",result)
+			result=self.client.BellSchedulerManager.write_audio_device_config(newValue)
+			self._debug("Write audio device config:",result)
+		else:
+			result={"status":True,"code":BellManager.AUDIO_DEVICE_ALREADY_CONFIGURATED,"data":""}
 
+		self._getAudioDeviceConfig()
+		
 		return result
 
 	#def writeAudioDeviceConfig
@@ -1053,14 +1069,14 @@ class BellManager(object):
 					tmpDisp=tmpItem[1].split(":")
 					tmpDispCode=tmpDisp[0].split(" ")[1]
 					tmpDispName=tmpDisp[1]
-					tmpDevice["idAudioDevice"]="hw:%s,%s"%(tmpCardCode,tmpDispCode)
-					tmpDevice["nameAudioDevice"]="%s-%s"%(tmpCardName,tmpDispName)
+					tmpDevice["name"]="%s-%s"%(tmpCardName,tmpDispName)
+					tmpDevice["value"]="hw:%s,%s"%(tmpCardCode,tmpDispCode)
 					self.audioDevicesData.append(tmpDevice)
 
 		if len(self.audioDevicesData)>1:
 			tmpDevice={}
-			tmpDevice["idAudioDevice"]="default"
-			tmpDevice["nameAudioDevice"]=_("Default audio ouput")
+			tmpDevice["name"]=_("Default audio ouput")
+			tmpDevice["value"]="default"
 			self.audioDevicesData.insert(0,tmpDevice)
 			self.enableAudioDeviceConfiguration=True
 

@@ -154,26 +154,26 @@ Rectangle{
             onClicked:settingsMenu.open()
 
             Menu{
-                id:settingsMenu
-                y: -settingsBtn.height*1.7
-                x: settingsBtn.width/2
+               id:settingsMenu
+               y: -settingsBtn.height*1.7
+               x: settingsBtn.width/2
 
-                MenuItem{
+               MenuItem{
                     icon.name:bellsOptionsStackBridge.isHolidayControlActive?"kt-stop.svg":"kt-start.svg"
                     text:bellsOptionsStackBridge.isHolidayControlActive?i18nd("bell-scheduler","Disable holiday control"):i18nd("bell-scheduler","Enable holiday control")
                     enabled:bellsOptionsStackBridge.enableHolidayControl
                     onClicked:bellsOptionsStackBridge.manageHolidayControl()
-                 }
-                 MenuItem{
+                }
+                MenuItem{
                     icon.name:"audio-card.svg"
                     text:i18nd("bell-scheduler","Audio output configuration")
                     enabled:bellsOptionsStackBridge.enableAudioDeviceConfiguration
                     onClicked:audioDevicesSelector.open()
-                    AudioDevicesSelector{
-                        id:audioDevicesSelector
-                    }
-
-                 }
+                }
+            }    
+            
+            AudioDevicesSelector{
+                id:audioDevicesSelector
             }
         }
         Button {
@@ -333,6 +333,9 @@ Rectangle{
             case -52:
                 var msg=i18nd("bell-scheduler","It is not possible to remove all bells")
                 break;
+            case -53:
+                var msg=i18nd("bell-scheduler","It is not possible to changed audio output settings")
+                break;
             case 10:
                 var msg=i18nd("bell-scheduler","Backup loaded successfully")
                 break;
@@ -377,6 +380,12 @@ Rectangle{
                 break;
             case 55:
                 var msg=i18nd("bell-scheduler","Bells alreday removed. Nothing to do")
+                break;
+            case 57:
+                var msg=i18nd("bell-scheduler","Audio device ouput already configurated. Nothing to do")
+                break;
+            case 58:
+                var msg=i18nd("bell-scheduler","Audio device output settings have been changed successfully")
                 break;
             default:
                 var msg=""
