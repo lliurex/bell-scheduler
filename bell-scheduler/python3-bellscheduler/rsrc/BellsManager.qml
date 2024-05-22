@@ -334,7 +334,7 @@ Rectangle{
                 var msg=i18nd("bell-scheduler","It is not possible to remove all bells")
                 break;
             case -53:
-                var msg=i18nd("bell-scheduler","It is not possible to changed audio output settings")
+                var msg=i18nd("bell-scheduler","It is not possible to changed audio output")
                 break;
             case 10:
                 var msg=i18nd("bell-scheduler","Backup loaded successfully")
@@ -382,10 +382,10 @@ Rectangle{
                 var msg=i18nd("bell-scheduler","Bells alreday removed. Nothing to do")
                 break;
             case 57:
-                var msg=i18nd("bell-scheduler","Audio device ouput already configurated. Nothing to do")
+                var msg=i18nd("bell-scheduler","Audio ouput already configurated. Nothing to do")
                 break;
             case 58:
-                var msg=i18nd("bell-scheduler","Audio device output settings have been changed successfully")
+                var msg=i18nd("bell-scheduler","Audio output have been changed successfully")
                 break;
             default:
                 var msg=""
