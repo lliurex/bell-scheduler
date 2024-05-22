@@ -1075,7 +1075,7 @@ class BellManager(object):
 
 		if len(self.audioDevicesData)>1:
 			tmpDevice={}
-			tmpDevice["name"]=_("Default audio ouput")
+			tmpDevice["name"]=_("Default audio output")
 			tmpDevice["value"]="default"
 			self.audioDevicesData.insert(0,tmpDevice)
 			self.enableAudioDeviceConfiguration=True
