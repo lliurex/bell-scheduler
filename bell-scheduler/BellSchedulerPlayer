@@ -53,13 +53,15 @@ class BellSchedulerPlayer:
 
 			if len(pError)>1:
 				if self.audioDeviceCommand!="" and self.deviceId!="default":
-					oldCommand='AUDIODEV="%s"'%self.deviceId
-					newCommand='AUDIODEV="default"'
-					cmd=cmd.replace(oldCommand,newCommand)
-					pc=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-					pError=pc.communicate()[1].decode().split("\n")
-					if len(pError)>1:
-						pError.pop()
+					exitCode=pc.returncode
+					if exitCode !=-15:
+						oldCommand='AUDIODEV="%s"'%self.deviceId
+						newCommand='AUDIODEV="default"'
+						cmd=cmd.replace(oldCommand,newCommand)
+						pc=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+						pError=pc.communicate()[1].decode().split("\n")
+						if len(pError)>1:
+							pError.pop()
 				else:
 					pError.pop()
 			
