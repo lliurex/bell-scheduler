@@ -86,7 +86,7 @@ Rectangle {
                 focus:true
                 width:100
                 visible:true
-                enabled:true
+                enabled:listBells.count==0?false:true
                 placeholderText:i18nd("bell-scheduler","Search...")
                 onTextChanged:{
                     filterModel.update()
