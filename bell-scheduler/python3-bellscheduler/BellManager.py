@@ -364,7 +364,6 @@ class BellManager(object):
 	
 	def _saveConf(self,info,last_change,action):
 
-		self.bellsConfig=info
 		change=str(last_change)
 				
 		result=self.client.BellSchedulerManager.save_changes(info,change,action)
