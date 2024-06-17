@@ -21,6 +21,7 @@ IMPORT_BELLS_CONFIG=12
 RECOVERY_BELLS_CONFIG=13
 DISABLE_HOLIDAY_CONTROL=14
 ENABLE_HOLIDAY_CONTROL=15
+CONFIGURATING_AUDIO_DEVICE=18
 
 class ChangeBellStatus(QThread):
 
@@ -139,6 +140,23 @@ class ChangeHolidayControl(QThread):
 
 #class ChangeHolidayControl
 
+class ChangeAudioDeviceControl(QThread):
+
+	def __init__(self,*args):
+
+		QThread.__init__(self)
+		self.audioDeviceConfigurated=args[0]
+		self.audioDeviceValue=args[1]
+
+	def run(self):
+
+		time.sleep(0.5)
+		self.ret=Bridge.bellManager.changeAudioDeviceControl(self.audioDeviceConfigurated,self.audioDeviceValue)
+	
+	#def run
+
+#class ChangeAudioDeviceControl		
+
 class Bridge(QObject):
 
 	def __init__(self):
@@ -154,6 +172,10 @@ class Bridge(QObject):
 		self._showExportBellsWarning=False
 		self._isHolidayControlActive=False
 		self._enableHolidayControl=False
+		self._audioDevicesModel=Bridge.bellManager.audioDevicesData
+		self._enableAudioDeviceConfiguration=False
+		self._currentAudioDevice=""
+		self._isAudioDeviceConfigurated=False
 		self.bellSchedulerPlayerLog="/var/log/BELL-SCHEDULER-PLAYER.log"
 		self._filterStatusValue="all"
 
@@ -163,7 +185,9 @@ class Bridge(QObject):
 
 		self._updateBellsModel()
 		self.showExportBellsWarning=Bridge.bellManager.checkIfAreBellsWithDirectory()
-		self._manageOptions()	
+		self._manageOptions()
+		self._getCurrentAudioConfiguration()	
+	
 	#def loadConfig
 
 	def _manageOptions(self):
@@ -174,6 +198,14 @@ class Bridge(QObject):
 		self.enableHolidayControl=Bridge.bellManager.checkIfAreHolidaysConfigured()
 
 	#def _manageOptions
+
+	def _getCurrentAudioConfiguration(self):
+
+		self.currentAudioDevice=int(Bridge.bellManager.currentAudioDevice)
+		self.isAudioDeviceConfigurated=Bridge.bellManager.isAudioDeviceConfigurated
+		self.enableAudioDeviceConfiguration=Bridge.bellManager.enableAudioDeviceConfiguration
+
+	#def _getCurrentAudioConfiguration
 
 	def _getShowRemoveBellDialog(self):
 
@@ -292,6 +324,54 @@ class Bridge(QObject):
 			self.on_filterStatusValue.emit()
 
 	#def _setFilterStatusValue
+
+	def _getAudioDevicesModel(self):
+
+		return self._audioDevicesModel
+
+	#def _getAudioDevicesModel
+	
+	def _getEnableAudioDeviceConfiguration(self):
+
+		return self._enableAudioDeviceConfiguration
+
+	#def _getEnableAudioDeviceConfiguration
+
+	def _setEnableAudioDeviceConfiguration(self,enableAudioDeviceConfiguration):
+
+		if self._enableAudioDeviceConfiguration!=enableAudioDeviceConfiguration:
+			self._enableAudioDeviceConfiguration=enableAudioDeviceConfiguration
+			self.on_enableAudioDeviceConfiguration.emit()
+
+	#def _setEnableAudioDeviceConfiguration
+
+	def _getCurrentAudioDevice(self):
+
+		return self._currentAudioDevice
+
+	#def _getCurrentAudioDevice
+
+	def _setCurrentAudioDevice(self,currentAudioDevice):
+
+		if self._currentAudioDevice!=currentAudioDevice:
+			self._currentAudioDevice=currentAudioDevice
+			self.on_currentAudioDevice.emit()
+
+	#def _setCurrentAudioDevice
+
+	def _getIsAudioDeviceConfigurated(self):
+
+		return self._isAudioDeviceConfigurated
+
+	#def _getIsAudioDeviceConfigurated
+
+	def _setIsAudioDeviceConfigurated(self,isAudioDeviceConfigurated):
+
+		if self._isAudioDeviceConfigurated!=isAudioDeviceConfigurated:
+			self._isAudioDeviceConfigurated=isAudioDeviceConfigurated
+			self.on_isAudioDeviceConfigurated.emit()
+
+	#def _setIsAudioDeviceConfigurated
 
 	def _updateBellsModel(self):
 
@@ -525,6 +605,35 @@ class Bridge(QObject):
 		self.isHolidayControlActive=Bridge.bellManager.checkHolidayManagerStatus()
 
 	#def _changeHolidayControlRet
+
+	@Slot('QVariantList')
+	def manageAudioDeviceControl(self,data):
+
+		self.core.mainStack.closeGui=False
+		self.showMainMessage=[False,"","Ok"]
+		isAudioDeviceConfigurated=data[0]
+		currentAudioDevice=data[1]
+		self.core.mainStack.closePopUp=[False,CONFIGURATING_AUDIO_DEVICE]
+		self.changeAudioDeviceControl=ChangeAudioDeviceControl(isAudioDeviceConfigurated,currentAudioDevice)
+		self.changeAudioDeviceControl.start()
+		self.changeAudioDeviceControl.finished.connect(self._changeAudioDeviceControlRet)
+
+	#def manageAudioDeviceControl
+
+	def _changeAudioDeviceControlRet(self):
+
+		self.core.mainStack.closePopUp=[True,""]
+		self.core.mainStack.closeGui=True
+
+		if self.changeAudioDeviceControl.ret["status"]:
+			self.showMainMessage=[True,self.changeAudioDeviceControl.ret["code"],"Ok"]
+		else:
+			self.showMainMessage=[True,self.changeAudioDeviceControl.ret["code"],"Error"]
+
+		self._getCurrentAudioConfiguration()
+
+
+	#def _changeAudioDeviceControlRet
 	
 	on_showMainMessage=Signal()
 	showMainMessage=Property('QVariantList',_getShowMainMessage,_setShowMainMessage, notify=on_showMainMessage)
@@ -547,10 +656,20 @@ class Bridge(QObject):
 	on_enableHolidayControl=Signal()
 	enableHolidayControl=Property(bool,_getEnableHolidayControl,_setEnableHolidayControl,notify=on_enableHolidayControl)
 
+	on_enableAudioDeviceConfiguration=Signal()
+	enableAudioDeviceConfiguration=Property(bool,_getEnableAudioDeviceConfiguration,_setEnableAudioDeviceConfiguration,notify=on_enableAudioDeviceConfiguration)
+
+	on_currentAudioDevice=Signal()
+	currentAudioDevice=Property(int,_getCurrentAudioDevice,_setCurrentAudioDevice,notify=on_currentAudioDevice)
+	
+	on_isAudioDeviceConfigurated=Signal()
+	isAudioDeviceConfigurated=Property(bool,_getIsAudioDeviceConfigurated,_setIsAudioDeviceConfigurated,notify=on_isAudioDeviceConfigurated)
+
 	on_filterStatusValue=Signal()
 	filterStatusValue=Property(str,_getFilterStatusValue,_setFilterStatusValue,notify=on_filterStatusValue)
 
 	bellsModel=Property(QObject,_getBellsModel,constant=True)
+	audioDevicesModel=Property('QVariant',_getAudioDevicesModel,constant=True)
 
 #class Bridge
 

@@ -8,6 +8,7 @@ import sys
 import json
 from datetime import datetime, date,timedelta
 import syslog
+import time
 
 class BellSchedulerPlayer:
 
@@ -18,6 +19,9 @@ class BellSchedulerPlayer:
 		self.configFile=os.path.join(self.configDir,"bell_list")
 		self.tokenFolder="/tmp/.BellScheduler"
 		self.tokenPath=os.path.join(self.tokenFolder,'bellscheduler-token')
+		self.audioDeviceConfigFile=os.path.join(self.configDir,"audio_device")
+		self.audioDeviceCommand=""
+		self.deviceId=""
 		self.playBell()
 
 	#def__init__
@@ -45,11 +49,25 @@ class BellSchedulerPlayer:
 			else:
 				cmd=playCommand
 
+			startTime=time.perf_counter()
 			pc=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 			pError=pc.communicate()[1].decode().split("\n")
-
+			endTime=time.perf_counter()
+			totalTime=endTime-startTime
+			
 			if len(pError)>1:
-				pError.pop()
+				if self.audioDeviceCommand!="" and self.deviceId!="default":
+					exitCode=pc.returncode
+					if exitCode !=-15 and totalTime<5:
+						oldCommand='AUDIODEV="%s"'%self.deviceId
+						newCommand='AUDIODEV="default"'
+						cmd=cmd.replace(oldCommand,newCommand)
+						pc=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+						pError=pc.communicate()[1].decode().split("\n")
+						if len(pError)>1:
+							pError.pop()
+				else:
+					pError.pop()
 			
 			pError=pError[-1]
 			exitCode=pc.returncode
@@ -193,13 +211,15 @@ class BellSchedulerPlayer:
 			soundOption=bellInfo[2]
 			soundPath=bellInfo[3]
 
+			self._getAudioDeviceOutput()
+
 			if duration>0:
 				fadeOut=int(duration)+int(startTime)-2
-				fadeEffects='-af aformat=channel_layouts=mono -af afade=in:st=%s:d=3,afade=out:st=%s:d=2'%(str(startTime),str(fadeOut))
-				cmd=" ffplay -nodisp -autoexit -loglevel error " + "-ss %s -t %s"%(str(startTime),duration)
+				fadeEffects='-af afade=in:st=%s:d=3,afade=out:st=%s:d=2'%(str(startTime),str(fadeOut))
+				cmd="%s ffplay -nodisp -autoexit -loglevel error -ss %s -t %s"%(self.audioDeviceCommand,str(startTime),str(duration))
 			else:
-				fadeEffects='-af aformat=channel_layouts=mono '
-				cmd=" ffplay -nodisp -autoexit -loglevel error -ss %s"%str(startTime)
+				fadeEffects=''
+				cmd="%s ffplay -nodisp -autoexit -loglevel error -ss %s"%(self.audioDeviceCommand,str(startTime))
 
 			if soundOption in ["directory","urlslist"]:
 				soundPath=self._getSoundPath(soundOption,soundPath)
@@ -240,6 +260,23 @@ class BellSchedulerPlayer:
 		return playPath
 
 	#def _getSoundPath
+
+	def _getAudioDeviceOutput(self):
+
+		self.audioDeviceCommand=""
+		self.deviceId=""
+
+		if os.path.exists(self.audioDeviceConfigFile):
+			try:
+				with open(self.audioDeviceConfigFile,'r') as fd:
+					self.deviceId=fd.readline().strip()
+					audioDriver='SDL_AUDIODRIVER="alsa"'
+					audioDevice='AUDIODEV="%s"'%self.deviceId
+					self.audioDeviceCommand="%s %s"%(audioDriver,audioDevice)
+			except:
+				pass
+
+	#def _getAudioDeviceOutput
 
 #class BellSchedulerPlayer
 

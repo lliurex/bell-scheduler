@@ -100,6 +100,9 @@ Popup {
             case 17:
                 var msg=i18nd("bell-scheduler","Duplicating bell info. Wait a moment...")
                 break;
+            case 18:
+                var msg=i18nd("bell-scheduler","Configuring audio output. Wait a moment...")
+                break;
             default:
                 var msg=""
                 break;
