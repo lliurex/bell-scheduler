@@ -122,20 +122,24 @@ class BellSchedulerManager:
 
 	def _get_tasks_from_cron(self):
 
-		cron_tasks=[]
+		cron_tasks={}
+		tmp_tasks={}
 		
 		try:
-			if os.path.exists(self.cron_file):
-				with open(self.cron_file,'r') as fd:
-					content=fd.readlines()
+			tasks=self.core.get_plugin('SchedulerServer').get_local_tasks()
+			if tasks.get("status",None)==0:
 
-				for line in content:
-					if not line.startswith("#"):
-						key=line.strip().split(" ")[-1]
-						cron_tasks.append(key)
+				for item in tasks.get('return',None):
+					if item=="BellScheduler":
+						tmp_tasks=tasks.get('return',None)[item]
 
+				if len(tmp_tasks)>0:
+					for	item in tmp_tasks:
+						key=str(tmp_tasks[item]["BellId"])
+						cron_tasks[key]={}
+						cron_tasks[key]["CronId"]=item
 		except Exception as e:
-			print("BellSchedulerManager:_get_tasks_from_cron.Error: "+str(e))
+			print("BellSchedulerManager-SchedulerServer:_get_tasks_from_cron.Error: "+str(e))
 			pass
 		
 		return cron_tasks
@@ -150,13 +154,14 @@ class BellSchedulerManager:
 		keys_cron=[]
 		try:
 			bells_incron=self._get_tasks_from_cron()
+			keys_cron=bells_incron.keys()
 		except:
 			pass
 		changes=0
 
-		if len(bells_incron)>0:
+		if len(keys_cron)>0:
 			for item in bell_tasks:
-				if item in bells_incron:
+				if item in keys_cron:
 					if bell_tasks[item]["active"]:
 						pass
 					else:
@@ -169,7 +174,7 @@ class BellSchedulerManager:
 					else:
 						pass
 
-			for item in bells_incron:
+			for item in keys_cron:
 				if item not in keys_bells:
 					result=self._delete_from_cron(item)
 					if result.get('status',None)!=0:
@@ -215,7 +220,11 @@ class BellSchedulerManager:
 			if info[last_change]["active"]:
 				turn_on=True
 				tasks_for_cron=self._format_to_cron(info,last_change,action)
-				result=self._add_to_cron(tasks_for_cron)
+				try:
+					result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
+				except Exception as e:
+					print("BellSchedulerManager-SchedulerServer:save_changes.Error: "+str(e))
+					result={"status":-1}	
 			else:
 				result=self._delete_from_cron(last_change)
 		else:
@@ -246,79 +255,34 @@ class BellSchedulerManager:
 		try:
 			cron_tasks=self._get_tasks_from_cron()
 			if len(cron_tasks)>0:
-				if last_change in cron_tasks:
-					return {"status":True, "id":last_change}
+				if last_change in cron_tasks.keys():
+					return {"status":True, "id":cron_tasks[last_change]}
 		except Exception as e:
 			print("BellSchedulerManager:_get_cron_id.Error:"+str(e))
-			return {"status":False,"id":""}
+			return {"status":False,"id":{}}
 		
-		return {"status":False,"id":0}
+		
+		return {"status":False,"id":{"CronId":0}}
 
-	# def _get_cron_id
-
-	def _add_to_cron(self,task):
-
-		try:
-			new_task="%s %s %s %s %s %s %s\n"%(task["minute"],task["hour"],task["validity"]["dom"],task["validity"]["mon"],task["days"]["dow"],task["cmd"],task["id"])
-
-			if os.path.exists(self.cron_file):
-				with open(self.cron_file,'r') as fd:
-					content=fd.readlines()
-
-				match=False
-				new_content=[]
-				for line in content:
-					key=line.strip().split(" ")[-1]
-					if key==task["id"]:
-						line=new_task
-						match=True
-					new_content.append(line)
-				if not match:
-					new_content.append(new_task)
-
-				with open(self.cron_file,'w') as fd:
-					for line in new_content:
-						fd.write(line)
-			else:
-				with open(self.cron_file,'a') as fd:
-					fd.write(new_task)
-			
-			result={"status":0,"msg":""}
-		except Exception as e:
-			print("BellSchedulerManager:_add_to_cron.Error:"+str(e))
-			result={"status":-1,"msg":str(e)}
-
-		return result
-
-	#def _add_to_cron	
+	# def _get_cron_id	
 	
 	def _delete_from_cron(self,last_change):
 
 		id_to_remove=self._get_cron_id(last_change)
-		if id_to_remove["status"]:
-			cron_id=id_to_remove["id"]
-			delete={"status":0,"data":"0","msg":""}
-			try:
-				if os.path.exists(self.cron_file):
-					with open(self.cron_file,'r') as fd:
-						content=fd.readlines()
-				tmpLines=[]
-				for line in content:
-					key=line.strip().split(" ")[-1]
-					if key!=last_change:
-						tmpLines.append(line)
-
-				with open(self.cron_file,'w') as fd:
-					for line in tmpLines:
-						fd.write(line)
-
-			except Exception as e:
-				print("BellSchedulerManager:_delete_from_cron.Error:"+str(e))
-				delete={"status":-1,"data":"0","msg":str(e)}
-				pass
+		if len(id_to_remove["id"])>0:
+			cron_id=id_to_remove["id"]["CronId"]
+			delete={"status":0,"data":"0"}
+			
+			if id_to_remove["status"]:
+				try:
+					delete=self.core.get_plugin('SchedulerServer').remove_task('local','BellScheduler',cron_id,'cmd')
+				except Exception as e:
+					print("BellSchedulerManager-SchedulerServer:_delete_from_cron.Error:"+str(e))
+					delete={"status":-1,"data":"0"}
+					pass
 		
 		else:
-			delete={"status":-1,"data":"0","msg":""}
+			delete={"status":-1,"data":"0"}
 
 		return delete
 
@@ -327,11 +291,21 @@ class BellSchedulerManager:
 	def _format_to_cron(self,info,item,action):
 
 		info_to_cron={}
-		holiday_cmd="/usr/bin/check_holidays.py"
-		bell_cmd="/usr/bin/BellSchedulerPlayer"
 
+		if action=="edit" or action=="active":
+			cron_tasks=self._get_tasks_from_cron()
+			try:
+				key=cron_tasks[item]["CronId"]
+			except:
+				key="0"	
+		else:
+			key="0"
+			
+
+		info_to_cron["BellScheduler"]={}
+		info_to_cron["BellScheduler"][key]={}
+		info_to_cron["BellScheduler"][key]["name"]=info[item]["name"]
 		try:
-			info_to_cron["validity"]={}
 			if info[item]["validity"]["active"]:
 				bell_validity=info[item]["validity"]["value"]
 				if bell_validity!="":
@@ -354,11 +328,11 @@ class BellSchedulerManager:
 							tmpmonth2=tmpmonth2[1:]
 						
 						if tmpmonth1==tmpmonth2:
-							info_to_cron["validity"]["dom"]="%s-%s"%(tmpday1,tmpday2)
-							info_to_cron["validity"]["mon"]="%s"%(tmpmonth1) 
+							info_to_cron["BellScheduler"][key]["dom"]="%s-%s"%(tmpday1,tmpday2)
+							info_to_cron["BellScheduler"][key]["mon"]="%s"%(tmpmonth1) 
 						else:
-							info_to_cron["validity"]["dom"]="*"
-							info_to_cron["validity"]["mon"]="%s-%s"%(tmpmonth1,tmpmonth2) 
+							info_to_cron["BellScheduler"][key]["dom"]="*"
+							info_to_cron["BellScheduler"][key]["mon"]="%s-%s"%(tmpmonth1,tmpmonth2) 
 						
 					else:
 						tmpday=bell_validity.split("/")[0]
@@ -367,20 +341,21 @@ class BellSchedulerManager:
 						tmpmonth=bell_validity.split("/")[1]
 						if tmpmonth.startswith("0"):
 							tmpmonth=tmpmonth[1:]
-						info_to_cron["validity"]["dom"]="%s"%tmpday
-						info_to_cron["validity"]["mon"]="%s"%tmpmonth
+						info_to_cron["BellScheduler"][key]["dom"]="%s"%tmpday
+						info_to_cron["BellScheduler"][key]["mon"]="%s"%tmpmonth
 				else:
-					info_to_cron["validity"]["dom"]="*"
-					info_to_cron["validity"]["mon"]="*" 
+					info_to_cron["BellScheduler"][key]["dom"]="*"
+					info_to_cron["BellScheduler"][key]["mon"]="*" 
 			else:
-				info_to_cron["validity"]["dom"]="*"
-				info_to_cron["validity"]["mon"]="*" 
+				info_to_cron["BellScheduler"][key]["dom"]="*"
+				info_to_cron["BellScheduler"][key]["mon"]="*" 
 		except:
-			info_to_cron["validity"]["dom"]="*"
-			info_to_cron["validity"]["mon"]="*" 
+			info_to_cron["BellScheduler"][key]["dom"]="*"
+			info_to_cron["BellScheduler"][key]["mon"]="*" 
 
-		info_to_cron["hour"]=str(info[item]["hour"])
-		info_to_cron["minute"]=str(info[item]["minute"])
+		info_to_cron["BellScheduler"][key]["h"]=str(info[item]["hour"])
+		info_to_cron["BellScheduler"][key]["m"]=str(info[item]["minute"])
+		info_to_cron["BellScheduler"][key]["protected"]=True
 
 		weekdays=info[item]["weekdays"]
 		days=""
@@ -397,17 +372,31 @@ class BellSchedulerManager:
 
 		if days!="":
 			days=days[:-1]
-			info_to_cron["days"]={}
-			info_to_cron["days"]["dow"]=days
-			info_to_cron["id"]=item				
+
+		
+			info_to_cron["BellScheduler"][key]["dow"]=days
+			info_to_cron["BellScheduler"][key]["BellId"]=item				
+
+			
+			sound_option=info[item]["sound"]["option"]
+			sound_path=info[item]["sound"]["path"]
+			duration=info[item]["play"]["duration"]
+
+			try:
+				start_time=info[item]["play"]["start"]
+			except:
+				start_time=0	
+	
+			cmd="/usr/bin/BellSchedulerPlayer "+item
+			
+			info_to_cron["BellScheduler"][key]["cmd"]=cmd
 
 			if os.path.exists(self.holiday_token):
-				cmd="root %s && %s"%(holiday_cmd,bell_cmd)
+				info_to_cron["BellScheduler"][key]["holidays"]=True
 			else:
-				cmd="root %s"%(bell_cmd)
+				info_to_cron["BellScheduler"][key]["holidays"]=False
+	
 			
-			info_to_cron["cmd"]=cmd
-		
 		return info_to_cron
 
 	#def _format_to_cron
@@ -571,10 +560,16 @@ class BellSchedulerManager:
 			cont_days=0
 			if bell_list[item]["active"]:
 				tasks_for_cron=self._format_to_cron(bell_list,str(item),"active")
-				result=self._add_to_cron(tasks_for_cron)
+				try:
+					result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
+				except Exception as e:
+					print("BellSchedulerManager-SchedulerServer: change_activation_status.Error: "+str(e))
+					result={'status':-1}
+								
 				if result.get('status',None)==-1:
 					errors+=1
 					break
+			
 		if errors==0:
 			result={"status":True,"msg":"Cron file updated to use holiday manager","code":"","data":""}
 		else:
@@ -662,7 +657,12 @@ class BellSchedulerManager:
 							cont_days+=1
 					if cont_days>0:			
 						tasks_for_cron=self._format_to_cron(bell_list,str(item),"active")
-						result=self._add_to_cron(tasks_for_cron)
+						try:
+							result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
+						except Exception as e:
+							print("BellSchedulerManager-SchedulerServer: change_activation_status.Error: "+str(e))
+							result={'status':-1}
+								
 
 						if result.get('status',None)==0:
 							bell_list[item]["active"]=True
