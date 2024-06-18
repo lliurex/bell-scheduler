@@ -1,3 +1,9 @@
+bell-scheduler (0.5) focal; urgency=medium
+
+  * New version in PySide2-QML
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 18 Jun 2024 09:52:09 +0200
+
 bell-scheduler (0.4.57) focal; urgency=medium
 
   * Improved BellSchedulerPlayer log details
