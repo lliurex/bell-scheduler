@@ -3,14 +3,11 @@
 import sys
 
 
-from . import bellmanager
-from . import MainWindow
-from . import BellBox
-from . import EditBox
-from . import settings
-
-import holidaymanager.HolidayBox as HolidayBox
-
+from . import BellManager
+from . import BellStack
+from . import BellsOptionsStack
+from . import MainStack
+import holidaymanager.HolidayStack as HolidayStack
 
 class Core:
 	
@@ -36,28 +33,18 @@ class Core:
 	
 	def init(self):
 
-		self.rsrc_dir= settings.RSRC_DIR + "/"
-		self.ui_path= settings.RSRC_DIR + "/bell-scheduler.ui"
-		self.images_path="/usr/local/share/bellScheduler/images"
-		self.sounds_path="/usr/local/share/bellScheduler/sounds"
-
+	
+		self.bellManager=BellManager.BellManager()
+		self.bellStack=BellStack.Bridge()
+		self.bellsOptionsStack=BellsOptionsStack.Bridge()
+		self.mainStack=MainStack.Bridge()
 		
-		self.bellmanager=bellmanager.BellManager()
-		self.bellBox=BellBox.BellBox()
-		self.editBox=EditBox.EditBox()
-		self.holidayBox=HolidayBox.HolidayBox("BELL SCHEDULER")
-		self.mainWindow=MainWindow.MainWindow()
-				
-			
-		self.mainWindow.load_gui()
-		self.mainWindow.start_gui()
-			
-		
+		self.holidayStack=HolidayStack.Bridge("Bell-Scheduler")
+		self.mainStack.initBridge()
+	
 		
 	#def init
-	
-	
-	
+
 	def dprint(self,msg):
 		
 		if Core.DEBUG:

@@ -1,7 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Name=Bell Scheduler Indicator
-Comment=Bell Scheduler Indicator
-Exec=/usr/bin/bell-scheduler-indicator
-Terminal=false
-Type=Application
