@@ -401,7 +401,7 @@ class Bridge(QObject):
 		else:
 			tmpSound=[]
 			tmpSound.append("file")
-			tmpSound.append(sys.argv[2])
+			tmpSound.append(self.fileFromMenu)
 			tmpSound.append(True)
 			self.updateSoundValues(tmpSound)
 		self.core.mainStack.currentStack=2
