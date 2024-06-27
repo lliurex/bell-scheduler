@@ -88,8 +88,9 @@ class Bridge(QObject):
 						self.core.bellsOptionsStack.showMainMessage=[True,Bridge.bellManager.BELLS_WITH_ERRORS,"Error"]
 					self.currentStack=1
 				else:
-					if os.path.exists(sys.argv[2]):
-						self.core.bellStack.addNewBell(sys.argv[2])
+					tmpFile=sys.argv[2].replace('##U+0020##',' ')
+					if os.path.exists(tmpFile):
+						self.core.bellStack.addNewBell(tmpFile)
 					else:
 						self.showLoadErrorMessage=[True,CREATE_BELL_FROM_MENU_ERROR]
 			else:
