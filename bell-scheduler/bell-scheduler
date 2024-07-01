@@ -99,7 +99,7 @@ class Tunnel(QObject):
 		if len(sys.argv)==1:
 			os.system("/usr/sbin/bell-scheduler-gui %s &"%ticket)
 		elif len(sys.argv)==2:
-			tmpFile=sys.argv[1].replace(' ','##U+0020##')
+			tmpFile='"%s"'%sys.argv[1]
 			os.system("/usr/sbin/bell-scheduler-gui %s %s &"%(ticket,tmpFile))
 		app.quit()
 
