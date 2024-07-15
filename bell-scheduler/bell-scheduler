@@ -93,14 +93,22 @@ class Tunnel(QObject):
 	#def getPackageVersion
 
 	@Slot(str)
+	def on_authenticated(self,passwd):
+		
+		self.passwd=passwd
+	
+	#def on_authenticated
+
+	@Slot(str)
 	def onTicket(self, ticket):
 		
 		ticket=ticket.replace(' ','##U+0020##')
+		passwd="'"+self.passwd+"'"
 		if len(sys.argv)==1:
-			os.system("/usr/sbin/bell-scheduler-gui %s &"%ticket)
+			os.system("/usr/sbin/bell-scheduler-gui %s %s &"%(ticket,passwd))
 		elif len(sys.argv)==2:
 			tmpFile='"%s"'%sys.argv[1]
-			os.system("/usr/sbin/bell-scheduler-gui %s %s &"%(ticket,tmpFile))
+			os.system("/usr/sbin/bell-scheduler-gui %s %s %s &"%(ticket,passwd,tmpFile))
 		app.quit()
 
 	#def onTicket

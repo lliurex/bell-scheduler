@@ -10,7 +10,7 @@ Rectangle {
 
     N4DAgent.Login
     {
-        showAddress:false
+        showAddress:true
         address:"localhost"
         showCancel: false
         inGroups:["sudo","admins","teachers"]
@@ -19,6 +19,9 @@ Rectangle {
         
         onLogged: {
             tunnel.onTicket(ticket);
+        }
+        onAuthenticated: {
+            tunnel.on_authenticated(passwd);
         }
     }
 }

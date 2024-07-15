@@ -98,6 +98,12 @@
                 "admins",
                 "teachers"
             ]
+        },
+        "check_sound_path":{
+             "allowed_groups":[
+                "*",
+                "anonymous"
+            ]
         }
     }
 }

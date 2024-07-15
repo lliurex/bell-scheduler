@@ -61,7 +61,7 @@ class Bridge(QObject):
 		self.moveToStack=""
 		self._closeGui=True
 		self._showLoadErrorMessage=[False,""]
-		Bridge.bellManager.createN4dClient(sys.argv[1])
+		Bridge.bellManager.createN4dClient(sys.argv[1],sys.argv[2])
 
 	#def _init__
 
@@ -83,12 +83,12 @@ class Bridge(QObject):
 				self.core.bellsOptionsStack.loadConfig()
 				self.core.bellStack.updateImagesModel()
 				self._systemLocale=Bridge.bellManager.systemLocale
-				if len(sys.argv)<3:
+				if len(sys.argv)<4:
 					if Bridge.bellManager.loadError:
 						self.core.bellsOptionsStack.showMainMessage=[True,Bridge.bellManager.BELLS_WITH_ERRORS,"Error"]
 					self.currentStack=1
 				else:
-					tmpFile=sys.argv[2]
+					tmpFile=sys.argv[3]
 					if os.path.exists(tmpFile):
 						self.core.bellStack.addNewBell(tmpFile)
 					else:

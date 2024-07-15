@@ -401,7 +401,7 @@ class BellSchedulerManager:
 
 	#def _format_to_cron
 
-	def copy_media_files(self,image,sound):
+	def copy_media_files(self,image,sound,remoteBell,remoteBellIp,credential,defaultPath):
 
 		self._create_dirs()
 		
@@ -416,11 +416,25 @@ class BellSchedulerManager:
 		try:
 			if image!="":
 				if not os.path.exists(image_dest):
-					shutil.copy2(image,image_dest)
+					if remoteBell:
+						tmp_img_dest=os.path.join("/tmp",img_file)
+						ret=self.core.get_plugin('ScpManager').get_file(credential[0],credential[0],credential[1],remoteBellIp,image,tmp_img_dest)
+						if not defaultPath:
+							image_dest=image
+						shutil.copy2(tmp_image_dest,image_dest)
+					else:
+						shutil.copy2(image,image_dest)
 
 			if sound!="":
 				if not os.path.exists(sound_dest):
-					shutil.copy2(sound,sound_dest)
+					if remoteBell:
+						tmp_sound_dest=os.path.join("/tmp",sound_file)
+						ret=self.core.get_plugin('ScpManager').get_file(credential[0],credential[0],credential[1],remoteBellIp,sound,tmp_sound_dest)
+						if not defaultPath:
+							sound_dest=sound
+						shutil.copy2(tmp_sound_dest,sound_dest)
+					else:
+						shutil.copy2(sound,sound_dest)
 
 			result={"status":True,"msg":"Files copied successfully","code":"","data":""}
 		except Exception as e:
@@ -749,6 +763,26 @@ class BellSchedulerManager:
 			result={"status":False,"msg":"Audio device changed error","code":BellSchedulerManager.AUDIO_DEVICE_CONFIG_CHANGED_ERROR,"data":str(e)}
 
 		return n4d.responses.build_successful_call_response(result)
+
+	def check_sound_path(self,path,option):
+
+		error=False
+
+		if os.path.exists(path):
+			if option=="file":
+				file=os.path.basename(path)
+				ret=[error,file]
+			else:
+				ret=[error,path]
+		else:
+			error=True
+			ret=[error,""]
+
+		result={"status":True,"msg":"checkSoundPath","code":"","data":ret}
+
+		return n4d.responses.build_successful_call_response(result)
+
+	#def check_sound_path
 
 #def BellSchedulerManager
 	

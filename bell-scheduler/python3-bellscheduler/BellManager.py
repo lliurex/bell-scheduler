@@ -15,6 +15,7 @@ import n4d.client
 from datetime import datetime, date,timedelta
 import copy
 import gettext
+import psutil
 gettext.textdomain("bell-scheduler")
 _ = gettext.gettext
 
@@ -65,6 +66,8 @@ class BellManager(object):
 		self.currentAudioDevice=0
 		self.enableAudioDeviceConfiguration=False
 		self.isAudioDeviceConfigurated=False
+		self.remoteBell=False
+		self.remoteBellIp=""
 		self._getSystemLocale()
 		self._getImagesConfig()
 		self._getAudioDevices()
@@ -72,11 +75,22 @@ class BellManager(object):
 
 	#def __init__	
 
-	def createN4dClient(self,ticket):
+	def createN4dClient(self,ticket,passwd):
 
 		ticket=ticket.replace('##U+0020##',' ')
 		tk=n4d.client.Ticket(ticket)
 		self.client=n4d.client.Client(ticket=tk)
+
+		if 'localhost' not in ticket:
+			self.remoteBell=True
+			self.credentials.append(ticket.split(' ')[2])
+			self.credentials.append(passwd)
+			self.remoteBellIp=ticket.split(' ')[1].split(":")[1].split("/")[2]
+			self.localClient=n4d.client.Client("https://localhost:9779",self.credentials[0],self.credentials[1])
+			localT=self.localClient.get_ticket()
+			if localT.valid():
+				self.localClient=n4d.client.Client(ticket=localT)
+
 
 	#def createN4dClient
 
@@ -159,9 +173,19 @@ class BellManager(object):
 			if os.path.exists(self.bellsConfig[item]["image"]["path"]):
 				tmp["img"]=self.bellsConfig[item]["image"]["path"]
 			else:
-				imgError=True
-				tmp["img"]=self.imgNoDispPath
-				self.loadError=True
+				if self.remoteBell and self.bellsConfig[item]["image"]["option"]=="custom":
+					tmpImgName=os.path.basename(self.bellsConfig[item]["image"]["path"])
+					tmpPath=os.path.join("/tmp",tmpImgName)
+					try:
+						get_tmpfile=self.localClient.ScpManager.get_file(self.credentials[0],self.credentials[0],self.credentials[1],self.remoteBellIp,self.bellsConfig[item]["image"]["path"],tmpPath)
+						tmp["img"]=tmpPath
+					except:
+						imgError=True
+				else:
+					imgError=True
+				if imgError:
+					tmp["img"]=self.imgNoDispPath
+					self.loadError=True
 
 			tmp["name"]=self.bellsConfig[item]["name"]
 			search+=tmp["name"]
@@ -251,17 +275,27 @@ class BellManager(object):
 		error=False
 		
 		if option!="url" and option!="urlslist":
-			if os.path.exists(path):
-				if option=="file":
-					file=os.path.basename(path)
-					return [error,file]
+			if not self.remoteBell:
+				if os.path.exists(path):
+					if option=="file":
+						file=os.path.basename(path)
+						return [error,file]
+					else:
+						return [error,path]	
 				else:
-					return [error,path]	
+					self.loadError=True
 			else:
-				self.loadError=True
+				ret=self.client.BellSchedulerManager.check_sound_path(path,option)
+				if ret["status"]:
+					return ret["data"]
+				else:
+					self.loadError=True
+	
+			if self.loadError:
 				error=True
 				msg=_("ERROR: File or directory not available")
-				return [error,msg]	
+				return [error,msg]
+
 		else:
 			self.loadError=True
 			error=True
@@ -320,16 +354,32 @@ class BellManager(object):
 		self.bellName=self.currentBellConfig["name"]
 		if self.currentBellConfig["image"]["option"]=="stock":
 			imgIndex=self._getImageIndexFromPath(self.currentBellConfig["image"]["path"])
+			imgPath=self.currentBellConfig["image"]["path"]
 		else:
 			imgIndex=1
-		self.bellImage=[self.currentBellConfig["image"]["option"],imgIndex,self.currentBellConfig["image"]["path"],bellToLoad[1]]
+			if self.remoteBell:
+				imgPath=os.path.join("/tmp",os.path.basename(self.currentBellConfig["image"]["path"]))
+			else:
+				imgPath=self.currentBellConfig["image"]["path"]
+		self.bellImage=[self.currentBellConfig["image"]["option"],imgIndex,imgPath,bellToLoad[1]]
 
 		tmpSoundPath=self.currentBellConfig["sound"]["path"]
 		soundDefaultPath=True
 		if self.currentBellConfig["sound"]["option"]=="file":
-			if self.soundsPath not in tmpSoundPath:
+			if self.soundsPath not in tmpSoundPath and tmpSoundPath!="":
 				soundDefaultPath=False
+			if self.remoteBell:
+				tmpSoundName=os.path.basename(tmpSoundPath)
+				tmpPath=os.path.join("/tmp",tmpSoundName)
+				try:
+					get_tmpfile=self.localClient.ScpManager.get_file(self.credentials[0],self.credentials[0],self.credentials[1],self.remoteBellIp,tmpSoundPath,tmpPath)
+					tmpSoundPath=tmpPath
+					self.currentBellConfig["sound"]["path"]=tmpSoundPath
+				except:
+					pass
+		
 		self.bellSound=[self.currentBellConfig["sound"]["option"],tmpSoundPath,bellToLoad[2],soundDefaultPath]
+
 		self.bellStartIn=self.currentBellConfig["play"]["start"]
 		self.bellDuration=self.currentBellConfig["play"]["duration"]
 		self.bellActive=self.currentBellConfig["active"]
@@ -503,6 +553,7 @@ class BellManager(object):
 		activeBell=False
 		bellsConfig=copy.deepcopy(self.bellsConfig)
 		orderKeys=[]
+		sendFolder=False
 
 		if self.bellToLoad!="":
 			order=self.bellToLoad
@@ -542,6 +593,12 @@ class BellManager(object):
 				origSoundPath=data["sound"]["path"]
 				destSoundPath=os.path.join(self.soundsPath,os.path.basename(origSoundPath))
 				data["sound"]["path"]=destSoundPath
+			else:
+				if self.remoteBell:
+					origSoundPath=data["sound"]["path"]
+		else:
+			sendFolder=True
+			origSoundPath=data["sound"]["path"]
 
 		bellsConfig[order]["sound"]=data["sound"]
 
@@ -556,8 +613,11 @@ class BellManager(object):
 			activeBell=False
 
 		bellsConfig[order]["active"]=activeBell
-		retCopy=self._copyMediaFiles(origImgPath,origSoundPath)
-
+		if not sendFolder:
+			retCopy=self._copyMediaFiles(origImgPath,origSoundPath,data["soundDefaultPath"])
+		else:
+			retCopy=self._sendMediaFolder(origSoundPath)
+			
 		if retCopy["status"]:
 			retSave=self._saveConf(bellsConfig,order,action)
 			if retSave["status"]:
@@ -736,9 +796,13 @@ class BellManager(object):
 
 	#def formatTime	
 
-	def _copyMediaFiles(self,image,sound):
+	def _copyMediaFiles(self,image,sound,defaultPath):
 
-		result=self.client.BellSchedulerManager.copy_media_files(image,sound)
+		localBellIp=""
+		if self.remoteBell:
+			localBellIp=self._getSystemIp()
+		
+		result=self.client.BellSchedulerManager.copy_media_files(image,sound,self.remoteBell,localBellIp,self.credentials,defaultPath)
 		self._debug("Copy Media files: ",result)
 		return result
 
@@ -1080,5 +1144,24 @@ class BellManager(object):
 			self.enableAudioDeviceConfiguration=True
 
 	#def _getAudioDevices()
+
+	def _getSystemIp(self):
+
+		interfaces=psutil.net_if_addrs()
+		for key, val in interfaces.items():
+			if key !='lo' and ":" not in val[0].address:
+				return val[0].address
+
+	#def _getSystemIp
+
+	def _sendMediaFolder(self,origSoundPath):
+
+		destSoundPath="/home/%s"%self.credentials[0]
+		ret={}
+		ret['status']=self.localClient.ScpManager.send_dir(self.credentials[0],self.credentials[1],self.remoteBellIp,origSoundPath,destSoundPath,False)
+
+		return ret
+
+	#def _sendMediaFolder
 	
 #class BellManager 		
