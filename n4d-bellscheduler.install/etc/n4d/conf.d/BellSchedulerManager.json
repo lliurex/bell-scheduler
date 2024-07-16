@@ -104,6 +104,12 @@
                 "*",
                 "anonymous"
             ]
+        },
+        "get_audio_device":{
+             "allowed_groups":[
+                "*",
+                "anonymous"
+            ]
         }
     }
 }

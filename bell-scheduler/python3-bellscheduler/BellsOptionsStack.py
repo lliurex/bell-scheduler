@@ -555,10 +555,17 @@ class Bridge(QObject):
 			self._manageOptions()
 			self.filterStatusValue="all"
 		else:
-			self.core.mainStack.closePopUp=[False,RECOVERY_BELLS_CONFIG]
-			self.recoveryConfig=RecoveryConfig(self.importBackup.ret[1])
-			self.recoveryConfig.start()
-			self.recoveryConfig.finished.connect(self._recoveryConfigRet)		
+			if not self.importBackup.ret[1]:
+				self.core.mainStack.closePopUp=[False,RECOVERY_BELLS_CONFIG]
+				self.recoveryConfig=RecoveryConfig(self.importBackup.ret[1])
+				self.recoveryConfig.start()
+				self.recoveryConfig.finished.connect(self._recoveryConfigRet)
+			else:
+				self.core.mainStack.closePopUp=[True,""]
+				self.core.mainStack.closeGui=True
+				self.showMainMessage=[True,-9,"Error"]
+				self._manageOptions()
+				self.filterStatusValue="all"		
 
 	#def _importBackupRet
 

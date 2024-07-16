@@ -778,11 +778,39 @@ class BellSchedulerManager:
 			error=True
 			ret=[error,""]
 
-		result={"status":True,"msg":"checkSoundPath","code":"","data":ret}
+		result={"status":True,"msg":"check_sound_path","code":"","data":ret}
 
 		return n4d.responses.build_successful_call_response(result)
 
 	#def check_sound_path
+
+	def get_audio_device(self):
+
+		audio_device=[]
+		cmd="aplay -l"
+		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
+		poutput=p.communicate()[0].decode().split("\n")
+
+		for item in poutput:
+			if ":" in item and "," in item:
+				tmpItem=item.split(", ")
+				if len(tmpItem)==2:
+					tmpDevice={}
+					tmpCard=tmpItem[0].split(":")
+					tmpCardCode=tmpCard[0].split(" ")[1]
+					tmpCardName=tmpCard[1]
+					tmpDisp=tmpItem[1].split(":")
+					tmpDispCode=tmpDisp[0].split(" ")[1]
+					tmpDispName=tmpDisp[1]
+					tmpDevice["name"]="%s-%s"%(tmpCardName,tmpDispName)
+					tmpDevice["value"]="hw:%s,%s"%(tmpCardCode,tmpDispCode)
+					audio_device.append(tmpDevice)
+
+		result={"status":True,"msg":"_get_audio_device","code":"","data":audio_device}
+
+		return n4d.responses.build_successful_call_response(result)
+
+	#def get_audio_device
 
 #def BellSchedulerManager
 	

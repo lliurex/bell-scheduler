@@ -824,24 +824,37 @@ class BellManager(object):
 		backup=True
 		resultImport=self._importBellsConfifg(origFile,backup)
 
-		if resultImport['status']:
+		if resultImport[0]['status']:
 			retReadConfig=self.readConf()
 			if retReadConfig["status"]:
-				return [True,resultImport["code"]]
+				return [True,resultImport[0]["code"]]
 			else:
 				return [False,retReadConfig["code"]]
 		else:
-			return [False,resultImport["data"]]
+			return [False,resultImport[0]["data"],resultImport[1]]
 
 	#def importBellBackup
 
 	def _importBellsConfifg(self,origFile,backup):
 		
-		user=os.environ["USER"]
-		result=self.client.BellSchedulerManager.import_bells_conf(origFile,user,backup)
-		self._debug("Import bells config: ",result)	
+		abort=False
+		if self.remoteBell:
+			try:
+				destFile=os.path.join("/tmp",os.path.basename(origFile))
+				self.localClient.ScpManager.send_file(self.credentials[0],self.credentials[1],self.remoteBellIp, origFile,destFile)
+				origFile=destFile
+			except Exception as e:
+				self._debug("Import bells config: ",str(e))
+				abort=True
+				result={}
+				result['status']=False
 		
-		return result
+		if not abort:
+			user=os.environ["USER"]
+			result=self.client.BellSchedulerManager.import_bells_conf(origFile,user,backup)
+			self._debug("Import bells config: ",result)	
+		
+		return [result,abort]
 
 	#def importBellsConfig
 
@@ -1118,24 +1131,9 @@ class BellManager(object):
 
 		self.audioDevicesData=[]
 
-		cmd="aplay -l"
-		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
-		poutput=p.communicate()[0].decode().split("\n")
-
-		for item in poutput:
-			if ":" in item and "," in item:
-				tmpItem=item.split(", ")
-				if len(tmpItem)==2:
-					tmpDevice={}
-					tmpCard=tmpItem[0].split(":")
-					tmpCardCode=tmpCard[0].split(" ")[1]
-					tmpCardName=tmpCard[1]
-					tmpDisp=tmpItem[1].split(":")
-					tmpDispCode=tmpDisp[0].split(" ")[1]
-					tmpDispName=tmpDisp[1]
-					tmpDevice["name"]="%s-%s"%(tmpCardName,tmpDispName)
-					tmpDevice["value"]="hw:%s,%s"%(tmpCardCode,tmpDispCode)
-					self.audioDevicesData.append(tmpDevice)
+		result=self.client.BellSchedulerManager.get_audio_device()
+		
+		self.audioDevicesData.append(result['data'])
 
 		if len(self.audioDevicesData)>1:
 			tmpDevice={}
