@@ -417,8 +417,8 @@ class BellSchedulerManager:
 			if image!="":
 				if not os.path.exists(image_dest):
 					if remoteBell:
-						tmp_img_dest=os.path.join("/tmp",img_file)
-						ret=self.core.get_plugin('ScpManager').get_file(credential[0],credential[0],credential[1],remoteBellIp,image,tmp_img_dest)
+						tmp_image_dest=os.path.join("/tmp",image_file)
+						ret=self.core.get_plugin('ScpManager').get_file(credential[0],credential[0],credential[1],remoteBellIp,image,tmp_image_dest)
 						if not defaultPath:
 							image_dest=image
 						shutil.copy2(tmp_image_dest,image_dest)

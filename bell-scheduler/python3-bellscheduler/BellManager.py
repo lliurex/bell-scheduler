@@ -286,7 +286,7 @@ class BellManager(object):
 					self.loadError=True
 			else:
 				ret=self.client.BellSchedulerManager.check_sound_path(path,option)
-				if ret["status"]:
+				if not ret["data"][0]:
 					return ret["data"]
 				else:
 					self.loadError=True
@@ -613,9 +613,10 @@ class BellManager(object):
 			activeBell=False
 
 		bellsConfig[order]["active"]=activeBell
-		if not sendFolder:
-			retCopy=self._copyMediaFiles(origImgPath,origSoundPath,data["soundDefaultPath"])
-		else:
+
+		retCopy=self._copyMediaFiles(origImgPath,origSoundPath,data["soundDefaultPath"])
+		
+		if sendFolder:
 			retCopy=self._sendMediaFolder(origSoundPath)
 			
 		if retCopy["status"]:
@@ -1158,7 +1159,13 @@ class BellManager(object):
 
 		destSoundPath="/home/%s"%self.credentials[0]
 		ret={}
-		ret['status']=self.localClient.ScpManager.send_dir(self.credentials[0],self.credentials[1],self.remoteBellIp,origSoundPath,destSoundPath,False)
+		
+		try:
+			ret['status']=self.localClient.ScpManager.send_dir(self.credentials[0],self.credentials[1],self.remoteBellIp,origSoundPath,destSoundPath,False)
+		except Exception as e:
+			self._debug("Send media folder",str(e))
+			ret['status']=False
+			ret['code']=-24
 
 		return ret
 
