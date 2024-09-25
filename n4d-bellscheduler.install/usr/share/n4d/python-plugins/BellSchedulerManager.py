@@ -50,6 +50,7 @@ class BellSchedulerManager:
 		self.sounds_folder="/usr/local/share/bellScheduler/sounds"
 		self.media_files_folder="/usr/local/share/bellScheduler/"
 		self.bell_scheduler_player_log="/var/log/BELL-SCHEDULER-PLAYER.log"
+		self.n4d_bell_scheduler_manager_log="/var/log/N4D-BELLSCHEDULER-MANAGER.log"
 	
 		self.indicator_token_folder="/tmp/.BellScheduler"
 		self.indicator_token_path=os.path.join(self.indicator_token_folder,"bellscheduler-token")
@@ -466,6 +467,9 @@ class BellSchedulerManager:
 			if os.path.exists(self.bell_scheduler_player_log):
 				shutil.copy2(self.bell_scheduler_player_log,os.path.join(tmp_export,os.path.basename(self.bell_scheduler_player_log)))
 		
+			if os.path.exists(self.n4d_bell_scheduler_manager_log):
+				shutil.copy2(self.n4d_bell_scheduler_manager_log,os.path.join(tmp_export,os.path.basename(self.n4d_bell_scheduler_manager_log)))
+
 			dest_file=os.path.splitext(dest_file)[0]
 			shutil.make_archive(dest_file, 'zip', tmp_export)
 			if arg!=True:
