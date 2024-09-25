@@ -8,6 +8,7 @@ import tempfile
 import zipfile
 import n4d.server.core as n4dcore
 import n4d.responses
+import syslog
 
 
 class BellSchedulerManager:
@@ -52,7 +53,8 @@ class BellSchedulerManager:
 		self.sounds_folder="/usr/local/share/bellScheduler/sounds"
 		self.media_files_folder="/usr/local/share/bellScheduler/"
 		self.bell_scheduler_player_log="/var/log/BELL-SCHEDULER-PLAYER.log"
-		
+		self.n4d_bell_scheduler_manager_log="/var/log/N4D-BELLSCHEDULER-MANAGER.log"
+	
 		self.indicator_token_folder="/tmp/.BellScheduler"
 		self.indicator_token_path=os.path.join(self.indicator_token_folder,"bellscheduler-token")
 		self.cmd_create_token='bellscheduler-token-management create_token '
@@ -119,6 +121,9 @@ class BellSchedulerManager:
 
 			self.bells_config={}
 			result={"status":False,"msg":"Unabled to read configuration file :" +str(e),"code":BellSchedulerManager.READ_CONF_FILE_ERROR,"data":self.bells_config}
+			errorMsg="BellSchedulerManager:read_conf.Error: %s"%str(e)
+			syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+			syslog.syslog(errorMsg)
 
 		f.close()	
 
@@ -145,7 +150,10 @@ class BellSchedulerManager:
 						cron_tasks[key]={}
 						cron_tasks[key]["CronId"]=item
 		except Exception as e:
-			print("BellSchedulerManager-SchedulerServer:_get_tasks_from_cron.Error: "+str(e))
+			errorMsg="BellSchedulerManager-SchedulerServer:_get_tasks_from_cron-get_local_tasks.Error: %s"%str(e)
+			print(errorMsg)
+			syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+			syslog.syslog(errorMsg)
 			pass
 		
 		return cron_tasks
@@ -235,7 +243,10 @@ class BellSchedulerManager:
 				try:
 					result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
 				except Exception as e:
-					print("BellSchedulerManager-SchedulerServer:save_changes.Error: "+str(e))
+					errorMsg="BellSchedulerManager-SchedulerServer:save_changes-write_tasks.Error: %s"%str(e)
+					print(errorMsg)
+					syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+					syslog.syslog(errorMsg)
 					result={"status":-1}	
 			else:
 				result=self._delete_from_cron(last_change)
@@ -270,7 +281,10 @@ class BellSchedulerManager:
 				if last_change in cron_tasks.keys():
 					return {"status":True, "id":cron_tasks[last_change]}
 		except Exception as e:
-			print("BellSchedulerManager:_get_cron_id.Error:"+str(e))
+			errorMsg="BellSchedulerManager:_get_cron_id.Error: %s"%str(e)
+			print(errorMsg)
+			syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+			syslog.syslog(errorMsg)
 			return {"status":False,"id":{}}
 		
 		
@@ -289,7 +303,10 @@ class BellSchedulerManager:
 				try:
 					delete=self.core.get_plugin('SchedulerServer').remove_task('local','BellScheduler',cron_id,'cmd')
 				except Exception as e:
-					print("BellSchedulerManager-SchedulerServer:_delete_from_cron.Error:"+str(e))
+					errorMsg:"BellSchedulerManager-SchedulerServer:_delete_from_cron-remove_task.Error: %s"%str(e)
+					print(errorMsg)
+					syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+					syslog.syslog(errorMsg)
 					delete={"status":-1,"data":"0"}
 					pass
 		
@@ -436,7 +453,10 @@ class BellSchedulerManager:
 
 			result={"status":True,"msg":"Files copied successfully","code":"","data":""}
 		except Exception as e:
-				result={"status":False,"msg":str(e),"code":BellSchedulerManager.COPY_MEDIA_FILES_ERROR,"data":""}		
+			errorMsg="BellSchedulerManager:copy_media_files.Error: %s"%str(e)
+			syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+			syslog.syslog(errorMsg)
+			result={"status":False,"msg":str(e),"code":BellSchedulerManager.COPY_MEDIA_FILES_ERROR,"data":""}		
 
 		return n4d.responses.build_successful_call_response(result)
 	
@@ -459,7 +479,10 @@ class BellSchedulerManager:
 			
 			if os.path.exists(self.bell_scheduler_player_log):
 				shutil.copy2(self.bell_scheduler_player_log,os.path.join(tmp_export,os.path.basename(self.bell_scheduler_player_log)))
-			
+		
+			if os.path.exists(self.n4d_bell_scheduler_manager_log):
+				shutil.copy2(self.n4d_bell_scheduler_manager_log,os.path.join(tmp_export,os.path.basename(self.n4d_bell_scheduler_manager_log)))
+
 			dest_file=os.path.splitext(dest_file)[0]
 			shutil.make_archive(dest_file, 'zip', tmp_export)
 			if arg!=True:
@@ -470,6 +493,9 @@ class BellSchedulerManager:
 			result={"status":True,"msg":"Bells exported successfully","code":BellSchedulerManager.BELL_EXPORT_SUCCESSFUL,"data":""}
 						
 		except Exception as e:
+			errorMsg="BellSchedulerManager:export_bells_conf.Error: %s"%str(e)
+			syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+			syslog.syslog(errorMsg)
 			result={"status":False,"msg":str(e),"code":BellSchedulerManager.BELL_EXPORT_ERROR,"data":""}		
 
 		return n4d.responses.build_successful_call_response(result) 	
@@ -509,6 +535,9 @@ class BellSchedulerManager:
 						f_cron.close()
 					
 				except Exception as e:
+					errorMsg="BellSchedulerManager:import_bells_conf.Error: %s"%str(e)
+					syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+					syslog.syslog(errorMsg)
 					result={"status":False,"msg":str(e),"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}	
 					return n4d.responses.build_successful_call_response(result)		
 		
@@ -543,6 +572,9 @@ class BellSchedulerManager:
 				return n4d.responses.build_successful_call_response(result)		
 	
 		except Exception as e:
+			errorMsg="BellSchedulerManager:import_bells_conf.Error: %s"%str(e)
+			syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+			syslog.syslog(errorMsg)
 			result={"status":False,"msg":str(e),"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}	
 			return n4d.responses.build_successful_call_response(result)		
 
@@ -575,6 +607,10 @@ class BellSchedulerManager:
 			try:
 				tasks_cron=json.load(f)
 			except Exception as e:
+				errorMsg="BellSchedulerManager:_update_holiday_control.Error: %s"%str(e)
+				syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+				syslog.syslog(errorMsg)
+
 				result={"status":False,"msg":str(e),"code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}
 				return n4d.responses.build_successful_call_response(result)
 
@@ -592,7 +628,10 @@ class BellSchedulerManager:
 				self.core.get_plugin('SchedulerClient').process_tasks(self.n4dkey)
 				result={"status":True,"msg":"Cron file updated to use holiday manager","code":"","data":""}
 			except Exception as e:
-				print("BellSchedulerManager-SchedulerServer:_update_holiday_control.Error: "+str(e))
+				errorMsg="BellSchedulerManager-SchedulerServer:_update_holiday_control.Error: %s"%str(e)
+				print(errorMsg)
+				syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+				syslog.syslog(errorMsg)
 				result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}			
 			
 		else:
@@ -613,6 +652,10 @@ class BellSchedulerManager:
 				tasks_cron=json.load(f)
 				f.close()
 			except Exception as e:
+				errorMsg="BellSchedulerManager:update_indicator_token.Error: %s"%str(e)
+				syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+				syslog.syslog(errorMsg)
+
 				result={"status":False,"msg":str(e),"code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}
 				return n4d.responses.build_successful_call_response(result)
 
@@ -633,7 +676,10 @@ class BellSchedulerManager:
 				self.core.get_plugin('SchedulerClient').process_tasks(self.n4dkey)
 				result={"status":True,"msg":"Cron file updated to use indicator","code":"","data":""}
 			except Exception as e:
-				print("BellSchedulerManager-SchedulerServer:update_indicator_token.Error: "+str(e))
+				errorMsg="BellSchedulerManager-SchedulerServer:update_indicator_token.Error: %s"%str(e)
+				print(errorMsg)
+				syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+				syslog.syslog(errorMsg)
 				result={"status":False,"msg":"Cron file dosn't exists","code":BellSchedulerManager.APPLY_CHANGES_DUETOCRON_ERROR,"data":""}			
 				
 		else:
@@ -726,7 +772,10 @@ class BellSchedulerManager:
 						try:
 							result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
 						except Exception as e:
-							print("BellSchedulerManager-SchedulerServer: change_activation_status.Error: "+str(e))
+							errorMsg="BellSchedulerManager-SchedulerServer: change_activation_status-write_tasks.Error: %s"%str(e)
+							syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+							syslog.syslog(errorMsg)
+							print(errorMsg)
 							result={'status':-1}
 								
 
@@ -814,6 +863,9 @@ class BellSchedulerManager:
 			result={"status":True,"msg":"Audio device changed successfully","code":BellSchedulerManager.AUDIO_DEVICE_CONFIG_CHANGED_SUCCCESS,"data":""}
 
 		except Exception as e:
+			errorMsg="BellSchedulerManager:write_audio_device_config.Error: %s"%str(e)
+			syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+			syslog.syslog(errorMsg)
 			result={"status":False,"msg":"Audio device changed error","code":BellSchedulerManager.AUDIO_DEVICE_CONFIG_CHANGED_ERROR,"data":str(e)}
 
 		return n4d.responses.build_successful_call_response(result)
