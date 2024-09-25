@@ -22,6 +22,8 @@ RECOVERY_BELLS_CONFIG=13
 DISABLE_HOLIDAY_CONTROL=14
 ENABLE_HOLIDAY_CONTROL=15
 CONFIGURATING_AUDIO_DEVICE=18
+NO_PLAY_LOG_FILE=59
+NO_ERROR_LOG_FILE=60
 
 class ChangeBellStatus(QThread):
 
@@ -177,6 +179,7 @@ class Bridge(QObject):
 		self._currentAudioDevice=""
 		self._isAudioDeviceConfigurated=False
 		self.bellSchedulerPlayerLog="/var/log/BELL-SCHEDULER-PLAYER.log"
+		self.n4dBellScedulerManagerLog="/var/log/N4D-BELLSCHEDULER-MANAGER.log"
 		self._filterStatusValue="all"
 
 	#def _init__
@@ -446,13 +449,29 @@ class Bridge(QObject):
 	#def _changeBellStatusRet
 
 	@Slot()
-	def openLogFile(self):
+	def openPlayLogFile(self):
 
+		self.showMainMessage=[False,"","Ok"]
 		if os.path.exists(self.bellSchedulerPlayerLog):
 			cmd="xdg-open %s"%self.bellSchedulerPlayerLog
 			os.system(cmd)
+		else:
+			self.showMainMessage=[True,NO_PLAY_LOG_FILE,"Information"]
 
-	#def openLogFile
+	#def openPlayLogFile
+
+	@Slot()
+	def openErrorLogFile(self):
+
+		self.showMainMessage=[False,"","Ok"]
+		
+		if os.path.exists(self.n4dBellScedulerManagerLog):
+			cmd="xdg-open %s"%self.n4dBellScedulerManagerLog
+			os.system(cmd)
+		else:
+			self.showMainMessage=[True,NO_ERROR_LOG_FILE,"Information"]
+
+	#def openErrorLogFile
 
 	@Slot('QVariantList')
 	def removeBell(self,data):

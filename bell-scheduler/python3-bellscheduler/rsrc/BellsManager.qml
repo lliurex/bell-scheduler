@@ -111,7 +111,7 @@ Rectangle{
 
             Menu{
                 id:actionsMenu
-                y: -actionsBtn.height*3.2
+                y: -actionsBtn.height*4
                 x: actionsBtn.width/2
 
                 MenuItem{
@@ -130,8 +130,14 @@ Rectangle{
 
                 MenuItem{
                     icon.name:"document-preview-archive.svg"
-                    text:i18nd("bell-scheduler","View log file")
-                    onClicked:bellsOptionsStackBridge.openLogFile()
+                    text:i18nd("bell-scheduler","View playback log file")
+                    onClicked:bellsOptionsStackBridge.openPlayLogFile()
+                }
+
+                MenuItem{
+                    icon.name:"document-preview-archive.svg"
+                    text:i18nd("bell-scheduler","View error log file")
+                    onClicked:bellsOptionsStackBridge.openErrorLogFile()
                 }
 
                 MenuItem{
@@ -386,6 +392,12 @@ Rectangle{
                 break;
             case 58:
                 var msg=i18nd("bell-scheduler","Audio output have been changed successfully")
+                break;
+            case 59:
+                var msg=i18nd("bell-scheduler","There is no playback log available")
+                break;
+            case 60:
+                var msg=i18nd("bell-scheduler","There is no error log available")
                 break;
             default:
                 var msg=""

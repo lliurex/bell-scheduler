@@ -8,6 +8,7 @@ import tempfile
 import zipfile
 import n4d.server.core as n4dcore
 import n4d.responses
+import syslog
 
 
 class BellSchedulerManager:
@@ -113,6 +114,9 @@ class BellSchedulerManager:
 
 			self.bells_config={}
 			result={"status":False,"msg":"Unabled to read configuration file :" +str(e),"code":BellSchedulerManager.READ_CONF_FILE_ERROR,"data":self.bells_config}
+			errorMsg="BellSchedulerManager:read_conf.Error: %s"%str(e)
+			syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+			syslog.syslog(errorMsg)
 
 		f.close()	
 
@@ -139,7 +143,10 @@ class BellSchedulerManager:
 						cron_tasks[key]={}
 						cron_tasks[key]["CronId"]=item
 		except Exception as e:
-			print("BellSchedulerManager-SchedulerServer:_get_tasks_from_cron.Error: "+str(e))
+			errorMsg="BellSchedulerManager-SchedulerServer:_get_tasks_from_cron-get_local_tasks.Error: %s"%str(e)
+			print(errorMsg)
+			syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+			syslog.syslog(errorMsg)
 			pass
 		
 		return cron_tasks
@@ -223,7 +230,10 @@ class BellSchedulerManager:
 				try:
 					result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
 				except Exception as e:
-					print("BellSchedulerManager-SchedulerServer:save_changes.Error: "+str(e))
+					errorMsg="BellSchedulerManager-SchedulerServer:save_changes-write_tasks.Error: %s"%str(e)
+					print(errorMsg)
+					syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+					syslog.syslog(errorMsg)
 					result={"status":-1}	
 			else:
 				result=self._delete_from_cron(last_change)
@@ -258,7 +268,10 @@ class BellSchedulerManager:
 				if last_change in cron_tasks.keys():
 					return {"status":True, "id":cron_tasks[last_change]}
 		except Exception as e:
-			print("BellSchedulerManager:_get_cron_id.Error:"+str(e))
+			errorMsg="BellSchedulerManager:_get_cron_id.Error: %s"%str(e)
+			print(errorMsg)
+			syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+			syslog.syslog(errorMsg)
 			return {"status":False,"id":{}}
 		
 		
@@ -277,7 +290,10 @@ class BellSchedulerManager:
 				try:
 					delete=self.core.get_plugin('SchedulerServer').remove_task('local','BellScheduler',cron_id,'cmd')
 				except Exception as e:
-					print("BellSchedulerManager-SchedulerServer:_delete_from_cron.Error:"+str(e))
+					errorMsg:"BellSchedulerManager-SchedulerServer:_delete_from_cron-remove_task.Error: %s"%str(e)
+					print(errorMsg)
+					syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+					syslog.syslog(errorMsg)
 					delete={"status":-1,"data":"0"}
 					pass
 		
@@ -424,7 +440,10 @@ class BellSchedulerManager:
 
 			result={"status":True,"msg":"Files copied successfully","code":"","data":""}
 		except Exception as e:
-				result={"status":False,"msg":str(e),"code":BellSchedulerManager.COPY_MEDIA_FILES_ERROR,"data":""}		
+			errorMsg="BellSchedulerManager:copy_media_files.Error: %s"%str(e)
+			syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+			syslog.syslog(errorMsg)
+			result={"status":False,"msg":str(e),"code":BellSchedulerManager.COPY_MEDIA_FILES_ERROR,"data":""}		
 
 		return n4d.responses.build_successful_call_response(result)
 	
@@ -457,6 +476,9 @@ class BellSchedulerManager:
 			result={"status":True,"msg":"Bells exported successfully","code":BellSchedulerManager.BELL_EXPORT_SUCCESSFUL,"data":""}
 						
 		except Exception as e:
+			errorMsg="BellSchedulerManager:export_bells_conf.Error: %s"%str(e)
+			syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+			syslog.syslog(errorMsg)
 			result={"status":False,"msg":str(e),"code":BellSchedulerManager.BELL_EXPORT_ERROR,"data":""}		
 
 		return n4d.responses.build_successful_call_response(result) 	
@@ -489,6 +511,9 @@ class BellSchedulerManager:
 					f_config.close()
 					
 				except Exception as e:
+					errorMsg="BellSchedulerManager:import_bells_conf.Error: %s"%str(e)
+					syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+					syslog.syslog(errorMsg)
 					result={"status":False,"msg":str(e),"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}	
 					return n4d.responses.build_successful_call_response(result)		
 		
@@ -524,6 +549,9 @@ class BellSchedulerManager:
 				return n4d.responses.build_successful_call_response(result)		
 	
 		except Exception as e:
+			errorMsg="BellSchedulerManager:import_bells_conf.Error: %s"%str(e)
+			syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+			syslog.syslog(errorMsg)
 			result={"status":False,"msg":str(e),"code":BellSchedulerManager.BELL_IMPORT_ERROR,"data":backup_file[1]}	
 			return n4d.responses.build_successful_call_response(result)		
 
@@ -563,7 +591,10 @@ class BellSchedulerManager:
 				try:
 					result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
 				except Exception as e:
-					print("BellSchedulerManager-SchedulerServer: change_activation_status.Error: "+str(e))
+					errorMsg="BellSchedulerManager-SchedulerServer: change_activation_status-write_tasks.Error: %s"%str(e)
+					syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+					syslog.syslog(errorMsg)
+					print(errorMsg)
 					result={'status':-1}
 								
 				if result.get('status',None)==-1:
@@ -660,7 +691,10 @@ class BellSchedulerManager:
 						try:
 							result=self.core.get_plugin('SchedulerServer').write_tasks('local',tasks_for_cron)
 						except Exception as e:
-							print("BellSchedulerManager-SchedulerServer: change_activation_status.Error: "+str(e))
+							errorMsg="BellSchedulerManager-SchedulerServer: change_activation_status-write_tasks.Error: %s"%str(e)
+							syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+							syslog.syslog(errorMsg)
+							print(errorMsg)
 							result={'status':-1}
 								
 
@@ -746,6 +780,9 @@ class BellSchedulerManager:
 			result={"status":True,"msg":"Audio device changed successfully","code":BellSchedulerManager.AUDIO_DEVICE_CONFIG_CHANGED_SUCCCESS,"data":""}
 
 		except Exception as e:
+			errorMsg="BellSchedulerManager:write_audio_device_config.Error: %s"%str(e)
+			syslog.openlog("N4D-BELLSCHEDULER-MANAGER")
+			syslog.syslog(errorMsg)
 			result={"status":False,"msg":"Audio device changed error","code":BellSchedulerManager.AUDIO_DEVICE_CONFIG_CHANGED_ERROR,"data":str(e)}
 
 		return n4d.responses.build_successful_call_response(result)
