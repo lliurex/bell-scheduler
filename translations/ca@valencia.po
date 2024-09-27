@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 10:26+0200\n"
-"PO-Revision-Date: 2024-09-25 10:29+0200\n"
+"POT-Creation-Date: 2024-09-27 08:10+0200\n"
+"PO-Revision-Date: 2024-09-27 08:11+0200\n"
 "Last-Translator: Angels <gimenez_angcam@gva.es>\n"
 "Language-Team: Valencian <http://weblate.lliurex.net/projects/bell-scheduler/"
 "bell-scheduler/ca@valencia/>\n"
@@ -767,7 +767,7 @@ msgid "Unabled to create a bell with selected file"
 msgstr "No és possible crear l'alarma amb el fitxer seleccionat"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/MainOptions.qml:37
-msgid "Holiday manager"
+msgid "Holidays"
 msgstr "Festius"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/MainOptions.qml:49
