@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-25 10:26+0200\n"
-"PO-Revision-Date: 2024-09-25 10:27+0200\n"
+"POT-Creation-Date: 2024-09-27 08:19+0200\n"
+"PO-Revision-Date: 2024-09-27 08:20+0200\n"
 "Last-Translator: Weblate Admin <fernandezdeybarra_jua@gva.es>\n"
 "Language-Team: Spanish <http://weblate.lliurex.net/projects/bell-scheduler/"
 "bell-scheduler/es/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 2.3\n"
 
 #: bell-scheduler/python3-bellscheduler/BellManager.py:263
 msgid "ERROR: File or directory not available"
@@ -766,7 +766,7 @@ msgid "Unabled to create a bell with selected file"
 msgstr "No es posible crear la alarma con el fichero seleccionado"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/MainOptions.qml:37
-msgid "Holiday manager"
+msgid "Holidays"
 msgstr "Festivos"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/MainOptions.qml:49
