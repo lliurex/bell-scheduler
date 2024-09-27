@@ -34,7 +34,7 @@ GridLayout{
             }
             MenuOptionBtn {
                 id:holidayItem
-                optionText:i18nd("bell-scheduler","Holiday manager")
+                optionText:i18nd("bell-scheduler","Holidays")
                 optionIcon:"/usr/share/icons/breeze/actions/22/view-calendar.svg"
                 
                 Connections{
