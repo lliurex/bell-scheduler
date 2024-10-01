@@ -558,6 +558,8 @@ class BellSchedulerManager:
 						shutil.rmtree(self.sounds_folder)
 					shutil.copytree(os.path.join(unzip_tmp,"media/sounds"),self.sounds_folder)
 
+				if os.path.exists(self.cron_file):
+					os.remove(self.cron_file)
 				
 				update_holiday=self.enable_holiday_control(action).get('return',None)	
 				
