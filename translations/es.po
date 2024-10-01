@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-27 08:10+0200\n"
-"PO-Revision-Date: 2024-09-27 08:10+0200\n"
+"POT-Creation-Date: 2024-10-01 12:09+0200\n"
+"PO-Revision-Date: 2024-10-01 12:10+0200\n"
 "Last-Translator: Weblate Admin <fernandezdeybarra_jua@gva.es>\n"
 "Language-Team: Spanish <http://weblate.lliurex.net/projects/bell-scheduler/"
 "bell-scheduler/es/>\n"
@@ -848,3 +848,7 @@ msgstr "Debe indicar las 2 fechas del rango"
 #: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:228
 msgid "Last date in range must be major than init date"
 msgstr "La última fecha del rango debe ser mayor que la fecha inicial"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:239
+msgid "You must indicate a date"
+msgstr "Debe indicar una fecha"
