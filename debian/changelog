@@ -1,3 +1,9 @@
+bell-scheduler (0.15.6.7) jammy; urgency=medium
+
+  * Fixed bug in validity bell form.
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 02 Oct 2024 17:27:39 +0200
+
 bell-scheduler (0.15.6.6) jammy; urgency=medium
 
   * Fixed translations
