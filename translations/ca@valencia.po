@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-27 08:19+0200\n"
-"PO-Revision-Date: 2024-09-27 08:19+0200\n"
+"POT-Creation-Date: 2024-10-01 12:09+0200\n"
+"PO-Revision-Date: 2024-10-01 12:10+0200\n"
 "Last-Translator: Angels <gimenez_angcam@gva.es>\n"
 "Language-Team: Valencian <http://weblate.lliurex.net/projects/bell-scheduler/"
 "bell-scheduler/ca@valencia/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 3.0.1\n"
 
 #: bell-scheduler/python3-bellscheduler/BellManager.py:263
 msgid "ERROR: File or directory not available"
@@ -849,3 +849,7 @@ msgstr "Cal que indiqueu les dues dates de l'interval"
 #: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:228
 msgid "Last date in range must be major than init date"
 msgstr "L'última data de l'interval ha de ser posterior a la data inicial"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:239
+msgid "You must indicate a date"
+msgstr "Cal que indiqueu una data"
