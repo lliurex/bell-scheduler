@@ -234,7 +234,13 @@ Popup {
                 }
             }
         }else{
-            return true
+            if (dayEntry.text==""){
+                messageLabel.visible=true
+                messageLabel.text=i18nd("bell-scheduler","You must indicate a date")
+                return false
+            }else{
+                return true
+            }
         }
     }
 
@@ -244,6 +250,8 @@ Popup {
         calendar.stopDate=undefined
         calendar.daysInRange=bellStackBridge.bellValidityDaysInRange
         rangeDate.checked=bellStackBridge.bellValidityRangeOption
+        messageLabel.visible=false
+        messageLabel.text=""
 
         if (bellStackBridge.bellValidityRangeOption){
             dayEntry.text=""
