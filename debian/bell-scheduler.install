@@ -1,1 +1,7 @@
 bell-scheduler.install/*	/
+bell-scheduler/bell-scheduler /usr/sbin
+bell-scheduler/bell-scheduler-gui /usr/sbin
+bell-scheduler/data-files/banners/* /usr/share/bell-scheduler/banners/
+bell-scheduler/BellSchedulerPlayer /usr/bin/
+bell-scheduler/data-files/create_bell_with_file.desktop /usr/share/kio/servicemenus/
+debian/output/usr/lib/python3.12/dist-packages/bellscheduler /usr/lib/python3.12/dist-packages
