@@ -108,7 +108,7 @@ Popup {
             }
             TextField{
                 id: sliderEntry
-                validator: RegularExpressionValidator { regularExpressionValidator: /([0-9][0-9][0-9])/ }
+                validator: RegularExpressionValidator { regularExpression: /([0-9][0-9][0-9])/ }
                 implicitWidth: 70
                 text:sliderId.value
                 horizontalAlignment: TextInput.AlignHCenter

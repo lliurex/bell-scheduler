@@ -1,4 +1,5 @@
 import org.kde.kirigami as Kirigami
+import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -132,9 +133,9 @@ Rectangle{
                             onClicked:removeValidityDialog.open()
                         }
                     }
-                    ValiditySelector{
+                    /*ValiditySelector{
                         id:validitySelector
-                    }
+                    }*/
                 }
 
             }
@@ -218,7 +219,7 @@ Rectangle{
                             }
                         }
 
-                        ImageSelector{
+                        PictureSelector{
                             id:imageSelector
                         }
                     }

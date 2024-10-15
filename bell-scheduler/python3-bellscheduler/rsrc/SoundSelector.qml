@@ -1,4 +1,5 @@
 import org.kde.kirigami as Kirigami
+import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -17,9 +18,10 @@ Popup {
     modal:true
     focus:true
     closePolicy:Popup.NoAutoClose
-
+    
     background:Rectangle{
         color:"#ebeced"
+	border.color:"#b8b9ba"
     }
 
     contentItem:Rectangle{
@@ -265,17 +267,17 @@ Popup {
     FileDialog{
         id:soundFileDialog
         title: "Select a sound file"
-        folder:{
+        currentFolder:{
             if (selectedSoundFile!=""){
-                shortcuts.selectedSoundFile.substring(0,selectedSoundFile.lastIndexOf("/"))
+                selectedSoundFile.substring(0,selectedSoundFile.lastIndexOf("/"))
             }else{
-                shortcuts.home
+                StandardPaths.standardLocations(StandardPaths.MusicLocation)[0]
             }
 
         }
         onAccepted:{
             selectedSoundFile=""
-            selectedSoundFile=soundFileDialog.fileUrl.toString()
+            selectedSoundFile=soundFileDialog.selectedFile.toString()
             selectedSoundFile=selectedSoundFile.replace(/^(file:\/{2})/,"")
             filePath.text=selectedSoundFile.substring(selectedSoundFile.lastIndexOf('/')+1)
             if (!bellStackBridge.checkMimetypeSound(selectedSoundFile)){
@@ -290,22 +292,21 @@ Popup {
         }
       
     }
-    FileDialog{
+    FolderDialog{
         id:soundFolderDialog
         title: "Select a folder"
-        folder:{
+        currentFolder:{
             if (selectedSoundFolder!=""){
-                shortcuts.selectedSoundFolder
+               selectedSoundFolder
             }else{
-                shortcuts.home
+               StandardPaths.standardLocations(StandardPaths.MusicLocation)[0]
             }
         }
-        selectFolder:true
         onAccepted:{
-            selectedSoundFolder=""
-            selectedSoundFolder=soundFolderDialog.fileUrl.toString()
+	    selectedSoundFolder=""
+            selectedSoundFolder=soundFolderDialog.selectedFolder.toString()
             selectedSoundFolder=selectedSoundFolder.replace(/^(file:\/{2})/,"")
-            folderPath.text=selectedSoundFolder
+	    folderPath.text=selectedSoundFolder
             messageLabel.visible=false
             applyBtn.enabled=true
         }
