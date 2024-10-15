@@ -1,7 +1,7 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
-import org.kde.plasma.components 3.0 as PC3
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import org.kde.plasma.components as PC
 
 
 Rectangle{
@@ -11,7 +11,7 @@ Rectangle{
     property alias currentImgIndex:imagesSelector.currentIndex
     property alias listEnabled:imagesSelector.enabled
 
-    PC3.ScrollView{
+    PC.ScrollView{
         implicitWidth:parent.width
         implicitHeight:parent.height
         anchors.leftMargin:10

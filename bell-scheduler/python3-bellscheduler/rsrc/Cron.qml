@@ -1,6 +1,6 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 
 
 GridLayout{
@@ -34,7 +34,7 @@ GridLayout{
 					onExited: {
 						parent.color="#3daee9"
 					}
-					onWheel:{
+					onWheel:(wheel)=>{
 						wheel.accepted=false
 						if (wheel.angleDelta.y>0){
 							if (modelData==0){

@@ -1,5 +1,5 @@
-import QtQuick 2.15
-import QtQml.Models 2.8
+import QtQuick
+import QtQml.Models
 
 DelegateModel {
 	id:filterModel

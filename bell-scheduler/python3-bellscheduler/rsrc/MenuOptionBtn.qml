@@ -1,6 +1,6 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 
 
 Item {
@@ -10,7 +10,7 @@ Item {
 
 	property alias optionIcon:menuOptionIcon.source
 	property alias optionText:menuOptionText.text
-  property alias optionFontSize:menuOptionText.font.pointSize
+    property alias optionFontSize:menuOptionText.font.pointSize
 
 	signal menuOptionClicked()
 

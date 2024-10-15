@@ -1,7 +1,7 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
-import org.kde.plasma.components 3.0 as PC3
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import org.kde.plasma.components as PC
 
 Popup {
 
@@ -41,7 +41,7 @@ Popup {
             anchors.leftMargin:10
         }
 
-        PC3.Slider{
+        PC.Slider{
         
             id:sliderId
             from:0
@@ -108,7 +108,7 @@ Popup {
             }
             TextField{
                 id: sliderEntry
-                validator: RegExpValidator { regExp: /([0-9][0-9][0-9])/ }
+                validator: RegularExpressionValidator { regularExpressionValidator: /([0-9][0-9][0-9])/ }
                 implicitWidth: 70
                 text:sliderId.value
                 horizontalAlignment: TextInput.AlignHCenter

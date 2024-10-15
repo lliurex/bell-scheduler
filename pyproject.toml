@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools","setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bell-scheduler"
+version = "0.1"
+description = "Aplication to manage bells"
+authors = [
+	{ name = "Juan Ramon Pelegrina", email="juapesai@hotmail.com" },
+	{ name = "LliureX Team"}
+]
+license = {text="GPL-3"}
+urls = {repository="https://github.com/lliurex/bell-scheduler"}
+
+[tool.setuptools]
+packages = ["bellscheduler"]
+
+[tool.setuptools.package-dir]
+bellscheduler = "bell-scheduler/python3-bellscheduler"
+
+[tool.setuptools.package-data]
+bellscheduler = ["rsrc/*"]

@@ -1,7 +1,7 @@
-import QtQuick 2.15
-import QtGraphicalEffects 1.0
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.1
+import QtQuick
+import QtGraphicalEffects
+import QtQuick.Controls
+import QtQuick.Controls.Styles
 
 Rectangle {
     width: 325
