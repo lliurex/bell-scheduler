@@ -1,7 +1,7 @@
-import org.kde.kirigami 2.16 as Kirigami
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
+import org.kde.kirigami as Kirigami
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 
 Popup {
     id:timePopUp
@@ -44,7 +44,7 @@ Popup {
                 spacing:4
                 TextField{
                     id: hourEntry
-                    validator: RegExpValidator { regExp: /([0-1][0-9]|2[0-3])/ }
+                    validator: RegularExpressionValidator { regularExpression: /([0-1][0-9]|2[0-3])/ }
                     implicitWidth: 70
                     horizontalAlignment: TextInput.AlignHCenter
                     color:"#3daee9"
@@ -59,7 +59,7 @@ Popup {
                         
                 TextField{
                     id: minuteEntry
-                    validator: RegExpValidator { regExp: /[0-5][0-9]/ }
+                    validator: RegularExpressionValidator { regularExpression: /[0-5][0-9]/ }
                     implicitWidth: 70
                     horizontalAlignment: TextInput.AlignHCenter
                     color:"#3daee9"

@@ -1,9 +1,9 @@
-import org.kde.plasma.core 2.1 as PlasmaCore
-import org.kde.kirigami 2.16 as Kirigami
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
-import QtQuick.Window 2.15
+import org.kde.plasma.core as PlasmaCore
+import org.kde.kirigami as Kirigami
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtQuick.Window
 
 ApplicationWindow {
 
@@ -21,7 +21,7 @@ ApplicationWindow {
         y = Screen.height / 2 - minimumHeight/2
     }
 
-    onClosing: {
+    onClosing:(close)=> {
         close.accepted=closing;
         mainStackBridge.closeBellScheduler()
         delay(100, function() {

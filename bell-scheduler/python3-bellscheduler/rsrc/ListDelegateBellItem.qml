@@ -1,9 +1,9 @@
-import org.kde.plasma.components 2.0 as Components
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQml.Models 2.8
+import org.kde.plasma.components as Components
+import QtQuick
+import QtQuick.Controls
+import QtQml.Models
 
-Components.ListItem{
+Components.ItemDelegate{
 
     id: listBellItem
     property string bellId
@@ -24,18 +24,7 @@ Components.ListItem{
     property bool isImgError
 
     enabled:true
-
-    onContainsMouseChanged: {
-
-        if (!optionsMenu.activeFocus){
-            if (containsMouse) {
-                listBells.currentIndex=filterModel.visibleElements.indexOf(index)
-            }else {
-                listBells.currentIndex = -1
-            }
-        }
-
-    }
+    height:145
 
     Rectangle {
         height:visible?140:0
@@ -52,6 +41,19 @@ Components.ListItem{
             id: menuItem
             height:visible?140:0
             width:listBellItem.width-manageBellBtn.width
+
+            MouseArea {
+                id: mouseAreaOption
+                anchors.fill: parent
+                hoverEnabled:true
+                propagateComposedEvents:true
+
+                onEntered: {
+                    if (!optionsMenu.activeFocus){
+                        listBells.currentIndex=filterModel.visibleElements.indexOf(index)
+                    }
+                }
+            }
             
             Column{
                 id:cronRow

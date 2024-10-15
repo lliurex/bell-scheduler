@@ -1,8 +1,8 @@
-import org.kde.kirigami 2.16 as Kirigami
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
-import QtQuick.Dialogs 1.3
+import org.kde.kirigami as Kirigami
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtQuick.Dialogs
 
 Rectangle{
     id:rectLayout
@@ -276,7 +276,7 @@ Rectangle{
 
     FileDialog{
         id:backupFileDialog
-        folder:shortcuts.home
+        currentFolder:shortcuts.home
         nameFilters:["Zip files (*zip)"]
         onAccepted:{
             var selectedPath=""
