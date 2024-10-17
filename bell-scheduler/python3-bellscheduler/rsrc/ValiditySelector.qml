@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+
 Popup {
 
     id:validityPopUp
@@ -52,12 +53,12 @@ Popup {
                 Layout.topMargin: 40
             }
 
-            Calendar{
+            CustomCalendar{
                 id:calendar
                 Layout.alignment:Qt.AlignHCenter
                 Layout.preferredWidth:325
                 Layout.topMargin: messageLabel.visible?0:50
-                calendarLocale:mainStackBridge.systemLocale
+                //calendarLocale:mainStackBridge.systemLocale
                 startDate:undefined
                 stopDate:undefined
                 initDate:{
