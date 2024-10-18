@@ -78,9 +78,9 @@ Popup {
                 }
                 rangeDate:rangeDate.checked
                 daysInRange:bellStackBridge.bellValidityDaysInRange
-		currentMonth:new Date().getMonth()
-		currentYear:new Date().getFullYear()
-		fullMonth:new Date().toLocaleString(Qt.locale(),'MMMM')
+                currentMonth:new Date().getMonth()
+                currentYear:new Date().getFullYear()
+                fullMonth:new Date().toLocaleString(Qt.locale(),'MMMM').split(" ").slice(-1)[0]
                 Connections{
                     target:calendar
                     function onGetSelectedDate(info){
@@ -212,7 +212,7 @@ Popup {
                 Layout.preferredHeight: 40
                 enabled:true
                 onClicked:{
-		   validitySelector.close()
+                    validitySelector.close()
                 }
                 
             }
@@ -250,13 +250,13 @@ Popup {
 
     function loadInitValues(){
 
-	calendar.startDate=undefined
+        calendar.startDate=undefined
         calendar.stopDate=undefined
         calendar.daysInRange=bellStackBridge.bellValidityDaysInRange
         rangeDate.checked=bellStackBridge.bellValidityRangeOption
         messageLabel.visible=false
         messageLabel.text=""
-	var newDate=new Date()
+        var newDate=new Date()
 
         if (bellStackBridge.bellValidityRangeOption){
             dayEntry.text=""
@@ -285,9 +285,9 @@ Popup {
                 newDate=new Date()
             }
         }
-	calendar.currentMonth=newDate.getMonth()
-	calendar.currentYear=newDate.getFullYear()
-	calendar.fullMonth=newDate.toLocaleString(Qt.locale(),'MMMM')
+        calendar.currentMonth=newDate.getMonth()
+        calendar.currentYear=newDate.getFullYear()
+        calendar.fullMonth=newDate.toLocaleString(Qt.locale(),'MMMM').split(" ").slice(-1)[0]
     }
 
 }

@@ -49,11 +49,11 @@ GridLayout{
 					onClicked:{
 						if (currentMonth>0 && currentMonth<12){
 							currentMonth=currentMonth-1
-							fullMonth=currentLocale.monthName(currentMonth)
+							fullMonth=currentLocale.monthName(currentMonth).split(" ").slice(-1)[0]
 						}else{
 							currentMonth=11
 							currentYear=currentYear-1
-							fullMonth=currentLocale.monthName(currentMonth)
+							fullMonth=currentLocale.monthName(currentMonth).split(" ").slice(-1)[0]
 						}
 					}
 				}
@@ -92,11 +92,11 @@ GridLayout{
 					onClicked:{
 						if (currentMonth<11){
 							currentMonth=currentMonth+1
-							fullMonth=currentLocale.monthName(currentMonth)
+							fullMonth=currentLocale.monthName(currentMonth).split(" ").slice(-1)[0]
 						}else{
 							currentMonth=0
 							currentYear=currentYear+1
-							fullMonth=currentLocale.monthName(currentMonth)
+							fullMonth=currentLocale.monthName(currentMonth).split(" ").slice(-1)[0]
 						}
 					}
 				}
@@ -201,7 +201,7 @@ GridLayout{
 				}
 			}
 			currentMonth=date.getMonth()
-			fullMonth=date.toLocaleString(locale,'MMMM')
+			fullMonth=date.toLocaleString(locale,'MMMM').split(" ").slice(-1)[0]
 			currentYear=date.getFullYear()
 		}
 
