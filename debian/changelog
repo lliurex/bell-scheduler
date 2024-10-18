@@ -1,3 +1,9 @@
+bell-scheduler (0.25.6.7) noble; urgency=medium
+
+  * Initial release for noble
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 18 Oct 2024 12:53:06 +0200
+
 bell-scheduler (0.15.6.7) jammy; urgency=medium
 
   * Fixed bug in validity bell form.
