@@ -277,7 +277,7 @@ Rectangle{
 
     FileDialog{
         id:backupFileDialog
-	currentFolder:StandardPaths.standardLocations(StandardPaths.HomeLocation)[0]
+        currentFolder:StandardPaths.standardLocations(StandardPaths.HomeLocation)[0]
         nameFilters:["Zip files (*zip)"]
         onAccepted:(selectedPath)=>{
             var selectedPath=""
