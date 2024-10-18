@@ -133,9 +133,9 @@ Rectangle{
                             onClicked:removeValidityDialog.open()
                         }
                     }
-                    /*ValiditySelector{
+                    ValiditySelector{
                         id:validitySelector
-                    }*/
+                    }
                 }
 
             }
