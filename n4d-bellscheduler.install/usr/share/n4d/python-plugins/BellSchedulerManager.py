@@ -265,7 +265,7 @@ class BellSchedulerManager:
 			syslog.syslog(errorMsg)
 			return {"status":False,"id":""}
 		
-		return {"status":False,"id":0}
+		return {"status":True,"id":0}
 
 	# def _get_cron_id
 
