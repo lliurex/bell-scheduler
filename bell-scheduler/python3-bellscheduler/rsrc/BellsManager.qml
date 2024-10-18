@@ -1,4 +1,5 @@
 import org.kde.kirigami as Kirigami
+import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -72,7 +73,7 @@ Rectangle{
                         
                         backupAction="export"
                         backupFileDialog.title=i18nd("bell-scheduler","Please choose a file to save bells list")
-                        backupFileDialog.selectExisting=false
+                        backupFileDialog.fileMode=FileDialog.SaveFile
                         
                         if (bellsOptionsStackBridge.showExportBellsWarning){
                            exportBellDialog.open()
@@ -89,7 +90,7 @@ Rectangle{
 
                         backupAction="import"
                         backupFileDialog.title=i18nd("bell-scheduler","Please choose a file to load bells list")
-                        backupFileDialog.selectExisting=true
+                        backupFileDialog.fileMode=FileDialog.OpenFile
                         importBellDialog.open()
 
                     }
@@ -276,11 +277,11 @@ Rectangle{
 
     FileDialog{
         id:backupFileDialog
-        currentFolder:shortcuts.home
+	currentFolder:StandardPaths.standardLocations(StandardPaths.HomeLocation)[0]
         nameFilters:["Zip files (*zip)"]
-        onAccepted:{
+        onAccepted:(selectedPath)=>{
             var selectedPath=""
-            selectedPath=backupFileDialog.fileUrl.toString()
+            selectedPath=backupFileDialog.selectedFile.toString()
             selectedPath=selectedPath.replace(/^(file:\/{2})/,"")
             switch(backupAction){
                 case "export":

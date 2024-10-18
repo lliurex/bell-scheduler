@@ -1,4 +1,5 @@
 import org.kde.kirigami as Kirigami
+import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -20,6 +21,7 @@ Popup {
 
     background:Rectangle{
         color:"#ebeced"
+	border.color:"#b8b9ba"
     }
 
     contentItem:Rectangle{
@@ -208,17 +210,17 @@ Popup {
     FileDialog{
         id:imgDialog
         title: "Select and image file"
-        folder:{
+        currentFolder:{
             if (selectedImageFile!=""){
-                shortcuts.selectedImageFile.substring(0,selectedImageFile.lastIndexOf("/"))
+                selectedImageFile.substring(0,selectedImageFile.lastIndexOf("/"))
             }else{
-                shortcuts.home
+                StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
             }
 
         }
         onAccepted:{
             selectedImageFile=""
-            var tmpFile=imgDialog.fileUrl.toString()
+            var tmpFile=imgDialog.selectedFile.toString()
             tmpFile=tmpFile.replace(/^(file:\/{2})/,"")
             customImagePath.text=tmpFile.substring(tmpFile.lastIndexOf('/')+1)
             selectedImageFile=tmpFile

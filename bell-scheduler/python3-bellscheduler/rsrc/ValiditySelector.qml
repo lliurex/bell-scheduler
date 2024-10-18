@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+
 Popup {
 
     id:validityPopUp
@@ -16,12 +17,13 @@ Popup {
     closePolicy:Popup.NoAutoClose
     onVisibleChanged:{
         if (visible){
-            loadInitVales()
+            loadInitValues()
         }
     }
     
     background:Rectangle{
         color:"#ebeced"
+	border.color:"#b8b9ba"
     }
 
     contentItem:Rectangle{
@@ -52,12 +54,12 @@ Popup {
                 Layout.topMargin: 40
             }
 
-            Calendar{
+            CustomCalendar{
                 id:calendar
                 Layout.alignment:Qt.AlignHCenter
                 Layout.preferredWidth:325
                 Layout.topMargin: messageLabel.visible?0:50
-                calendarLocale:mainStackBridge.systemLocale
+                currentLocale:Qt.locale(mainStackBridge.systemLocale)
                 startDate:undefined
                 stopDate:undefined
                 initDate:{
@@ -76,7 +78,9 @@ Popup {
                 }
                 rangeDate:rangeDate.checked
                 daysInRange:bellStackBridge.bellValidityDaysInRange
-                selectedDate:new Date()
+                currentMonth:new Date().getMonth()
+                currentYear:new Date().getFullYear()
+                fullMonth:new Date().toLocaleString(Qt.locale(),'MMMM').split(" ").slice(-1)[0]
                 Connections{
                     target:calendar
                     function onGetSelectedDate(info){
@@ -244,7 +248,7 @@ Popup {
         }
     }
 
-    function loadInitVales(){
+    function loadInitValues(){
 
         calendar.startDate=undefined
         calendar.stopDate=undefined
@@ -252,18 +256,19 @@ Popup {
         rangeDate.checked=bellStackBridge.bellValidityRangeOption
         messageLabel.visible=false
         messageLabel.text=""
+        var newDate=new Date()
 
         if (bellStackBridge.bellValidityRangeOption){
             dayEntry.text=""
             if (bellStackBridge.bellValidityDaysInRange.length>0){
                 day1Entry.text=bellStackBridge.bellValidityDaysInRange[0]
                 day2Entry.text=bellStackBridge.bellValidityDaysInRange[ bellStackBridge.bellValidityDaysInRange.length-1]
-                calendar.selectedDate=Date.fromLocaleString(Qt.locale(),day1Entry.text,"dd/MM/yyyy")
+                newDate=Date.fromLocaleString(Qt.locale(),day1Entry.text,"dd/MM/yyyy")
 
             }else{
                 day1Entry.text=""
                 day2Entry.text=""
-                calendar.selectedDate=new Date()
+                newDate=new Date()
 
             }
             calendar.initDate=day1Entry.text
@@ -275,12 +280,14 @@ Popup {
             calendar.initDate=dayEntry.text
             calendar.endDate=""
             if (dayEntry!=""){
-                calendar.selectedDate=Date.fromLocaleString(Qt.locale(),dayEntry.text,"dd/MM/yyyy")
+               newDate=Date.fromLocaleString(Qt.locale(),dayEntry.text,"dd/MM/yyyy")
             }else{
-                calendar.selectedDate=new Date()
+                newDate=new Date()
             }
         }
-    
+        calendar.currentMonth=newDate.getMonth()
+        calendar.currentYear=newDate.getFullYear()
+        calendar.fullMonth=newDate.toLocaleString(Qt.locale(),'MMMM').split(" ").slice(-1)[0]
     }
 
 }
