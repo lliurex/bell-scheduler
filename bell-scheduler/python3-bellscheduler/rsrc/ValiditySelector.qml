@@ -22,9 +22,11 @@ Popup {
     }
     
     background:Rectangle{
-        color:"#ebeced"
+	color:"#ebeced"
 	border.color:"#b8b9ba"
-    }
+        border.width:1
+        radius:0,5
+      }
 
     contentItem:Rectangle{
         id:container
