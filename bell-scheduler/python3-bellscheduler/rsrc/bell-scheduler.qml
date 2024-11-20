@@ -67,6 +67,7 @@ ApplicationWindow {
             Layout.leftMargin:0
             Layout.fillWidth:true
             Layout.fillHeight: true
+	    Layout.minimumHeight:640
             initialItem:loadView
             onCurrentIndexChanged:{
                 switch (currentIndex){
