@@ -22,7 +22,7 @@ Rectangle{
         rowSpacing:10
         anchors.left:parent.left
         width:parent.width-10
-        height:parent.height-90
+        height:parent.height-120
         enabled:true
         Kirigami.InlineMessage {
             id: messageLabel
