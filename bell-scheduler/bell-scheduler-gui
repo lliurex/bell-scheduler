@@ -10,6 +10,7 @@ from bellscheduler.Core import Core
 c=Core.get_core()
 
 app = QApplication()
+app.setDesktopFileName("bell-scheduler")
 engine = QQmlApplicationEngine()
 engine.clearComponentCache()
 context=engine.rootContext()
@@ -29,7 +30,6 @@ if not engine.rootObjects():
 	sys.exit(-1)
 
 engine.quit.connect(QApplication.quit)
-app.setWindowIcon(QIcon("/usr/share/icons/hicolor/scalable/apps/bell-scheduler.svg"));
 ret=app.exec()
 del engine
 del app
