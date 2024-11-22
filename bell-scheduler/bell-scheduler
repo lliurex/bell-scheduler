@@ -108,6 +108,7 @@ class Tunnel(QObject):
 #class Tunnel
 
 app = QApplication([])
+app.setDesktopFileName("bell-scheduler")
 tunnel = Tunnel()
 view = QQuickView()
 view.rootContext().setContextProperty("tunnel", tunnel)
