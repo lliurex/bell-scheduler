@@ -1,3 +1,9 @@
+bell-scheduler (0.25.6.15) noble; urgency=medium
+
+  * Fixed day button style performance 
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 26 Nov 2024 11:38:31 +0100
+
 bell-scheduler (0.25.6.14) noble; urgency=medium
 
   * Fixed launcher to show app icon in Wayland
