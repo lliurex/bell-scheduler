@@ -1,3 +1,9 @@
+bell-scheduler (0.25.6.16) noble; urgency=medium
+
+  * Added key to hide zomandos
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 02 May 2025 10:53:12 +0200
+
 bell-scheduler (0.25.6.15) noble; urgency=medium
 
   * Fixed day button style performance 
