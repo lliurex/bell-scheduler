@@ -17,3 +17,4 @@ Using=pkexec
 Service=True
 Modal=True
 Groups=sudo;admins;teachers;
+Show=False

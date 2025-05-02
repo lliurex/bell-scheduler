@@ -14,3 +14,4 @@ Category=Software
 ScriptPath=bell-scheduler.zmd
 Replaces=bell-scheduler-installer
 Groups=sudo;admins;teachers
+Show=False
