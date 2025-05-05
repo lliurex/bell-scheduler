@@ -67,7 +67,7 @@ ApplicationWindow {
             Layout.leftMargin:0
             Layout.fillWidth:true
             Layout.fillHeight: true
-	    Layout.minimumHeight:640
+            Layout.minimumHeight:640
             initialItem:loadView
             onCurrentIndexChanged:{
                 switch (currentIndex){
@@ -87,7 +87,7 @@ ApplicationWindow {
                     property: "opacity"
                     from: 0
                     to:1
-                    duration: 600
+                    duration: 60
                 }
             }
             replaceExit: Transition {
@@ -95,7 +95,7 @@ ApplicationWindow {
                     property: "opacity"
                     from: 1
                     to:0
-                    duration: 600
+                    duration: 60
                 }
             }
 
