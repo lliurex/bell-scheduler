@@ -86,7 +86,13 @@ Rectangle {
                 focus:true
                 width:100
                 visible:true
-                enabled:listBells.count==0?false:true
+                enabled:{
+                    if ((listBells.count==0)&& (text.length==0)) {
+                        false
+                    }else{
+                        true
+                    }
+                }
                 placeholderText:i18nd("bell-scheduler","Search...")
                 onTextChanged:{
                     filterModel.update()
@@ -155,7 +161,13 @@ Rectangle {
                         anchors.centerIn: parent
                         width: parent.width - (units.largeSpacing * 4)
                         visible: listBells.count==0?true:false
-                        text: i18nd("bell-scheduler","No bell is configured")
+                        text: {
+                            if (bellSearchEntry.text.length==0){
+                                i18nd("bell-scheduler","No bell is configured")
+                            }else{
+                                i18nd("bell-scheduler","No bell found")
+                            }
+                        }
                     }
                 } 
              }
