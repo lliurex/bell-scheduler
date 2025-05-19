@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-01 12:09+0200\n"
+"POT-Creation-Date: 2025-05-19 13:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,6 +111,7 @@ msgstr ""
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:220
 #: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:81
 #: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:185
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:185
 msgid "Apply"
 msgstr ""
 
@@ -124,6 +125,7 @@ msgstr ""
 #: bell-scheduler/python3-bellscheduler/rsrc/SliderPopUp.qml:200
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:252
 #: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:102
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:207
 #: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:207
 msgid "Cancel"
 msgstr ""
@@ -340,10 +342,12 @@ msgid "Remove filter"
 msgstr ""
 
 #: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:90
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:96
 msgid "Search..."
 msgstr ""
 
 #: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:158
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:166
 msgid "No bell is configured"
 msgstr ""
 
@@ -784,29 +788,40 @@ msgid "Edit time for bell"
 msgstr ""
 
 #: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:33
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:33
 msgid "Edit bell validity"
 msgstr ""
 
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:119
 #: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:119
 msgid "Day:"
 msgstr ""
 
 #: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:142
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:142
 msgid "From:"
 msgstr ""
 
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:157
 #: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:157
 msgid "to:"
 msgstr ""
 
 #: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:223
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:223
 msgid "You must indicate the two dates of range"
 msgstr ""
 
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:228
 #: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:228
 msgid "Last date in range must be major than init date"
 msgstr ""
 
 #: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:239
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:239
 msgid "You must indicate a date"
+msgstr ""
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:168
+msgid "No bell found"
 msgstr ""

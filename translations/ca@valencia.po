@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-01 12:09+0200\n"
-"PO-Revision-Date: 2024-10-01 12:10+0200\n"
+"POT-Creation-Date: 2025-05-19 13:52+0200\n"
+"PO-Revision-Date: 2025-05-19 13:54+0200\n"
 "Last-Translator: Angels <gimenez_angcam@gva.es>\n"
 "Language-Team: Valencian <http://weblate.lliurex.net/projects/bell-scheduler/"
 "bell-scheduler/ca@valencia/>\n"
@@ -350,10 +350,12 @@ msgid "Remove filter"
 msgstr "Elimina el filtre"
 
 #: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:90
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:96
 msgid "Search..."
 msgstr "Busca..."
 
 #: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:158
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:166
 msgid "No bell is configured"
 msgstr "No hi ha alarmes configurades"
 
@@ -853,3 +855,7 @@ msgstr "L'última data de l'interval ha de ser posterior a la data inicial"
 #: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:239
 msgid "You must indicate a date"
 msgstr "Cal que indiqueu una data"
+
+#: bell-scheduler/python3-bellscheduler/rsrc/BellsList.qml:168
+msgid "No bell found"
+msgstr "No s'ha trobat cap alarma"
