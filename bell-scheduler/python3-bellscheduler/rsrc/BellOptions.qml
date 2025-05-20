@@ -26,7 +26,7 @@ GridLayout{
         }  
         Rectangle{
             width:120
-            Layout.minimumHeight:475
+            /*Layout.minimumHeight:475*/
             Layout.fillHeight:true
             border.color: "#d3d3d3"
             GridLayout{

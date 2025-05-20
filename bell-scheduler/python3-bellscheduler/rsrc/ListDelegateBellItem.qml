@@ -24,10 +24,10 @@ Components.ItemDelegate{
     property bool isImgError
 
     enabled:true
-    height:145
+    height:125
 
     Rectangle {
-        height:visible?140:0
+        height:visible?120:0
         width:parent.width
         color:{
             if (isSoundError || isImgError){
@@ -39,7 +39,7 @@ Components.ItemDelegate{
         border.color: "transparent"
         Item{
             id: menuItem
-            height:visible?140:0
+            height:visible?120:0
             width:listBellItem.width-manageBellBtn.width
 
             MouseArea {
@@ -53,6 +53,7 @@ Components.ItemDelegate{
                         listBells.currentIndex=filterModel.visibleElements.indexOf(index)
                     }
                 }
+		
             }
             
             Column{
@@ -65,7 +66,7 @@ Components.ItemDelegate{
                     text:bellCron
                     font.family: "Quattrocento Sans Bold"
                     color:"#3366cc"
-                    font.pointSize: 44
+                    font.pointSize: 35
                     anchors.horizontalCenter:parent.horizontalCenter
                 }
                 Row{
@@ -126,8 +127,8 @@ Components.ItemDelegate{
             }
             Image{
                 id:bellImage
-                width:80
-                height:80
+                width:70
+                height:70
                 fillMode:Image.PreserveAspectFit
                 source:bellImg
                 anchors.verticalCenter:parent.verticalCenter
