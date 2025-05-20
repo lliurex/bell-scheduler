@@ -1,3 +1,9 @@
+bell-scheduler (0.25.6.19) noble; urgency=medium
+
+  * Changed minimum gui height
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 20 May 2025 11:43:13 +0200
+
 bell-scheduler (0.25.6.18) noble; urgency=medium
 
   * Fixed bug in search entry
