@@ -19,7 +19,7 @@ GridLayout{
 		Component {
 			id: delegateComponent
 			Label {
-				font.pointSize: 50
+				font.pointSize: 40
 				color:"#3daee9"
 				text:formatText(Tumbler.tumbler.count,modelData)
 				horizontalAlignment: Text.AlignHCenter
@@ -73,13 +73,13 @@ GridLayout{
 		Rectangle {
 			anchors.topMargin: 4
 	       	Layout.alignment:Qt.AlignCenter
-		    height: 80
-		    width: 80
+		    height: 60
+		    width: 60
 		    color:"transparent"
 		    Tumbler {
 		    	id: hoursTumbler
-		    	width:80
-	            height:80
+		    	width:60
+	            height:60
 	            model: 24
 	            currentIndex:bellStackBridge.bellCron[0]
 	            delegate:delegateComponent 
@@ -97,21 +97,21 @@ GridLayout{
 		Text{
 			id:clockSeparator
 	       	Layout.alignment:Qt.AlignCenter
-	       	font.pointSize:50
+	       	font.pointSize:40
 			color:"#3daee9"
 			text:":"
 	    }
 	    Rectangle {
 	    	anchors.topMargin: 4
 	       	Layout.alignment:Qt.AlignCenter
-	    	height: 80
-	    	width: 80
+	    	height: 60
+	    	width: 60
 	    	color:"transparent"
 
 	    	Tumbler {
 	    		id: minutesTumbler
-	    		height:80
-	    		width:80
+	    		height:60
+	    		width:60
 	    		model: 60
 	    		currentIndex:bellStackBridge.bellCron[1]
 	    		delegate: delegateComponent
@@ -131,7 +131,7 @@ GridLayout{
 			display:AbstractButton.IconOnly
 			icon.name:"edit-entry.svg"
 			Layout.preferredHeight: 35
-	       	Layout.alignment:Qt.AlignCenter
+			Layout.alignment:Qt.AlignCenter
 			Layout.topMargin:10
 			Layout.leftMargin:10
 			hoverEnabled:true
