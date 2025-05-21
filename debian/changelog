@@ -1,3 +1,9 @@
+bell-scheduler (0.15.6.10) jammy; urgency=medium
+
+  * Reduced gui height
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 21 May 2025 09:04:54 +0200
+
 bell-scheduler (0.15.6.9) jammy; urgency=medium
 
   * Fixed bug in search entry
