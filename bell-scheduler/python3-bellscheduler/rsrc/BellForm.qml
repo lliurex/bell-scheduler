@@ -177,16 +177,16 @@ Rectangle{
                 }
                 Rectangle{
                     id:container
-                    width:100
-                    height:100
+                    width:85
+                    height:85
                     border.color: "#ffffff"
                     border.width:5
                     color:"transparent"
    
                     Image{
                         id:bellImg
-                        width:80
-                        height:80
+                        width:65
+                        height:65
                         fillMode:Image.PreserveAspectFit
                         source:{
                             if (!bellStackBridge.bellImage[3]){

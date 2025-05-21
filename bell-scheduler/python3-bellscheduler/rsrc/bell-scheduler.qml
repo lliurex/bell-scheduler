@@ -37,8 +37,8 @@ ApplicationWindow {
         id: mainLayout
         anchors.fill: parent
         anchors.margins: margin
-        Layout.minimumWidth:980
-        Layout.minimumHeight:740
+        Layout.minimumWidth:960
+        Layout.minimumHeight:695
 
         RowLayout {
             id: bannerBox
