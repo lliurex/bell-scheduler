@@ -38,7 +38,7 @@ Components.ListItem{
     }
 
     Rectangle {
-        height:visible?140:0
+        height:visible?120:0
         width:parent.width
         color:{
             if (isSoundError || isImgError){
@@ -50,7 +50,7 @@ Components.ListItem{
         border.color: "transparent"
         Item{
             id: menuItem
-            height:visible?140:0
+            height:visible?120:0
             width:listBellItem.width-manageBellBtn.width
             
             Column{
@@ -63,7 +63,7 @@ Components.ListItem{
                     text:bellCron
                     font.family: "Quattrocento Sans Bold"
                     color:"#3366cc"
-                    font.pointSize: 44
+                    font.pointSize: 35
                     anchors.horizontalCenter:parent.horizontalCenter
                 }
                 Row{
@@ -124,8 +124,8 @@ Components.ListItem{
             }
             Image{
                 id:bellImage
-                width:80
-                height:80
+                width:70
+                height:70
                 fillMode:Image.PreserveAspectFit
                 source:bellImg
                 anchors.verticalCenter:parent.verticalCenter
