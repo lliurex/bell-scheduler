@@ -1,3 +1,9 @@
+bell-scheduler (0.25.6.20) noble; urgency=medium
+
+  * Changed zero files to show launcher in Zero-Center
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 23 May 2025 08:55:49 +0200
+
 bell-scheduler (0.25.6.19) noble; urgency=medium
 
   * Changed minimum gui height
