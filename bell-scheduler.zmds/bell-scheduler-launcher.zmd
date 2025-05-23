@@ -1,5 +1,4 @@
-#!/bin/sh
-
+#!/bin/bash
 
 exec /usr/sbin/bell-scheduler
 
