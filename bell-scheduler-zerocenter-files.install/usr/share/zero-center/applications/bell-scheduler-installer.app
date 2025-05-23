@@ -12,7 +12,6 @@ Comment[ca@valencia]=Assistent d'instal·lació del Bell-Scheduler (aplicació p
 Icon=bell-scheduler
 Category=Software
 ScriptPath=bell-scheduler-installer.zmd
-ReplacedWith=bell-scheduler
 Using=pkexec
 Service=True
 Modal=True
