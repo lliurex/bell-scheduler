@@ -1,3 +1,9 @@
+bell-scheduler (0.15.6.11) jammy; urgency=medium
+
+  * Fixed minor bug in remove all option
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 05 Jun 2025 11:46:33 +0200
+
 bell-scheduler (0.15.6.10) jammy; urgency=medium
 
   * Reduced gui height
