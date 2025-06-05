@@ -516,7 +516,7 @@ class Bridge(QObject):
 			self._updateBellsModel()
 			self.showMainMessage=[True,self.removeBellProcess.ret[1],"Ok"]
 		else:
-			self.showMainMessage=[False,self.removeBellProcess.ret[1],"Error"]
+			self.showMainMessage=[True,self.removeBellProcess.ret[1],"Error"]
 
 		self._manageOptions()
 		self.filterStatusValue="all"
