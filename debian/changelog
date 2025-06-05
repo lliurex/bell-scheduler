@@ -1,3 +1,9 @@
+bell-scheduler (0.25.6.21) noble; urgency=medium
+
+  * Fixed minor bug in remove all function
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 05 Jun 2025 11:49:37 +0200
+
 bell-scheduler (0.25.6.20) noble; urgency=medium
 
   * Changed zero files to show launcher in Zero-Center
