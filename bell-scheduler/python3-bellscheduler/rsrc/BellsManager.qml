@@ -197,7 +197,6 @@ Rectangle{
     ChangesDialog{
         id:removeBellDialog
         dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
-        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell List")
         dialogMsg:{
             if (bellsOptionsStackBridge.showRemoveBellDialog[1]){
                 i18nd("bell-scheduler","All bells will be deleted.\nDo yo want to continue?")
@@ -229,7 +228,6 @@ Rectangle{
     ChangesDialog{
         id:exportBellDialog
         dialogIcon:"/usr/share/icons/breeze/status/64/dialog-information.svg"
-        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell List")
         dialogMsg:i18nd("bell-scheduler","Alarms have been detected with random selection of sound files from a folder.\nRemember that this folder will not be included in the export made.\nIf the folder is not saved manually, when the export is restored, the alarms that\nuse it will be deactivated")
         dialogWidth:640
         btnAcceptVisible:false
@@ -251,7 +249,6 @@ Rectangle{
      ChangesDialog{
         id:importBellDialog
         dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
-        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell List")
         dialogMsg:i18nd("bell-scheduler","New bells configuration will be loaded and replace the existing configuration.\nDo you want to continue?")
         dialogWidth:600
         btnAcceptVisible:false

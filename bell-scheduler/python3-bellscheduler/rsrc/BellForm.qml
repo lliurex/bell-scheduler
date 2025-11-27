@@ -438,7 +438,6 @@ Rectangle{
     ChangesDialog{
         id:settingsChangesDialog
         dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
-        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell")
         dialogVisible:bellStackBridge.showChangesInBellDialog
         dialogMsg:i18nd("bell-scheduler","The are pending changes to save.\nDo you want save the changes or discard them?")
         dialogWidth:400
@@ -468,7 +467,6 @@ Rectangle{
    ChangesDialog{
         id:removeValidityDialog
         dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
-        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell")
         dialogMsg:i18nd("bell-scheduler","The alarm validity will be deleted\nDo you want to continue?")
         dialogWidth:400
         btnAcceptVisible:false
@@ -495,7 +493,6 @@ Rectangle{
    ChangesDialog{
         id:bellDuplicateDialog
         dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
-        dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell")
         dialogMsg:i18nd("bell-scheduler","There are already alarms programmed for the same time and days.\nDo you wish to continue?")
         dialogVisible:bellStackBridge.showBellDuplicateDialog
         dialogWidth:500

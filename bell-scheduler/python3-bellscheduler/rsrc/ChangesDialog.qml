@@ -3,10 +3,9 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 
-Dialog {
+Popup {
     id: customDialog
     property alias dialogIcon:dialogIcon.source
-    property alias dialogTitle:customDialog.title
     property alias dialogVisible:customDialog.visible
     property alias dialogMsg:dialogText.text
     property alias dialogWidth:container.implicitWidth
@@ -22,9 +21,10 @@ Dialog {
     signal rejectDialogClicked
 
     visible:dialogVisible
-    title:dialogTitle
     modal:true
     anchors.centerIn:Overlay.overlay
+    closePolicy:Popup.NoAutoClose
+
     background:Rectangle{
         color:"#ebeced"
         border.color:"#b8b9ba"
@@ -57,11 +57,11 @@ Dialog {
         
         }
       
-        DialogButtonBox {
-            buttonLayout:DialogButtonBox.KdeLayout
+        RowLayout {
             anchors.bottom:parent.bottom
             anchors.right:parent.right
             anchors.topMargin:15
+            spacing:10
 
             Button {
                 id:dialogApplyBtn
@@ -70,7 +70,9 @@ Dialog {
                 text: btnAcceptText
                 visible:btnAcceptVisible
                 font.pointSize: 10
-                DialogButtonBox.buttonRole: DialogButtonBox.ApplyRole
+                onClicked:{
+                    dialogApplyClicked() 
+                }
 
             }
 
@@ -81,8 +83,9 @@ Dialog {
                 text: btnDiscardText
                 visible:btnDiscardVisible
                 font.pointSize: 10
-                DialogButtonBox.buttonRole: DialogButtonBox.DestructiveRole
-
+                onClicked:{
+                    discardDialogClicked()
+                }
             }
 
             Button {
@@ -91,21 +94,11 @@ Dialog {
                 icon.name:btnCancelIcon
                 text: btnCancelText
                 font.pointSize: 10
-                DialogButtonBox.buttonRole:DialogButtonBox.RejectRole
-        
+                onClicked:{
+                    rejectDialogClicked()
+                }        
             }
-
-            onApplied:{
-                dialogApplyClicked()
-            }
-
-            onDiscarded:{
-                discardDialogClicked()
-            }
-
-            onRejected:{
-                rejectDialogClicked()
-            }
+ 
         }
     }
  }
