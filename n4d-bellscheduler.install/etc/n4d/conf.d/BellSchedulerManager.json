@@ -17,7 +17,8 @@
             "allowed_groups": [
                 "sudo",
                 "admins",
-                "teachers"
+                "teachers",
+                "NoDocente"
             ]
         },
         
@@ -25,7 +26,8 @@
             "allowed_groups": [
                 "sudo",
                 "admins",
-                "teachers"
+                "teachers",
+                "NoDocente"
             ]
         },
        
@@ -33,28 +35,32 @@
             "allowed_groups": [
                 "sudo",
                 "admins",
-                "teachers"
+                "teachers",
+                "NoDocente"
             ]
         },
         "export_bells_conf": {
             "allowed_groups": [
                 "sudo",
                 "admins",
-                "teachers"
+                "teachers",
+                "NoDocente"
             ]
         },
         "import_bells_conf": {
             "allowed_groups": [
                 "sudo",
                 "admins",
-                "teachers"
+                "teachers",
+                "NoDocente"
             ]
         },
         "enable_holiday_control": {
             "allowed_groups": [
                 "sudo",
                 "admins",
-                "teachers"
+                "teachers",
+                "NoDocente"
             ]
         },
       
@@ -69,21 +75,24 @@
             "allowed_groups": [
                 "sudo",
                 "admins",
-                "teachers"
+                "teachers",
+                "NoDocente"
             ]
         },
         "change_activation_status": {
             "allowed_groups": [
                 "sudo",
                 "admins",
-                "teachers"
+                "teachers",
+                "NoDocente"
             ]
         },
         "remove_all_bells": {
             "allowed_groups": [
                 "sudo",
                 "admins",
-                "teachers"
+                "teachers",
+                "NoDocente"
             ]
         },
         "read_audio_device_config":{
@@ -96,7 +105,8 @@
             "allowed_groups":[
                 "sudo",
                 "admins",
-                "teachers"
+                "teachers",
+                "NoDocente"
             ]
         }
     }
