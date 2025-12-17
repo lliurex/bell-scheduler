@@ -1,3 +1,10 @@
+bell-scheduler (0.15.6.12) jammy; urgency=medium
+
+  * Allowed group NoDocente to use app
+  * Fixed n4d timeout
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 17 Dec 2025 10:52:34 +0100
+
 bell-scheduler (0.15.6.11) jammy; urgency=medium
 
   * Fixed minor bug in remove all option
