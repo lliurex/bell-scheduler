@@ -1,3 +1,10 @@
+bell-scheduler (0.25.6.23) noble; urgency=medium
+
+  * Allowed group NoDocente to use app
+  * Fixed n4d timeout
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 17 Dec 2025 10:47:24 +0100
+
 bell-scheduler (0.25.6.22) noble; urgency=medium
 
   * Fixed custom dialog template
