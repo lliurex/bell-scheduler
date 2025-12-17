@@ -76,7 +76,7 @@ class BellManager(object):
 
 		ticket=ticket.replace('##U+0020##',' ')
 		tk=n4d.client.Ticket(ticket)
-		self.client=n4d.client.Client(ticket=tk)
+		self.client=n4d.client.Client(ticket=tk,timeout=120)
 
 	#def createN4dClient
 
