@@ -27,6 +27,7 @@ Components.ItemDelegate{
     height:125
 
     Rectangle {
+        id:containerItem
         height:visible?120:0
         width:parent.width
         color:{
@@ -44,7 +45,8 @@ Components.ItemDelegate{
 
             MouseArea {
                 id: mouseAreaOption
-                anchors.fill: parent
+                width: containerItem.width
+                height: menuItem.height
                 hoverEnabled:true
                 propagateComposedEvents:true
 
