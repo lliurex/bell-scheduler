@@ -19,6 +19,7 @@ class BellSchedulerPlayer:
 		self.configFile=os.path.join(self.configDir,"bell_list")
 		self.tokenFolder="/tmp/.BellScheduler"
 		self.tokenPath=os.path.join(self.tokenFolder,'bellscheduler-token')
+		self.newTokenPath=os.path.join(self.tokenFolder,'newbellscheduler-token')
 		self.audioDeviceConfigFile=os.path.join(self.configDir,"audio_device")
 		self.audioDeviceCommand=""
 		self.deviceId=""
@@ -39,7 +40,7 @@ class BellSchedulerPlayer:
 		if abort:
 			sys.exit(1)
 		else:
-			self._manageToken('create')
+			self._manageToken('create',bellInfo)
 			user=self._getActiveUser()
 
 			playCommand=self._getPlayCommand(bellInfo)
@@ -124,7 +125,7 @@ class BellSchedulerPlayer:
 						except:
 							validity=""
 						bellInfo.append(validity)
-						tmpTime="%s:%s"%(bellsConfig[item]["hour"],bellsConfig[item]["minute"])
+						tmpTime=self._formatTime(bellsConfig[item]["hour"],bellsConfig[item]["minute"])
 						bellInfo.append(tmpTime)
 						bellInfo.append(bellsConfig[item]["name"])
 						break;
@@ -158,18 +159,25 @@ class BellSchedulerPlayer:
 
 	#def _checkBellValidity
 
-	def _manageToken(self,action):
+	def _manageToken(self,action,bellInfo=None):
 
 		if action=='create':
 			if not os.path.exists(self.tokenFolder):
 				os.mkdir(self.tokenFolder)
 
 			with open(self.tokenPath,'a') as fd:
-				fd.write("%s\n"%self.bellId)
-
+				fd.write("%s\n"%(self.bellId))
+			
+			if (bellInfo!=None):	
+				with open(self.newTokenPath,'a') as fd:
+					fd.write("%s###%s###%s###%s\n"%(self.bellId,bellInfo[6],bellInfo[5],bellInfo[0]))
 		else:
 			if os.path.exists(self.tokenPath):
 				os.remove(self.tokenPath)
+			
+			if os.path.exists(self.newTokenPath):
+				os.remove(self.newTokenPath)
+			
 
 	#def _manageToken
 
@@ -277,6 +285,19 @@ class BellSchedulerPlayer:
 				pass
 
 	#def _getAudioDeviceOutput
+
+	def _formatTime(self, bellHour, bellMinute):
+
+		if bellHour<10:
+			bellHour="0%s"%bellHour
+		if bellMinute<10:
+			bellMinute="0%s"%bellMinute
+
+		formatTime="%s:%s"%(bellHour,bellMinute)
+
+		return formatTime
+
+	#def formatTime
 
 #class BellSchedulerPlayer
 

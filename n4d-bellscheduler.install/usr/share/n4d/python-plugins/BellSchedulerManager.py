@@ -404,7 +404,7 @@ class BellSchedulerManager:
 			except:
 				start_time=0	
 	
-			cmd="/usr/bin/BellSchedulerPlayer "+item
+			cmd="exec /usr/bin/BellSchedulerPlayer "+item
 			
 			info_to_cron["BellScheduler"][key]["cmd"]=cmd
 
