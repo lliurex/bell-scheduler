@@ -616,47 +616,12 @@ class BellSchedulerManager:
 
 	def stop_bell(self):
 		
-		cmd_kill=""
-		bells_kill=""
-
-		bells_pid=self._get_bells_pid()["data"]
-
-		if len(bells_pid)>0:
-
-			for item in bells_pid:	
-				bells_kill=bells_kill+item+" "
-				cmd_kill=cmd_kill+'kill ' +str(item)+";"
-			
-			bells_kill=bells_kill.strip()	
-			os.system(cmd_kill)
-			result={"status":True,"msg":"Alarm stoppped: "+bells_kill,"code":"","data":""}
-			return n4d.responses.build_successful_call_response(result)	
+		cmd_kill="pkill -f 'ffplay -nodisp -autoexit -loglevel error -ss'"
+		os.system(cmd_kill)
+		result={"status":True,"msg":"Alarm stoppped: "+bells_kill,"code":"","data":""}
+		return n4d.responses.build_successful_call_response(result)	
 
 	#def stop_bell 
-			
-	def _get_bells_pid(self):
-	
-		bells_pid=[]
-
-		cmd="ps -ef | grep 'ffplay -nodisp -autoexit' | grep -v '/bin/bash' |grep -v 'grep' |egrep ' ' | awk '{print $2}' "
-		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-		output=p.communicate()[0]
-		
-		if type(output) is bytes:
-			output=output.decode()
-
-		lst=output.split("\n")
-		lst=lst[:-1]
-		
-		if len(lst)>0:
-			for item in lst:
-				bells_pid.append(item)
-	
-			result={"status":True,"msg":"","code":"","data":bells_pid}
-		
-		return result	
-
-	#def get_bells_pid
 			
 	def update_config_file(self,file=None):
 
