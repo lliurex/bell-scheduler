@@ -629,7 +629,7 @@ class BellSchedulerManager:
 		
 		cmd_kill="pkill -f 'ffplay -nodisp -autoexit -loglevel error -ss'"
 		os.system(cmd_kill)
-		result={"status":True,"msg":"Alarm stoppped: "+bells_kill,"code":"","data":""}
+		result={"status":True,"msg":"Alarm stoppped","code":"","data":""}
 		return n4d.responses.build_successful_call_response(result)	
 
 	#def stop_bell 
