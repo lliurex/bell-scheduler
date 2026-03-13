@@ -168,9 +168,16 @@ class BellSchedulerPlayer:
 			with open(self.tokenPath,'a') as fd:
 				fd.write("%s\n"%(self.bellId))
 			
-			if (bellInfo!=None):	
+			if (bellInfo!=None):
 				with open(self.newTokenPath,'a') as fd:
-					fd.write("%s###%s###%s###%s\n"%(self.bellId,bellInfo[6],bellInfo[5],bellInfo[0]))
+					try:
+						if len(bellInfo)>0:
+							fd.write("%s###%s###%s###%s\n"%(self.bellId,bellInfo[6],bellInfo[5],bellInfo[0]))
+						else:
+							fd.write("%s\n"%(self.bellId))
+					except:
+						fd.write("%s\n"%(self.bellId))
+			
 		else:
 			if os.path.exists(self.tokenPath):
 				os.remove(self.tokenPath)
