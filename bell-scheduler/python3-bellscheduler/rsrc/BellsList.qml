@@ -136,7 +136,7 @@ Rectangle {
                         statusFilter:bellsOptionsStackBridge.filterStatusValue
 
                         delegate: ListDelegateBellItem{
-                            width:bellsTable.width
+                            width:bellsTable.width-18
                             bellId:model.id
                             bellCron:model.cron
                             bellMo:model.mo
