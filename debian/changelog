@@ -1,3 +1,11 @@
+bell-scheduler (0.15.7) jammy; urgency=medium
+
+  * Changed bell token to improve interaction with widget
+  * Improved stop bell function
+  * Other minor fixes
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 16 Mar 2026 15:16:07 +0100
+
 bell-scheduler (0.15.6.12) jammy; urgency=medium
 
   * Allowed group NoDocente to use app
