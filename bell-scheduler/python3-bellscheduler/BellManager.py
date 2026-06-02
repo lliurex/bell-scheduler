@@ -34,6 +34,8 @@ class BellManager(object):
 	FOLDER_WITH_INCORRECT_FILES_ERROR=-38
 	TIME_OUT_VALIDATION_ERROR=-41
 	DAY_NOT_IN_VALIDITY_ERROR=-56
+	ERROR_TIMEOUT_EXPIRED=-57
+	ERROR_FFPROBE_MISSING=-58
 
 	ACTION_SUCCESSFUL=0
 	BELL_REMOVED_SUCCESSFULLY=14
@@ -83,7 +85,7 @@ class BellManager(object):
 	def _debug(self,function,msg):
 
 		if self.dbg==1:
-			print("[BELLSCHEDULER]: "+ str(function) + str(msg))
+			print(f"[BELLSCHEDULER]: {function} {msg}")
 
 	#def _debug	
 
@@ -103,6 +105,7 @@ class BellManager(object):
 
 		result=self.client.BellSchedulerManager.sync_with_cron()
 		self._debug("SyncWithCron: ",result)
+		
 		return result
 
 	#def syncWithCron
@@ -110,12 +113,18 @@ class BellManager(object):
 	def readConf(self):
 		
 		self.loadError=False
+
 		result=self.client.BellSchedulerManager.read_conf()
+
 		self._debug("Read configuration file: ",result)
-		self.bellsConfig=result["data"]
+
+		self.bellsConfig=result.get("data",{})
+
 		self.bellsConfigData=[]
-		if result["status"]:
+		
+		if result.get("status"):
 			self._getBellsConfig()
+
 		self._getAudioDeviceConfig()
 		
 		return result
@@ -124,63 +133,63 @@ class BellManager(object):
 
 	def _getBellsConfig(self):
 
+		daysMapping={0:"mo", 1:"tu", 2:"we", 3:"th", 4:"fr"}
 		orderBells=self._getOrderBell()
 
 		for item in orderBells:
+			bell=self.bellsConfig.get(item)
 			soundError=False
 			imgError=False
-			tmp={}
-			search=""
+			tmp={"id":item}
 			tmp["id"]=item
+			
 			tmp["cron"]=self.formatTime(item)[2]
-			search+=tmp["cron"]
-			tmp["mo"]=self.bellsConfig[item]["weekdays"]["0"]
-			if tmp["mo"]:
-				search+=self._getDayToSearch(0)
-			tmp["tu"]=self.bellsConfig[item]["weekdays"]["1"]
-			if tmp["tu"]:
-				search+=self._getDayToSearch(1)
-			tmp["we"]=self.bellsConfig[item]["weekdays"]["2"]
-			if tmp["we"]:
-				search+=self._getDayToSearch(2)
-			tmp["th"]=self.bellsConfig[item]["weekdays"]["3"]
-			if tmp["th"]:
-				search+=self._getDayToSearch(3)
-			tmp["fr"]=self.bellsConfig[item]["weekdays"]["4"]
-			if tmp["fr"]:
-				search+=self._getDayToSearch(4)
-			try:
-				tmp["validity"]=self.bellsConfig[item]["validity"]["value"]
-				search+=tmp["validity"]
-				tmp["validityActivated"]=self.bellsConfig[item]["validity"]["active"]
-			except:
-				tmp["validity"]=""
-				tmp["validityActivated"]=False
-			if os.path.exists(self.bellsConfig[item]["image"]["path"]):
-				tmp["img"]=self.bellsConfig[item]["image"]["path"]
+			search=[tmp["cron"]]
+
+			weekdays=bell.get("weekdays",{})
+			for dayIdx,dayKey in daysMapping.items():
+				isActive=weekdays.get(str(dayIdx),False)
+				tmp[dayKey]=isActive
+
+				if isActive:
+					search.append(self._getDayToSearch(dayIdx))
+
+			validityInfo=bell.get("validity",{})
+			tmp["validity"]=validityInfo.get("value","")
+			tmp["validityActivated"]=validityInfo.get("active",False)
+			if tmp["validity"]:
+					search.append(tmp["validity"])
+
+			
+			imgPath=bell.get("image",{}).get("path","")
+			if os.path.exists(imgPath):
+				tmp["img"]=imgPath
 			else:
 				imgError=True
 				tmp["img"]=self.imgNoDispPath
 				self.loadError=True
 
-			tmp["name"]=self.bellsConfig[item]["name"]
-			search+=tmp["name"]
+			tmp["name"]=bell.get("name")
+			search.append(tmp["name"])
+
 			tmpRet=self._loadSoundPath(item)
 			tmp["sound"]=tmpRet[1]
 			if not tmpRet[0]:
-				tmp["bellActivated"]=self.bellsConfig[item]["active"]
+				tmp["bellActivated"]=bell.get("active",False)
 			else:
 				soundError=True
 				self.loadError=True
 				tmp["bellActivated"]=False
-				self.bellsConfig[item]["active"]=False
+				bell["active"]=False
 				self._saveConf(self.bellsConfig,item,"active")
  
-			tmp["metaInfo"]=search
+			tmp["metaInfo"]="".join(search)
 			tmp["isSoundError"]=soundError
 			tmp["isImgError"]=imgError
 
 			self.bellsConfigData.append(tmp)
+
+		self.bellsMap = {item["id"]: item for item in self.bellsConfigData if "id" in item}
 
 	#def _getBellsConfig
 
@@ -188,17 +197,11 @@ class BellManager(object):
 
 		self.imagesConfigData=[]
 
-		tmpFiles=[]
 		if os.path.exists(self.bannersPath):
-			for item in os.listdir(self.bannersPath):
-				tmpFiles.append(item)
-			
-			tmpFiles.sort()
-			for item in tmpFiles:
-				tmp={}
-				tmp["imageSource"]="%s/%s"%(self.bannersPath,item)
-				self.imagesConfigData.append(tmp)
+			sortedFiles=sorted(os.listdir(self.bannersPath))
 
+			self.imagesConfigData=[{"imageSource":os.path.join(self.bannersPath,item)} for item in sortedFiles]
+		
 	#def _getImagesConfig
 
 	def initValues(self):
@@ -217,155 +220,157 @@ class BellManager(object):
 		self.bellStartIn=0
 		self.bellDuration=0
 		self.bellActive=False
-		self.currentBellConfig={}
-		self.currentBellConfig["hour"]=self.bellCron[0]
-		self.currentBellConfig["minute"]=self.bellCron[1]
-		self.currentBellConfig["validity"]={}
-		self.currentBellConfig["validity"]["active"]=self.bellValidityActive
-		self.currentBellConfig["validity"]["value"]=self.bellValidityValue
-		self.currentBellConfig["weekdays"]={}
-		self.currentBellConfig["weekdays"]["0"]=self.bellDays[0]
-		self.currentBellConfig["weekdays"]["1"]=self.bellDays[1]
-		self.currentBellConfig["weekdays"]["2"]=self.bellDays[2]
-		self.currentBellConfig["weekdays"]["3"]=self.bellDays[3]
-		self.currentBellConfig["weekdays"]["4"]=self.bellDays[4]
-		self.currentBellConfig["name"]=self.bellName
-		self.currentBellConfig["image"]={}
-		self.currentBellConfig["image"]["option"]=self.bellImage[0]
-		self.currentBellConfig["image"]["path"]=self.imagesConfigData[self.bellImage[1]]["imageSource"]
-		self.currentBellConfig["sound"]={}
-		self.currentBellConfig["sound"]["option"]=self.bellSound[0]
-		self.currentBellConfig["sound"]["path"]=self.bellSound[1]
-		self.currentBellConfig["play"]={}
-		self.currentBellConfig["play"]["duration"]=self.bellDuration
-		self.currentBellConfig["play"]["start"]=self.bellStartIn
-		self.currentBellConfig["active"]=self.bellActive
-		self.currentBellConfig["soundDefaultPath"]=self.bellSound[3]
+
+		imgId=self.bellImage[1]
+		defaultImgPath=(
+			self.imagesConfigData[imgId]["imageSource"]
+			if len(self.imagesConfigData) >imgId else self.bellImage[2]
+		)
+
+		self.currentBellConfig={
+			"hour":self.bellCron[0],
+			"minute":self.bellCron[1],
+			"validity":{
+				"active":self.bellValidityActive,
+				"value":self.bellValidityValue
+			},
+			"weekdays":{str(i):status for i,status in enumerate(self.bellDays)},
+			"name":self.bellName,
+			"image":{
+				"option":self.bellImage[0],
+				"path":defaultImgPath
+			},
+			"sound":{
+				"option":self.bellSound[0],
+				"path":self.bellSound[1]
+			},
+			"play":{
+				"duration":self.bellDuration,
+				"start":self.bellStartIn
+			},
+			"active":self.bellActive,
+			"soundDefaultPath":self.bellSound[3]
+		}
 	
 	#def initValues
 
 	def _loadSoundPath(self,bell):
 		
-		path=self.bellsConfig[bell]["sound"]["path"]
-		option=self.bellsConfig[bell]["sound"]["option"]
+		soundConfig=self.bellsConfig[bell]["sound"]
+
+		path=soundConfig["path"]
+		option=soundConfig["option"]
 		error=False
 		
-		if option!="url" and option!="urlslist":
-			if os.path.exists(path):
-				if option=="file":
-					file=os.path.basename(path)
-					return [error,file]
-				else:
-					return [error,path]	
-			else:
-				self.loadError=True
-				error=True
-				msg=_("ERROR: File or directory not available")
-				return [error,msg]	
-		else:
+		if option in ["url","url_list"]:
 			self.loadError=True
-			error=True
-			msg=_("ERROR: Current option for sound not supported")
-			return [error,msg]
+			return [True,_("ERROR: Current option for sound not supported")]
+			
+		if not os.path.exists(path):
+			self.loadError=True
+			return [True,_("ERROR: File or directory not available")]
+
+		if option=="file":
+			return [False,os.path.basename(path)]
+
+		return [False,path]
 
 	#def _loadSoundPath
 
 	def _getDayToSearch(self,day):
 
-		tmpDay=""
-		if day==0:
-			tmpDay+=_("Monday")
-			tmpDay+=_("M")
-			tmpDay+=("Mon")
-		elif day==1:
-			tmpDay+=_("Tuesday")
-			tmpDay+=_("T")
-			tmpDay+=_("Tue")
-		elif day==2:
-			tmpDay+=_("Wednesday")	
-			tmpDay+=_("W")
-			tmpDay+=_("Wed")
-		elif day==3:
-			tmpDay+=_("Thursday")
-			tmpDay+=_("R")
-			tmpDay+=_("Thu")
-		elif day==4:
-			tmpDay+=_("Friday")
-			tmpDay+=_("F")	
-			tmpDay+=_("Fri")
+		daysMap={
+			0:_("Monday")+_("M")+_("Mon"),
+			1:_("Tuesday")+_("T")+_("Tue"),
+			2:_("Wednesday")+_("W")+_("Wed"),
+			3:_("Thursday")+_("R")+_("Thu"),
+			4:_("Friday")+_("F")+_("Fri")
+		}
 
-		return tmpDay
+		return daysMap.get(day,"")
 
 	#def _getDayToSearch
 
 	def loadBellConfig(self,bellToLoad,duplicateBell):
 
+		bellId=bellToLoad[0]
+
 		if not duplicateBell:
-			self.bellToLoad=bellToLoad[0]
-		self.currentBellConfig=self.bellsConfig[bellToLoad[0]]
-		self.bellCron=[self.currentBellConfig["hour"],self.currentBellConfig["minute"]]
-		self.bellDays=[self.currentBellConfig["weekdays"]["0"],self.currentBellConfig["weekdays"]["1"],self.currentBellConfig["weekdays"]["2"],self.currentBellConfig["weekdays"]["3"],self.currentBellConfig["weekdays"]["4"]]
-		try:
-			self.bellValidityActive=self.currentBellConfig["validity"]["active"]
-			self.bellValidityValue=self.currentBellConfig["validity"]["value"]
-		except:
-			self.currentBellConfig["validity"]={}
-			self.currentBellConfig["validity"]["active"]=False
-			self.currentBellConfig["validity"]["value"]=""
-			self.bellValidityActive=False
-			self.bellValidityValue=""
+			self.bellToLoad=bellId
+
+		tmpConfig=self.bellsConfig[bellId]	
+		self.currentBellConfig=tmpConfig
+
+		self.bellCron=[tmpConfig["hour"],tmpConfig["minute"]]
+		
+		weekdays=tmpConfig.get("weekdays",{})
+		self.bellDays=[weekdays.get(str(i),False) for i in range(5)]
+		
+		
+		validity=tmpConfig.get("validity",{})
+		self.bellValidityActive=validity.get("active",False)
+		self.bellValidityValue=validity.get("value","")
+		tmpConfig["validity"]={"active":self.bellValidityActive,"value":self.bellValidityValue}
+
 		self.bellValidityDaysInRange=[]
 		self._getValidityConfig(self.bellValidityValue)
-		self.enableBellValidity=self.areDaysChecked(self.currentBellConfig["weekdays"])
-		self.bellName=self.currentBellConfig["name"]
-		if self.currentBellConfig["image"]["option"]=="stock":
-			imgIndex=self._getImageIndexFromPath(self.currentBellConfig["image"]["path"])
-		else:
-			imgIndex=1
-		self.bellImage=[self.currentBellConfig["image"]["option"],imgIndex,self.currentBellConfig["image"]["path"],bellToLoad[1]]
+		self.enableBellValidity=self.areDaysChecked(weekdays)
+		self.bellName=tmpConfig["name"]
 
-		tmpSoundPath=self.currentBellConfig["sound"]["path"]
+		imgConfig=tmpConfig["image"]
+		imgIndex=(
+			self._getImageIndexFromPath(imgConfig["path"])
+			if imgConfig["option"]=="stock"
+			else 1
+		)
+
+		self.bellImage=[imgConfig["option"],imgIndex,imgConfig["path"],bellToLoad[1]]
+
+		soundConfig=tmpConfig["sound"]
+		tmpSoundPath=soundConfig["path"]
 		soundDefaultPath=True
-		if self.currentBellConfig["sound"]["option"]=="file":
-			if self.soundsPath not in tmpSoundPath:
-				soundDefaultPath=False
-		self.bellSound=[self.currentBellConfig["sound"]["option"],tmpSoundPath,bellToLoad[2],soundDefaultPath]
-		self.bellStartIn=self.currentBellConfig["play"]["start"]
-		self.bellDuration=self.currentBellConfig["play"]["duration"]
-		self.bellActive=self.currentBellConfig["active"]
-		self.currentBellConfig["soundDefaultPath"]=soundDefaultPath
+
+		if soundConfig["option"]=="file" and self.soundsPath not in tmpSoundPath:
+			soundDefaultPath=False
+		
+		self.bellSound=[soundConfig["option"],tmpSoundPath,bellToLoad[2],soundDefaultPath]
+		
+		playConfig=tmpConfig.get("play",{})
+		self.bellStartIn=playConfig.get("start",0)
+		self.bellDuration=playConfig.get("duration",0)
+
+		self.bellActive=tmpConfig["active"]
+		tmpConfig["soundDefaultPath"]=soundDefaultPath
 
 	#def loadBellConfig
 
 	def _getImageIndexFromPath(self,imagePath):
 
-		for i in range(len(self.imagesConfigData)):
-			if self.imagesConfigData[i]["imageSource"]==imagePath:
+		for i, item in enumerate(self.imagesConfigData):
+			if item.get("imageSource")==imagePath:
 				return i
+		
+		return 0
 
 	#def _getImageIndexFromPath
 
 	def _getValidityConfig(self,validityInfo):
 
-		tmpValue=validityInfo
+		if not validityInfo:
+			return
 
-		if tmpValue!="":
-			if "-" in tmpValue:
-				self.bellValidityRangeOption=True
-				self.bellValidityDaysInRange=self.getDaysInRange(tmpValue)
-			else:
-				self.bellValidityRangeOption=False
-				self.bellValidityDaysInRange.append(tmpValue)
+		if "-" in validityInfo:
+			self.bellValidityRangeOption=True
+			self.bellValidityDaysInRange=self.getDaysInRange(validityInfo)
+		else:
+			self.bellValidityRangeOption=False
+			self.bellValidityDaysInRange=[validityInfo]
 
 	#def _getValidityConfig
 
 	def areDaysChecked(self,daysSelected):
 
-		for item in range(len(daysSelected)):
-			if daysSelected[str(item)]:
-				return True
-		
-		return False
+		return any(daysSelected.values())
 
 	#def areDaysChecked
 	
@@ -375,6 +380,7 @@ class BellManager(object):
 				
 		result=self.client.BellSchedulerManager.save_changes(info,change,action)
 		self._debug("Save configuration file: ",result)
+		
 		return result
 
 	#def _saveConf		
@@ -385,92 +391,117 @@ class BellManager(object):
 		checkImage={"result":True,"code":"","data":""}
 		checkSound={"result":True,"code":"","data":""}
 
-		if data["name"]=="":
+		if not data.get("name"):
 			return {"result":False,"code":BellManager.MISSING_BELL_NAME_ERROR,"data":""}
 
-		if data["validity"]["active"]:
-			checkValidity=self.checkValidity(data["weekdays"],data["validity"]["value"])
-		
-		if checkValidity==None:
-			if data["image"]["option"]=="custom":
-				if data["image"]["path"]!="":
-					checkImage=self.checkMimetypes(data["image"]["path"],"image")
-				else:
-					return {"result":False,"code":BellManager.MISSING_IMAGE_FILE_ERROR,"data":""}
-			
-			if checkImage["result"]:
-				if data["sound"]["option"]=="file":
-					if data["sound"]["path"]!="":
-						checkSound=self.checkMimetypes(data["sound"]["path"],"audio")
-						
-						if checkSound["result"]:
-							return self.checkAudiofile(data["sound"]["path"],"file")
-						else:
-							return checkSound
-					else:
-						return {"result":False,"code":BellManager.MISSING_SOUND_FILE_ERROR,"data":""}
+		validity=data.get("validity",{})
 
-				elif data["sound"]["option"]=="directory":
-					if data["sound"]["path"]=="":
-						return {"result":False,"code":BellManager.MISSING_SOUND_FOLDER_ERROR,"data":""}
-					else:
-						self.correctFiles=0
-						return self.checkDirectory(data["sound"]["path"])	
-					
-			else:
+		if validity.get("active"):
+			checkValidity=self.checkValidity(data.get("weekdays",{}),validity.get("value",""))
+			
+			if checkValidity is not None:
+				return checkValidity
+
+		imgConfig=data.get("image",{})
+
+		if imgConfig.get("option")=="custom":
+			imgPath=imgConfig.get("path")
+			if not imgPath:
+				return {"result":False,"code":BellManager.MISSING_IMAGE_FILE_ERROR,"data":""}
+
+			checkImage=self.checkMimetypes(imgPath,"image")
+			
+			if not checkImage.get("result"):
 				return checkImage
-		else:
-			return checkValidity			
+
+		soundConfig=data.get("sound",{})
+		soundOption=soundConfig.get("option")
+		soundPath=soundConfig.get("path")
+
+		if soundOption=="file":
+			if not soundPath:
+				return {"result":False,"code":BellManager.MISSING_SOUND_FILE_ERROR,"data":""}
 	
+			checkSound=self.checkMimetypes(soundPath,"audio")
+			
+			if not checkSound.get("result"):
+				return checkSound
+
+			return self.checkAudiofile(soundPath,"file")
+		
+		if soundOption=="directory":
+			if not soundPath:
+				return {"result":False,"code":BellManager.MISSING_SOUND_FOLDER_ERROR,"data":""}
+
+			self.correctFiles=0
+			
+			return self.checkDirectory(soundPath)
+
+		return {"result":True,"code":"","data":""}	
+					
 	#def checkData
 
 	def checkMimetypes(self,file,check):
 
 		mime = MimeTypes()
-		fileMimeType= mime.guess_type(file)
-		error=False
+		fileMimeType,_= mime.guess_type(file)
 		
 		if check=="audio":
-			if fileMimeType[0]!=None:
-				if not 'audio' in fileMimeType[0] and not 'video' in fileMimeType[0]:
-					error=True
-			else:
-				error=True
-		else:
-			if fileMimeType[0]!=None:
-				if not 'image' in fileMimeType[0]: 
-					error=True
-			else:
-				error=True
-
-		if error:
-			if check=="audio":
+			if not fileMimeType or (not fileMimeType.startswith("audio") and not fileMimeType.startswith("video")):
 				return {"result":False,"code":BellManager.INVALID_SOUND_FILE_ERROR,"data":""}
-			else:
-				return {"result":False,"code":BellManager.INVALID_IMAGE_FILE_ERROR,"data":""}
 		else:
-			return {"result":True,"code":"","data":""}
+			if not fileMimeType or not fileMimeType.startswith("image"):
+				return {"result":False,"code":BellManager.INVALID_IMAGE_FILE_ERROR,"data":""}
+
+		return {"result":True,"code":"","data":""}
 
 	#def checkMimetypes			
 				
 	def checkAudiofile(self,file,type):
 		
-		params=' -show_entries stream=codec_type,duration -of compact=p=0:nk=1'
+		ffprobeArgs=[
+			"ffprobe",
+			"-show_entries stream codec_type duration",
+			"-of",
+			"compact=p=0:nk=1"
+		]
 		
-		if type=="file":
-			cmd='ffprobe -i "'+file +'"'+ params
-		else:
-			cmd='ffprobe -i $(youtube-dl -g "'+file+'" |sed -n 2p) '+params
+		if type!="file":
+			downloader="yt-dlp" if shutil.wicth("yt-dlp") else "youtube-dl"
 
-			
-		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
-		poutput=p.communicate()[0]
-		
-		if len(poutput)==0:
-			return {"result":False,"code":BellManager.SOUND_FILE_URL_NOT_VALID_ERROR,"data":""}	
+			try:
+				urlCmd=[downloader,"-g",file]
+				urlOutput=subprocess.run(urlCmd,capture_output=True,text=True,check=True)
+				urls=[line.strip() for line in urlOutput.stdout.splitlines() if line.strip()]
+
+				if not urls:
+					return {"result":False,"code":BellManager.SOUND_FILE_URL_NOT_VALID_ERROR,"data":""}	
+
+				targetUrl=urls[1] if len(urls)>1 else urls[0]
+				ffprobeArgs.extend(["-i",targetUrl])
+
+			except (subprocess.CalledProcessError,FileNotFoundError):
+				return {"result":False,"code":BellManager.SOUND_FILE_URL_NOT_VALID_ERROR,"data":""}	
+
 		else:
+			print("1")
+			ffprobeArgs.extend(["-i",file.strip('\'"')])
+		try:
+			result=subprocess.run(ffprobeArgs,capture_output=True,text=True,timeout=10)
+			print(result)
+			if not result.stdout.strip():
+				return {"result":False,"code":BellManager.SOUND_FILE_URL_NOT_VALID_ERROR,"data":""}	
+
 			return {"result":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
-	
+
+		except subprocess.TimeOutExpired:
+			return {"result":False,"code":BellManager.ERROR_TIMEOUT_EXPIRED,"data":""}
+
+		except FileNotFoundError:
+			print("Error")
+			return {"result":False,"code":BellManager.ERROR_FFPROBE_MISSING_,"data":""}	
+
+
 	#def checkAudiofile	
 
 	def checkDirectory(self,directory):
