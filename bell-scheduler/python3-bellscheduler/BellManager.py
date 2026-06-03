@@ -14,6 +14,7 @@ import urllib.request
 import n4d.client
 from datetime import datetime, date,timedelta
 import copy
+import re
 import gettext
 gettext.textdomain("bell-scheduler")
 _ = gettext.gettext
@@ -36,6 +37,7 @@ class BellManager(object):
 	DAY_NOT_IN_VALIDITY_ERROR=-56
 	ERROR_TIMEOUT_EXPIRED=-57
 	ERROR_FFPROBE_MISSING=-58
+	BELL_NOT_FOUND_ERROR=-59
 
 	ACTION_SUCCESSFUL=0
 	BELL_REMOVED_SUCCESSFULLY=14
@@ -387,7 +389,7 @@ class BellManager(object):
 
 	def checkData(self,data):
 		
-		checkValidity=None
+		checkValidity=True
 		checkImage={"result":True,"code":"","data":""}
 		checkSound={"result":True,"code":"","data":""}
 
@@ -399,7 +401,7 @@ class BellManager(object):
 		if validity.get("active"):
 			checkValidity=self.checkValidity(data.get("weekdays",{}),validity.get("value",""))
 			
-			if checkValidity is not None:
+			if not checkValidity.get("result"):
 				return checkValidity
 
 		imgConfig=data.get("image",{})
@@ -433,8 +435,6 @@ class BellManager(object):
 			if not soundPath:
 				return {"result":False,"code":BellManager.MISSING_SOUND_FOLDER_ERROR,"data":""}
 
-			self.correctFiles=0
-			
 			return self.checkDirectory(soundPath)
 
 		return {"result":True,"code":"","data":""}	
@@ -459,15 +459,15 @@ class BellManager(object):
 				
 	def checkAudiofile(self,file,type):
 		
-		ffprobeArgs=[
+		ffprobeArgs = [
 			"ffprobe",
-			"-show_entries stream codec_type duration",
-			"-of",
-			"compact=p=0:nk=1"
-		]
+        	"-v", "error",
+        	"-show_entries", "stream=codec_type:format=duration",
+        	"-of", "compact=p=0:nk=1"
+    	]
 		
 		if type!="file":
-			downloader="yt-dlp" if shutil.wicth("yt-dlp") else "youtube-dl"
+			downloader="yt-dlp" if shutil.which("yt-dlp") else "youtube-dl"
 
 			try:
 				urlCmd=[downloader,"-g",file]
@@ -484,21 +484,20 @@ class BellManager(object):
 				return {"result":False,"code":BellManager.SOUND_FILE_URL_NOT_VALID_ERROR,"data":""}	
 
 		else:
-			print("1")
 			ffprobeArgs.extend(["-i",file.strip('\'"')])
+		
 		try:
 			result=subprocess.run(ffprobeArgs,capture_output=True,text=True,timeout=10)
-			print(result)
+
 			if not result.stdout.strip():
 				return {"result":False,"code":BellManager.SOUND_FILE_URL_NOT_VALID_ERROR,"data":""}	
 
 			return {"result":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
 
-		except subprocess.TimeOutExpired:
+		except subprocess.TimeoutExpired:
 			return {"result":False,"code":BellManager.ERROR_TIMEOUT_EXPIRED,"data":""}
 
 		except FileNotFoundError:
-			print("Error")
 			return {"result":False,"code":BellManager.ERROR_FFPROBE_MISSING_,"data":""}	
 
 
@@ -506,23 +505,16 @@ class BellManager(object):
 
 	def checkDirectory(self,directory):
 
-		path=directory+"/*"
-		contentDirectory=glob.glob(path)
-		for item in contentDirectory:
-			if os.path.isfile(item):
-				checkFile=self.checkMimetypes(item,"audio")
-				if checkFile["result"]:
-					checkRun=self.checkAudiofile(item,'file')
-					if checkRun["result"]:
-						self.correctFiles+=1
-			else:
-				if os.path.isdir(item):
-					self.checkDirectory(item)			
-		
-		if self.correctFiles>0:
-			return {"result":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
-		else:
-			return {"result":False,"code":BellManager.FOLDER_WITH_INCORRECT_FILES_ERROR,"data":""}
+		for root,dirs,files in os.walk(directory):
+			for file in files:
+				fullPath=os.path.join(root,file)
+				checkFile=self.checkMimetypes(fullPath,"audio")
+				if checkFile.get("result"):
+					checkRun=self.checkAudiofile(fullPath,'file')
+					if checkRun.get("result"):
+						return {"result":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
+
+		return {"result":False,"code":BellManager.FOLDER_WITH_INCORRECT_FILES_ERROR,"data":""}
 
 	#def checkDirectory		
 
@@ -644,126 +636,103 @@ class BellManager(object):
 
 	def _checkBellStatus(self,active):
 
-		if len(self.bellsConfig)>0:
-			for item in self.bellsConfig:
-				if self.bellsConfig[item]["active"]!=active:
-					return True
-		return False			
+		for bell in self.bellsConfig.values():
+			if bell.get("active")!=active:
+				return True
+
+		return False
 
 	#def _checkBellStatus
 
 	def _updateBellsConfigData(self,param,value,bellId):
 
-		for item in self.bellsConfigData:
-			if item["id"]==bellId:
-				if item[param]!=value:
-					item[param]=value
-				break
+		item=self.bellsMap.get(bellId)
+		
+		if item:
+			if item[param]!=value:
+				item[param]=value
 
 	#def _updateBellsConfigData
 
 	def removeBell(self,allBells,bellToRemove=None):
 
 		if allBells:
-			if len(self.bellsConfig)>0:
-				retRemove=self._removeAllBells()
-				if retRemove['status']:
-					retReadConfig=self.readConf()
-					if retReadConfig["status"]:
-						return [True,retRemove["code"]]
-					else:
-						return [False,retReadConfig["code"]]
-				else:
-					return [False, retRemove["code"]]
-			else:
+			if not self.bellsConfig:
 				return [True,BellManager.BELLS_ALREADY_REMOVED]
-		else:
-			bellsConfig=copy.deepcopy(self.bellsConfig)
-			bellsConfig.pop(bellToRemove)
-			ret=self._saveConf(bellsConfig,bellToRemove,"remove")
 
-			if ret["status"]:
-				self.bellsConfig=bellsConfig
-				for i in range(len(self.bellsConfigData)-1,-1,-1):
-					if self.bellsConfigData[i]["id"]==bellToRemove:
-						self.bellsConfigData.pop(i)
-						break
-				return [True,BellManager.BELL_REMOVED_SUCCESSFULLY]
-			else:
-				return [False,ret["code"]]
+			retRemove=self._removeAllBells()
+			if not retRemove.get('status'):
+				return [False, retRemove.get("code")]
+
+			retReadConfig=self.readConf()
+			if not retReadConfig.get("status"):
+				return [False,retReadConfig.get("code")]
+
+			return [True,retRemove["code"]]
+			
+				
+		bellsConfig=copy.deepcopy(self.bellsConfig)
+
+		if bellsConfig.pop(bellToRemove,None) is None:
+			return [False,BellManager.BELL_NOT_FOUND_ERROR]
+
+		ret=self._saveConf(bellsConfig,bellToRemove,"remove")
+		if not ret.get("status"):
+			return [False,ret.get("code")]
+
+		self.bellsConfig=bellsConfig
+		self.bellsConfigData=[item for item in self.bellsConfigData if item.get("id")!=bellToRemove]
+
+		return [True,BellManager.BELL_REMOVED_SUCCESSFULLY]
 
 	#def removeBell
 
 	def _getOrderBell(self,info=None):
 	
-		tmp=[]
-		orderBells=[]
-		currentDay=date.today().strftime('%d/%m/%Y')
-		if info==None:
-			if len(self.bellsConfig)>0:
-				for item in self.bellsConfig:
-					time=str(self.bellsConfig[item]["hour"])+":"+str(self.bellsConfig[item]["minute"])
-					time_f=datetime.strptime(time,"%H:%M")
-					try:
-						if (self.bellsConfig[item]["validity"]["value"]!=""):
-							if "-" in self.bellsConfig[item]["validity"]["value"]:
-								dateToFormat=self.bellsConfig[item]["validity"]["value"].split("-")[0]
-								datef=datetime.strptime(dateToFormat,"%d/%m/%Y")
-							else:
-								dateToFormat=self.bellsConfig[item]["validity"]["value"]
-								datef=datetime.strptime(dateToFormat,"%d/%m/%Y")
-						else:
-							datef=datetime.strptime(currentDay,"%d/%m/%Y")
-					except:
-						datef=datetime.strptime(currentDay,"%d/%m/%Y")
+		dataSource=self.bellsConfig if info is None else info
 
-					x=()
-					x=item,time_f,datef
-					tmp.append(x)
-		else:
-			
-			for item in info:
-				time=str(info[item]["hour"])+":"+str(info[item]["minute"])
-				time_f=datetime.strptime(time,"%H:%M")
+		if not dataSource:
+			return []
+
+		currentDay=datetime.combine(date.today(),datetime.min.time())
+		tmp=[]
+
+		for itemId,bellData in dataSource.items():
+			timeStr=f"{bellData.get("hour",0)}:{bellData.get("minute",0)}"
+			try:
+				timeF=datetime.strptime(timeStr,"%H:%M")
+			except ValueError:
+				timeF=datetime.strptime("00:00","%H:%M")
+
+			dateF=currentDay
+			validityValue=bellData.get("validity",{}).get("value","")
+			if validityValue:
+				dateToFormat=validityValue.split("-")[0] if "-" in validityValue else validityValue
 				try:
-					if (info[item]["validity"]["value"]!=""):
-						if "-" in info[item]["validity"]["value"]:
-							dateToFormat=info[item]["validity"]["value"].split("-")[0]
-							datef=datetime.strptime(dateToFormat,"%d/%m/%Y")
-						else:
-							dateToFormat=info[item]["validity"]["value"]
-							datef=datetime.strptime(dateToFormat,"%d/%m/%Y")
-					else:
-						datef=datetime.strptime(currentDay,"%d/%m/%Y")
-				except:
-					datef=datetime.strptime(currentDay,"%d/%m/%Y")
-				x=()
-				x=item,time_f,datef
-				tmp.append(x)		
+					dateF=datetime.strptime(dateToFormat.strip(),"%d/%m/%Y")
+				except ValueError:
+					dateF=currentDay
+
+			tmp.append((itemId,timeF,dateF))
 
 		tmp.sort(key=lambda bell:(bell[1],bell[2]))
-		for item in tmp:
-			orderBells.append(item[0])
 
-		return orderBells	
-
+		return [bell[0] for bell in tmp]
+		
+		
 	#def _getOrderBells
 	
 	def formatTime(self,item):
 	
-		time=[]
-		hour=self.bellsConfig[item]["hour"]
-		minute=self.bellsConfig[item]["minute"]
+		bell=self.bellsConfig.get(item,{})
+		hour=bell.get("hour",0)
+		minute=bell.get("minute",0)
 
-		if hour<10:
-			hour='0'+str(hour)
+		hourStr=f"{hour:02d}"
+		minuteStr=f"{minute:02d}"
+		cron=f"{hourStr}:{minuteStr}"
 
-		if minute<10:
-			minute='0'+str(minute)
-
-		cron=str(hour)+":"+str(minute)
-		time=[hour,minute,cron]
-		return time		
+		return [hourStr,minuteStr,cron]
 
 	#def formatTime	
 
@@ -861,48 +830,46 @@ class BellManager(object):
 
 	def checkValidity(self,weekdays,validity):
 
-		daysInValidity=[]
-		weekdaysSelected=[]
-		weekdaysValidity=[]
-		noMatchDay=0
-		
-		if validity!="":
-			daysInValidity=self.getDaysInRange(validity)
-	
-			for item in daysInValidity:
-				tmpDay=datetime.strptime(item,"%d/%m/%Y")
-				tmpWeekday=tmpDay.weekday()
-				if tmpWeekday not in weekdaysValidity:
-					weekdaysValidity.append(tmpWeekday)
+		if not validity:
+			return {"result":True,"code":"","data":""}
 
-			for i in range(len(weekdays)):
-				if weekdays[str(i)]:
-					weekdaysSelected.append(i)
+		daysInValidity=self.getDaysInRange(validity)
+		weeksValidity=set()
 
-			for item in weekdaysSelected:
-				if item not in weekdaysValidity:
-					noMatchDay+=1
+		for item in daysInValidity:
+			tmpDay=datetime.strptime(item,"%d/%m/%Y")
+			weeksValidity.add(tmpDay.weekday())
 
-			if noMatchDay>0:
+		weekdaysSelected=[int(i) for i,active in weekdays.items() if active]
+
+		for item in weekdaysSelected:
+			if item not in weeksValidity:
 				return {"result":False,"code":BellManager.DAY_NOT_IN_VALIDITY_ERROR,"data":""}
 
+		return {"result":True,"code":"","data":""}
+
+		
 	#def checkValidity
 
 	def getDaysInRange(self,day):	
 
 		listDays=[]
-		if day!="":
-			if "-" in day:
-				tmp=day.split("-")
-				date1=datetime.strptime(tmp[0],'%d/%m/%Y')
-				date2=datetime.strptime(tmp[1],'%d/%m/%Y')
-			else:
-				date1=datetime.strptime(day,'%d/%m/%Y')
-				date2=date1
-			delta=date2-date1
-			for i in range(delta.days + 1):
-				tmpDay=(date1 + timedelta(days=i)).strftime('%d/%m/%Y')
-				listDays.append(tmpDay)
+
+		if not day:
+			return listDays
+
+		if "-" in day:
+			tmp=day.split("-")
+			date1=datetime.strptime(tmp[0].strip(),'%d/%m/%Y')
+			date2=datetime.strptime(tmp[1].strip(),'%d/%m/%Y')
+		else:
+			date1=datetime.strptime(day.strip(),'%d/%m/%Y')
+			date2=date1
+		
+		delta=date2-date1
+		for i in range(delta.days + 1):
+			tmpDay=(date1 + timedelta(days=i)).strftime('%d/%m/%Y')
+			listDays.append(tmpDay)
 
 		return listDays	
 
@@ -910,37 +877,27 @@ class BellManager(object):
 
 	def checkGlobalOptionStatus(self):
 
-		if len(self.bellsConfig)>0:
-			return True
-		else:
-			return False
-			
+		return bool(self.bellsConfig)
+	
 	#def checkGlobalOptionStatus
 
 	def checkIfAreBellsWithDirectory(self):
 
-		for item in self.bellsConfig:
-			if self.bellsConfig[item]["sound"]["option"]=="directory":
-				return True
-
-		return False
+		return any(bell.get("sound",{}).get("option")=="directory" for bell in self.bellsConfig.values())
 
 	#def checkIfAreBellsWithRandom
 
 	def checkHolidayManagerStatus(self):
 
-		if os.path.exists(self.holidayToken):
-			return True
-		else:
-			return False
-
+		return os.path.exists(self.holidayToken)
+	
 	#def checkHolidayManagerStatus
 
 	def checkIfAreHolidaysConfigured(self,):
 
 		result=self.client.HolidayListManager.are_days_configured()
 	
-		return result["status"]
+		return result.get("status")
 
 	#def checkIfAreHolidaysConfigured
 
@@ -955,89 +912,74 @@ class BellManager(object):
 
 	def checkChangeStatusBellsOption(self):
 
-		allActivated=False
-		allDeactivated=False
-		enableStatusFilter=True
-		countActivated=0
-		countDeactivated=0
-		result=[]
-		
-		if len(self.bellsConfig)>0:
-			for item in self.bellsConfig:
-				if self.bellsConfig[item]['active']:
-					countActivated+=1
-				else:
-					countDeactivated+=1
+		totalBells=len(self.bellsConfig)
 
-			if countActivated==0:
-				allDeactivated=True
-				enableStatusFilter=False
+		if totalBells==0:
+			return [False,False,False]
 
-			if countDeactivated==0:
-				allActivated=True
-				enableStatusFilter=False
-		else:
-			enableStatusFilter=False
+		countActivated=sum(1 for bell in self.bellsConfig.values() if bell.get("active"))
 
-		result=[allActivated,allDeactivated,enableStatusFilter]
+		allActivated=(countActivated==totalBells)
+		allDeactivated=(countActivated==0)
+		enableStatusFilter=not(allActivated or allDeactivated)
 
-		return result
+		return [allActivated,allDeactivated,enableStatusFilter]
 
 	#def checkChangeStatusBellsOption
 
 	def checkDuplicateBellCron(self,data):
 
-		duplicateWeekDays=False
-		duplicateValidity=False
 		today=datetime.today()
 
-		currentTimer=[data["hour"],data["minute"]]
-		currentWeekDays=[data["weekdays"]["0"],data["weekdays"]["1"],data["weekdays"]["2"],data["weekdays"]["3"],data["weekdays"]["4"]]
-		currentValidity=[data["validity"]["active"],data["validity"]["value"]]
-		currentDays=self.getDaysInRange(currentValidity[1])
+		currentTime=(data.get("hour"),data.get("minute"))
+		
+		currentWeekDays={int(k) for k,active in data.get("weekdays",{}).items() if active}
+		
+		currentValidityActive=data.get("validity",{}).get("active",False)
+		currentValidityValue=data.get("validity",{}).get("value","")
+		currentDays=set(self.getDaysInRange(currentValidityValue))
 
-		for item in self.bellsConfig:
-			if item!=self.bellToLoad:
-				tmpTimer=[self.bellsConfig[item]["hour"],self.bellsConfig[item]["minute"]]
-				if tmpTimer==currentTimer:
-					duplicateWeekDays=False
-					tmpWeekDays=[self.bellsConfig[item]["weekdays"]["0"],self.bellsConfig[item]["weekdays"]["1"],self.bellsConfig[item]["weekdays"]["2"],self.bellsConfig[item]["weekdays"]["3"],self.bellsConfig[item]["weekdays"]["4"]]
-					for i in range(len(currentWeekDays)):
-						if currentWeekDays[i]:
-							if tmpWeekDays[i]:
-								duplicateWeekDays=True
-								break
-					if duplicateWeekDays:
-						tmpValidity=[self.bellsConfig[item]["validity"]["active"],self.bellsConfig[item]["validity"]["value"]]
-						tmpDays=self.getDaysInRange(tmpValidity[1])
-						if currentValidity==tmpValidity:
-							duplicateValidity=True
-						else:
-							if not currentValidity[0] and not tmpValidity[0]:
-								duplicateValidity=True
-							else:
-								if len(currentDays)>0:
-									if len(tmpDays)>0:
-										for day in currentDays:
-											if day in tmpDays:
-												duplicateValidity=True
-												break
-									else:
-										for day in currentDays:
-											if today < datetime.strptime(day,'%d/%m/%Y'):
-												duplicateValidity=True
-												break
-								else:
-									if len(tmpDays)>0:
-										for day in tmpDays:
-											if today < datetime.strptime(day,'%d/%m/%Y'):
-												duplicateValidity=True
-												break
-									else:
-										duplicateValidity=True
+		for itemId,bell in self.bellsConfig.items():
+			if itemId==self.bellToLoad:
+				continue
 
-						if duplicateValidity:
-							return {"result":False,"code":BellManager.BELL_DUPLICATE,"data":""}
+			if (bell.get("hour"),bell.get("minute")) != currentTime:
+				continue
+
+			tmpWeekDays={int(k) for k,active in bell.get("weekdays",{}).items() if active}
+			
+			if not currentWeekDays.intersection(tmpWeekDays):
+				continue
+
+			tmpValidityActive=bell.get("validity",{}).get("active",False)
+			tmpValidityValue=bell.get("validity",{}).get("value","")
+			
+			duplicateValidity=False
+
+			if currentValidityActive==tmpValidityActive and currentValidityValue==tmpValidityValue:
+				duplicateValidity=True
+
+			elif not currentValidityActive and not tmpValidityActive:
+				duplicateValidity=True
+
+			else:
+				tmpDays=set(self.getDaysInRange(tmpValidityValue))
+
+				if currentDays and tmpDays:
+					if currentDays.intersection(tmpDays):
+						duplicateValidity=True
+				
+				elif currentDays:
+					duplicateValidity=any(today<datetieme.strptime(d,"%d/%m/%Y") for d in currentDays)
+				
+				elif tmpDays:
+					duplicateValidity=any(today<datetieme.strptime(d,"%d/%m/%Y") for d in tmpDays)
+
+				else:
+					duplicateValidity=True
+
+			if duplicateValidity:
+				return {"result":False,"code":BellManager.BELL_DUPLICATE,"data":""}
 		
 		return {"result":True,"code":"","data":""}
 
@@ -1047,10 +989,15 @@ class BellManager(object):
 
 		result=self.client.BellSchedulerManager.read_audio_device_config()
 		self._debug("Read audio device config: ",result)
-		if result["data"]!="":
+		
+		deviceValue=result.get("data") if isinstance(result,dict) else ""
+
+		if deviceValue:
 			self.isAudioDeviceConfigurated=True
-			for i in range(len(self.audioDevicesData)):
-				if self.audioDevicesData[i]["value"]==result["data"]:
+			self.currentAudioDevice=0
+
+			for i,device in enumerate(self.audioDevicesData):
+				if device.get("value")==deviceValue:
 					self.currentAudioDevice=i
 					break
 		else:
@@ -1061,18 +1008,20 @@ class BellManager(object):
 
 	def changeAudioDeviceControl(self,status,audioDevice):
 
-		newAudioConfigurationStatus=status
-		newAudioDeviceValue=audioDevice
-		if newAudioConfigurationStatus!=self.isAudioDeviceConfigurated or newAudioDeviceValue!=self.currentAudioDevice:
-			if not newAudioConfigurationStatus:
-				newValue=""
-			else:
-				newValue=self.audioDevicesData[newAudioDeviceValue]["value"]
+		if status==self.isAudioDeviceConfigurated and audioDevice==self.currentAudioDevice:
+			 return {"status":True,"code":BellManager.AUDIO_DEVICE_ALREADY_CONFIGURATED,"data":""}
 
-			result=self.client.BellSchedulerManager.write_audio_device_config(newValue)
-			self._debug("Write audio device config:",result)
+		if not status:
+			newValue=""
+
 		else:
-			result={"status":True,"code":BellManager.AUDIO_DEVICE_ALREADY_CONFIGURATED,"data":""}
+			if 0<=audioDevice<len(self.audioDevicesData):
+				newValue=self.audioDevicesData[audioDevice]["value"]
+			else:
+				newValue=""
+
+		result=self.client.BellSchedulerManager.write_audio_device_config(newValue)
+		self._debug("Write audio device config:",result)
 
 		self._getAudioDeviceConfig()
 		
@@ -1082,34 +1031,41 @@ class BellManager(object):
 	
 	def _getAudioDevices(self):
 
-		self.audioDevicesData=[]
+	 	self.audioDevicesData = []
 
-		cmd="aplay -l"
-		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
-		poutput=p.communicate()[0].decode().split("\n")
+	 	try:
+	 		cmd = "LC_ALL=C aplay -l"
+	 		p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	 		stdout,stderr = p.communicate()
+	 		poutput = stdout.decode('utf-8', errors='ignore').splitlines()
+	 	except Exception as e:
+	 		self._debug("_getAudioDevices. Error:", e)
+	 		poutput = []
 
-		for item in poutput:
-			if ":" in item and "," in item:
-				tmpItem=item.split(", ")
-				if len(tmpItem)==2:
-					tmpDevice={}
-					tmpCard=tmpItem[0].split(":")
-					tmpCardCode=tmpCard[0].split(" ")[1]
-					tmpCardName=tmpCard[1]
-					tmpDisp=tmpItem[1].split(":")
-					tmpDispCode=tmpDisp[0].split(" ")[1]
-					tmpDispName=tmpDisp[1]
-					tmpDevice["name"]="%s-%s"%(tmpCardName,tmpDispName)
-					tmpDevice["value"]="hw:%s,%s"%(tmpCardCode,tmpDispCode)
-					self.audioDevicesData.append(tmpDevice)
+	 	pattern = re.compile(r"card\s+(\d+):\s*([^,]+),\s*device\s+(\d+):\s*(.*)")
 
-		if len(self.audioDevicesData)>1:
-			tmpDevice={}
-			tmpDevice["name"]=_("Default audio output")
-			tmpDevice["value"]="default"
-			self.audioDevicesData.insert(0,tmpDevice)
-			self.enableAudioDeviceConfiguration=True
+	 	for item in poutput:
+	 		match = pattern.search(item)
+	 		if match:
+	 			card_code = match.group(1)
+	 			card_name = match.group(2).strip()
+	 			disp_code = match.group(3)
+	 			disp_name = match.group(4).strip()
 
+	 			self.audioDevicesData.append({
+	 				"name": f"{card_name}-{disp_name}",
+	 				"value": f"hw:{card_code},{disp_code}"
+	 			})
+
+	 	if len(self.audioDevicesData) > 1:
+	 		self.audioDevicesData.insert(0, {
+	 			"name": _("Default audio output"),
+	 			"value": "default"
+	 			})
+	 		self.enableAudioDeviceConfiguration = True
+	 	else:
+	 		self.enableAudioDeviceConfiguration = False
+	
 	#def _getAudioDevices()
 	
 #class BellManager 		
