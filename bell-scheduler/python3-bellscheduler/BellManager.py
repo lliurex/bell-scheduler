@@ -351,7 +351,7 @@ class BellManager(object):
 		for i, item in enumerate(self.imagesConfigData):
 			if item.get("imageSource")==imagePath:
 				return i
-		
+
 		return 0
 
 	#def _getImageIndexFromPath
@@ -520,117 +520,103 @@ class BellManager(object):
 
 	def saveData(self,data):
 
-		ret=[False,""]
-		origImgPath=""
-		origSoundPath=""
-		activeBell=False
 		bellsConfig=copy.deepcopy(self.bellsConfig)
-		orderKeys=[]
 
-		if self.bellToLoad!="":
+		if self.bellToLoad:
 			order=self.bellToLoad
 			action="edit"
 		else:
-			if len(bellsConfig)>0:
-				keys=bellsConfig.keys()
-				for item in keys:
-					orderKeys.append(int(item))
-
-				order=str(int(max(orderKeys))+1)
-			else:
-				order="1"
-
+			nextId=max([int(k) for k in self.bellsConfig.keys()],default=0)+1
+			order=str(nextId)
 			action="add"
 
-		bellsConfig[order]={}
-		bellsConfig[order]["hour"]=data["hour"]
-		bellsConfig[order]["minute"]=data["minute"]
-		bellsConfig[order]["weekdays"]=data["weekdays"]
-		
-		if data["validity"]["value"]=="":
+		bellData={
+			"hour":data["hour"],
+			"minute":data["minute"],
+			"weekdays":data["weekdays"],
+			"name":data["name"],
+			"play":data["play"]
+		}
+
+		if not data.get("validity").get("value"):
 			data["validity"]["active"]=False
 
-		bellsConfig[order]["validity"]=data["validity"]
-		bellsConfig[order]["name"]=data["name"]
+		bellData["validity"]=data["validity"]
 
-		if data["image"]["option"]=="custom":
-			origImgPath=data["image"]["path"]
-			destImgPath=os.path.join(self.imagesPath,os.path.basename(origImgPath))
-			data["image"]["path"]=destImgPath
+		origImgPath=""
+		bellData["image"]=copy.deepcopy(data["image"])
 
-		bellsConfig[order]["image"]=data["image"]
+		if data["image"].get("option")=="custom":
+			origImgPath=data["image"].get("path")
+			bellData["image"]["path"]=os.path.join(self.imagesPath,os.path.basename(origImgPath))
 
-		if data["sound"]["option"]=="file":
-			if data["soundDefaultPath"]:
-				origSoundPath=data["sound"]["path"]
-				destSoundPath=os.path.join(self.soundsPath,os.path.basename(origSoundPath))
-				data["sound"]["path"]=destSoundPath
+		origSoundPath=""
+		bellData["sound"]=copy.deepcopy(data["sound"])
 
-		bellsConfig[order]["sound"]=data["sound"]
+		if data["sound"].get("option")=="file" and data.get("soundDefaultPath"):
+			origSoundPath=data["sound"].get("path")
+			destSoundPath=os.path.join(self.soundsPath,os.path.basename(origSoundPath))
+			bellData["sound"]["path"]=os.path.join(self.soundsPath,os.path.basename(origSoundPath))
 
-		bellsConfig[order]["play"]=data["play"]
 
 		if self.areDaysChecked(data["weekdays"]):
-			if action=="edit":
-				activeBell=data["active"]
-			else:
-				activeBell=True
+			activeBell=data["active"] if action=="edit" else True
 		else:
 			activeBell=False
 
-		bellsConfig[order]["active"]=activeBell
+		bellData["active"]=activeBell
+		bellsConfig[order]=bellData
+
 		retCopy=self._copyMediaFiles(origImgPath,origSoundPath)
 
-		if retCopy["status"]:
-			retSave=self._saveConf(bellsConfig,order,action)
-			if retSave["status"]:
-				retReadConfig=self.readConf()
-				if retReadConfig["status"]:
-					if action=="edit":
-						ret=[True,BellManager.BELL_EDITED_SUCCESSFULLY]
-					else:
-						ret=[True,BellManager.BELL_ADDED_SUCCESSFULLY]
-				else:
-					ret=[False,retReadConfig["code"]]
-			else:
-				ret=[False,retSave["code"]]
-		else:
-			ret=[False,retCopy["code"]]	
+		if not retCopy.get("status"):
+			return [False,retCopy.get("code")]	
 
-		return ret	
+		retSave=self._saveConf(bellsConfig,order,action)
+		
+		if not retSave.get("status"):
+			return [False,retSave.get("code")]
+
+		retReadConfig=self.readConf()
+		if not retReadConfig["status"]:
+			return [False,retReadConfig.get("code")]
+
+		code=BellManager.BELL_EDITED_SUCCESSFULLY if action=="edit" else BellManager.BELL_ADDED_SUCCESSFULLY
+		
+		return [True,code]	
 
 	#def saveData
 
 	def changeBellStatus(self,allBells,active,bellToEdit=None):
 
 		if allBells:
-			if self._checkBellStatus(active):
-				retChangeStatus=self.changeActivationStatus(active)
-				if retChangeStatus['status']:
-					retReadConfig=self.readConf()
-					if retReadConfig["status"]:
-						return [True,retChangeStatus["code"]]
-					else:
-						return [False,retReadConfig["code"]]
-				else:
-					return [False,retChangeStatus["code"]]
-			else:
-				if active:
-					return [True,BellManager.BELLS_ALREADY_ACTIVATED]
-				else:
-					return [True,BellManager.BELLS_ALREADY_DEACTIVATED]
-		else:
-			self.bellsConfig[bellToEdit]["active"]=active
-			ret=self._saveConf(self.bellsConfig,bellToEdit,"active")
+			
+			if not self._checkBellStatus(active):
+				code=BellManager.BELLS_ALREADY_ACTIVATED if active else BellManager.BELLS_ALREADY_DEACTIVATED
+				return [True,code]
 
-			if ret["status"]:
-				self._updateBellsConfigData("bellActivated",active,bellToEdit)
-				if active:
-					return [True,BellManager.BELL_ACTIVATED_SUCCESSFULLY]
-				else:
-					return [True,BellManager.BELL_DEACTIVATED_SUCCESSFULLY]
-			else:
-				return [False,ret["code"]]
+			retChangeStatus=self.changeActivationStatus(active)
+			
+			if not retChangeStatus.get('status'):
+				return [False,retChangeStatus.get("code")]
+
+			retReadConfig=self.readConf()
+
+			if not retReadConfig.get("status"):
+				return [False,retReadConfig.get("code")]
+
+			return [True,retChangeStatus.get("code")]
+
+		self.bellsConfig[bellToEdit]["active"]=active
+		ret=self._saveConf(self.bellsConfig,bellToEdit,"active")
+
+		if not ret.get("status"):
+			return [False,ret.get("code")]
+
+		self._updateBellsConfigData("bellActivated",active,bellToEdit)
+		code=BellManager.BELL_ACTIVATED_SUCCESSFULLY if active else BellManager.BELL_DEACTIVATED_SUCCESSFULLY
+
+		return [True,code]
 
 	#def changeBellStatus
 
@@ -740,6 +726,7 @@ class BellManager(object):
 
 		result=self.client.BellSchedulerManager.copy_media_files(image,sound)
 		self._debug("Copy Media files: ",result)
+		
 		return result
 
 	#def _copyMediaFiles	
@@ -759,14 +746,14 @@ class BellManager(object):
 		backup=True
 		resultImport=self._importBellsConfifg(origFile,backup)
 
-		if resultImport['status']:
-			retReadConfig=self.readConf()
-			if retReadConfig["status"]:
-				return [True,resultImport["code"]]
-			else:
-				return [False,retReadConfig["code"]]
+		if not resultImport.get('status'):
+			return [False,resultImport.get("data")]
+
+		retReadConfig=self.readConf()
+		if retReadConfig.get("status"):
+			return [True,resultImport.get("code")]
 		else:
-			return [False,resultImport["data"]]
+			return [False,retReadConfig.get("code")]
 
 	#def importBellBackup
 
@@ -782,16 +769,17 @@ class BellManager(object):
 
 	def recoveryBellBackup(self,origFile):
 
-		backup=False
 		resultRecovery=self._recoveryBellsConfig(origFile,backup)
+		
+		if not resultRecovery.get("status"):
+			return [False,resultRecovery.get("code")]
+
 		retReadConfig=self.readConf()
-		if resultRecovery["status"]:
-			if retReadConfig["status"]:
-				return [False,BellManager,RECOVERY_BELLS_CONFIG]
-			else:
-				return [False,retReadConfig["code"]]
+
+		if retReadConfig.get("status"):
+			return [False,BellManager,RECOVERY_BELLS_CONFIG]
 		else:
-			return [False,resultRecovery["code"]]
+			return [False,retReadConfig.get("code")]
 
 	#def recoveryBellBackup
 
@@ -807,11 +795,7 @@ class BellManager(object):
 
 	def changeActivationStatus(self,active):
 
-		if active:
-			action="activate"
-		else:
-			action="deactivate"
-
+		action="activate" if active else "deactivate"
 		result=self.client.BellSchedulerManager.change_activation_status(action)
 		self._debug("Activation/Deactivation process: ",result)	
 		
@@ -895,9 +879,7 @@ class BellManager(object):
 
 	def checkIfAreHolidaysConfigured(self,):
 
-		result=self.client.HolidayListManager.are_days_configured()
-	
-		return result.get("status")
+		return self.client.HolidayListManager.are_days_configured().get("status")
 
 	#def checkIfAreHolidaysConfigured
 
