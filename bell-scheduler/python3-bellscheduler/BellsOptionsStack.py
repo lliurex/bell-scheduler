@@ -27,20 +27,22 @@ NO_ERROR_LOG_FILE=60
 
 class ChangeBellStatus(QThread):
 
-	def __init__(self,*args):
+	bellStatusChanged=Signal(dict)
 
-		QThread.__init__(self)
-		self.allBells=args[0]
-		self.active=args[1]
-		self.bellToEdit=args[2]
-		self.ret=[]
+	def __init__(self,manager,changeAllBells,active,bellToEdit):
+
+		super().__init__(self)
+		self.manager=manager
+		self.allBells=changeAllBells
+		self.active=active
+		self.bellToEdit=bellToEdit
 
 	#def __init__
 
 	def run(self,*args):
 
-		time.sleep(0.5)
-		self.ret=Bridge.bellManager.changeBellStatus(self.allBells,self.active,self.bellToEdit)
+		ret=self.manager.changeBellStatus(self.allBells,self.active,self.bellToEdit)
+		self.bellStatusChanged.emit(ret)
 
 	#def run
 
@@ -48,19 +50,21 @@ class ChangeBellStatus(QThread):
 
 class RemoveBell(QThread):
 
-	def __init__(self,*args):
+	bellRemoved=Signal(dict)
 
-		QThread.__init__(self)
-		self.allBells=args[0]
-		self.bellToRemove=args[1]
-		self.ret=[]
+	def __init__(self,manager,removeAll,bellToRemove):
+
+		super().__init__(self)
+		self.manager=manager
+		self.allBells=removeAll
+		self.bellToRemove=bellToRemove
 
 	#def __init__
 
 	def run(self,*args):
 
-		time.sleep(0.5)
-		self.ret=Bridge.bellManager.removeBell(self.allBells,self.bellToRemove)
+		ret=self.manager.removeBell(self.allBells,self.bellToRemove)
+		self.bellRemoved.emit(ret)
 
 	#def run
 
@@ -68,18 +72,20 @@ class RemoveBell(QThread):
 
 class GenerateBackup(QThread):
 
-	def __init__(self,*args):
+	backupGenerated=Signal(dict)
 
-		QThread.__init__(self)
-		self.exportPath=args[0]
-		self.ret=[]
+	def __init__(self,manager,exportPath):
+
+		super().__init__(self)
+		self.manager=manager
+		self.exportPath=exportPath
 
 	#def __init__
 
 	def run(self,*args):
 
-		time.sleep(0.5)
-		self.ret=Bridge.bellManager.exportBellsConfig(self.exportPath)
+		ret=self.manager.exportBellsConfig(self.exportPath)
+		self.backupGenerated.emit(ret)
 
 	#def run
 
@@ -98,7 +104,7 @@ class ImportBackup(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellManager.importBellBackup(self.importPath)
+		self.ret=self.bellManager.importBellBackup(self.importPath)
 
 	#def run
 
@@ -117,7 +123,7 @@ class RecoveryConfig(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellManager.recoveryBellBackup(self.recoveryPath)
+		self.ret=self.bellManager.recoveryBellBackup(self.recoveryPath)
 
 	#def run
 
@@ -136,7 +142,7 @@ class ChangeHolidayControl(QThread):
 	def run(self,*args):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellManager.changeHolidayControl(self.action)
+		self.ret=self.bellManager.changeHolidayControl(self.action)
 
 	#def run
 
@@ -153,7 +159,7 @@ class ChangeAudioDeviceControl(QThread):
 	def run(self):
 
 		time.sleep(0.5)
-		self.ret=Bridge.bellManager.changeAudioDeviceControl(self.audioDeviceConfigurated,self.audioDeviceValue)
+		self.ret=self.bellManager.changeAudioDeviceControl(self.audioDeviceConfigurated,self.audioDeviceValue)
 	
 	#def run
 
@@ -161,20 +167,32 @@ class ChangeAudioDeviceControl(QThread):
 
 class Bridge(QObject):
 
+	showMainMessageChanged=Signal()
+	showRemoveBellDialogChanged=Signal()
+	enableGlobalOptionsChanged=Signal()
+	enableChangeStatusOptionsChanged=Signal()
+	showExportBellsWarningChanged=Signal()
+	isHolidayControlActiveChanged=Signal()
+	enableHolidayControlChanged=Signal()
+	enableAudioDeviceConfigurationChanged=Signal()
+	currentAudioDeviceChanged=Signal()
+	isAudioDeviceConfiguratedChanged=Signal()
+	filterStatusValueChanged=Signal()
+
 	def __init__(self):
 
 		QObject.__init__(self)
 		self.core=Core.Core.get_core()
-		Bridge.bellManager=self.core.bellManager
+		self.bellManager=self.core.bellManager
 		self._bellsModel=BellsModel.BellsModel()
-		self._showMainMessage=[False,"","Ok"]
-		self._showRemoveBellDialog=[False,False]
+		self._showMainMessage={"show":False,"msgCode":"","type":""}
+		self._showRemoveBellDialog={"show":False,"removeAll":False}
 		self._enableGlobalOptions=False
-		self._enableChangeStatusOptions=[False,False,False]
+		self._enableChangeStatusOptions={"allActivated":False,"allDeactivated":False,"enableFilter":False}
 		self._showExportBellsWarning=False
 		self._isHolidayControlActive=False
 		self._enableHolidayControl=False
-		self._audioDevicesModel=Bridge.bellManager.audioDevicesData
+		self._audioDevicesModel=self.bellManager.audioDevicesData
 		self._enableAudioDeviceConfiguration=False
 		self._currentAudioDevice=""
 		self._isAudioDeviceConfigurated=False
@@ -183,11 +201,202 @@ class Bridge(QObject):
 		self._filterStatusValue="all"
 
 	#def _init__
+
+	@Property(dict,notify=showMainMessageChanged)
+	def showMainMessage(self):
+
+		return self._showMainMessage
+
+	#def showMainMessage
+
+	@showMainMessage.setter
+	def showMainMessage(self,showMainMessage):
+
+		if self._showMainMessage!=showMainMessage:
+			self._showMainMessage=showMainMessage
+			self.showMainMessageChanged.emit()
+
+	#def showMainMessage
+
+	@Property(dict,notify=showRemoveBellDialogChanged)
+	def showRemoveBellDialog(self):
+
+		return self._showRemoveBellDialog
+
+	#def showRemoveBellDialog
+
+	@showRemoveBellDialog.setter
+	def showRemoveBellDialog(self,showRemoveBellDialog):
+
+		if self._showRemoveBellDialog!=showRemoveBellDialog:
+			self._showRemoveBellDialog=showRemoveBellDialog
+			self.showRemoveBellDialogChanged.emit()
+
+	#def showRemoveBellDialog
+
+	@Property(bool,notify=enableGlobalOptionsChanged)
+	def enableGlobalOptions(self):
+
+		return self._enableGlobalOptions
+
+	#def enableGlobalOptions
+
+	@enableGlobalOptions.setter
+	def enableGlobalOptions(self,enableGlobalOptions):
+
+		if self._enableGlobalOptions!=enableGlobalOptions:
+			self._enableGlobalOptions=enableGlobalOptions
+			self.enableGlobalOptionsChanged.emit()
+
+	#def enableGlobalOptions
+
+	@Property(dict,notify=enableChangeStatusOptionsChanged)
+	def enableChangeStatusOptions(self):
+
+		return self._enableChangeStatusOptions
+
+	#def enableChangeStatusOptions
+
+	@enableChangeStatusOptions.setter
+	def enableChangeStatusOptions(self,enableChangeStatusOptions):
+
+		if self._enableChangeStatusOptions!=enableChangeStatusOptions:
+			self._enableChangeStatusOptions=enableChangeStatusOptions
+			self.enableChangeStatusOptionsChanged.emit()
+
+	#def enableChangeStatusOptions
+
+	@Property(bool,notify=showExportBellsWarningChanged)
+	def showExportBellsWarning(self):
+
+		return self._showExportBellsWarning
+
+	#def showExportBellsWarning
+
+	@showExportBellsWarning.setter
+	def showExportBellsWarning(self,showExportBellsWarning):
+
+		if self._showExportBellsWarning!=showExportBellsWarning:
+			self._showExportBellsWarning=showExportBellsWarning
+			self.showExportBellsWarningChanged.emit()
+
+	#def showExportBellsWarning
+
+	@Property(bool,notify=isHolidayControlActiveChanged)
+	def isHolidayControlActive(self):
+
+		return self._isHolidayControlActive
+
+	#def isHolidayControlActive
+
+	@isHolidayControlActive.setter
+	def isHolidayControlActive(self,isHolidayControlActive):
+
+		if self._isHolidayControlActive!=isHolidayControlActive:
+			self._isHolidayControlActive=isHolidayControlActive
+			self.isHolidayControlActiveChanged.emit()
+
+	#def isHolidayControlActive
+
+	@Property(bool,notify=enableHolidayControlChanged)
+	def enableHolidayControl(self):
+
+		return self._enableHolidayControl
+
+	#def enableHolidayControl
+
+	@enableHolidayControl.setter
+	def enableHolidayControl(self,enableHolidayControl):
+
+		if self._enableHolidayControl!=enableHolidayControl:
+			self._enableHolidayControl=enableHolidayControl
+			self.enableHolidayControlChanged.emit()
+
+	#def enableHolidayControl
+
+	@Property(bool,notify=enableAudioDeviceConfigurationChanged)
+	def enableAudioDeviceConfiguration(self):
+
+		return self._enableAudioDeviceConfiguration
+
+	#def enableAudioDeviceConfiguration
+
+	@enableAudioDeviceConfiguration.setter
+	def enableAudioDeviceConfiguration(self,enableAudioDeviceConfiguration):
+
+		if self._enableAudioDeviceConfiguration!=enableAudioDeviceConfiguration:
+			self._enableAudioDeviceConfiguration=enableAudioDeviceConfiguration
+			self.enableAudioDeviceConfigurationChanged.emit()
+
+	#def _setEnableAudioDeviceConfiguration
 	
+	@Property(int,notify=currentAudioDeviceChanged)
+	def currentAudioDevice(self):
+
+		return self._currentAudioDevice
+
+	#def currentAudioDevice
+
+	@currentAudioDevice.setter
+	def currentAudioDevice(self,currentAudioDevice):
+
+		if self._currentAudioDevice!=currentAudioDevice:
+			self._currentAudioDevice=currentAudioDevice
+			self.currentAudioDeviceChanged.emit()
+
+	#def currentAudioDevice
+
+	@Property(bool,notify=isAudioDeviceConfiguratedChanged)
+	def isAudioDeviceConfigurated(self):
+
+		return self._isAudioDeviceConfigurated
+
+	#def isAudioDeviceConfigurated
+
+	@isAudioDeviceConfigurated.setter
+	def isAudioDeviceConfigurated(self,isAudioDeviceConfigurated):
+
+		if self._isAudioDeviceConfigurated!=isAudioDeviceConfigurated:
+			self._isAudioDeviceConfigurated=isAudioDeviceConfigurated
+			self.isAudioDeviceConfiguratedChanged.emit()
+
+	#def isAudioDeviceConfigurated
+
+	@Property(str,notify=filterStatusValueChanged)
+	def filterStatusValue(self):
+
+		return self._filterStatusValue
+
+	#def filterStatusValue
+
+	@filterStatusValue.setter
+	def filterStatusValue(self,filterStatusValue):
+
+		if self._filterStatusValue!=filterStatusValue:
+			self._filterStatusValue=filterStatusValue
+			self.filterStatusValueChanged.emit()
+
+	#def _setFilterStatusValue
+
+
+	@Property(QObject,constant=True)
+	def bellsModel(self):
+
+		return self._bellsModel
+
+	#def bellsModel
+
+	@Property('QVariant',constant=True)
+	def audioDevicesModel(self):
+
+		return self._audioDevicesModel
+
+	#def audioDevicesModel
+
 	def loadConfig(self):
 
 		self._updateBellsModel()
-		self.showExportBellsWarning=Bridge.bellManager.checkIfAreBellsWithDirectory()
+		self.showExportBellsWarning=self.bellManager.checkIfAreBellsWithDirectory()
 		self._manageOptions()
 		self._getCurrentAudioConfiguration()	
 	
@@ -195,191 +404,25 @@ class Bridge(QObject):
 
 	def _manageOptions(self):
 
-		self.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
-		self.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
-		self.isHolidayControlActive=Bridge.bellManager.checkHolidayManagerStatus()
-		self.enableHolidayControl=Bridge.bellManager.checkIfAreHolidaysConfigured()
+		self.enableGlobalOptions=self.bellManager.checkGlobalOptionStatus()
+		self.enableChangeStatusOptions=self.bellManager.checkChangeStatusBellsOption()
+		self.isHolidayControlActive=self.bellManager.checkHolidayManagerStatus()
+		self.enableHolidayControl=self.bellManager.checkIfAreHolidaysConfigured()
 
 	#def _manageOptions
 
 	def _getCurrentAudioConfiguration(self):
 
-		self.currentAudioDevice=int(Bridge.bellManager.currentAudioDevice)
-		self.isAudioDeviceConfigurated=Bridge.bellManager.isAudioDeviceConfigurated
-		self.enableAudioDeviceConfiguration=Bridge.bellManager.enableAudioDeviceConfiguration
+		self.currentAudioDevice=int(self.bellManager.currentAudioDevice)
+		self.isAudioDeviceConfigurated=self.bellManager.isAudioDeviceConfigurated
+		self.enableAudioDeviceConfiguration=self.bellManager.enableAudioDeviceConfiguration
 
 	#def _getCurrentAudioConfiguration
-
-	def _getShowRemoveBellDialog(self):
-
-		return self._showRemoveBellDialog
-
-	#def _getShowRemoveBellDialog
-
-	def _setShowRemoveBellDialog(self,showRemoveBellDialog):
-
-		if self._showRemoveBellDialog!=showRemoveBellDialog:
-			self._showRemoveBellDialog=showRemoveBellDialog
-			self.on_showRemoveBellDialog.emit()
-
-	#def _setShowRemoveBellDialog
-
-	def _getBellsModel(self):
-
-		return self._bellsModel
-
-	#def _getBellsModel
-
-	def _getShowMainMessage(self):
-
-		return self._showMainMessage
-
-	#def _getShowMainMessage
-
-	def _setShowMainMessage(self,showMainMessage):
-
-		if self._showMainMessage!=showMainMessage:
-			self._showMainMessage=showMainMessage
-			self.on_showMainMessage.emit()
-
-	#def _setShowMainMessage
-
-	def _getEnableGlobalOptions(self):
-
-		return self._enableGlobalOptions
-
-	#def _getEnableGlobalOptions
-
-	def _setEnableGlobalOptions(self,enableGlobalOptions):
-
-		if self._enableGlobalOptions!=enableGlobalOptions:
-			self._enableGlobalOptions=enableGlobalOptions
-			self.on_enableGlobalOptions.emit()
-
-	#def _setEnableGlobalOptions
-
-	def _getEnableChangeStatusOptions(self):
-
-		return self._enableChangeStatusOptions
-
-	#def _getEnableChangeStatusOptions
-
-	def _setEnableChangeStatusOptions(self,enableChangeStatusOptions):
-
-		if self._enableChangeStatusOptions!=enableChangeStatusOptions:
-			self._enableChangeStatusOptions=enableChangeStatusOptions
-			self.on_enableChangeStatusOptions.emit()
-
-	#def _setEnableChangeStatusOptions
-
-	def _getShowExportBellsWarning(self):
-
-		return self._showExportBellsWarning
-
-	#def _getShowExportBellsWarning
-
-	def _setShowExportBellsWarning(self,showExportBellsWarning):
-
-		if self._showExportBellsWarning!=showExportBellsWarning:
-			self._showExportBellsWarning=showExportBellsWarning
-			self.on_showExportBellsWarning.emit()
-
-	#def _setShowExportBellsWarning
-
-	def _getIsHolidayControlActive(self):
-
-		return self._isHolidayControlActive
-
-	#def _getIsHolidayControlActive
-
-	def _setIsHolidayControlActive(self,isHolidayControlActive):
-
-		if self._isHolidayControlActive!=isHolidayControlActive:
-			self._isHolidayControlActive=isHolidayControlActive
-			self.on_isHolidayControlActive.emit()
-
-	#def _setIsHolidayControlActive
-
-	def _getEnableHolidayControl(self):
-
-		return self._enableHolidayControl
-
-	#def _getEnableHolidayControl
-
-	def _setEnableHolidayControl(self,enableHolidayControl):
-
-		if self._enableHolidayControl!=enableHolidayControl:
-			self._enableHolidayControl=enableHolidayControl
-			self.on_enableHolidayControl.emit()
-
-	#def _setEnableHolidayControl
-
-	def _getFilterStatusValue(self):
-
-		return self._filterStatusValue
-
-	#def _getFilterStatusValue
-
-	def _setFilterStatusValue(self,filterStatusValue):
-
-		if self._filterStatusValue!=filterStatusValue:
-			self._filterStatusValue=filterStatusValue
-			self.on_filterStatusValue.emit()
-
-	#def _setFilterStatusValue
-
-	def _getAudioDevicesModel(self):
-
-		return self._audioDevicesModel
-
-	#def _getAudioDevicesModel
-	
-	def _getEnableAudioDeviceConfiguration(self):
-
-		return self._enableAudioDeviceConfiguration
-
-	#def _getEnableAudioDeviceConfiguration
-
-	def _setEnableAudioDeviceConfiguration(self,enableAudioDeviceConfiguration):
-
-		if self._enableAudioDeviceConfiguration!=enableAudioDeviceConfiguration:
-			self._enableAudioDeviceConfiguration=enableAudioDeviceConfiguration
-			self.on_enableAudioDeviceConfiguration.emit()
-
-	#def _setEnableAudioDeviceConfiguration
-
-	def _getCurrentAudioDevice(self):
-
-		return self._currentAudioDevice
-
-	#def _getCurrentAudioDevice
-
-	def _setCurrentAudioDevice(self,currentAudioDevice):
-
-		if self._currentAudioDevice!=currentAudioDevice:
-			self._currentAudioDevice=currentAudioDevice
-			self.on_currentAudioDevice.emit()
-
-	#def _setCurrentAudioDevice
-
-	def _getIsAudioDeviceConfigurated(self):
-
-		return self._isAudioDeviceConfigurated
-
-	#def _getIsAudioDeviceConfigurated
-
-	def _setIsAudioDeviceConfigurated(self,isAudioDeviceConfigurated):
-
-		if self._isAudioDeviceConfigurated!=isAudioDeviceConfigurated:
-			self._isAudioDeviceConfigurated=isAudioDeviceConfigurated
-			self.on_isAudioDeviceConfigurated.emit()
-
-	#def _setIsAudioDeviceConfigurated
 
 	def _updateBellsModel(self):
 
 		ret=self._bellsModel.clear()
-		bellsEntries=Bridge.bellManager.bellsConfigData
+		bellsEntries=self.bellManager.bellsConfigData
 		for item in bellsEntries:
 			if item["id"]!="":
 				self._bellsModel.appendRow(item["id"],item["cron"],item["mo"],item["tu"],item["we"],item["th"],item["fr"],item["validity"],item["validityActivated"],item["img"],item["name"],item["sound"],item["bellActivated"],item["metaInfo"],item["isSoundError"],item["isImgError"])
@@ -388,7 +431,7 @@ class Bridge(QObject):
 
 	def _updateBellsModelInfo(self,param):
 
-		updatedInfo=Bridge.bellManager.bellsConfigData
+		updatedInfo=self.bellManager.bellsConfigData
 		if len(updatedInfo)>0:
 			for i in range(len(updatedInfo)):
 				index=self._bellsModel.index(i)
@@ -407,43 +450,42 @@ class Bridge(QObject):
 	def changeBellStatus(self,data):
 
 		self.core.mainStack.closeGui=False
-		self.showMainMessage=[False,"","Ok"]
+		self.showMainMessage={"show":False,"msgCode":"","type":""}
 		self.changeAllBells=data[0]
 		active=data[1]
 		if self.changeAllBells:
 			bellToEdit=None
 			if active:
-				self.core.mainStack.closePopUp=[False,ACTIVE_ALL_BELLS]
+				self.core.mainStack.showPopUp={"show":True,"msgCode":ACTIVE_ALL_BELLS}
 			else:
-				self.core.mainStack.closePopUp=[False,DEACTIVE_ALLS_BELLS]
+				self.core.mainStack.showPopUp={"show":True,"msgCode":DEACTIVE_ALLS_BELLS}
 		
 		else:
 			bellToEdit=data[2]
-			if active:
-				self.core.mainStack.closePopUp=[False,ACTIVE_BELL]
-			else:
-				self.core.mainStack.closePopUp=[False,DEACTIVE_BELL]
+			code=ACTIVE_BELL if active else DEACTIVE_BELL
+			self.core.mainStack.showPopUp={"show":False,"msgCode":code}
 		
-		self.changeStatus=ChangeBellStatus(self.changeAllBells,active,bellToEdit)
-		self.changeStatus.start()
-		self.changeStatus.finished.connect(self._changeBellStatusRet)
+		self.changeStatusT=ChangeBellStatus(self.bellManager,self.changeAllBells,active,bellToEdit)
+		self.changeStatusT.start()
+		self.changeStatusT.bellStatusChanged.connect(self._changeBellStatusRet)
+		self.changeStatus.finished.connect(self.changeStatusT.deleteLater)
 
 	#def changeBellStatus
 
-	def _changeBellStatusRet(self):
+	@Slot(dict)
+	def _changeBellStatusRet(self,ret):
 
-		if self.changeStatus.ret[0]:
+		if ret.get("status"):
 			if self.changeAllBells:
 				self._updateBellsModel()
 			else:
 				self._updateBellsModelInfo('bellActivated')
-			self.showMainMessage=[True,self.changeStatus.ret[1],"Ok"]
-		else:
-			self.showMainMessage=[True,self.changeStatus.ret[1],"Error"]
+		
+		self.showMainMessage={"show":True,"msgCode":ret.get("msgCode"),"tỳpe":ret.get("type")}
 
-		self.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
+		self.enableChangeStatusOptions=self.bellManager.checkChangeStatusBellsOption()
 		self.filterStatusValue="all"
-		self.core.mainStack.closePopUp=[True,""]
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		self.core.mainStack.closeGui=True
 
 	#def _changeBellStatusRet
@@ -451,46 +493,43 @@ class Bridge(QObject):
 	@Slot()
 	def openPlayLogFile(self):
 
-		self.showMainMessage=[False,"","Ok"]
+		self.showMainMessage={"show":False,"msgCode":"","type":""}
 		if os.path.exists(self.bellSchedulerPlayerLog):
 			cmd="xdg-open %s"%self.bellSchedulerPlayerLog
 			os.system(cmd)
 		else:
-			self.showMainMessage=[True,NO_PLAY_LOG_FILE,"Information"]
+			self.showMainMessage={"show":True,"msgCode":NO_PLAY_LOG_FILE,"type":bellManager.KIRIGAMI_MSG_INFO}
 
 	#def openPlayLogFile
 
 	@Slot()
 	def openErrorLogFile(self):
 
-		self.showMainMessage=[False,"","Ok"]
+		self.showMainMessage={"show":False,"msgCode":"","type":""}
 		
 		if os.path.exists(self.n4dBellScedulerManagerLog):
 			cmd="xdg-open %s"%self.n4dBellScedulerManagerLog
 			os.system(cmd)
 		else:
-			self.showMainMessage=[True,NO_ERROR_LOG_FILE,"Information"]
+			self.showMainMessage={"show":True,"msgCode":NO_ERROR_LOG_FILE,"type":bellManager.KIRIGAMI_MSG_INFO}
 
 	#def openErrorLogFile
 
 	@Slot('QVariantList')
 	def removeBell(self,data):
 
-		self.showMainMessage=[False,"","Ok"]
+		self.showMainMessage={"show":False,"msgCode":"","type":""}
 		self.removeAllBells=data[0]
-		if self.removeAllBells:
-			self.bellToRemove=None
-		else:
-			self.bellToRemove=data[1]
-
-		self.showRemoveBellDialog=[True,self.removeAllBells]
+		self.bellToRemove=None if self.removeAllBells else data[1]
+	
+		self.showRemoveBellDialog={"show":True,"removeAll":self.removeAllBells}
 
 	#def removeBell
 
 	@Slot(str)
 	def manageRemoveBellDialog(self,response):
 
-		self.showRemoveBellDialog=[False,False]
+		self.showRemoveBellDialog={"show":False,"removeAll":False}
 		if response=="Accept":
 			self._launchRemoveBellProcess()
 
@@ -499,28 +538,27 @@ class Bridge(QObject):
 	def _launchRemoveBellProcess(self):
 
 		self.core.mainStack.closeGui=False
-		if self.removeAllBells:
-			self.core.mainStack.closePopUp=[False,REMOVING_ALL_BELLS]
-		else:
-			self.core.mainStack.closePopUp=[False,REMOVING_BELL]
+		code=REMOVING_ALL_BELLS if self.removeAllBells else REMOVING_BELL
+		self.core.mainStack.showPopUp={"show":True,"msgCode":REMOVING_ALL_BELLS}
 
-		self.removeBellProcess=RemoveBell(self.removeAllBells,self.bellToRemove)
-		self.removeBellProcess.start()
-		self.removeBellProcess.finished.connect(self._removeBellProcessRet)
+		self.removeBellProcessT=RemoveBell(self.bellManager,self.removeAllBells,self.bellToRemove)
+		self.removeBellProcessT.start()
+		self.removeBellProcessT.bellRemoved.connect(self._removeBellProcessRet)
+		self.removeBellProcessT.finished.connect(self.removeBellProcessT.deleteLater)
 
 	#def _launchRemoveBellProcess
 
-	def _removeBellProcessRet(self):
+	@Slot(dict)
+	def _removeBellProcessRet(self,ret):
 
-		if self.removeBellProcess.ret[0]:
+		if ret.get("status"):
 			self._updateBellsModel()
-			self.showMainMessage=[True,self.removeBellProcess.ret[1],"Ok"]
-		else:
-			self.showMainMessage=[True,self.removeBellProcess.ret[1],"Error"]
-
+		
+		self.showMainMessage={"show":True,"msgCode":ret.get("msgCode"),"type:"ret.get("type")}
+	
 		self._manageOptions()
 		self.filterStatusValue="all"
-		self.core.mainStack.closePopUp=[True,""]
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		self.core.mainStack.closeGui=True
 
 	#def _removeBellProcessRet
@@ -529,23 +567,21 @@ class Bridge(QObject):
 	def exportBellsConfig(self,exportPath):
 
 		self.core.mainStack.closeGui=False
-		self.showMainMessage=[False,"","Ok"]
-		self.core.mainStack.closePopUp=[False,EXPORT_BELLS_CONFIG]
-		self.generateBackup=GenerateBackup(exportPath)
-		self.generateBackup.start()
-		self.generateBackup.finished.connect(self._exportBellsConfigRet)
+		self.showMainMessage={"show":False,"msCode":"","type":""}
+		self.core.mainStack.showPopUp={"show":True,"msgCode":EXPORT_BELLS_CONFIG}
+		self.generateBackupT=GenerateBackup(self.bellManager,exportPath)
+		self.generateBackupT.start()
+		self.generateBackupT.backupGenerated.connect(self._exportBellsConfigRet)
+		self.generateBackupT.finished.connect(self.generateBackupT.deleteLater)
 
 	#def exportBellsConfig
 
-	def _exportBellsConfigRet(self):
+	@Slot(dict)
+	def _exportBellsConfigRet(self,ret):
 
-		if self.generateBackup.ret["status"]:
-			self.showMainMessage=[True,self.generateBackup.ret["code"],"Ok"]
-		else:
-			self.showMainMessage=[True,self.generateBackup.ret["code"],"Error"]
-		
+		self.showMainMessage={"show":True,"msgCode":ret.get("code"),"type":ret.get("type")}
 		self.core.mainStack.closeGui=True
-		self.core.mainStack.closePopUp=[True,""]			
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}			
 
 	#def _exportBellsConfigRet
 
@@ -554,7 +590,7 @@ class Bridge(QObject):
 
 		self.core.mainStack.closeGui=False
 		self.showMainMessage=[False,"","Ok"]
-		self.core.mainStack.closePopUp=[False,IMPORT_BELLS_CONFIG]
+		self.core.mainStack.showPopUp={"show":True,"msgCode":IMPORT_BELLS_CONFIG}
 		self.importBackup=ImportBackup(importPath)
 		self.importBackup.start()
 		self.importBackup.finished.connect(self._importBackupRet)
@@ -566,15 +602,15 @@ class Bridge(QObject):
 		if self.importBackup.ret[0]:
 			self._updateBellsModel()
 			self.core.mainStack.closeGui=True
-			self.core.mainStack.closePopUp=[True,""]
-			if Bridge.bellManager.loadError:
-				self.showMainMessage=[True,Bridge.bellManager.BELLS_WITH_ERRORS,"Error"]
+			self.core.mainStack.showPopUp={"show":False,"msgCode":""}
+			if self.bellManager.loadError:
+				self.showMainMessage=[True,self.bellManager.BELLS_WITH_ERRORS,"Error"]
 			else:
 				self.showMainMessage=[True,self.importBackup.ret[1],"Ok"]
 			self._manageOptions()
 			self.filterStatusValue="all"
 		else:
-			self.core.mainStack.closePopUp=[False,RECOVERY_BELLS_CONFIG]
+			self.core.mainStack.showPopUp={"show":True,"msgCode":RECOVERY_BELLS_CONFIG}
 			self.recoveryConfig=RecoveryConfig(self.importBackup.ret[1])
 			self.recoveryConfig.start()
 			self.recoveryConfig.finished.connect(self._recoveryConfigRet)		
@@ -584,7 +620,7 @@ class Bridge(QObject):
 	def _recoveryConfigRet(self):
 
 		self._updateBellsModel()
-		self.core.mainStack.closePopUp=[True,""]
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		self.core.mainStack.closeGui=True
 		self.showMainMessage=[True,self.recoveryConfig.ret[1],"Error"]
 		self._manageOptions()
@@ -604,7 +640,7 @@ class Bridge(QObject):
 
 		self.core.mainStack.closeGui=False
 		self.showMainMessage=[False,"","Ok"]
-		self.core.mainStack.closePopUp=[False,msgCode]
+		self.core.mainStack.showPopUp={"show":True,"msgCode":msgCode}
 		self.changeHolidayControl=ChangeHolidayControl(action)
 		self.changeHolidayControl.start()
 		self.changeHolidayControl.finished.connect(self._changeHolidayControlRet)
@@ -613,7 +649,7 @@ class Bridge(QObject):
 
 	def _changeHolidayControlRet(self):
 
-		self.core.mainStack.closePopUp=[True,""]
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		self.core.mainStack.closeGui=True
 
 		if self.changeHolidayControl.ret["status"]:
@@ -621,7 +657,7 @@ class Bridge(QObject):
 		else:
 			self.showMainMessage=[True,self.changeHolidayControl.ret["code"],"Error"]
 
-		self.isHolidayControlActive=Bridge.bellManager.checkHolidayManagerStatus()
+		self.isHolidayControlActive=self.bellManager.checkHolidayManagerStatus()
 
 	#def _changeHolidayControlRet
 
@@ -632,7 +668,7 @@ class Bridge(QObject):
 		self.showMainMessage=[False,"","Ok"]
 		isAudioDeviceConfigurated=data[0]
 		currentAudioDevice=data[1]
-		self.core.mainStack.closePopUp=[False,CONFIGURATING_AUDIO_DEVICE]
+		self.core.mainStack.showPopUp={"show":True,"msgCode":CONFIGURATING_AUDIO_DEVICE}
 		self.changeAudioDeviceControl=ChangeAudioDeviceControl(isAudioDeviceConfigurated,currentAudioDevice)
 		self.changeAudioDeviceControl.start()
 		self.changeAudioDeviceControl.finished.connect(self._changeAudioDeviceControlRet)
@@ -641,7 +677,7 @@ class Bridge(QObject):
 
 	def _changeAudioDeviceControlRet(self):
 
-		self.core.mainStack.closePopUp=[True,""]
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		self.core.mainStack.closeGui=True
 
 		if self.changeAudioDeviceControl.ret["status"]:
@@ -654,41 +690,7 @@ class Bridge(QObject):
 
 	#def _changeAudioDeviceControlRet
 	
-	on_showMainMessage=Signal()
-	showMainMessage=Property('QVariantList',_getShowMainMessage,_setShowMainMessage, notify=on_showMainMessage)
 	
-	on_showRemoveBellDialog=Signal()
-	showRemoveBellDialog=Property('QVariantList',_getShowRemoveBellDialog,_setShowRemoveBellDialog,notify=on_showRemoveBellDialog)
-
-	on_enableGlobalOptions=Signal()
-	enableGlobalOptions=Property(bool,_getEnableGlobalOptions,_setEnableGlobalOptions,notify=on_enableGlobalOptions)
-
-	on_enableChangeStatusOptions=Signal()
-	enableChangeStatusOptions=Property('QVariantList',_getEnableChangeStatusOptions,_setEnableChangeStatusOptions,notify=on_enableChangeStatusOptions)
-
-	on_showExportBellsWarning=Signal()
-	showExportBellsWarning=Property(bool,_getShowExportBellsWarning,_setShowExportBellsWarning,notify=on_showExportBellsWarning)
-
-	on_isHolidayControlActive=Signal()
-	isHolidayControlActive=Property(bool,_getIsHolidayControlActive,_setIsHolidayControlActive,notify=on_isHolidayControlActive)
-
-	on_enableHolidayControl=Signal()
-	enableHolidayControl=Property(bool,_getEnableHolidayControl,_setEnableHolidayControl,notify=on_enableHolidayControl)
-
-	on_enableAudioDeviceConfiguration=Signal()
-	enableAudioDeviceConfiguration=Property(bool,_getEnableAudioDeviceConfiguration,_setEnableAudioDeviceConfiguration,notify=on_enableAudioDeviceConfiguration)
-
-	on_currentAudioDevice=Signal()
-	currentAudioDevice=Property(int,_getCurrentAudioDevice,_setCurrentAudioDevice,notify=on_currentAudioDevice)
-	
-	on_isAudioDeviceConfigurated=Signal()
-	isAudioDeviceConfigurated=Property(bool,_getIsAudioDeviceConfigurated,_setIsAudioDeviceConfigurated,notify=on_isAudioDeviceConfigurated)
-
-	on_filterStatusValue=Signal()
-	filterStatusValue=Property(str,_getFilterStatusValue,_setFilterStatusValue,notify=on_filterStatusValue)
-
-	bellsModel=Property(QObject,_getBellsModel,constant=True)
-	audioDevicesModel=Property('QVariant',_getAudioDevicesModel,constant=True)
 
 #class Bridge
 

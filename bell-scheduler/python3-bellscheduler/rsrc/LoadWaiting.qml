@@ -16,7 +16,7 @@ Rectangle{
         RowLayout{
             Layout.fillWidth: true
             Layout.alignment:Qt.AlignHCenter
-            visible:!mainStackBridge.showLoadErrorMessage[0]
+            visible:!mainStackBridge.showLoadErrorMessage.show
 
             Rectangle{
                 color:"transparent"
@@ -33,7 +33,7 @@ Rectangle{
         RowLayout{
             Layout.fillWidth: true
             Layout.alignment:Qt.AlignHCenter
-            visible:!mainStackBridge.showLoadErrorMessage[0]
+            visible:!mainStackBridge.showLoadErrorMessage.show
 
             Text{
                 id:loadtext
@@ -44,8 +44,8 @@ Rectangle{
         }
         Kirigami.InlineMessage {
             id: errorLabel
-            visible:mainStackBridge.showLoadErrorMessage[0]
-            text:getMsgText(mainStackBridge.showLoadErrorMessage[1])
+            visible:mainStackBridge.showLoadErrorMessage.show
+            text:getMsgText(mainStackBridge.showLoadErrorMessage.msgCode)
             type:Kirigami.MessageType.Error;
             Layout.minimumWidth:960
             Layout.fillWidth:true
@@ -58,19 +58,13 @@ Rectangle{
 
         switch (msgCode){
             case -25:
-                var msg=i18nd("bell-scheduler","Unabled to read bells configuration file")
-                break;
+                return i18nd("bell-scheduler","Unabled to read bells configuration file")
             case -37:
-                var msg=i18nd("bell-scheduler","Unabled to load bell list due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to load bell list due to problems with cron sync")
             case -38:
-                var msg=i18nd("bell-scheduler","Unabled to create a bell with selected file")
-                break;
+                return i18nd("bell-scheduler","Unabled to create a bell with selected file")
             default:
-                var msg=""
-                break;
+                return ""
         }
-        return msg
-
     }
 }

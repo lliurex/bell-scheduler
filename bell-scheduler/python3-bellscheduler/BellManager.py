@@ -1,20 +1,14 @@
 #!/usr/bin/env python3
 
 import os
-import json
-import codecs
-from mimetypes import MimeTypes
-import tempfile
 import shutil
 import subprocess
-import threading
-import glob
-import random
-import urllib.request
-import n4d.client
+from mimetypes import MimeTypes
 from datetime import datetime, date,timedelta
 import copy
 import re
+
+import n4d.client
 import gettext
 gettext.textdomain("bell-scheduler")
 _ = gettext.gettext
@@ -22,7 +16,6 @@ _ = gettext.gettext
 
 class BellManager(object):
 
-	
 	MISSING_BELL_NAME_ERROR=-1
 	INVALID_SOUND_FILE_ERROR=-2
 	MISSING_SOUND_FILE_ERROR=-3
@@ -51,13 +44,17 @@ class BellManager(object):
 	BELL_DUPLICATE=56
 	AUDIO_DEVICE_ALREADY_CONFIGURATED=57
 
+	KIRIGAMI_MSG_OK=0
+	KIRIGAMI_MSG_ERROR=1
+	KIRIGAMI_MSG_WARNING=2
+	KIRIGAMI_MSG_INFO=3
+
+
 	def __init__(self):
 
 		super(BellManager, self).__init__()
 
 		self.dbg=0
-		self.credentials=[]
-		self.server='localhost'
 		self.holidayToken="/etc/bellScheduler/enabled_holiday_token"
 		self.bellsConfigData=[]
 		self.imgNoDispPath="/usr/lib/python3/dist-packages/bellscheduler/rsrc/image_nodisp.svg"
@@ -593,30 +590,30 @@ class BellManager(object):
 			
 			if not self._checkBellStatus(active):
 				code=BellManager.BELLS_ALREADY_ACTIVATED if active else BellManager.BELLS_ALREADY_DEACTIVATED
-				return [True,code]
+				return {"status":True,"msgCode":code,"type":BellManager.KIRIGAMI_MSG_OK}
 
 			retChangeStatus=self.changeActivationStatus(active)
 			
 			if not retChangeStatus.get('status'):
-				return [False,retChangeStatus.get("code")]
+				return {"status":False,"msgCode":retChangeStatus.get("code")."type":BellManager.KIRIGAMI_MSG_ERROR}
 
 			retReadConfig=self.readConf()
 
 			if not retReadConfig.get("status"):
-				return [False,retReadConfig.get("code")]
+				return {"status":False,"msgCode":retReadConfig.get("code")."type":BellManager.KIRIGAMI_MSG_ERROR}
 
-			return [True,retChangeStatus.get("code")]
+			return {"status":True,"msgCode":retChangeStatus.get("code")."type":BellManager.KIRIGAMI_MSG_OK}
 
 		self.bellsConfig[bellToEdit]["active"]=active
 		ret=self._saveConf(self.bellsConfig,bellToEdit,"active")
 
 		if not ret.get("status"):
-			return [False,ret.get("code")]
+			return {"status":False,"msgCode":ret.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
 
 		self._updateBellsConfigData("bellActivated",active,bellToEdit)
 		code=BellManager.BELL_ACTIVATED_SUCCESSFULLY if active else BellManager.BELL_DEACTIVATED_SUCCESSFULLY
 
-		return [True,code]
+		return {"status":True,"msgCode":code,"type":BellManager.KIRIGAMI_MSG_OK}
 
 	#def changeBellStatus
 
@@ -644,33 +641,33 @@ class BellManager(object):
 
 		if allBells:
 			if not self.bellsConfig:
-				return [True,BellManager.BELLS_ALREADY_REMOVED]
+				return {"status":True,"msgCode":BellManager.BELLS_ALREADY_REMOVED,"type":BellManager.KIRIGAMI_MSG_OK}
 
 			retRemove=self._removeAllBells()
 			if not retRemove.get('status'):
-				return [False, retRemove.get("code")]
+				return {"status":False,"msgCode":retRemove.get("code")."type":BellManager.KIRIGAMI_MSG_ERROR}
 
 			retReadConfig=self.readConf()
 			if not retReadConfig.get("status"):
-				return [False,retReadConfig.get("code")]
+				return {"status":False,"msgCode":retReadConfig.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
 
-			return [True,retRemove["code"]]
+			return {"status":True,"msgCode":retRemove["code"],"type":BellManager.KIRIGAMI_MSG_OK}
 			
 				
 		bellsConfig=copy.deepcopy(self.bellsConfig)
 
 		if bellsConfig.pop(bellToRemove,None) is None:
-			return [False,BellManager.BELL_NOT_FOUND_ERROR]
+			return {"status":False,"msgCode":BellManager.BELL_NOT_FOUND_ERROR,"type":BellManager.KIRIGAMI_MSG_ERROR}
 
 		ret=self._saveConf(bellsConfig,bellToRemove,"remove")
 		if not ret.get("status"):
-			return [False,ret.get("code")]
+			return {"status":False,"msgCode":ret.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
 
 		self.bellsConfig=bellsConfig
 		self.bellsConfigData=[item for item in self.bellsConfigData if item.get("id")!=bellToRemove]
 
-		return [True,BellManager.BELL_REMOVED_SUCCESSFULLY]
-
+		return {"status":True,"msgCode":BellManager.BELL_REMOVED_SUCCESSFULLY."type":BellManager.KIRIGAMI_MSG_OK}
+	
 	#def removeBell
 
 	def _getOrderBell(self,info=None):
@@ -736,6 +733,8 @@ class BellManager(object):
 		user=os.environ["USER"]
 		result=self.client.BellSchedulerManager.export_bells_conf(destFile,user)
 		self._debug("Export bells conf : ",result)
+		
+		result["type"]=BellManager.KIRIGAMI_MSG_OK if result.get("status") else BellManager.KIRIGAMI_MSG_ERROR
 		
 		return result
 
@@ -897,7 +896,7 @@ class BellManager(object):
 		totalBells=len(self.bellsConfig)
 
 		if totalBells==0:
-			return [False,False,False]
+			return {"allActivated":False,"allDetactivated":False,"enableFilter":False}
 
 		countActivated=sum(1 for bell in self.bellsConfig.values() if bell.get("active"))
 
@@ -905,7 +904,7 @@ class BellManager(object):
 		allDeactivated=(countActivated==0)
 		enableStatusFilter=not(allActivated or allDeactivated)
 
-		return [allActivated,allDeactivated,enableStatusFilter]
+		return {"allActivated":allActivated,"allDeactivated":allDeactivated,"enableFilter":enableStatusFilter}
 
 	#def checkChangeStatusBellsOption
 
