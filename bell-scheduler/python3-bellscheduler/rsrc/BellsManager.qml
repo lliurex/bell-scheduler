@@ -26,9 +26,9 @@ Rectangle{
         enabled:true
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:bellsOptionsStackBridge.showMainMessage[0]
-            text:getTextMessage(bellsOptionsStackBridge.showMainMessage[1])
-            type:getTypeMessage(bellsOptionsStackBridge.showMainMessage[2])
+            visible:bellsOptionsStackBridge.showMainMessage.show
+            text:getTextMessage(bellsOptionsStackBridge.showMainMessage.msgCode)
+            type:getTypeMessage(bellsOptionsStackBridge.showMainMessage.type)
             Layout.minimumWidth:650
             Layout.fillWidth:true
             Layout.topMargin: 40
@@ -118,15 +118,15 @@ Rectangle{
                 MenuItem{
                     icon.name:"audio-on.svg"
                     text:i18nd("bell-scheduler","Enable alls bells")
-                    enabled:!bellsOptionsStackBridge.enableChangeStatusOptions[0]
-                    onClicked:bellsOptionsStackBridge.changeBellStatus([true,true])
+                    enabled:!bellsOptionsStackBridge.enableChangeStatusOptions.allActivated
+                    onClicked:bellsOptionsStackBridge.changeBellStatus({"allBells":true,"active":true})
                 }
 
                 MenuItem{
                     icon.name:"audio-volume-muted.svg"
                     text:i18nd("bell-scheduler","Disable all bells")
-                    enabled:!bellsOptionsStackBridge.enableChangeStatusOptions[1]
-                    onClicked:bellsOptionsStackBridge.changeBellStatus([true,false])
+                    enabled:!bellsOptionsStackBridge.enableChangeStatusOptions.allDeactivated
+                    onClicked:bellsOptionsStackBridge.changeBellStatus({"allBells":true,"active":false})
                 }
 
                 MenuItem{
@@ -144,7 +144,7 @@ Rectangle{
                 MenuItem{
                     icon.name:"delete.svg"
                     text:i18nd("bell-scheduler","Delete alls bells")
-                    onClicked:bellsOptionsStackBridge.removeBell([true])
+                    onClicked:bellsOptionsStackBridge.removeBell({"allBells":true,"bellId":""})
                 }
             }
            
@@ -197,14 +197,11 @@ Rectangle{
     ChangesDialog{
         id:removeBellDialog
         dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
-        dialogMsg:{
-            if (bellsOptionsStackBridge.showRemoveBellDialog[1]){
-                i18nd("bell-scheduler","All bells will be deleted.\nDo yo want to continue?")
-            }else{
-                i18nd("bell-scheduler","The bell will be deleted.\nDo yo want to continue?")
-            }
-        }
-        dialogVisible:bellsOptionsStackBridge.showRemoveBellDialog[0]
+        dialogMsg:bellsOptionsStackBridge.showRemoveBellDialog.removeAll
+                  ?i18nd("bell-scheduler","All bells will be deleted.\nDo yo want to continue?")
+                  :i18nd("bell-scheduler","The bell will be deleted.\nDo yo want to continue?")
+       
+        dialogVisible:bellsOptionsStackBridge.showRemoveBellDialog.show
         dialogWidth:300
         btnAcceptVisible:false
         btnAcceptText:""
@@ -283,10 +280,10 @@ Rectangle{
             switch(backupAction){
                 case "export":
                     bellsOptionsStackBridge.exportBellsConfig(selectedPath)
-                    break;
+                    
                 case "import":
                     bellsOptionsStackBridge.importBellsConfig(selectedPath)
-                    break;
+                    
             }
 
         }
@@ -296,125 +293,90 @@ Rectangle{
     function getTextMessage(msgCode){
         switch (msgCode){
             case -9:
-                var msg=i18nd("bell-scheduler","Backup has errors. Unabled to load it")
-                break;
+                return i18nd("bell-scheduler","Backup has errors. Unabled to load it")
             case -12:
-                var msg=i18nd("bell-scheduler","Unable to generate backup")
-                break
+                return i18nd("bell-scheduler","Unable to generate backup")
             case -19:
-                var msg=i18nd("bell-scheduler","Unabled to edit the Bell due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to edit the Bell due to problems with cron sync")
             case -20:
-                var msg=i18nd("bell-scheduler","Unabled to create the Bell due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to create the Bell due to problems with cron sync")
             case -21:
-                var msg=i18nd("bell-scheduler","Unabled to delete the Bell due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to delete the Bell due to problems with cron sync")
             case -22:
-                var msg=i18nd("bell-scheduler","Unabled to activate the Bell due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to activate the Bell due to problems with cron sync")
             case -23:
-                var msg=i18nd("bell-scheduler","Unabled to deactivate the Bell due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to deactivate the Bell due to problems with cron sync")
             case -24:
-                var msg=i18nd("bell-scheduler","Unabled to copy image and/or sound file to work directory")
-                break;
+                return i18nd("bell-scheduler","Unabled to copy image and/or sound file to work directory")
             case -31:
-                var msg=i18nd("bell-scheduler","Detected alarms with errors")
-                break;
+                return i18nd("bell-scheduler","Detected alarms with errors")
             case -36:
-                var msg=i18nd("bell-scheduler","Unabled to apply changes due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to apply changes due to problems with cron sync")
             case -37:
-                var msg=i18nd("bell-scheduler","Unabled to load bell list due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to load bell list due to problems with cron sync")
             case -48:
-                var msg=i18nd("bell-scheduler","It is not possible to activate all bells")
-                break;
+                return i18nd("bell-scheduler","It is not possible to activate all bells")
             case -49:
-                var msg=i18nd("bell-scheduler","It is not possible to deactivate all bells")
-                break;
+                return i18nd("bell-scheduler","It is not possible to deactivate all bells")
             case -52:
-                var msg=i18nd("bell-scheduler","It is not possible to remove all bells")
-                break;
+                return i18nd("bell-scheduler","It is not possible to remove all bells")
             case -53:
-                var msg=i18nd("bell-scheduler","It is not possible to changed audio output")
-                break;
+                return i18nd("bell-scheduler","It is not possible to changed audio output")
             case 10:
-                var msg=i18nd("bell-scheduler","Backup loaded successfully")
-                break;
+                return i18nd("bell-scheduler","Backup loaded successfully")
             case 11:
-                var msg=i18nd("bell-scheduler","Backup generated successfully")
-                break;
+                return i18nd("bell-scheduler","Backup generated successfully")
             case 14:
-                var msg=i18nd("bell-scheduler","Bell deleted successfully")
-                break;
+                return i18nd("bell-scheduler","Bell deleted successfully")
             case 15:
-                var msg=i18nd("bell-scheduler","Bell edited successfully")
-                break;
+                return i18nd("bell-scheduler","Bell edited successfully")
             case 16:
-                var msg=i18nd("bell-scheduler","Bell activated successfully")
-                break;
+                return i18nd("bell-scheduler","Bell activated successfully")
             case 17:
-                var msg=i18nd("bell-scheduler","Bell deactivated successfully")
-                break;
+                return i18nd("bell-scheduler","Bell deactivated successfully")
             case 18:
-                var msg=i18nd("bell-scheduler","Bell created successfully")
-                break
+                return i18nd("bell-scheduler","Bell created successfully")
             case 34:
-                var msg=i18nd("bell-scheduler","Holiday control deactivated successfully")
-                break
+                return i18nd("bell-scheduler","Holiday control deactivated successfully")
             case 35:
-                var msg=i18nd("bell-scheduler","Holiday control activated successfully")
-                break
+                return i18nd("bell-scheduler","Holiday control activated successfully")
             case 46:
-                var msg=i18nd("bell-scheduler","The bells have been activated successfully")
-                break;
+                return i18nd("bell-scheduler","The bells have been activated successfully")
             case 47:
-                var msg=i18nd("bell-scheduler","The bells have been deactivated successfully")
-                break;
+                return i18nd("bell-scheduler","The bells have been deactivated successfully")
             case 51:
-                var msg=i18nd("bell-scheduler","The bells have been removed successfully")
-                break;
+                return i18nd("bell-scheduler","The bells have been removed successfully")
             case 53:
-                var msg=i18nd("bell-scheduler","Bells already activated. Nothing to do")
-                break;
+                return i18nd("bell-scheduler","Bells already activated. Nothing to do")
             case 54:
-                var msg=i18nd("bell-scheduler","Bells already deactivated. Nothing to do")
-                break;
+                return i18nd("bell-scheduler","Bells already deactivated. Nothing to do")
             case 55:
-                var msg=i18nd("bell-scheduler","Bells alreday removed. Nothing to do")
-                break;
+                return i18nd("bell-scheduler","Bells alreday removed. Nothing to do")
             case 57:
-                var msg=i18nd("bell-scheduler","Audio ouput already configurated. Nothing to do")
-                break;
+                return i18nd("bell-scheduler","Audio ouput already configurated. Nothing to do")
             case 58:
-                var msg=i18nd("bell-scheduler","Audio output have been changed successfully")
-                break;
+                return i18nd("bell-scheduler","Audio output have been changed successfully")
             case 59:
-                var msg=i18nd("bell-scheduler","There is no playback log available")
-                break;
+                return i18nd("bell-scheduler","There is no playback log available")
             case 60:
-                var msg=i18nd("bell-scheduler","There is no error log available")
-                break;
+                return i18nd("bell-scheduler","There is no error log available")
             default:
-                var msg=""
-                break;
+                return ""
         }
-        return msg
     } 
 
     function getTypeMessage(msgType){
 
-        switch (msgType){
-            case "Information":
-                return Kirigami.MessageType.Information
-            case "Ok":
+        switch(msgType){
+            case 0:
                 return Kirigami.MessageType.Positive
-            case "Error":
+            case 1:
                 return Kirigami.MessageType.Error
-            case "Warning":
+            case 2:
                 return Kirigami.MessageType.Warning
+            case 3:
+            default:
+                return Kirigami.MessageType.Information
         }
     }
 

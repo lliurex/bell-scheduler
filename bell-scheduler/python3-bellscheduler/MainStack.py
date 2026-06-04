@@ -39,7 +39,7 @@ class LoadHoliday(QThread):
 
 	def __init__(self,*args):
 
-		super().__init__(self)
+		super().__init__()
 		self.core=Core.Core.get_core()
 
 	#def __init__

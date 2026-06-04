@@ -590,30 +590,30 @@ class BellManager(object):
 			
 			if not self._checkBellStatus(active):
 				code=BellManager.BELLS_ALREADY_ACTIVATED if active else BellManager.BELLS_ALREADY_DEACTIVATED
-				return {"status":True,"msgCode":code,"type":BellManager.KIRIGAMI_MSG_OK}
+				return {"status":True,"code":code,"type":BellManager.KIRIGAMI_MSG_OK}
 
 			retChangeStatus=self.changeActivationStatus(active)
 			
 			if not retChangeStatus.get('status'):
-				return {"status":False,"msgCode":retChangeStatus.get("code")."type":BellManager.KIRIGAMI_MSG_ERROR}
+				return {"status":False,"code":retChangeStatus.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
 
 			retReadConfig=self.readConf()
 
 			if not retReadConfig.get("status"):
-				return {"status":False,"msgCode":retReadConfig.get("code")."type":BellManager.KIRIGAMI_MSG_ERROR}
+				return {"status":False,"code":retReadConfig.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
 
-			return {"status":True,"msgCode":retChangeStatus.get("code")."type":BellManager.KIRIGAMI_MSG_OK}
+			return {"status":True,"code":retChangeStatus.get("code"),"type":BellManager.KIRIGAMI_MSG_OK}
 
 		self.bellsConfig[bellToEdit]["active"]=active
 		ret=self._saveConf(self.bellsConfig,bellToEdit,"active")
 
 		if not ret.get("status"):
-			return {"status":False,"msgCode":ret.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
+			return {"status":False,"code":ret.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
 
 		self._updateBellsConfigData("bellActivated",active,bellToEdit)
 		code=BellManager.BELL_ACTIVATED_SUCCESSFULLY if active else BellManager.BELL_DEACTIVATED_SUCCESSFULLY
 
-		return {"status":True,"msgCode":code,"type":BellManager.KIRIGAMI_MSG_OK}
+		return {"status":True,"code":code,"type":BellManager.KIRIGAMI_MSG_OK}
 
 	#def changeBellStatus
 
@@ -641,32 +641,32 @@ class BellManager(object):
 
 		if allBells:
 			if not self.bellsConfig:
-				return {"status":True,"msgCode":BellManager.BELLS_ALREADY_REMOVED,"type":BellManager.KIRIGAMI_MSG_OK}
+				return {"status":True,"code":BellManager.BELLS_ALREADY_REMOVED,"type":BellManager.KIRIGAMI_MSG_OK}
 
 			retRemove=self._removeAllBells()
 			if not retRemove.get('status'):
-				return {"status":False,"msgCode":retRemove.get("code")."type":BellManager.KIRIGAMI_MSG_ERROR}
+				return {"status":False,"code":retRemove.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
 
 			retReadConfig=self.readConf()
 			if not retReadConfig.get("status"):
-				return {"status":False,"msgCode":retReadConfig.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
+				return {"status":False,"code":retReadConfig.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
 
-			return {"status":True,"msgCode":retRemove["code"],"type":BellManager.KIRIGAMI_MSG_OK}
+			return {"status":True,"code":retRemove["code"],"type":BellManager.KIRIGAMI_MSG_OK}
 			
 				
 		bellsConfig=copy.deepcopy(self.bellsConfig)
 
 		if bellsConfig.pop(bellToRemove,None) is None:
-			return {"status":False,"msgCode":BellManager.BELL_NOT_FOUND_ERROR,"type":BellManager.KIRIGAMI_MSG_ERROR}
+			return {"status":False,"code":BellManager.BELL_NOT_FOUND_ERROR,"type":BellManager.KIRIGAMI_MSG_ERROR}
 
 		ret=self._saveConf(bellsConfig,bellToRemove,"remove")
 		if not ret.get("status"):
-			return {"status":False,"msgCode":ret.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
+			return {"status":False,"code":ret.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
 
 		self.bellsConfig=bellsConfig
 		self.bellsConfigData=[item for item in self.bellsConfigData if item.get("id")!=bellToRemove]
 
-		return {"status":True,"msgCode":BellManager.BELL_REMOVED_SUCCESSFULLY."type":BellManager.KIRIGAMI_MSG_OK}
+		return {"status":True,"code":BellManager.BELL_REMOVED_SUCCESSFULLY,"type":BellManager.KIRIGAMI_MSG_OK}
 	
 	#def removeBell
 
@@ -746,13 +746,13 @@ class BellManager(object):
 		resultImport=self._importBellsConfifg(origFile,backup)
 
 		if not resultImport.get('status'):
-			return [False,resultImport.get("data")]
+			return {"status":False,"data":resultImport.get("data")}
 
 		retReadConfig=self.readConf()
 		if retReadConfig.get("status"):
-			return [True,resultImport.get("code")]
+			return {"status":True,"code":resultImport.get("code"),"type":BellManager.KIRIGAMI_MSG_OK}
 		else:
-			return [False,retReadConfig.get("code")]
+			return {"status":False,"code":retReadConfig.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
 
 	#def importBellBackup
 
@@ -771,14 +771,14 @@ class BellManager(object):
 		resultRecovery=self._recoveryBellsConfig(origFile,backup)
 		
 		if not resultRecovery.get("status"):
-			return [False,resultRecovery.get("code")]
+			return {"status":False,"code":resultRecovery.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
 
 		retReadConfig=self.readConf()
 
 		if retReadConfig.get("status"):
-			return [False,BellManager,RECOVERY_BELLS_CONFIG]
+			return {"status":False,"code":BellManager.RECOVERY_BELLS_CONFIG,"type":BellManager.KIRIGAMI_MSG_ERROR}
 		else:
-			return [False,retReadConfig.get("code")]
+			return {"status":False,"code":retReadConfig.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
 
 	#def recoveryBellBackup
 
@@ -887,6 +887,7 @@ class BellManager(object):
 		result=self.client.BellSchedulerManager.enable_holiday_control(action)
 		self._debug("Change holiday control: ",result)	
 		
+		result["type"]=BellManager.KIRIGAMI_MSG_OK if result.get("status") else BellManager.KIRIGAMI_MSG_ERROR
 		return result
 
 	#def changeHolidayControl
@@ -990,7 +991,7 @@ class BellManager(object):
 	def changeAudioDeviceControl(self,status,audioDevice):
 
 		if status==self.isAudioDeviceConfigurated and audioDevice==self.currentAudioDevice:
-			 return {"status":True,"code":BellManager.AUDIO_DEVICE_ALREADY_CONFIGURATED,"data":""}
+			 return {"status":True,"code":BellManager.AUDIO_DEVICE_ALREADY_CONFIGURATED,"type":BellManager.KIRIGAMI_MSG_OK}
 
 		if not status:
 			newValue=""
@@ -1005,6 +1006,7 @@ class BellManager(object):
 		self._debug("Write audio device config:",result)
 
 		self._getAudioDeviceConfig()
+		result["type"]=BellManager.KIRIGAMI_MSG_OK if result.get("status") else BellManager.KIRIGAMI_MSG_ERROR
 		
 		return result
 

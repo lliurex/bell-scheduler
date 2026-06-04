@@ -98,7 +98,7 @@ Popup {
                 Layout.preferredHeight:40
                 enabled:true
                 onClicked:{
-                    bellsOptionsStackBridge.manageAudioDeviceControl([enableConfiguration.checked,audioDevicesValues.currentIndex])
+                    bellsOptionsStackBridge.manageAudioDeviceControl({"active":enableConfiguration.checked,"device":audioDevicesValues.currentIndex})
                     audioSelectorPopUp.close()
                 }
             }
