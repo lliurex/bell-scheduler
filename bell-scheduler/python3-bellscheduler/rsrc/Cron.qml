@@ -81,7 +81,7 @@ GridLayout{
 		    	width:60
 	            height:60
 	            model: 24
-	            currentIndex:bellStackBridge.bellCron[0]
+	            currentIndex:bellStackBridge.bellCron.hour
 	            delegate:delegateComponent 
 	            visibleItemCount:1
 	            hoverEnabled:true
@@ -113,7 +113,7 @@ GridLayout{
 	    		height:60
 	    		width:60
 	    		model: 60
-	    		currentIndex:bellStackBridge.bellCron[1]
+	    		currentIndex:bellStackBridge.bellCron.minute
 	    		delegate: delegateComponent
 	    		visibleItemCount:1
 	    		hoverEnabled:true
@@ -166,65 +166,29 @@ GridLayout{
 	    Layout.bottomMargin: 5
 	    spacing:8
 
-	    DayButton {
-	      	id:mondaybtn
-			dayBtnChecked:bellStackBridge.bellDays[0]
-			dayBtnText:i18nd("bell-scheduler","Monday")
-			Connections{
-				function onDayBtnClicked(value){
-					bellStackBridge.updateWeekDaysValues(["MO",value]);	
-				}
-			}
-					
-		}
-				
-		DayButton {
-	       	id:tuesdaybtn
-			dayBtnChecked:bellStackBridge.bellDays[1]
-			dayBtnText:i18nd("bell-scheduler","Tuesday")
-			Connections{
-				function onDayBtnClicked(value){
-					bellStackBridge.updateWeekDaysValues(["TU",value]);
-				}
-			}
-		}
-		
-		DayButton {
-			id:wednesdaybtn
-			dayBtnChecked:bellStackBridge.bellDays[2]
-			dayBtnText:i18nd("bell-scheduler","Wednesday")
-			Connections{
-				function onDayBtnClicked(value){
-					bellStackBridge.updateWeekDaysValues(["WE",value]);
-				}
-			}
-			
-		}
-				
-		DayButton {
-			id:thursdaybtn
-			dayBtnChecked:bellStackBridge.bellDays[3]
-			dayBtnText:i18nd("bell-scheduler","Thursday")
-			Connections{
-				function onDayBtnClicked(value){
-					bellStackBridge.updateWeekDaysValues(["TH",value]);
-				}
-			}
-		}
-			
-		DayButton {
-			id:fridaybtn
-			dayBtnChecked:bellStackBridge.bellDays[4]
-			dayBtnText:i18nd("bell-scheduler","Friday")
-			Connections{
-				function onDayBtnClicked(value){
-					bellStackBridge.updateWeekDaysValues(["FR",value]);
+	    ListModel{
+	    	id:daysModel
+	    	ListElement { key:"MO"; name:"Monday"; index:0 }
+	    	ListElement { key:"TU"; name:"Tuesday"; index:1 }
+	    	ListElement { key:"WE"; name:"Wednesday"; index:2 }
+	    	ListElement { key:"TH"; name:"Thursday"; index:3 }
+	    	ListElement { key:"FR"; name:"Friday"; index:4 }
+	    }
+
+	    Repeater {
+	    	model:daysModel
+
+		    DayButton {
+				dayBtnChecked:bellStackBridge.bellDays[model.index]
+				dayBtnText:i18nd("bell-scheduler",model.name)
+				Connections{
+					function onDayBtnClicked(value){
+						bellStackBridge.updateWeekDaysValues([model.key,value]);	
+					}
 				}
 			}
 		}
 	}
-
-	
 
 	function formatText(count, modelData) {
         var data = count === 12 ? modelData + 1 : modelData;

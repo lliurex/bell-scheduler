@@ -69,7 +69,7 @@ Popup {
                     RadioButton{
                         id:stockOption
                         checked:{
-                            if (bellStackBridge.bellImage[0]=="stock"){
+                            if (bellStackBridge.bellImage.option=="stock"){
                                 true
                             }else{
                                 false
@@ -87,7 +87,7 @@ Popup {
                     }
                     ImageList{
                         id:imageList
-                        currentImgIndex:bellStackBridge.bellImage[1]
+                        currentImgIndex:bellStackBridge.bellImage.index
                         listEnabled:stockOption.checked
                     }
                 }
@@ -100,7 +100,7 @@ Popup {
                     RadioButton{
                         id:customOption
                         checked:{
-                            if (bellStackBridge.bellImage[0]=="custom"){
+                            if (bellStackBridge.bellImage.option=="custom"){
                                 true
                             }else{
                                 false
@@ -113,7 +113,7 @@ Popup {
                                     messageLabel.visible=true
                                     applyBtn.enabled=false
                                 }else{
-                                    if ((customImagePath.text=="")||(bellStackBridge.bellImage[3])){
+                                    if ((customImagePath.text=="")||(bellStackBridge.bellImage.error)){
                                         applyBtn.enabled=false
                                     }else{
                                         applyBtn.enabled=true
@@ -126,9 +126,9 @@ Popup {
                     TextField{
                         id:customImagePath
                         text:{
-                            if (bellStackBridge.bellImage[0]=="custom"){
-                                if (!bellStackBridge.bellImage[3]){
-                                    bellStackBridge.bellImage[2].substring(bellStackBridge.bellImage[2].lastIndexOf('/')+1)
+                            if (bellStackBridge.bellImage.option=="custom"){
+                                if (!bellStackBridge.bellImage.error){
+                                    bellStackBridge.bellImage.path.substring(bellStackBridge.bellImage.path.lastIndexOf('/')+1)
                                 }else{
                                     ""
                                 }
@@ -171,7 +171,7 @@ Popup {
                 icon.name:"dialog-ok.svg"
                 text:i18nd("bell-scheduler","Apply")
                 Layout.preferredHeight:40
-                enabled:!bellStackBridge.bellImage[3]
+                enabled:!bellStackBridge.bellImage.error
                 onClicked:{
                     var option=""
                     var tmpPath=""
@@ -183,7 +183,7 @@ Popup {
                     if (selectedImageFile!=""){
                         tmpPath=selectedImageFile
                     }else{
-                        tmpPath=bellStackBridge.bellImage[2]
+                        tmpPath=bellStackBridge.bellImage.path
                     }
                     bellStackBridge.updateImageValues([option,imageList.currentImgIndex,tmpPath])
                     restoreInitValues()

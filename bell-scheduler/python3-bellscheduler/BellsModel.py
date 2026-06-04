@@ -7,12 +7,8 @@ class BellsModel(QtCore.QAbstractListModel):
 
 	IdRole= QtCore.Qt.UserRole + 1000
 	CronRole=QtCore.Qt.UserRole+1001
-	MoRole=QtCore.Qt.UserRole+1002
-	TuRole=QtCore.Qt.UserRole+1003
-	WeRole=QtCore.Qt.UserRole+1004
-	ThRole=QtCore.Qt.UserRole+1005
-	FrRole=QtCore.Qt.UserRole+1006
-	ValidityRole=QtCore.Qt.UserRole+1007
+	WeekDaysRole=QtCore.Qt.UserRole+1003
+	ValidityRole=QtCore.Qt.UserRole+1004
 	ValidityActivatedRole=QtCore.Qt.UserRole+1008
 	ImgRole=QtCore.Qt.UserRole+1009
 	NameRole= QtCore.Qt.UserRole + 1010
@@ -44,16 +40,8 @@ class BellsModel(QtCore.QAbstractListModel):
 				return item["id"]
 			elif role == BellsModel.CronRole:
 				return item["cron"]
-			elif role == BellsModel.MoRole:
-				return item["mo"]
-			elif role == BellsModel.TuRole:
-				return item["tu"]
-			elif role == BellsModel.WeRole:
-				return item["we"]
-			elif role == BellsModel.ThRole:
-				return item["th"]
-			elif role == BellsModel.FrRole:
-				return item["fr"]
+			elif role == BellsModel.WeekDaysRole:
+				return item["weekDays"]
 			elif role == BellsModel.ValidityRole:
 				return item["validity"]
 			elif role == BellsModel.ValidityActivatedRole:
@@ -80,11 +68,7 @@ class BellsModel(QtCore.QAbstractListModel):
 		roles = dict()
 		roles[BellsModel.IdRole] = b"id"
 		roles[BellsModel.CronRole] = b"cron"
-		roles[BellsModel.MoRole] = b"mo"
-		roles[BellsModel.TuRole] = b"tu"
-		roles[BellsModel.WeRole] = b"we"
-		roles[BellsModel.ThRole] = b"th"
-		roles[BellsModel.FrRole] = b"fr"
+		roles[BellsModel.WeekDaysRole] = b"weekDays"
 		roles[BellsModel.ValidityRole] = b"validity"
 		roles[BellsModel.ValidityActivatedRole] = b"validityActivated"
 		roles[BellsModel.ImgRole]= b"img"
@@ -98,7 +82,7 @@ class BellsModel(QtCore.QAbstractListModel):
 
 	#def roleNames
 
-	def appendRow(self,i,cr,mo,tu,we,th,fr,va,vs,im,na,so,bs,mi,ise,iie):
+	def appendRow(self,i,cr,wd,va,vs,im,na,so,bs,mi,ise,iie):
 		
 		tmpId=[]
 		for item in self._entries:
@@ -106,7 +90,7 @@ class BellsModel(QtCore.QAbstractListModel):
 		tmpN=na.strip()
 		if i not in tmpId and na !="" and len(tmpN)>0:
 			self.beginInsertRows(QtCore.QModelIndex(), self.rowCount(),self.rowCount())
-			self._entries.append(dict(id=i,cron=cr,mo=mo,tu=tu,we=we,th=th,fr=fr,validity=va,validityActivated=vs,img=im,name=na,sound=so,bellActivated=bs,metaInfo=mi,isSoundError=ise,isImgError=iie))
+			self._entries.append(dict(id=i,cron=cr,weekDays=wd,validity=va,validityActivated=vs,img=im,name=na,sound=so,bellActivated=bs,metaInfo=mi,isSoundError=ise,isImgError=iie))
 			self.endInsertRows()
 
 	#def appendRow

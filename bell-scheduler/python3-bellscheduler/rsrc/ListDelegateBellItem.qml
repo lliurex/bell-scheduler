@@ -8,11 +8,7 @@ Components.ItemDelegate{
     id: listBellItem
     property string bellId
     property string bellCron
-    property bool bellMo
-    property bool bellTu
-    property bool bellWe
-    property bool bellTh
-    property bool bellFr
+    property list<bool> bellDays
     property string bellValidity
     property bool bellValidityActivated
     property string bellImg
@@ -75,41 +71,22 @@ Components.ItemDelegate{
                     id:dayRow
                     anchors.horizontalCenter: parent.horizontalCenter
                     spacing:5
-                    Text{
-                        id:moText
-                        text:i18nd("bell-scheduler","M")
-                        font.family:"Quattrocento Sans Bold"
-                        color:bellMo? "#3366cc":"#A0A0A0"
-                        font.pointSize:18
+                    Repeater {
+                        model: [
+                            { text: "M", idx: 0 },
+                            { text: "T", idx: 1 },
+                            { text: "W", idx: 2 },
+                            { text: "R", idx: 3 },
+                            { text: "F", idx: 4 }
+                        ]
+                        Text{
+                            id:moText
+                            text:i18nd("bell-scheduler",modelData.text)
+                            color:bellDays[modelData.idx]? "#3366cc":"#A0A0A0"
+                            font.pointSize:18
+                        }
                     }
-                    Text{
-                        id:tuText
-                        text:i18nd("bell-scheduler","T")
-                        font.family:"Quattrocento Sans Bold"
-                        color:bellTu? "#3366cc":"#A0A0A0"
-                        font.pointSize:18
-                    }
-                    Text{
-                        id:weText
-                        text:i18nd("bell-scheduler","W")
-                        font.family:"Quattrocento Sans Bold"
-                        color:bellWe? "#3366cc":"#A0A0A0"
-                        font.pointSize:18
-                    }
-                    Text{
-                        id:thText
-                        text:i18nd("bell-scheduler","R")
-                        font.family:"Quattrocento Sans Bold"
-                        color:bellTh? "#3366cc":"#A0A0A0"
-                        font.pointSize:18
-                    }
-                    Text{
-                        id:frText
-                        text:i18nd("bell-scheduler","F")
-                        font.family:"Quattrocento Sans Bold"
-                        color:bellFr? "#3366cc":"#A0A0A0"
-                        font.pointSize:18
-                    }
+                   
                 }
                 Text{
                     id:validityText
@@ -215,7 +192,7 @@ Components.ItemDelegate{
                     MenuItem{
                         icon.name:"document-edit.svg"
                         text:i18nd("bell-scheduler","Edit bell")
-                        onClicked:bellStackBridge.loadBell([bellId,isImgError,isSoundError])
+                        onClicked:bellStackBridge.loadBell({"bellId":bellId,"isImgError":isImgError,"isSoundError":isSoundError})
                     }
                     MenuItem{
                         icon.name:"xml-node-duplicate.svg"

@@ -132,7 +132,6 @@ class BellManager(object):
 
 	def _getBellsConfig(self):
 
-		daysMapping={0:"mo", 1:"tu", 2:"we", 3:"th", 4:"fr"}
 		orderBells=self._getOrderBell()
 
 		for item in orderBells:
@@ -146,20 +145,20 @@ class BellManager(object):
 			search=[tmp["cron"]]
 
 			weekdays=bell.get("weekdays",{})
-			for dayIdx,dayKey in daysMapping.items():
-				isActive=weekdays.get(str(dayIdx),False)
-				tmp[dayKey]=isActive
-
+			bellDays=[]
+			for day in weekdays:
+				isActive=weekdays.get(day,False)
+				bellDays.append(isActive) 
 				if isActive:
-					search.append(self._getDayToSearch(dayIdx))
+					search.append(self._getDayToSearch(int(day)))
 
+			tmp["weekDays"]=bellDays
 			validityInfo=bell.get("validity",{})
 			tmp["validity"]=validityInfo.get("value","")
 			tmp["validityActivated"]=validityInfo.get("active",False)
 			if tmp["validity"]:
 					search.append(tmp["validity"])
-
-			
+		
 			imgPath=bell.get("image",{}).get("path","")
 			if os.path.exists(imgPath):
 				tmp["img"]=imgPath
@@ -206,7 +205,7 @@ class BellManager(object):
 	def initValues(self):
 
 		self.bellToLoad=""
-		self.bellCron=[0,0]
+		self.bellCron={"hour":0,"minute":0}
 		self.bellDays=[False,False,False,False,False]
 		self.bellValidityActive=False
 		self.bellValidityValue=""
@@ -214,21 +213,20 @@ class BellManager(object):
 		self.bellValidityDaysInRange=[]
 		self.enableBellValidity=False
 		self.bellName=""
-		self.bellImage=["stock",1,"/usr/share/bell-scheduler/banners/bell.png",False]
-		self.bellSound=["file","",False,True]
+		self.bellImage={"option":"stock","index":1,"path":"/usr/share/bell-scheduler/banners/bell.png","error":False}
+		self.bellSound={"option":"file","paht":"","error":False,"defaultPath":True}
 		self.bellStartIn=0
 		self.bellDuration=0
 		self.bellActive=False
 
-		imgId=self.bellImage[1]
+		imgId=self.bellImage.get("index")
 		defaultImgPath=(
 			self.imagesConfigData[imgId]["imageSource"]
-			if len(self.imagesConfigData) >imgId else self.bellImage[2]
+			if len(self.imagesConfigData) >imgId else self.bellImage.get("path")
 		)
-
 		self.currentBellConfig={
-			"hour":self.bellCron[0],
-			"minute":self.bellCron[1],
+			"hour":self.bellCron.get("hour"),
+			"minute":self.bellCron.get("minute"),
 			"validity":{
 				"active":self.bellValidityActive,
 				"value":self.bellValidityValue
@@ -236,19 +234,19 @@ class BellManager(object):
 			"weekdays":{str(i):status for i,status in enumerate(self.bellDays)},
 			"name":self.bellName,
 			"image":{
-				"option":self.bellImage[0],
+				"option":self.bellImage.get("option"),
 				"path":defaultImgPath
 			},
 			"sound":{
-				"option":self.bellSound[0],
-				"path":self.bellSound[1]
+				"option":self.bellSound.get("option"),
+				"path":self.bellSound.get("path")
 			},
 			"play":{
 				"duration":self.bellDuration,
 				"start":self.bellStartIn
 			},
 			"active":self.bellActive,
-			"soundDefaultPath":self.bellSound[3]
+			"soundDefaultPath":self.bellSound.get("defaultPath")
 		}
 	
 	#def initValues
@@ -292,7 +290,7 @@ class BellManager(object):
 
 	def loadBellConfig(self,bellToLoad,duplicateBell):
 
-		bellId=bellToLoad[0]
+		bellId=bellToLoad.get("bellId")
 
 		if not duplicateBell:
 			self.bellToLoad=bellId
@@ -300,7 +298,10 @@ class BellManager(object):
 		tmpConfig=self.bellsConfig[bellId]	
 		self.currentBellConfig=tmpConfig
 
-		self.bellCron=[tmpConfig["hour"],tmpConfig["minute"]]
+		self.bellCron={
+			"hour":tmpConfig["hour"],
+			"minute":tmpConfig["minute"]
+		}
 		
 		weekdays=tmpConfig.get("weekdays",{})
 		self.bellDays=[weekdays.get(str(i),False) for i in range(5)]
@@ -323,7 +324,12 @@ class BellManager(object):
 			else 1
 		)
 
-		self.bellImage=[imgConfig["option"],imgIndex,imgConfig["path"],bellToLoad[1]]
+		self.bellImage={
+			"option":imgConfig["option"],
+			"index":imgIndex,
+			"path":imgConfig["path"],
+			"error":bellToLoad.get("isImageError")
+		}
 
 		soundConfig=tmpConfig["sound"]
 		tmpSoundPath=soundConfig["path"]
@@ -332,7 +338,12 @@ class BellManager(object):
 		if soundConfig["option"]=="file" and self.soundsPath not in tmpSoundPath:
 			soundDefaultPath=False
 		
-		self.bellSound=[soundConfig["option"],tmpSoundPath,bellToLoad[2],soundDefaultPath]
+		self.bellSound={
+			"option":soundConfig["option"],
+			"path":tmpSoundPath,
+			"error":bellToLoad.get("isSoundError"),
+			"defaultPath":soundDefaultPath
+		}
 		
 		playConfig=tmpConfig.get("play",{})
 		self.bellStartIn=playConfig.get("start",0)

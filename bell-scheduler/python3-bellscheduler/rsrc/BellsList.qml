@@ -25,7 +25,7 @@ Rectangle {
                 id:statusFilterBtn
                 display:AbstractButton.IconOnly
                 icon.name:"view-filter.svg"
-                enabled:bellsOptionsStackBridge.enableChangeStatusOptions[2]
+                enabled:bellsOptionsStackBridge.enableChangeStatusOptions.enableFilter
                 ToolTip.delay: 1000
                 ToolTip.timeout: 3000
                 ToolTip.visible: hovered
@@ -139,11 +139,7 @@ Rectangle {
                             width:bellsTable.width-18
                             bellId:model.id
                             bellCron:model.cron
-                            bellMo:model.mo
-                            bellTu:model.tu
-                            bellWe:model.we
-                            bellTh:model.th
-                            bellFr:model.fr
+                            bellDays:model.weekDays
                             bellValidity:model.validity
                             bellValidityActivated:model.validityActivated
                             bellImg:model.img
@@ -168,6 +164,7 @@ Rectangle {
                                 i18nd("bell-scheduler","No bell found")
                             }
                         }
+                        icon.name:"bell-scheduler"
                     }
                 } 
              }

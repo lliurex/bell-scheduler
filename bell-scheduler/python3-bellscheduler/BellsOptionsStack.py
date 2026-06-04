@@ -434,7 +434,7 @@ class Bridge(QObject):
 		bellsEntries=self.bellManager.bellsConfigData
 		for item in bellsEntries:
 			if item["id"]!="":
-				self._bellsModel.appendRow(item["id"],item["cron"],item["mo"],item["tu"],item["we"],item["th"],item["fr"],item["validity"],item["validityActivated"],item["img"],item["name"],item["sound"],item["bellActivated"],item["metaInfo"],item["isSoundError"],item["isImgError"])
+				self._bellsModel.appendRow(item["id"],item["cron"],item["weekDays"],item["validity"],item["validityActivated"],item["img"],item["name"],item["sound"],item["bellActivated"],item["metaInfo"],item["isSoundError"],item["isImgError"])
 	
 	#def _updateBellsModel
 
