@@ -1,72 +1,74 @@
-import org.kde.kirigami as Kirigami
 import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
+import org.kde.kirigami as Kirigami
 
 Rectangle{
     id:rectLayout
     color:"transparent"
-    Text{ 
-        text:i18nd("bell-scheduler","Configured bells")
-        font.pointSize: 16
-    }
 
-    property var backupAction:undefined
-
-    GridLayout{
-        id:generalBellsLayout
-        rows:2
-        flow: GridLayout.TopToBottom
-        rowSpacing:10
+    ColumnLayout{
+        id: mainContent
+        anchors.top:parent.top
         anchors.left:parent.left
-        width:parent.width-10
-        height:parent.height-120
-        enabled:true
+        anchors.right:parent.right
+        anchors.bottom:btnBox.top
+
+        anchors.leftMargin:5
+        anchors.rightMargin:15
+        anchors.bottomMargin:25
+        spacing: 10
+
+        property var backupAction:undefined
+
+        Text{ 
+            text:i18nd("bell-scheduler","Configured bells")
+            font.pointSize: 16
+        }
+
         Kirigami.InlineMessage {
             id: messageLabel
             visible:bellsOptionsStackBridge.showMainMessage.show
             text:getTextMessage(bellsOptionsStackBridge.showMainMessage.msgCode)
             type:getTypeMessage(bellsOptionsStackBridge.showMainMessage.type)
-            Layout.minimumWidth:650
             Layout.fillWidth:true
-            Layout.topMargin: 40
         }
-        
-            
+               
         BellsList{
             id:bellsList
             bellsModel:bellsOptionsStackBridge.bellsModel
             Layout.fillHeight:true
             Layout.fillWidth:true
-            Layout.topMargin: messageLabel.visible?0:40
         }
     }
     
     RowLayout{
         id:btnBox
         anchors.bottom: parent.bottom
-        anchors.fill:parent.fill
-        anchors.bottomMargin:15
-        spacing:10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.leftMargin:5
+        anchors.topMargin:20
+        anchors.margins:15
+        spacing: 30
 
         Button {
             id:backupBtn
             visible:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"backup.svg"
+            icon.name:"backup"
             text:i18nd("bell-scheduler","Backup")
-            Layout.preferredHeight:40
             onClicked:backupMenu.open()
             
             Menu{
                 id:backupMenu
-                y: -backupBtn.height*1.7
+                y: -height - 5
                 x: backupBtn.width/2
 
                 MenuItem{
-                    icon.name:"document-export.svg"
+                    icon.name:"document-export"
                     text:i18nd("bell-scheduler","Generate bell backup")
                     enabled:bellsOptionsStackBridge.enableGlobalOptions
                     onClicked:{
@@ -84,7 +86,7 @@ Rectangle{
                 }
 
                 MenuItem{
-                    icon.name:"document-import.svg"
+                    icon.name:"document-import"
                     text:i18nd("bell-scheduler","Import bell backup")
                     onClicked:{
 
@@ -104,75 +106,73 @@ Rectangle{
             id:actionsBtn
             visible:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"run-build.svg"
+            icon.name:"run-build"
             text:i18nd("bell-scheduler","Global Options")
-            Layout.preferredHeight:40
             enabled:bellsOptionsStackBridge.enableGlobalOptions
             onClicked:actionsMenu.open()
 
             Menu{
                 id:actionsMenu
-                y: -actionsBtn.height*4
+                y: -height - 5
                 x: actionsBtn.width/2
 
                 MenuItem{
-                    icon.name:"audio-on.svg"
+                    icon.name:"audio-on"
                     text:i18nd("bell-scheduler","Enable alls bells")
                     enabled:!bellsOptionsStackBridge.enableChangeStatusOptions.allActivated
                     onClicked:bellsOptionsStackBridge.changeBellStatus({"allBells":true,"active":true})
                 }
 
                 MenuItem{
-                    icon.name:"audio-volume-muted.svg"
+                    icon.name:"audio-volume-muted"
                     text:i18nd("bell-scheduler","Disable all bells")
                     enabled:!bellsOptionsStackBridge.enableChangeStatusOptions.allDeactivated
                     onClicked:bellsOptionsStackBridge.changeBellStatus({"allBells":true,"active":false})
                 }
 
                 MenuItem{
-                    icon.name:"document-preview-archive.svg"
+                    icon.name:"document-preview-archive"
                     text:i18nd("bell-scheduler","View playback log file")
                     onClicked:bellsOptionsStackBridge.openPlayLogFile()
                 }
 
                 MenuItem{
-                    icon.name:"document-preview-archive.svg"
+                    icon.name:"document-preview-archive"
                     text:i18nd("bell-scheduler","View error log file")
                     onClicked:bellsOptionsStackBridge.openErrorLogFile()
                 }
 
                 MenuItem{
-                    icon.name:"delete.svg"
+                    icon.name:"delete"
                     text:i18nd("bell-scheduler","Delete alls bells")
                     onClicked:bellsOptionsStackBridge.removeBell({"allBells":true,"bellId":""})
                 }
             }
            
         }
+
         Button {
             id:settingsBtn
             visible:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"configure.svg"
+            icon.name:"configure"
             text:i18nd("bell-scheduler","Settings")
             enabled:bellsOptionsStackBridge.enableGlobalOptions
-            Layout.preferredHeight:40
-            Layout.rightMargin:rectLayout.width-(backupBtn.width+actionsBtn.width+settingsBtn.width+newBtn.width+40)
             onClicked:settingsMenu.open()
 
             Menu{
                id:settingsMenu
-               y: -settingsBtn.height*1.7
+               y: -height - 5
                x: settingsBtn.width/2
 
                MenuItem{
-                    icon.name:bellsOptionsStackBridge.isHolidayControlActive?"kt-stop.svg":"kt-start.svg"
+                    icon.name:bellsOptionsStackBridge.isHolidayControlActive?"kt-stop.svg":"kt-start"
                     text:bellsOptionsStackBridge.isHolidayControlActive?i18nd("bell-scheduler","Disable holiday control"):i18nd("bell-scheduler","Enable holiday control")
                     enabled:bellsOptionsStackBridge.enableHolidayControl
                     onClicked:bellsOptionsStackBridge.manageHolidayControl()
                 }
                 MenuItem{
-                    icon.name:"audio-card.svg"
+                    icon.name:"audio-card"
                     text:i18nd("bell-scheduler","Audio output configuration")
                     enabled:bellsOptionsStackBridge.enableAudioDeviceConfiguration
                     onClicked:audioDevicesSelector.open()
@@ -183,13 +183,17 @@ Rectangle{
                 id:audioDevicesSelector
             }
         }
+
+        Item{
+            Layout.fillWidth:true
+        }
+
         Button {
             id:newBtn
             visible:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"list-add.svg"
+            icon.name:"list-add"
             text:i18nd("bell-scheduler","New bell")
-            Layout.preferredHeight:40
             onClicked:bellStackBridge.addNewBell() 
         }
     }
@@ -243,7 +247,7 @@ Rectangle{
 
     }
 
-     ChangesDialog{
+    ChangesDialog{
         id:importBellDialog
         dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
         dialogMsg:i18nd("bell-scheduler","New bells configuration will be loaded and replace the existing configuration.\nDo you want to continue?")
