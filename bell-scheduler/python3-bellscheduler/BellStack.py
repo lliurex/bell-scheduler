@@ -651,7 +651,7 @@ class Bridge(QObject):
 	@Slot(str,result=bool)
 	def checkMimetypeImage(self,imagePath):
 
-		return self.bellManager.checkMimetypes(imagePath,"image")["result"]
+		return self.bellManager.checkMimetypes(imagePath,"image").get("status")
 
 	#def checkMimetypeImage
 
@@ -678,7 +678,7 @@ class Bridge(QObject):
 	@Slot(str,result=bool)
 	def checkMimetypeSound(self,soundPath):
 
-		return self.bellManager.checkMimetypes(soundPath,"audio")["result"]
+		return self.bellManager.checkMimetypes(soundPath,"audio").get("status")
 
 	#def checkMimetypeSound
 

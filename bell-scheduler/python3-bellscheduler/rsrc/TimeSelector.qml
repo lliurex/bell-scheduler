@@ -138,8 +138,8 @@ Popup {
 
     function restoreInitValues(){
 
-        hourEntry.text=formatEditText(bellStackBridge.bellCron[0])
-        minuteEntry.text=formatEditText(bellStackBridge.bellCron[1])
+        hourEntry.text=formatEditText(bellStackBridge.bellCron.hour)
+        minuteEntry.text=formatEditText(bellStackBridge.bellCron.minute)
 
     }
 

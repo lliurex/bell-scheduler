@@ -10,6 +10,7 @@ from datetime import datetime, date, timedelta
 import syslog
 import time
 import random
+import shlex
 
 class BellSchedulerPlayer:
 
@@ -237,7 +238,7 @@ class BellSchedulerPlayer:
 			soundPath = self._getSoundPath(soundOption, soundPath)
 
 		if soundOption in ["file", "directory"]:
-			cmdArgs.append(soundPath)
+			cmdArgs.append(shlex.quote(soundPath))
 		elif soundOption in ["url", "urlslist"]:
 			soundPath = soundPath.replace("%", r"\%")
 			cmdArgs.append(f'$(yt-dlp --get-url --format "bestaudio/best" "{soundPath}")')

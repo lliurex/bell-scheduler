@@ -417,7 +417,7 @@ class BellManager(object):
 		if validity.get("active"):
 			checkValidity=self.checkValidity(data.get("weekdays",{}),validity.get("value",""))
 			
-			if not checkValidity.get("result"):
+			if not checkValidity.get("status"):
 				return checkValidity
 
 		imgConfig=data.get("image",{})
@@ -429,7 +429,7 @@ class BellManager(object):
 
 			checkImage=self.checkMimetypes(imgPath,"image")
 			
-			if not checkImage.get("result"):
+			if not checkImage.get("status"):
 				return checkImage
 
 		soundConfig=data.get("sound",{})
@@ -442,7 +442,7 @@ class BellManager(object):
 	
 			checkSound=self.checkMimetypes(soundPath,"audio")
 			
-			if not checkSound.get("result"):
+			if not checkSound.get("status"):
 				return checkSound
 
 			return self.checkAudiofile(soundPath,"file")
@@ -525,9 +525,9 @@ class BellManager(object):
 			for file in files:
 				fullPath=os.path.join(root,file)
 				checkFile=self.checkMimetypes(fullPath,"audio")
-				if checkFile.get("result"):
+				if checkFile.get("status"):
 					checkRun=self.checkAudiofile(fullPath,'file')
-					if checkRun.get("result"):
+					if checkRun.get("status"):
 						return {"status":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
 
 		return {"status":False,"code":BellManager.FOLDER_WITH_INCORRECT_FILES_ERROR,"data":""}
