@@ -480,7 +480,7 @@ Rectangle{
            target:removeValidityDialog
            function onDiscardDialogClicked(){
                 removeValidityDialog.close()
-                bellStackBridge.updateBellValidityValue(["",true])         
+                bellStackBridge.updateBellValidityValue({"rangeOption":true,"value":""})         
            }
            function onRejectDialogClicked(){
                 removeValidityDialog.close()       
@@ -534,7 +534,7 @@ Rectangle{
 
     function getMessageText(){
 
-         switch (bellStackBridge.showBellFormMessage[1]){
+         switch (bellStackBridge.showBellFormMessage.msgCode){
             case -1:
                 return i18nd("bell-scheduler","You must indicate a name for the alarm")
             case -3:

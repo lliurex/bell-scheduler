@@ -31,6 +31,7 @@ class BellManager(object):
 	ERROR_TIMEOUT_EXPIRED=-57
 	ERROR_FFPROBE_MISSING=-58
 	BELL_NOT_FOUND_ERROR=-59
+	BELL_ACTIVATION_ERROR=-60
 
 	ACTION_SUCCESSFUL=0
 	BELL_REMOVED_SUCCESSFULLY=14
@@ -41,7 +42,6 @@ class BellManager(object):
 	BELLS_ALREADY_ACTIVATED=53
 	BELLS_ALREADY_DEACTIVATED=54
 	BELLS_ALREADY_REMOVED=55
-	BELL_DUPLICATE=56
 	AUDIO_DEVICE_ALREADY_CONFIGURATED=57
 
 	KIRIGAMI_MSG_OK=0
@@ -206,7 +206,13 @@ class BellManager(object):
 
 		self.bellToLoad=""
 		self.bellCron={"hour":0,"minute":0}
-		self.bellDays=[False,False,False,False,False]
+		self.bellDays={
+			"0":False,
+			"1":False,
+			"2":False,
+			"3":False,
+			"4":False
+		}
 		self.bellValidityActive=False
 		self.bellValidityValue=""
 		self.bellValidityRangeOption=True
@@ -214,7 +220,7 @@ class BellManager(object):
 		self.enableBellValidity=False
 		self.bellName=""
 		self.bellImage={"option":"stock","index":1,"path":"/usr/share/bell-scheduler/banners/bell.png","error":False}
-		self.bellSound={"option":"file","paht":"","error":False,"defaultPath":True}
+		self.bellSound={"option":"file","path":"","error":False,"defaultPath":True}
 		self.bellStartIn=0
 		self.bellDuration=0
 		self.bellActive=False
@@ -231,7 +237,8 @@ class BellManager(object):
 				"active":self.bellValidityActive,
 				"value":self.bellValidityValue
 			},
-			"weekdays":{str(i):status for i,status in enumerate(self.bellDays)},
+			#"weekdays":{str(i):status for i,status in enumerate(self.bellDays)},
+			"weekdays":self.bellDays,
 			"name":self.bellName,
 			"image":{
 				"option":self.bellImage.get("option"),
@@ -303,8 +310,9 @@ class BellManager(object):
 			"minute":tmpConfig["minute"]
 		}
 		
-		weekdays=tmpConfig.get("weekdays",{})
-		self.bellDays=[weekdays.get(str(i),False) for i in range(5)]
+		#weekdays=tmpConfig.get("weekdays",{})
+		#self.bellDays=[weekdays.get(str(i),False) for i in range(5)]
+		self.bellDays=tmpConfig.get("weekdays")
 		
 		
 		validity=tmpConfig.get("validity",{})
@@ -314,7 +322,7 @@ class BellManager(object):
 
 		self.bellValidityDaysInRange=[]
 		self._getValidityConfig(self.bellValidityValue)
-		self.enableBellValidity=self.areDaysChecked(weekdays)
+		self.enableBellValidity=self.areDaysChecked(self.bellDays)
 		self.bellName=tmpConfig["name"]
 
 		imgConfig=tmpConfig["image"]
@@ -398,11 +406,11 @@ class BellManager(object):
 	def checkData(self,data):
 		
 		checkValidity=True
-		checkImage={"result":True,"code":"","data":""}
-		checkSound={"result":True,"code":"","data":""}
+		checkImage={"status":True,"code":"","data":""}
+		checkSound={"status":True,"code":"","data":""}
 
 		if not data.get("name"):
-			return {"result":False,"code":BellManager.MISSING_BELL_NAME_ERROR,"data":""}
+			return {"status":False,"code":BellManager.MISSING_BELL_NAME_ERROR,"data":""}
 
 		validity=data.get("validity",{})
 
@@ -417,7 +425,7 @@ class BellManager(object):
 		if imgConfig.get("option")=="custom":
 			imgPath=imgConfig.get("path")
 			if not imgPath:
-				return {"result":False,"code":BellManager.MISSING_IMAGE_FILE_ERROR,"data":""}
+				return {"status":False,"code":BellManager.MISSING_IMAGE_FILE_ERROR,"data":""}
 
 			checkImage=self.checkMimetypes(imgPath,"image")
 			
@@ -430,7 +438,7 @@ class BellManager(object):
 
 		if soundOption=="file":
 			if not soundPath:
-				return {"result":False,"code":BellManager.MISSING_SOUND_FILE_ERROR,"data":""}
+				return {"status":False,"code":BellManager.MISSING_SOUND_FILE_ERROR,"data":""}
 	
 			checkSound=self.checkMimetypes(soundPath,"audio")
 			
@@ -441,11 +449,11 @@ class BellManager(object):
 		
 		if soundOption=="directory":
 			if not soundPath:
-				return {"result":False,"code":BellManager.MISSING_SOUND_FOLDER_ERROR,"data":""}
+				return {"status":False,"code":BellManager.MISSING_SOUND_FOLDER_ERROR,"data":""}
 
 			return self.checkDirectory(soundPath)
 
-		return {"result":True,"code":"","data":""}	
+		return {"status":True,"code":"","data":""}	
 					
 	#def checkData
 
@@ -456,12 +464,12 @@ class BellManager(object):
 		
 		if check=="audio":
 			if not fileMimeType or (not fileMimeType.startswith("audio") and not fileMimeType.startswith("video")):
-				return {"result":False,"code":BellManager.INVALID_SOUND_FILE_ERROR,"data":""}
+				return {"status":False,"code":BellManager.INVALID_SOUND_FILE_ERROR,"data":""}
 		else:
 			if not fileMimeType or not fileMimeType.startswith("image"):
-				return {"result":False,"code":BellManager.INVALID_IMAGE_FILE_ERROR,"data":""}
+				return {"status":False,"code":BellManager.INVALID_IMAGE_FILE_ERROR,"data":""}
 
-		return {"result":True,"code":"","data":""}
+		return {"status":True,"code":"","data":""}
 
 	#def checkMimetypes			
 				
@@ -483,13 +491,13 @@ class BellManager(object):
 				urls=[line.strip() for line in urlOutput.stdout.splitlines() if line.strip()]
 
 				if not urls:
-					return {"result":False,"code":BellManager.SOUND_FILE_URL_NOT_VALID_ERROR,"data":""}	
+					return {"status":False,"code":BellManager.SOUND_FILE_URL_NOT_VALID_ERROR,"data":""}	
 
 				targetUrl=urls[1] if len(urls)>1 else urls[0]
 				ffprobeArgs.extend(["-i",targetUrl])
 
 			except (subprocess.CalledProcessError,FileNotFoundError):
-				return {"result":False,"code":BellManager.SOUND_FILE_URL_NOT_VALID_ERROR,"data":""}	
+				return {"status":False,"code":BellManager.SOUND_FILE_URL_NOT_VALID_ERROR,"data":""}	
 
 		else:
 			ffprobeArgs.extend(["-i",file.strip('\'"')])
@@ -498,15 +506,15 @@ class BellManager(object):
 			result=subprocess.run(ffprobeArgs,capture_output=True,text=True,timeout=10)
 
 			if not result.stdout.strip():
-				return {"result":False,"code":BellManager.SOUND_FILE_URL_NOT_VALID_ERROR,"data":""}	
+				return {"status":False,"code":BellManager.SOUND_FILE_URL_NOT_VALID_ERROR,"data":""}	
 
-			return {"result":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
+			return {"status":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
 
 		except subprocess.TimeoutExpired:
-			return {"result":False,"code":BellManager.ERROR_TIMEOUT_EXPIRED,"data":""}
+			return {"status":False,"code":BellManager.ERROR_TIMEOUT_EXPIRED,"data":""}
 
 		except FileNotFoundError:
-			return {"result":False,"code":BellManager.ERROR_FFPROBE_MISSING_,"data":""}	
+			return {"status":False,"code":BellManager.ERROR_FFPROBE_MISSING_,"data":""}	
 
 
 	#def checkAudiofile	
@@ -520,9 +528,9 @@ class BellManager(object):
 				if checkFile.get("result"):
 					checkRun=self.checkAudiofile(fullPath,'file')
 					if checkRun.get("result"):
-						return {"result":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
+						return {"status":True,"code":BellManager.ACTION_SUCCESSFUL,"data":""}
 
-		return {"result":False,"code":BellManager.FOLDER_WITH_INCORRECT_FILES_ERROR,"data":""}
+		return {"status":False,"code":BellManager.FOLDER_WITH_INCORRECT_FILES_ERROR,"data":""}
 
 	#def checkDirectory		
 
@@ -578,20 +586,20 @@ class BellManager(object):
 		retCopy=self._copyMediaFiles(origImgPath,origSoundPath)
 
 		if not retCopy.get("status"):
-			return [False,retCopy.get("code")]	
+			return {"status":False,"code":retCopy.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}	
 
 		retSave=self._saveConf(bellsConfig,order,action)
 		
 		if not retSave.get("status"):
-			return [False,retSave.get("code")]
+			return {"status":False,"code":retSave.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
 
 		retReadConfig=self.readConf()
-		if not retReadConfig["status"]:
-			return [False,retReadConfig.get("code")]
+		if not retReadConfig.get("status"):
+			return {"status":False,"code":retReadConfig.get("code"),"type":BellManager.KIRIGAMI_MSG_ERROR}
 
 		code=BellManager.BELL_EDITED_SUCCESSFULLY if action=="edit" else BellManager.BELL_ADDED_SUCCESSFULLY
 		
-		return [True,code]	
+		return {"status":True,"code":code,"type":BellManager.KIRIGAMI_MSG_OK}	
 
 	#def saveData
 
@@ -615,6 +623,10 @@ class BellManager(object):
 
 			return {"status":True,"code":retChangeStatus.get("code"),"type":BellManager.KIRIGAMI_MSG_OK}
 
+		else:
+			if not self.areDaysChecked(self.bellsConfig[bellToEdit]["weekdays"]):
+				return {"status":False,"code":BellManager.BELL_ACTIVATION_ERROR,"type":BellManager.KIRIGAMI_MSG_ERROR}
+		
 		self.bellsConfig[bellToEdit]["active"]=active
 		ret=self._saveConf(self.bellsConfig,bellToEdit,"active")
 
@@ -825,7 +837,7 @@ class BellManager(object):
 	def checkValidity(self,weekdays,validity):
 
 		if not validity:
-			return {"result":True,"code":"","data":""}
+			return {"status":True,"code":"","data":""}
 
 		daysInValidity=self.getDaysInRange(validity)
 		weeksValidity=set()
@@ -838,9 +850,9 @@ class BellManager(object):
 
 		for item in weekdaysSelected:
 			if item not in weeksValidity:
-				return {"result":False,"code":BellManager.DAY_NOT_IN_VALIDITY_ERROR,"data":""}
+				return {"status":False,"code":BellManager.DAY_NOT_IN_VALIDITY_ERROR,"data":""}
 
-		return {"result":True,"code":"","data":""}
+		return {"status":True,"code":"","data":""}
 
 		
 	#def checkValidity
@@ -963,18 +975,18 @@ class BellManager(object):
 						duplicateValidity=True
 				
 				elif currentDays:
-					duplicateValidity=any(today<datetieme.strptime(d,"%d/%m/%Y") for d in currentDays)
+					duplicateValidity=any(today<datetime.strptime(d,"%d/%m/%Y") for d in currentDays)
 				
 				elif tmpDays:
-					duplicateValidity=any(today<datetieme.strptime(d,"%d/%m/%Y") for d in tmpDays)
+					duplicateValidity=any(today<datetime.strptime(d,"%d/%m/%Y") for d in tmpDays)
 
 				else:
 					duplicateValidity=True
 
 			if duplicateValidity:
-				return {"result":False,"code":BellManager.BELL_DUPLICATE,"data":""}
+				return False
 		
-		return {"result":True,"code":"","data":""}
+		return True
 
 	#def checkDuplicateBellCron	
 

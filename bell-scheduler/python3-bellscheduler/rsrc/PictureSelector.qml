@@ -185,7 +185,7 @@ Popup {
                     }else{
                         tmpPath=bellStackBridge.bellImage.path
                     }
-                    bellStackBridge.updateImageValues([option,imageList.currentImgIndex,tmpPath])
+                    bellStackBridge.updateImageValues({"option":option,"index":imageList.currentImgIndex,"path":tmpPath})
                     restoreInitValues()
                     imageSelector.close()
                 }
@@ -241,19 +241,19 @@ Popup {
 
     function restoreInitValues(){
 
-        imageList.currentImgIndex=bellStackBridge.bellImage[1]
+        imageList.currentImgIndex=bellStackBridge.bellImage.index
         imageFileError=false
         selectedImageFile=""
         messageLabel.visible=""
-        applyBtn.enabled=!bellStackBridge.bellImage[3]
+        applyBtn.enabled=!bellStackBridge.bellImage.error
         
-        if (bellStackBridge.bellImage[0]=="stock"){
+        if (bellStackBridge.bellImage.option=="stock"){
             stockOption.checked=true
             customImagePath.text=""
         }else{
             customOption.checked=true
-            if (!bellStackBridge.bellImage[3]){
-                customImagePath.text=bellStackBridge.bellImage[2].substring(bellStackBridge.bellImage[2].lastIndexOf('/')+1)
+            if (!bellStackBridge.bellImage.error){
+                customImagePath.text=bellStackBridge.bellImage.path.substring(bellStackBridge.bellImage.path.lastIndexOf('/')+1)
             }else{
                 customImagePath.text=""
             }

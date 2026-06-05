@@ -242,7 +242,7 @@ Popup {
                             tmpPath=bellStackBridge.bellSound.path
                         }
                     }
-                    bellStackBridge.updateSoundValues([option,tmpPath,soundDefaultPath.checked])
+                    bellStackBridge.updateSoundValues({"option":option,"path":tmpPath,"defaultPath":soundDefaultPath.checked})
                     restoreInitValues()
                     soundSelector.close()
                 }
@@ -321,22 +321,22 @@ Popup {
         selectedSoundFile=""
         selectedSoundFolder=""
         messageLabel.visible=false
-        soundDefaultPath.checked=bellStackBridge.bellSound[3]
-        applyBtn.enabled=!bellStackBridge.bellSound[2]
+        soundDefaultPath.checked=bellStackBridge.bellSound.defaultPath
+        applyBtn.enabled=!bellStackBridge.bellSound.error
         
-        if (bellStackBridge.bellSound[0]=="file"){
+        if (bellStackBridge.bellSound.option=="file"){
             fileOption.checked=true
             folderPath.text=""
-            if (!bellStackBridge.bellSound[2]){
-                filePath.text=bellStackBridge.bellSound[1].substring(bellStackBridge.bellSound[1].lastIndexOf('/')+1)
+            if (!bellStackBridge.bellSound.error){
+                filePath.text=bellStackBridge.bellSound.path.substring(bellStackBridge.bellSound.path.lastIndexOf('/')+1)
             }else{
                 filePath.text=""
             }
         }else{
             directoryOption.checked=true
             filePath.text=""
-            if (!bellStackBridge.bellSound[2]){
-                folderPath.text=bellStackBridge.bellSound[1]
+            if (!bellStackBridge.bellSound.error){
+                folderPath.text=bellStackBridge.bellSound.path
             }else{
                 folderPath.text=""
             }

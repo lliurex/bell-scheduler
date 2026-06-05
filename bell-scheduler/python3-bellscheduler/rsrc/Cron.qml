@@ -90,7 +90,7 @@ GridLayout{
 	            ToolTip.visible: hovered
 	            ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the hour")
 	            onCurrentIndexChanged: {
-	            	bellStackBridge.updateClockValues(["H",hoursTumbler.currentIndex]);
+	            	bellStackBridge.updateClockValues({"hour":hoursTumbler.currentIndex});
 	            } 
 	        }       
 		}
@@ -122,7 +122,7 @@ GridLayout{
 	    	 	ToolTip.visible: hovered
 	    	 	ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the minutes")
 	    		onCurrentIndexChanged: {
-	    			bellStackBridge.updateClockValues(["M",minutesTumbler.currentIndex]);
+	    			bellStackBridge.updateClockValues({"minute":minutesTumbler.currentIndex});
 	    		}
 	    	}
 		} 
@@ -168,22 +168,22 @@ GridLayout{
 
 	    ListModel{
 	    	id:daysModel
-	    	ListElement { key:"MO"; name:"Monday"; index:0 }
-	    	ListElement { key:"TU"; name:"Tuesday"; index:1 }
-	    	ListElement { key:"WE"; name:"Wednesday"; index:2 }
-	    	ListElement { key:"TH"; name:"Thursday"; index:3 }
-	    	ListElement { key:"FR"; name:"Friday"; index:4 }
+	    	ListElement { key:"0"; name:"Monday" }
+	    	ListElement { key:"1"; name:"Tuesday" }
+	    	ListElement { key:"2"; name:"Wednesday" }
+	    	ListElement { key:"3"; name:"Thursday" }
+	    	ListElement { key:"4"; name:"Friday" }
 	    }
 
 	    Repeater {
 	    	model:daysModel
 
 		    DayButton {
-				dayBtnChecked:bellStackBridge.bellDays[model.index]
+				dayBtnChecked:bellStackBridge.bellDays[model.key]
 				dayBtnText:i18nd("bell-scheduler",model.name)
 				Connections{
 					function onDayBtnClicked(value){
-						bellStackBridge.updateWeekDaysValues([model.key,value]);	
+						bellStackBridge.updateWeekDaysValues({[model.key]:value});	
 					}
 				}
 			}

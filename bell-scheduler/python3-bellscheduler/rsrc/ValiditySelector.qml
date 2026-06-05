@@ -199,7 +199,7 @@ Popup {
                         }else{
                             tmpValue=dayEntry.text
                         }
-                        bellStackBridge.updateBellValidityValue([tmpValue,rangeDate.checked])
+                        bellStackBridge.updateBellValidityValue({"rangeOption":rangeDate.checked,"value":tmpValue})
                         validitySelector.close()
                     }
                 }

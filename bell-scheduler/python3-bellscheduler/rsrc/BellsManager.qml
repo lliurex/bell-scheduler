@@ -322,6 +322,8 @@ Rectangle{
                 return i18nd("bell-scheduler","It is not possible to remove all bells")
             case -53:
                 return i18nd("bell-scheduler","It is not possible to changed audio output")
+            case -60:
+                return i18nd("bell-scheduler","Unable to activate bell. There are no scheduled days")
             case 10:
                 return i18nd("bell-scheduler","Backup loaded successfully")
             case 11:
