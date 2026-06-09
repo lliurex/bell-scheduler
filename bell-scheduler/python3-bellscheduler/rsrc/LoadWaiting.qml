@@ -8,7 +8,7 @@ Rectangle{
     color:"transparent"
 
     ColumnLayout{
-        id: loadGrid
+        id: loadRoot
         anchors.centerIn: parent
         width: parent.width * 0.9
         spacing: 15
@@ -18,13 +18,28 @@ Rectangle{
             visible: !mainStackBridge.showLoadErrorMessage.show
             spacing: 10
 
-            AnimatedImage {
-                id: loadingGif
-                source: "/usr/lib/python3/dist-packages/bellscheduler/rsrc/loading.gif"
-                Layout.preferredWidth: 32
-                Layout.preferredHeight: 32
+            Image{
+                id:spinnerImage
+                source: "/usr/lib/python3/dist-packages/bellscheduler/rsrc/loading.png"
+                Layout.preferredWidth: 24
+                Layout.preferredHeight: 24
                 Layout.alignment: Qt.AlignHCenter
                 fillMode: Image.PreserveAspectFit
+                smooth:false
+                antialiasing:false
+
+                rotation:0
+            }
+            
+            Timer{
+                id:rotationTimer
+                running:(spinnerImage!==null && loadRoot!==null) && spinnerImage.visible && loadRoot.visible
+                repeat:true
+                interval:100
+
+                onTriggered:{
+                    spinnerImage.rotation=(spinnerImage.rotation+330)%360
+                }
             }
 
             Text {
