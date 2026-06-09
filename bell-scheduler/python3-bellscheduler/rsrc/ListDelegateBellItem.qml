@@ -28,6 +28,18 @@ ItemDelegate{
     leftPadding:5
     rightPadding:10
 
+    onHoveredChanged:{
+        if (hovered){
+            if (listBellItem.ListView.view && !optionsMenu.opened){
+                listBellItem.ListView.view.currentIndex=index
+            }
+        }else{
+            if (!optionsMenu.opened && listBellItem.ListView.view){
+                listBellItem.ListView.view.currentIndex=-1
+            }
+        }
+    }
+
     background:Rectangle {
         x:5
         y:5
@@ -37,7 +49,7 @@ ItemDelegate{
             if (isSoundError || isImgError){
                 "#ffa64c"
             }else{
-                if (listBellItem.hovered || listBellItem.ListView.isCurrentItem){
+                if (listBellItem.hovered || listBellItem.ListView.isCurrentItem || optionsMenu.opened){
                     Qt.alpha(Kirigami.Theme.highlightColor,0.15)
                 }else{
                     "transparent"
@@ -46,12 +58,12 @@ ItemDelegate{
         }
         radius:6
         border.width:1
-        border.color:(listBellItem.hovered || listBellItem.ListView.isCurrentItem)
+        border.color:(listBellItem.hovered || listBellItem.ListView.isCurrentItem || optionsMenu.opened)
                       ?Kirigami.Theme.highlightColor
                       :"transparent"
 
     }
-
+ 
     contentItem:RowLayout {
         spacing:20
 
@@ -156,6 +168,16 @@ ItemDelegate{
             onClicked:optionsMenu.open();
             onVisibleChanged:{
                 optionsMenu.close()
+            }
+
+            Connections{
+                target:listBells
+                function onCurrentIndexChanged(){
+                    if (!listBellItem.ListView.isCurretItem && optionsMenu.opened){
+                        optionsMenu.close()
+                    }
+
+                }
             }
 
             Menu{
