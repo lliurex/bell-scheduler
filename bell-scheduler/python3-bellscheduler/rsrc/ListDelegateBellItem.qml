@@ -20,7 +20,7 @@ ItemDelegate{
     property bool isImgError
 
     enabled:true
-    height:125
+    height:130
 
     width: parent ? parent.width-10 : 0
     hoverEnabled:true
@@ -44,10 +44,10 @@ ItemDelegate{
         x:5
         y:5
         width:parent.width-5
-        height:parent.height
+        height:parent.height-5
         color: {
             if (isSoundError || isImgError){
-                "#ffa64c"
+                Kirigami.Theme.neutralBackgroundColor
             }else{
                 if (listBellItem.hovered || listBellItem.ListView.isCurrentItem || optionsMenu.opened){
                     Qt.alpha(Kirigami.Theme.highlightColor,0.15)
@@ -70,6 +70,7 @@ ItemDelegate{
         ColumnLayout{
             id:cronRow
             Layout.preferredWidth:190
+            Layout.fillHeight:true
             Layout.alignment:Qt.AlignVCenter
             spacing:0
 
@@ -107,7 +108,7 @@ ItemDelegate{
                 text:bellValidity
                 color:bellValidityActivated?"#3366cc":"#A0A0A0"
                 font.pointSize:11
-                visible:bellValidity!=""
+                visible:bellValidity!==""
                 Layout.alignment:Qt.AlignHCenter
             }
         }

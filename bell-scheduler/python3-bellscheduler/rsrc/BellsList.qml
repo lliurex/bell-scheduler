@@ -115,6 +115,7 @@ Rectangle {
                         role:"metaInfo"
                         search:bellSearchEntry.text.trim()
                         statusFilter:bellsOptionsStackBridge.filterStatusValue
+                        externalTimer: searchTimer
 
                         delegate: ListDelegateBellItem{
                             width:bellsTable.width-18

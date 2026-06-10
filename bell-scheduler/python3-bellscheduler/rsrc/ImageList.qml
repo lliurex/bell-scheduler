@@ -5,22 +5,23 @@ import org.kde.plasma.components as PC
 
 
 Rectangle{
+    id:imgContainer
     width:120
     height:120
     border.color: "#d3d3d3"
+
     property alias currentImgIndex:imagesSelector.currentIndex
     property alias listEnabled:imagesSelector.enabled
 
     PC.ScrollView{
-        implicitWidth:parent.width
-        implicitHeight:parent.height
-        anchors.leftMargin:10
+        anchors.fill:parent
 
         ListView{
             id:imagesSelector
-            anchors.centerIn:parent
+            implicitWidth:imgContainer.width
+            implicitHeight:imgContainer.height
             focus:true
-            currentIndex:currentImgIndex
+
             snapMode:ListView.SnapOneItem
             highlightRangeMode: ListView.StrictlyEnforceRange
             enabled:listEnabled   
@@ -40,7 +41,6 @@ Rectangle{
                 }
 
             }
-                  
         }
     }
 }
