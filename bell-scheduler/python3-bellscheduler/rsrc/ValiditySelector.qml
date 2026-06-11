@@ -278,7 +278,7 @@ Popup {
             }
         }
 
-        calendar.initDate=rangeDate.checked?day1Entry.text:dayEntry
+        calendar.initDate=rangeDate.checked?day1Entry.text:dayEntry.text
         calendar.endDate=rangeDate.checked?day2Entry.text:"";
         calendar.currentMonth=newDate.getMonth()
         calendar.currentYear=newDate.getFullYear()

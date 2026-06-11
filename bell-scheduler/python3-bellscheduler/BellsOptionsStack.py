@@ -677,7 +677,7 @@ class Bridge(QObject):
 
 	#def _changeHolidayControlRet
 
-	@Slot('QVariantList')
+	@Slot(dict)
 	def manageAudioDeviceControl(self,data):
 
 		self.core.mainStack.closeGui=False
