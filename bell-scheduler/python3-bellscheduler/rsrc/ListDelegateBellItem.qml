@@ -8,7 +8,7 @@ ItemDelegate{
     id: listBellItem
     property string bellId
     property string bellCron
-    property list<bool> bellDays
+    property var bellDays:[]
     property string bellValidity
     property bool bellValidityActivated
     property string bellImg
@@ -22,7 +22,7 @@ ItemDelegate{
     enabled:true
     height:130
 
-    width: parent ? parent.width-10 : 0
+    width: listBellItem.ListView.view?listBellItem.ListView.view.width -10 : 0
     hoverEnabled:true
 
     leftPadding:5
@@ -146,7 +146,7 @@ ItemDelegate{
             Text{
                 id:soundText
                 text:bellSound
-                font.family:isSoundError?"Quattrocento Sans Italic":"Quattrocento Sans Bold"
+                font.italic:isSoundError
                 font.pointSize: 11
                 horizontalAlignment:Text.AlignLeft
                 elide:Text.ElideMiddle
@@ -181,7 +181,7 @@ ItemDelegate{
             Connections{
                 target:listBells
                 function onCurrentIndexChanged(){
-                    if (!listBellItem.ListView.isCurretItem && optionsMenu.opened){
+                    if (!listBellItem.ListView.isCurrentItem && optionsMenu.opened){
                         optionsMenu.close()
                     }
 

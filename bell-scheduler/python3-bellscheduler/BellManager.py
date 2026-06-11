@@ -336,7 +336,7 @@ class BellManager(object):
 			"option":imgConfig["option"],
 			"index":imgIndex,
 			"path":imgConfig["path"],
-			"error":bellToLoad.get("isImageError")
+			"error":bellToLoad.get("isImgError")
 		}
 
 		soundConfig=tmpConfig["sound"]
