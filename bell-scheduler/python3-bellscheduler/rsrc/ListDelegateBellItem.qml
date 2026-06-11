@@ -47,7 +47,7 @@ ItemDelegate{
         height:parent.height-5
         color: {
             if (isSoundError || isImgError){
-                Kirigami.Theme.neutralBackgroundColor
+                Kirigami.Theme.negativeBackgroundColor
             }else{
                 if (listBellItem.hovered || listBellItem.ListView.isCurrentItem || optionsMenu.opened){
                     Qt.alpha(Kirigami.Theme.highlightColor,0.15)
@@ -58,10 +58,17 @@ ItemDelegate{
         }
         radius:6
         border.width:1
-        border.color:(listBellItem.hovered || listBellItem.ListView.isCurrentItem || optionsMenu.opened)
-                      ?Kirigami.Theme.highlightColor
-                      :"transparent"
-
+        border.color:{
+            if (listBellItem.hovered || listBellItem.ListView.isCurrentItem || optionsMenu.opened){
+                if (isSoundError || isImgError){
+                    Kirigami.Theme.negativeTextColor
+                }else{
+                    Kirigami.Theme.highlightColor
+                }
+            }else{            
+                "transparent"
+            }
+        }
     }
  
     contentItem:RowLayout {

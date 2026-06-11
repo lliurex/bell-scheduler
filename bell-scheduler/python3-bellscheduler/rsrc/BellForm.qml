@@ -83,7 +83,7 @@ Rectangle{
                 ToolTip.text:i18nd("bell-scheduler","Click to edit validity")
                 onClicked:validityMenu.open()
                
-               Menu{
+                Menu{
                     id:validityMenu
                     y: editValidityBtn.height
                     x:-(validityMenu.width-editValidityBtn.width/2)

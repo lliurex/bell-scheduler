@@ -32,6 +32,7 @@ class LoadBell(QThread):
 
 	def run(self,*args):
 
+		time.sleep(0.5)
 		ret=self.manager.initValues()
 		if not self.newBell:
 			ret=self.manager.loadBellConfig(self.bellInfo,self.duplicateBell)
@@ -56,6 +57,7 @@ class CheckData(QThread):
 
 	def run(self,*args):
 
+		time.sleep(0.2)
 		ret=self.manager.checkData(self.dataToCheck)
 		if ret.get("status"):
 			ret["checkDuplicate"]=self.manager.checkDuplicateBellCron(self.dataToCheck)
@@ -80,6 +82,7 @@ class SaveData(QThread):
 
 	def run(self,*args):
 
+		time.sleep(0.2)
 		ret=self.manager.saveData(self.dataToSave)
 		self.dataSaved.emit(ret)
 
@@ -448,7 +451,7 @@ class Bridge(QObject):
 		actionType="add"
 		
 		if self.fileFromMenu==None:
-			self.core.mainStack.showPopup={"show":True,"msgCode":NEW_BELL_CONFIG}
+			self.core.mainStack.showPopUp={"show":True,"msgCode":NEW_BELL_CONFIG}
 			self.core.bellsOptionsStack.showMainMessage={"show":False,"msgCode":"","type":""}
 		
 		self.newBellT=LoadBell(self.bellManager,True,"",duplicateBell)
@@ -464,7 +467,7 @@ class Bridge(QObject):
 		self.currentBellConfig=copy.deepcopy(self.bellManager.currentBellConfig)
 		self._initializeVars()
 		if self.fileFromMenu==None:
-			self.core.mainStack.showPopup={"show":False,"msgCode":""}
+			self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		else:
 			tmpSound=[]
 			tmpSound.append("file")
@@ -513,7 +516,7 @@ class Bridge(QObject):
 	@Slot(dict)
 	def loadBell(self,bellToLoad):
 
-		self.core.mainStack.showPopup={"show":True,"msgCode":LOAD_BELL_CONFIG}
+		self.core.mainStack.showPopUp={"show":True,"msgCode":LOAD_BELL_CONFIG}
 		self.core.bellsOptionsStack.showMainMessage={"show":False,"msgCode":"","typ":""}
 		duplicateBell=False
 		self.actionType="edit"
@@ -529,7 +532,7 @@ class Bridge(QObject):
 
 		self.currentBellConfig=copy.deepcopy(self.bellManager.currentBellConfig)
 		self._initializeVars()
-		self.core.mainStack.showPopup={"show":False,"msgCode":""}
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		self.core.mainStack.currentStack=2
 		self.bellCurrentOption=1
 
@@ -538,7 +541,7 @@ class Bridge(QObject):
 	@Slot(dict)
 	def duplicateBell(self,bellToDuplicate):
 
-		self.core.mainStack.showPopup={"show":True,"msgCode":DUPLICATE_BELL_CONFIG}
+		self.core.mainStack.showPopUp={"show":True,"msgCode":DUPLICATE_BELL_CONFIG}
 		self.core.bellsOptionsStack.showMainMessage={"show":False,"msgCode":"","type":""}
 		self.actionType="duplicate"
 		duplicateBell=True
@@ -554,7 +557,7 @@ class Bridge(QObject):
 
 		self.currentBellConfig=copy.deepcopy(self.bellManager.currentBellConfig)
 		self._initializeVars()
-		self.core.mainStack.showPopup={"show":False,"msgCode":""}
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		self.core.mainStack.currentStack=2
 		self.bellCurrentOption=1
 
@@ -751,7 +754,7 @@ class Bridge(QObject):
 
 	def _applyBellChanges(self):
 
-		self.core.mainStack.showPopup={"show":True,"msgCode":CHECK_DATA}
+		self.core.mainStack.showPopUp={"show":True,"msgCode":CHECK_DATA}
 		self.core.mainStack.closeGui=False
 		self.checkDataT=CheckData(self.bellManager,self.currentBellConfig)
 		self.checkDataT.start()
@@ -767,10 +770,10 @@ class Bridge(QObject):
 			if ret.get("checkDuplicate"):
 				self.saveDataChanges()
 			else:
-				self.core.mainStack.showPopup={"show":False,"msgCode":""}
+				self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 				self.showBellDuplicateDialog=True
 		else:
-			self.core.mainStack.showPopup={"show":False,"msgCode":""}
+			self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 			self.showBellFormMessage={"show":True,"msgCode":ret.get("code")}
 
 	#def _checkDataRet
@@ -787,7 +790,7 @@ class Bridge(QObject):
 
 	def saveDataChanges(self):
 
-		self.core.mainStack.showPopup={"show":True,"msgCode":SAVE_DATA}
+		self.core.mainStack.showPopUp={"show":True,"msgCode":SAVE_DATA}
 		self.saveDataT=SaveData(self.bellManager,self.currentBellConfig)
 		self.saveDataT.start()
 		self.saveDataT.dataSaved.connect(self._saveDataRet)
@@ -810,7 +813,7 @@ class Bridge(QObject):
 		self.core.mainStack.closeGui=True
 		self.core.mainStack.moveToStack=1
 		self.core.mainStack.manageGoToStack()
-		self.core.mainStack.showPopup={"show":False,"msgCode":""}
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 
 	#def _saveDataRet
 

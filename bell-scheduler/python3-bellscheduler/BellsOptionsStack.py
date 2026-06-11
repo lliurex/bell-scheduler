@@ -41,6 +41,7 @@ class ChangeBellStatus(QThread):
 
 	def run(self,*args):
 
+		time.sleep(0.2)
 		ret=self.manager.changeBellStatus(self.allBells,self.active,self.bellToEdit)
 		self.bellStatusChanged.emit(ret)
 
@@ -63,6 +64,7 @@ class RemoveBell(QThread):
 
 	def run(self,*args):
 
+		time.sleep(0.2)
 		ret=self.manager.removeBell(self.allBells,self.bellToRemove)
 		self.bellRemoved.emit(ret)
 
@@ -84,6 +86,7 @@ class GenerateBackup(QThread):
 
 	def run(self,*args):
 
+		time.sleep(0.2)
 		ret=self.manager.exportBellsConfig(self.exportPath)
 		self.backupGenerated.emit(ret)
 
@@ -105,6 +108,7 @@ class ImportBackup(QThread):
 
 	def run(self,*args):
 
+		time.sleep(0.2)
 		ret=self.manager.importBellBackup(self.importPath)
 		self.backupImported.emit(ret)
 
@@ -126,6 +130,7 @@ class RecoveryConfig(QThread):
 
 	def run(self,*args):
 
+		time.sleep(0.2)
 		ret=self.manager.recoveryBellBackup(self.recoveryPath)
 		self.configRecovered.emit(ret)
 
@@ -147,6 +152,7 @@ class ChangeHolidayControl(QThread):
 
 	def run(self,*args):
 
+		time.sleep(0.2)
 		ret=self.manager.changeHolidayControl(self.action)
 		self.holidayControlChanged.emit(ret)
 
@@ -167,6 +173,7 @@ class ChangeAudioDeviceControl(QThread):
 
 	def run(self):
 
+		time.sleep(0.2)
 		ret=self.manager.changeAudioDeviceControl(self.audioDeviceConfigurated,self.audioDeviceValue)
 		self.audioDeviceControlChanged.emit(ret)
 	

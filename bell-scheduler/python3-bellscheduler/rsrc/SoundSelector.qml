@@ -30,7 +30,7 @@ Popup {
         id:container
         anchors.fill:parent
         anchors.margins:15
-        spacing:15
+        spacing:12
         
         Text{ 
             text:i18nd("bell-scheduler","Edit sound for bell")
@@ -49,6 +49,7 @@ Popup {
             id:soundSelectorLayout
             Layout.fillWidth:true
             Layout.fillHeight:true
+            Layout.topMargin:messageLabel.visible?0:10         
             spacing:12
            
             ButtonGroup{
@@ -174,10 +175,12 @@ Popup {
             }
         }
 
+        Item {
+            Layout.fillHeight:true
+        }
+
         RowLayout{
             id:btnBox
-            Layout.fillWidth:true
-            Layout.fillHeight:true
             Layout.alignment:Qt.AlignRight
             spacing:12
 

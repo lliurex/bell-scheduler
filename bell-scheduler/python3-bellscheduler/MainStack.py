@@ -23,6 +23,7 @@ class GatherInfo(QThread):
 
 	def run(self,*args):
 		
+		time.sleep(0.2)
 		ret=self.manager.syncWithCron()
 		if ret.get("status"):
 			ret=self.manager.readConf()
@@ -46,6 +47,7 @@ class LoadHoliday(QThread):
 
 	def run(self,*args):
 
+		time.sleep(0.2)
 		self.core.holidayStack.initBridge()
 
 		self.holidayLoaded.emit()
