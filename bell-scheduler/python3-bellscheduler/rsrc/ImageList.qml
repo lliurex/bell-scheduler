@@ -10,10 +10,17 @@ Rectangle{
     height:120
     border.color: "#d3d3d3"
 
-    property alias currentImgIndex:imagesSelector.currentIndex
-    property alias listEnabled:imagesSelector.enabled
+    property int currentImgIndex
+    property alias listEnabled:listSV.enabled
+
+    onCurrentImgIndexChanged:{
+        if (imagesSelector.currentIndex!==currentImgIndex){
+            imagesSelector.currentIndex=currentImgIndex
+        }
+    }
 
     PC.ScrollView{
+        id:listSV
         anchors.fill:parent
 
         ListView{
@@ -21,11 +28,13 @@ Rectangle{
             implicitWidth:imgContainer.width
             implicitHeight:imgContainer.height
             focus:true
-
             snapMode:ListView.SnapOneItem
             highlightRangeMode: ListView.StrictlyEnforceRange
-            enabled:listEnabled   
             model:bellStackBridge.imagesModel
+
+            Component.onCompleted:{
+                imagesSelector.currentIndex=imgContainer.currentImgIndex
+            }
            
             delegate:Item{
                 width:90

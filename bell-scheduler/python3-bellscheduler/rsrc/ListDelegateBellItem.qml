@@ -101,7 +101,7 @@ ItemDelegate{
                         { text: "F", idx: 4 }
                     ]
                     Text{
-                        id:moText
+                        id:dayText
                         text:i18nd("bell-scheduler",modelData.text)
                         color:bellDays[modelData.idx]? "#3366cc":"#A0A0A0"
                         font.pointSize:18
@@ -174,10 +174,7 @@ ItemDelegate{
             ToolTip.visible: hovered
             ToolTip.text:i18nd("bell-scheduler","Click to manage this bell")
             onClicked:optionsMenu.open();
-            onVisibleChanged:{
-                optionsMenu.close()
-            }
-
+  
             Connections{
                 target:listBells
                 function onCurrentIndexChanged(){
@@ -194,20 +191,20 @@ ItemDelegate{
                 x:-(optionsMenu.width-manageBellBtn.width/2)
 
                 MenuItem{
-                    icon.name:bellActivated?"audio-volume-muted.svg":"audio-on.svg"
+                    icon.name:bellActivated?"audio-volume-muted":"audio-on"
                     text:bellActivated?i18nd("bell-scheduler","Disable bell"):i18nd("bell-scheduler","Enable bell")
                     enabled:isSoundError?false:true
                     onClicked:bellsOptionsStackBridge.changeBellStatus({"allBells":false,"active":!bellActivated,"bellId":bellId})
                 }
 
                 MenuItem{
-                    icon.name:"document-edit.svg"
+                    icon.name:"document-edit"
                     text:i18nd("bell-scheduler","Edit bell")
                     onClicked:bellStackBridge.loadBell({"bellId":bellId,"isImgError":isImgError,"isSoundError":isSoundError})
                 }
                 
                 MenuItem{
-                    icon.name:"xml-node-duplicate.svg"
+                    icon.name:"xml-node-duplicate"
                     text:i18nd("bell-scheduler","Duplicate bell")
                     enabled:((isSoundError) || (isImgError))
                             ?false
@@ -216,7 +213,7 @@ ItemDelegate{
                 }
                 
                 MenuItem{
-                    icon.name:"delete.svg"
+                    icon.name:"delete"
                     text:i18nd("bell-scheduler","Delete the bell")
                     onClicked:bellsOptionsStackBridge.removeBell({"allBells":false,"bellId":bellId})
                 }

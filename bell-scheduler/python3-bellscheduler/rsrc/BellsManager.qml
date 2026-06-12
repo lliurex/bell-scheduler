@@ -72,8 +72,7 @@ Rectangle{
                     text:i18nd("bell-scheduler","Generate bell backup")
                     enabled:bellsOptionsStackBridge.enableGlobalOptions
                     onClicked:{
-                        
-                        backupAction="export"
+                        mainContent.backupAction="export"
                         backupFileDialog.title=i18nd("bell-scheduler","Please choose a file to save bells list")
                         backupFileDialog.fileMode=FileDialog.SaveFile
                         
@@ -89,8 +88,7 @@ Rectangle{
                     icon.name:"document-import"
                     text:i18nd("bell-scheduler","Import bell backup")
                     onClicked:{
-
-                        backupAction="import"
+                        mainContent.backupAction="import"
                         backupFileDialog.title=i18nd("bell-scheduler","Please choose a file to load bells list")
                         backupFileDialog.fileMode=FileDialog.OpenFile
                         importBellDialog.open()
@@ -166,7 +164,7 @@ Rectangle{
                x: settingsBtn.width/2
 
                MenuItem{
-                    icon.name:bellsOptionsStackBridge.isHolidayControlActive?"kt-stop.svg":"kt-start"
+                    icon.name:bellsOptionsStackBridge.isHolidayControlActive?"kt-stop":"kt-start"
                     text:bellsOptionsStackBridge.isHolidayControlActive?i18nd("bell-scheduler","Disable holiday control"):i18nd("bell-scheduler","Enable holiday control")
                     enabled:bellsOptionsStackBridge.enableHolidayControl
                     onClicked:bellsOptionsStackBridge.manageHolidayControl()
@@ -200,7 +198,7 @@ Rectangle{
 
     ChangesDialog{
         id:removeBellDialog
-        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
+        dialogIcon:"dialog-warning"
         dialogMsg:bellsOptionsStackBridge.showRemoveBellDialog.removeAll
                   ?i18nd("bell-scheduler","All bells will be deleted.\nDo yo want to continue?")
                   :i18nd("bell-scheduler","The bell will be deleted.\nDo yo want to continue?")
@@ -210,10 +208,10 @@ Rectangle{
         btnAcceptVisible:false
         btnAcceptText:""
         btnDiscardText:i18nd("bell-scheduler","Accept")
-        btnDiscardIcon:"dialog-ok.svg"
+        btnDiscardIcon:"dialog-ok"
         btnDiscardVisible:true
         btnCancelText:i18nd("bell-scheduler","Cancel")
-        btnCancelIcon:"dialog-cancel.svg"
+        btnCancelIcon:"dialog-cancel"
         Connections{
            target:removeBellDialog
            function onDiscardDialogClicked(){
@@ -228,14 +226,14 @@ Rectangle{
 
     ChangesDialog{
         id:exportBellDialog
-        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-information.svg"
+        dialogIcon:"dialog-information"
         dialogMsg:i18nd("bell-scheduler","Alarms have been detected with random selection of sound files from a folder.\nRemember that this folder will not be included in the export made.\nIf the folder is not saved manually, when the export is restored, the alarms that\nuse it will be deactivated")
         dialogWidth:640
         btnAcceptVisible:false
         btnAcceptText:""
         btnDiscardVisible:false
         btnCancelText:i18nd("bell-scheduler","Accept")
-        btnCancelIcon:"dialog-ok.svg"
+        btnCancelIcon:"dialog-ok"
         Connections{
            target:exportBellDialog
            function onRejectDialogClicked(){
@@ -249,16 +247,16 @@ Rectangle{
 
     ChangesDialog{
         id:importBellDialog
-        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
+        dialogIcon:"dialog-warning"
         dialogMsg:i18nd("bell-scheduler","New bells configuration will be loaded and replace the existing configuration.\nDo you want to continue?")
         dialogWidth:600
         btnAcceptVisible:false
         btnAcceptText:""
         btnDiscardVisible:true
         btnDiscardText:i18nd("bell-scheduler","Accept")
-        btnDiscardIcon:"dialog-ok.svg"
+        btnDiscardIcon:"dialog-ok"
         btnCancelText:i18nd("bell-scheduler","Cancel")
-        btnCancelIcon:"dialog-cancel.svg"
+        btnCancelIcon:"dialog-cancel"
         Connections{
            target:importBellDialog
            function onDiscardDialogClicked(){
@@ -281,7 +279,7 @@ Rectangle{
             var selectedPath=""
             selectedPath=backupFileDialog.selectedFile.toString()
             selectedPath=selectedPath.replace(/^(file:\/{2})/,"")
-            switch(backupAction){
+            switch(mainContent.backupAction){
                 case "export":
                     bellsOptionsStackBridge.exportBellsConfig(selectedPath)
                     

@@ -3,12 +3,9 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-GridLayout {
+ColumnLayout {
     id: calendarRoot
-    rows: 3
-    flow: GridLayout.TopToBottom
-    Layout.leftMargin: 90
-    Layout.rightMargin: 90
+    spacing: 10
 
     property var startDate: undefined
     property var stopDate: undefined
@@ -24,6 +21,8 @@ GridLayout {
     signal getSelectedDate(var value)
 
     RowLayout {
+        Layout.fillWidth: true
+
         Rectangle {
             id: removeContainer
             width: 50
@@ -131,18 +130,17 @@ GridLayout {
                 color: {
                     if (calendarRoot.startDate === undefined && calendarRoot.stopDate === undefined) {
                         if (cellFormattedDate === calendarRoot.initDate || cellFormattedDate === calendarRoot.endDate) {
-                            return "#3778d0"; 
+                            return "#3778d0";
                         }
                         if (calendarRoot.daysInRange.includes(cellFormattedDate)) {
-                            return "#55555555"; 
+                            return "#55555555";
                         }
                         return "white";
                     }
-
                     else {
                         let cellTime = model.date.getTime();
                         if (cellTime > calendarRoot.startDate && cellTime < calendarRoot.stopDate) {
-                            return "#55555555"; 
+                            return "#55555555";
                         }
                         if ((calendarRoot.startDate !== undefined && cellTime === calendarRoot.startDate) ||
                             (calendarRoot.stopDate !== undefined && cellTime === calendarRoot.stopDate)) {

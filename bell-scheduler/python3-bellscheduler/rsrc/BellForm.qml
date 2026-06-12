@@ -114,6 +114,7 @@ Rectangle{
             columns:2
             rowSpacing:10
             columnSpacing:10
+            Layout.topMargin:5
             Layout.alignment: Qt.AlignHCenter
 
             Text{
@@ -386,10 +387,10 @@ Rectangle{
         btnAcceptVisible:true
         btnAcceptText:i18nd("bell-scheduler","Apply")
         btnDiscardText:i18nd("bell-scheduler","Discard")
-        btnDiscardIcon:"delete.svg"
+        btnDiscardIcon:"delete"
         btnDiscardVisible:true
         btnCancelText:i18nd("bell-scheduler","Cancel")
-        btnCancelIcon:"dialog-cancel.svg"
+        btnCancelIcon:"dialog-cancel"
         Connections{
             target:settingsChangesDialog
             function onDialogApplyClicked(){
@@ -414,10 +415,10 @@ Rectangle{
         btnAcceptVisible:false
         btnAcceptText:""
         btnDiscardText:i18nd("bell-scheduler","Accept")
-        btnDiscardIcon:"dialog-ok.svg"
+        btnDiscardIcon:"dialog-ok"
         btnDiscardVisible:true
         btnCancelText:i18nd("bell-scheduler","Cancel")
-        btnCancelIcon:"dialog-cancel.svg"
+        btnCancelIcon:"dialog-cancel"
         Connections{
            target:removeValidityDialog
            function onDiscardDialogClicked(){
@@ -441,10 +442,10 @@ Rectangle{
         btnAcceptVisible:false
         btnAcceptText:""
         btnDiscardText:i18nd("bell-scheduler","Yes")
-        btnDiscardIcon:"dialog-ok.svg"
+        btnDiscardIcon:"dialog-ok"
         btnDiscardVisible:true
         btnCancelText:i18nd("bell-scheduler","No")
-        btnCancelIcon:"dialog-cancel.svg"
+        btnCancelIcon:"dialog-cancel"
         Connections{
            target:bellDuplicateDialog
            function onDiscardDialogClicked(){

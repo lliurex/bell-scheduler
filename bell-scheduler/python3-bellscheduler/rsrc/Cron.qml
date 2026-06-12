@@ -2,114 +2,170 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-GridLayout {
+ColumnLayout {
     id: scheduler
-    rows: 2
-    flow: GridLayout.TopToBottom
-    focus:true
+    spacing: 10
+    focus: true
 
-    Component.onCompleted:{
-        hoursTumbler.forceActiveFocus()
-    }
-
-    GridLayout {
+    RowLayout {
         id: clockLayout
         enabled: true
-        Layout.leftMargin: 5
-        Layout.rightMargin: 5
-        Layout.bottomMargin: 5
         Layout.alignment: Qt.AlignHCenter
-        columns: 4
+        spacing: 5
+
+        property int hoursWheelAccumulator:0
+        property int minutesWheelAccumulator:59
+        readonly property int wheelThreshold:360
 
         Component {
-            id: delegateComponent
-            Label {
-                id: delegateLabel
-                font.pointSize: 40
-                text: modelData.toString().padStart(2, "0")
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                /*color:Tumbler.tumbler.hovered?"#add8e6":"#3daee9"*/
-                color:"#3daee9"
-             
+            id: numberDelegate
+            Item {
+                width: 60
+                height: 60
+
+                visible:PathView.isCurrentItem
+
+                Text {
+                    text: modelData.toString().padStart(2, "0")
+                    font.pointSize: 40
+                    color: "#3daee9"
+                    anchors.centerIn: parent
+                }
             }
         }
 
-   
         Rectangle {
-            Layout.topMargin: 4
-            Layout.alignment: Qt.AlignCenter
-            height: 60
             width: 60
+            height: 60
             color: "transparent"
+            clip: true
 
-            Tumbler {
-                id: hoursTumbler
-                width: 60
-                height: 60
+            PathView {
+                id: hoursSelector
+                anchors.fill: parent
+                focus: true
                 model: 24
-                currentIndex: bellStackBridge.bellCron.hour
-                delegate: delegateComponent
-                visibleItemCount: 1
-                wheelEnabled:true
-                hoverEnabled:true
-                focus:hovered
+                delegate: numberDelegate
 
-                /*
-                ToolTip.delay: 1000
-                ToolTip.timeout: 3000
-                ToolTip.visible: hovered
-                ToolTip.text: i18nd("bell-scheduler", "You can use the mouse wheel to change the hour")
-                */
+                pathItemCount: 3
+                preferredHighlightBegin: 0.5
+                preferredHighlightEnd: 0.5
+                highlightRangeMode: PathView.StrictlyEnforceRange
+
+                currentIndex: bellStackBridge.bellCron.hour
 
                 onCurrentIndexChanged: {
-                    bellStackBridge.updateClockValues({"hour": hoursTumbler.currentIndex});
+                    bellStackBridge.updateClockValues({"hour": hoursSelector.currentIndex});
                 }
-                
-            }
 
+                WheelHandler {
+                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+
+                    onWheel: (event) => {
+
+                        let delta=event.angleDelta.y;
+
+                        if ((delta >0 && clockLayout.hoursWheelAccumulator < 0) || ( delta <0 && clockLayout.hoursWheelAccumulator > 0)){
+                            clockLayout.hoursWheelAccumulator = 0;
+                        }
+
+                        clockLayout.hoursWheelAccumulator+=delta;
+
+                        if (clockLayout.hoursWheelAccumulator >= clockLayout.wheelThreshold){
+                            hoursSelector.currentIndex = (hoursSelector.currentIndex > 0) ? hoursSelector.currentIndex - 1 : 23;
+                            clockLayout.hoursWheelAccumulator=0;
+                        } 
+                        else if (clockLayout.hoursWheelAccumulator <= -clockLayout.wheelThreshold) {
+                            hoursSelector.currentIndex = (hoursSelector.currentIndex < 23) ? hoursSelector.currentIndex + 1 : 0;
+                            clockLayout.hoursWheelAccumulator=0;
+                        }
+                            
+                    }
+                }
+
+                path: Path {
+                    startX: 30; startY: -30
+                    PathLine { x: 30; y: 90 }
+                }
+
+                HoverHandler{
+                    id:hoursHandler
+                }
+
+                ToolTip.delay:1000
+                ToolTip.timeout:1000
+                ToolTip.visible:hoursHandler.hovered
+                ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the hour")
+            }
         }
 
         Text {
-            id: clockSeparator
-            Layout.alignment: Qt.AlignCenter
-            font.pointSize: 40
-            color: "#3daee9"
             text: ":"
+            font.pointSize: 30
+            color: "#3daee9"
+            Layout.alignment: Qt.AlignCenter
         }
 
         Rectangle {
-            Layout.topMargin: 4 
-            Layout.alignment: Qt.AlignCenter
-            height: 60
             width: 60
+            height: 60
             color: "transparent"
+            clip: true
 
-            Tumbler {
-                id: minutesTumbler
-                height: 60
-                width: 60
+            PathView {
+                id: minutesSelector
+                anchors.fill: parent
+                focus: true
                 model: 60
-                currentIndex: bellStackBridge.bellCron.minute
-                delegate: delegateComponent
-                visibleItemCount: 1
-                wheelEnabled:true
-                hoverEnabled:true
-                focus:hovered
+                delegate: numberDelegate
 
-                /*
-                ToolTip.delay: 1000
-                ToolTip.timeout: 3000
-                ToolTip.visible: hovered
-                ToolTip.text: i18nd("bell-scheduler", "You can use the mouse wheel to change the minutes")
-                */
+                pathItemCount: 3
+                preferredHighlightBegin: 0.5
+                preferredHighlightEnd: 0.5
+                highlightRangeMode: PathView.StrictlyEnforceRange
+
+                currentIndex: bellStackBridge.bellCron.minute
 
                 onCurrentIndexChanged: {
-                    bellStackBridge.updateClockValues({"minute": minutesTumbler.currentIndex});
+                    bellStackBridge.updateClockValues({"minute": minutesSelector.currentIndex});
                 }
 
+                WheelHandler {
+                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                    onWheel: (event) => {
+
+                        let delta=event.angleDelta.y;
+
+                        if ((delta >0 && clockLayout.minutesWheelAccumulator < 0) || ( delta <0 && clockLayout.minutesWheelAccumulator > 0)){
+                            clockLayout.minutesWheelAccumulator = 0;
+                        }
+
+                        clockLayout.minutesWheelAccumulator+=delta;
+
+                        if (clockLayout.minutesWheelAccumulator >= clockLayout.wheelThreshold){
+                            minutesSelector.currentIndex = (minutesSelector.currentIndex > 0) ? minutesSelector.currentIndex - 1 : 59;
+                            clockLayout.minutesWheelAccumulator = 0;
+                        } else if (clockLayout.minutesWheelAccumulator <= -clockLayout.wheelThreshold) {
+                            minutesSelector.currentIndex = (minutesSelector.currentIndex < 59) ? minutesSelector.currentIndex + 1 : 0;
+                            clockLayout.minutesWheelAccumulator = 0;
+                        }
+                    }
+                }
+
+                path: Path {
+                    startX: 30; startY: -30
+                    PathLine { x: 30; y: 90 }
+                }
+
+                HoverHandler{
+                    id:minutesHandler
+                }
+
+                ToolTip.delay:1000
+                ToolTip.timeout:1000
+                ToolTip.visible:minutesHandler.hovered
+                ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the minutes")
             }
-    
         }
 
         Button {
@@ -129,21 +185,8 @@ GridLayout {
             onClicked: {
                 timeSelector.open()
             }
-
-            TimeSelector {
-                id: timeSelector
-                hourValue: hoursTumbler.currentIndex.toString().padStart(2, "0")
-                minuteValue: minutesTumbler.currentIndex.toString().padStart(2, "0")
-
-                Connections {
-                    target: timeSelector
-                    function onTimeApplyClicked(hourValue, minuteValue){
-                        hoursTumbler.currentIndex = hourValue
-                        minutesTumbler.currentIndex = minuteValue
-                    }
-                }
-            }
         }
+                
     }
 
     RowLayout {
@@ -173,6 +216,20 @@ GridLayout {
                 onDayBtnClicked: (value) => {
                     bellStackBridge.updateWeekDaysValues({[model.key]: value});
                 }
+            }
+        }
+    }
+
+    TimeSelector {
+        id: timeSelector
+        hourValue: hoursSelector.currentIndex.toString().padStart(2, "0")
+        minuteValue: minutesSelector.currentIndex.toString().padStart(2, "0")
+
+        Connections {
+            target: timeSelector
+            function onTimeApplyClicked(hourValue, minuteValue){
+                hoursSelector.currentIndex = hourValue
+                minutesSelector.currentIndex = minuteValue
             }
         }
     }

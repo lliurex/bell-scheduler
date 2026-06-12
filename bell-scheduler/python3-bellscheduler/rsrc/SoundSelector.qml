@@ -72,7 +72,7 @@ Popup {
                                 messageLabel.visible=true
                                 applyBtn.enabled=false
                             }else{
-                                if ((filePath.text=="")||(bellStackBridge.bellSound,error)){
+                                if ((filePath.text=="")||(bellStackBridge.bellSound.error)){
                                     applyBtn.enabled=false
                                 }else{
                                     applyBtn.enabled=true

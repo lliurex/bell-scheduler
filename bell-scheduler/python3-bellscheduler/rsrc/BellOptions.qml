@@ -30,7 +30,7 @@ RowLayout{
                 MenuOptionBtn {
                     id:infoItem
                     optionText:i18nd("bell-scheduler","Bell")
-                    optionIcon:"appointment-reminder.svg"
+                    optionIcon:"appointment-reminder"
                 }
 
                 Item{

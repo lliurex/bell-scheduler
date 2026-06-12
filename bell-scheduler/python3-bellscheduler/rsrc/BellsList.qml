@@ -39,7 +39,7 @@ Rectangle {
                     x:-(optionsMenu.width-statusFilterBtn.width/2)
 
                     MenuItem{
-                        icon.name:"audio-on.svg"
+                        icon.name:"audio-on"
                         text:i18nd("bell-scheduler","Show activated bells ")
                         enabled:bellsOptionsStackBridge.filterStatusValue!="active"
                                 ?true
@@ -48,7 +48,7 @@ Rectangle {
                     }
 
                     MenuItem{
-                        icon.name:"audio-volume-muted.svg"
+                        icon.name:"audio-volume-muted"
                         text:i18nd("bell-scheduler","Show disabled bells")
                         enabled:bellsOptionsStackBridge.filterStatusValue!="disable"
                                 ?true
@@ -56,7 +56,7 @@ Rectangle {
                         onClicked:bellsOptionsStackBridge.manageStatusFilter("disable")
                     }
                     MenuItem{
-                        icon.name:"kt-remove-filters.svg"
+                        icon.name:"kt-remove-filters"
                         text:i18nd("bell-scheduler","Remove filter")
                         enabled:bellsOptionsStackBridge.filterStatusValue!="all"
                                 ?true

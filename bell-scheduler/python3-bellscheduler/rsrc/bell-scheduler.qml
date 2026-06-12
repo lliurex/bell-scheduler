@@ -45,7 +45,7 @@ ApplicationWindow {
         id: mainLayout
         anchors.fill: parent
         Layout.minimumWidth:980
-        Layout.minimumHeight:700
+        Layout.minimumHeight:670
 
         Rectangle{
             color: "#0049ab"
@@ -65,7 +65,7 @@ ApplicationWindow {
             id: mainView
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.minimumHeight:575
+            Layout.minimumHeight:545
 
             property int currentIndex:mainStackBridge.currentStack
             initialItem:loadView
