@@ -76,7 +76,6 @@ Popup {
                 
                 ImageList{
                     id:imageList
-                    currentImgIndex:bellStackBridge.bellImage.index
                     listEnabled:stockOption.checked
                 }
             }
@@ -212,6 +211,10 @@ Popup {
             }
         }
       
+    }
+
+    onOpened:{
+        imageList.currentImgIndex=bellStackBridge.bellImage.index
     }
 
     function restoreInitValues(){

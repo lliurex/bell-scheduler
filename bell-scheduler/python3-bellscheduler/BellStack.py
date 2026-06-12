@@ -469,10 +469,11 @@ class Bridge(QObject):
 		if self.fileFromMenu==None:
 			self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		else:
-			tmpSound=[]
-			tmpSound.append("file")
-			tmpSound.append(self.fileFromMenu)
-			tmpSound.append(True)
+			tmpSound={
+				"option":"file",
+				"path":self.fileFromMenu,
+				"defaultPath":True
+			}
 			self.updateSoundValues(tmpSound)
 		
 		self.core.mainStack.currentStack=2
