@@ -71,7 +71,7 @@ Popup {
                     initDate:rangeDate.checked?day1Entry.text:dayEntry.text
                     endDate:rangeDate.checked?day2Entry.text:""
                     rangeDate:rangeDate.checked
-                    daysInRange:bellStackBridge.bellValidityDaysInRange
+                    daysInRange:bellStackBridge.bellValidity.daysInRange
                     currentMonth:new Date().getMonth()
                     currentYear:new Date().getFullYear()
                     fullMonth:new Date().toLocaleString(Qt.locale(),'MMMM').split(" ").slice(-1)[0]
@@ -115,7 +115,7 @@ Popup {
 
                 RadioButton{
                     id:singleDate
-                    checked:!bellStackBridge.bellValidityRangeOption
+                    checked:!bellStackBridge.bellValidity.rangeOption
                     text:i18nd("bell-scheduler","Day:")
                     ButtonGroup.group:dateOptionsGroup
                         
@@ -138,7 +138,7 @@ Popup {
 
                 RadioButton{
                     id:rangeDate
-                    checked:bellStackBridge.bellValidityRangeOption
+                    checked:bellStackBridge.bellValidity.rangeOption
                     text:i18nd("bell-scheduler","From:")
                     ButtonGroup.group:dateOptionsGroup
                         
@@ -195,7 +195,7 @@ Popup {
                         }else{
                             tmpValue=dayEntry.text
                         }
-                        bellStackBridge.updateBellValidityValue({"rangeOption":rangeDate.checked,"value":tmpValue})
+                        bellStackBridge.updateBellValidity({"value":tmpValue,"rangeOption":rangeDate.checked})
                         validitySelector.close()
                     }
                 }
@@ -247,15 +247,15 @@ Popup {
 
         calendar.startDate=undefined
         calendar.stopDate=undefined
-        calendar.daysInRange=bellStackBridge.bellValidityDaysInRange
-        rangeDate.checked=bellStackBridge.bellValidityRangeOption
+        calendar.daysInRange=bellStackBridge.bellValidity.daysInRange
+        rangeDate.checked=bellStackBridge.bellValidity.rangeOption
         messageLabel.visible=false
         messageLabel.text=""
 
         var newDate=new Date()
-        var days=bellStackBridge.bellValidityDaysInRange
+        var days=bellStackBridge.bellValidity.daysInRange
 
-        if (bellStackBridge.bellValidityRangeOption){
+        if (bellStackBridge.bellValidity.rangeOption){
             dayEntry.text=""
             
             if (days.length>0){

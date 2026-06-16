@@ -282,10 +282,10 @@ Rectangle{
             switch(mainContent.backupAction){
                 case "export":
                     bellsOptionsStackBridge.exportBellsConfig(selectedPath)
-                    
+                    break;
                 case "import":
                     bellsOptionsStackBridge.importBellsConfig(selectedPath)
-                    
+                    break;
             }
 
         }

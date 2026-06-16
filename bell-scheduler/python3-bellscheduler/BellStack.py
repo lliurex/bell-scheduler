@@ -95,9 +95,7 @@ class Bridge(QObject):
 	bellCronChanged=Signal()
 	bellDaysChanged=Signal()
 	bellValidityActiveChanged=Signal()
-	bellValidityValueChanged=Signal()
-	bellValidityRangeOptionChanged=Signal()
-	bellValidityDaysInRangeChanged=Signal()
+	bellValidityChanged=Signal()
 	enableBellValidityChanged=Signal()
 	bellNameChanged=Signal()
 	bellImageChanged=Signal()
@@ -120,9 +118,7 @@ class Bridge(QObject):
 		self._bellCron=self.bellManager.bellCron
 		self._bellDays=self.bellManager.bellDays
 		self._bellValidityActive=self.bellManager.bellValidityActive
-		self._bellValidityValue=self.bellManager.bellValidityValue
-		self._bellValidityRangeOption=True
-		self._bellValidityDaysInRange=[]
+		self._bellValidity=self.bellManager.bellValidity
 		self._enableBellValidity=False
 		self._bellName=self.bellManager.bellName
 		self._bellImage=self.bellManager.bellImage
@@ -186,53 +182,21 @@ class Bridge(QObject):
 
 	#def bellValidityActive
 
-	@Property(str,notify=bellValidityValueChanged)
-	def bellValidityValue(self):
+	@Property(dict,notify=bellValidityChanged)
+	def bellValidity(self):
 
-		return self._bellValidityValue
+		return self._bellValidity
+
+	#def bellValidity
+
+	@bellValidity.setter
+	def bellValidity(self,bellValidity):
+
+		if self._bellValidity!=bellValidity:
+			self._bellValidity=bellValidity
+			self.bellValidityChanged.emit()
 
 	#def bellValidityValue
-
-	@bellValidityValue.setter
-	def bellValidityValue(self,bellValidityValue):
-
-		if self._bellValidityValue!=bellValidityValue:
-			self._bellValidityValue=bellValidityValue
-			self.bellValidityValueChanged.emit()
-
-	#def bellValidityValue
-
-	@Property(bool,notify=bellValidityRangeOptionChanged)
-	def bellValidityRangeOption(self):
-
-		return self._bellValidityRangeOption
-
-	#def bellValidityRangeOption
-
-	@bellValidityRangeOption.setter
-	def bellValidityRangeOption(self,bellValidityRangeOption):
-
-		if self._bellValidityRangeOption!=bellValidityRangeOption:
-			self._bellValidityRangeOption=bellValidityRangeOption
-			self.bellValidityRangeOptionChanged.emit()
-
-	#def bellValidityRangeOption
-
-	@Property(list,notify=bellValidityDaysInRangeChanged)
-	def bellValidityDaysInRange(self):
-
-		return self._bellValidityDaysInRange
-
-	#def bellValidityDaysInRange
-
-	@bellValidityDaysInRange.setter
-	def bellValidityDaysInRange(self,bellValidityDaysInRange):
-
-		if self._bellValidityDaysInRange!=bellValidityDaysInRange:
-			self._bellValidityDaysInRange=bellValidityDaysInRange
-			self.bellValidityDaysInRangeChanged.emit()
-
-	#def bellValidityDaysInRange
 
 	@Property(bool,notify=enableBellValidityChanged)
 	def enableBellValidity(self):
@@ -486,9 +450,7 @@ class Bridge(QObject):
 		self.bellCron=self.bellManager.bellCron
 		self.bellDays=self.bellManager.bellDays
 		self.bellValidityActive=self.bellManager.bellValidityActive
-		self.bellValidityValue=self.bellManager.bellValidityValue
-		self.bellValidityRangeOption=self.bellManager.bellValidityRangeOption
-		self.bellValidityDaysInRange=self.bellManager.bellValidityDaysInRange
+		self.bellValidity=self.bellManager.bellValidity
 		self.enableBellValidity=self.bellManager.enableBellValidity
 		self.bellName=self.bellManager.bellName
 		self.bellImage=self.bellManager.bellImage
@@ -620,13 +582,14 @@ class Bridge(QObject):
 	#def _updateBellValidityActive
 
 	@Slot(dict)
-	def updateBellValidityValue(self,data):
+	def updateBellValidity(self,data):
 
-		if data.get("value")!=self.bellValidityValue:
-			self.bellValidityValue=data.get("value")
-			self.currentBellConfig["validity"]["value"]=self.bellValidityValue
-			self.bellValidityRangeOption=data.get("rangeOption")
-			self.bellValidityDaysInRange=self.bellManager.getDaysInRange(self.bellValidityValue)
+		changes={key:value for key,value in data.items() if self.bellValidity[key]!=value}
+
+		if changes:
+			changes["daysInRange"]=self.bellManager.getDaysInRange(changes.get("value"))
+			self.bellValidity={**self.bellValidity,**changes}
+			self.currentBellConfig["validity"]["value"]=self.bellValidity.get("value")
 
 		if data.get("value")!="":
 			if self.currentBellConfig!=self.bellManager.currentBellConfig:
@@ -636,7 +599,7 @@ class Bridge(QObject):
 		else:
 			self._updateBellValidityActive(False)
 
-	#def updateBellValidityValue
+	#def updateBellValidity
 
 	@Slot(str)
 	def updateBellNameValue(self,value):

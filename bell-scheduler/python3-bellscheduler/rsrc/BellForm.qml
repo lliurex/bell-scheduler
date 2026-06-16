@@ -68,7 +68,7 @@ Rectangle{
             
             Text{
                 id:validityText
-                text:bellStackBridge.bellValidityValue
+                text:bellStackBridge.bellValidity.value
                 font.pointSize:10
             }
             

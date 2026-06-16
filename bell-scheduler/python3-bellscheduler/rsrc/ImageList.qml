@@ -10,11 +10,10 @@ Rectangle{
     height:120
     border.color: "#d3d3d3"
 
-    property int currentImgIndex:0
+    property int currentImgIndex:1
     property alias listEnabled:listSV.enabled
 
     onCurrentImgIndexChanged:{
-        imagesSelector.currentIndex=currentImgIndex
         imagesSelector.positionViewAtIndex(currentImgIndex,ListView.Center)
     }
 
@@ -24,8 +23,7 @@ Rectangle{
 
         ListView{
             id:imagesSelector
-            implicitWidth:imgContainer.width
-            implicitHeight:imgContainer.height
+            anchors.fill:parent
             focus:true
             snapMode:ListView.SnapOneItem
             highlightRangeMode: ListView.StrictlyEnforceRange
@@ -34,12 +32,12 @@ Rectangle{
             model:bellStackBridge.imagesModel
 
             onCurrentIndexChanged:{
-                    imgContainer.currentImgIndex=currentIndex
+                 imgContainer.currentImgIndex=currentIndex
             }
 
             delegate:Item{
                 width:imgContainer.width
-                height:120
+                height:imgContainer.height
 
                 Image{
                   width:80

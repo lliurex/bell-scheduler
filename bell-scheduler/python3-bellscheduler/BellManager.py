@@ -171,8 +171,8 @@ class BellManager(object):
 			search.append(tmp["name"])
 
 			tmpRet=self._loadSoundPath(item)
-			tmp["sound"]=tmpRet[1]
-			if not tmpRet[0]:
+			tmp["sound"]=tmpRet.get("path")
+			if not tmpRet.get("status"):
 				tmp["bellActivated"]=bell.get("active",False)
 			else:
 				soundError=True
@@ -214,9 +214,11 @@ class BellManager(object):
 			"4":False
 		}
 		self.bellValidityActive=False
-		self.bellValidityValue=""
-		self.bellValidityRangeOption=True
-		self.bellValidityDaysInRange=[]
+		self.bellValidity={
+			"value":"",
+			"rangeOption":True,
+			"daysInRange":[]
+		}
 		self.enableBellValidity=False
 		self.bellName=""
 		self.bellImage={"option":"stock","index":1,"path":"/usr/share/bell-scheduler/banners/bell.png","error":False}
@@ -235,9 +237,8 @@ class BellManager(object):
 			"minute":self.bellCron.get("minute"),
 			"validity":{
 				"active":self.bellValidityActive,
-				"value":self.bellValidityValue
+				"value":self.bellValidity.get("value")
 			},
-			#"weekdays":{str(i):status for i,status in enumerate(self.bellDays)},
 			"weekdays":self.bellDays,
 			"name":self.bellName,
 			"image":{
@@ -268,16 +269,16 @@ class BellManager(object):
 		
 		if option in ["url","url_list"]:
 			self.loadError=True
-			return [True,_("ERROR: Current option for sound not supported")]
+			return {"status":True,"path":_("ERROR: Current option for sound not supported")}
 			
 		if not os.path.exists(path):
 			self.loadError=True
-			return [True,_("ERROR: File or directory not available")]
+			return {"status":True,"path":_("ERROR: File or directory not available")}
 
 		if option=="file":
-			return [False,os.path.basename(path)]
+			return {"status":False,"path":os.path.basename(path)}
 
-		return [False,path]
+		return {"status":False,"path":path}
 
 	#def _loadSoundPath
 
@@ -310,18 +311,18 @@ class BellManager(object):
 			"minute":tmpConfig["minute"]
 		}
 		
-		#weekdays=tmpConfig.get("weekdays",{})
-		#self.bellDays=[weekdays.get(str(i),False) for i in range(5)]
 		self.bellDays=tmpConfig.get("weekdays")
-		
 		
 		validity=tmpConfig.get("validity",{})
 		self.bellValidityActive=validity.get("active",False)
-		self.bellValidityValue=validity.get("value","")
-		tmpConfig["validity"]={"active":self.bellValidityActive,"value":self.bellValidityValue}
+		tmpValidityValue=validity.get("value","")
+		self.bellValidity={
+			"value":validity.get("value",""),
+			"rangeOption":False if "-" not in tmpValidityValue else True,
+			"daysInRange": [tmpValidityValue] if "-" not in tmpValidityValue else self.getDaysInRange(tmpValidityValue)
+		}
+		tmpConfig["validity"]={"active":self.bellValidityActive,"value":self.bellValidity.get("value")}
 
-		self.bellValidityDaysInRange=[]
-		self._getValidityConfig(self.bellValidityValue)
 		self.enableBellValidity=self.areDaysChecked(self.bellDays)
 		self.bellName=tmpConfig["name"]
 
@@ -371,20 +372,6 @@ class BellManager(object):
 		return 0
 
 	#def _getImageIndexFromPath
-
-	def _getValidityConfig(self,validityInfo):
-
-		if not validityInfo:
-			return
-
-		if "-" in validityInfo:
-			self.bellValidityRangeOption=True
-			self.bellValidityDaysInRange=self.getDaysInRange(validityInfo)
-		else:
-			self.bellValidityRangeOption=False
-			self.bellValidityDaysInRange=[validityInfo]
-
-	#def _getValidityConfig
 
 	def areDaysChecked(self,daysSelected):
 
