@@ -5,30 +5,39 @@ import org.kde.plasma.components 3.0 as PC3
 
 
 Rectangle{
+    id:imgContainer
     width:120
     height:120
     border.color: "#d3d3d3"
-    property alias currentImgIndex:imagesSelector.currentIndex
-    property alias listEnabled:imagesSelector.enabled
+
+    property int currentImgIndex:1
+    property alias listEnabled:listSV.enabled
+
+    onCurrentImgIndexChanged:{
+        imagesSelector.positionViewAtIndex(currentImgIndex,ListView.Center)
+    }
 
     PC3.ScrollView{
-        implicitWidth:parent.width
-        implicitHeight:parent.height
-        anchors.leftMargin:10
+        id:listSV
+        anchors.fill:parent
 
         ListView{
             id:imagesSelector
-            anchors.centerIn:parent
+            anchors.fill:parent
             focus:true
-            currentIndex:currentImgIndex
             snapMode:ListView.SnapOneItem
             highlightRangeMode: ListView.StrictlyEnforceRange
-            enabled:listEnabled   
+            highlightMoveDuration:0
+            highlightMoveVelocity:-1
             model:bellStackBridge.imagesModel
-           
+
+            onCurrentIndexChanged:{
+                 imgContainer.currentImgIndex=currentIndex
+            }
+
             delegate:Item{
-                width:90
-                height:120
+                width:imgContainer.width
+                height:imgContainer.height
 
                 Image{
                   width:80
@@ -40,7 +49,6 @@ Rectangle{
                 }
 
             }
-                  
         }
     }
 }

@@ -19,11 +19,11 @@ class Tunnel(QObject):
 	def clearCache(self):
 
 		clear=False
-		user=os.environ["USER"]
-		bellVersionFile="/home/%s/.config/bell-scheduler.conf"%user
-		holidayVersionFile="/home/%s/.config/python3-holidaymanager.conf"%user
-		cachePath1="/home/%s/.cache/bell-scheduler"%user
-		cachePath2="/home/%s/.cache/bell-scheduler-gui.py"%user
+		userHome=os.path.expanduser("~")
+		bellVersionFile=os.path.join(userHome,".config/bell-scheduler.conf")
+		holidayVersionFile=os.path.join(userHome,".config/python3-holidaymanager.conf")
+		cachePath1=os.path.join(userHome,".cache/bell-scheduler")
+		cachePath2=os.path.join(userHome,".cache/bell-scheduler-gui.py")
 		bellInstalledVersion=self.getPackageVersion("bell")
 		holidayInstalledVersion=self.getPackageVersion("holiday")
 
@@ -45,22 +45,18 @@ class Tunnel(QObject):
 			else:
 				with open(bellVersionFile,'r') as fd:
 					fileVersion=fd.readline()
-					fd.close()
 
 				if fileVersion!=bellInstalledVersion:
 					with open(bellVersionFile,'w') as fd:
 						fd.write(bellInstalledVersion)
-						fd.close()
 					clear=True
 				else:
 					with open(holidayVersionFile,'r') as fd:
 						fileVersion=fd.readline()
-						fd.close()
 
 					if fileVersion!=holidayInstalledVersion:
 						with open(holidayVersionFile,'w') as fd:
 							fd.write(holidayInstalledVersion)
-							fd.close()
 						clear=True
 
 		else:
@@ -86,7 +82,6 @@ class Tunnel(QObject):
 		if os.path.exists(packageVersionFile):
 			with open(packageVersionFile,'r') as fd:
 				pkgVersion=fd.readline()
-				fd.close()
 
 		return pkgVersion
 

@@ -4,92 +4,64 @@ import QtQuick.Layouts 1.15
 
 
 Item {
-	id:dayBtnItem
-	Layout.preferredWidth: 100
-	Layout.preferredHeight: 40
+    id: dayBtnItem
 
-	property alias dayBtnChecked:dayBtn.checked
-	property alias dayBtnText:dayBtn.text
-	signal dayBtnClicked(bool value)
+    Layout.preferredWidth: 100
+    Layout.preferredHeight: 40
 
-	Button {
-		id:dayBtn
-		checkable:true
-		checked:dayBtnChecked
-		text:dayBtnText
-		anchors.fill:parent
-		palette.button:paletteBtn(dayBtn.checked)
-		palette.buttonText:paletteBtnText(dayBtn.checked)
-		focusPolicy: Qt.NoFocus
-		states: [
-			State {
-				name: "Hovering"
-				PropertyChanges {
-					target: dayBtn
-					palette.button: paletteBtn(dayBtn.checked,true)
-				}
-			},
-			State {
-				name: "Exited"
-				PropertyChanges {
-					target: dayBtn
-					palette.button: paletteBtn(dayBtn.checked)
-				}
-			}
-		]
+    property alias dayBtnChecked: dayBtn.checked
+    property alias dayBtnText: dayBtn.text
 
-		MouseArea {
-			id: mouseAreaDay
-			anchors.fill: parent
-			hoverEnabled:true
-			onEntered: {
-				parent.state="Hovering"
-			}
-			onExited: {
-				parent.state="Exited"
-			}
-			onClicked: {
-				dayBtn.checked=!dayBtn.checked,
-				dayBtnClicked(dayBtn.checked),
-				parent.palette.button=paletteBtn(dayBtn.checked);
-			}
-		}		
-					
-	}
+    property bool layoutEnabled: true
 
-	function paletteBtn(status,mouseArea=false){
-		if (daysLayout.enabled){
-			if (status){
-				if (mouseArea){
-					return "#add8e6";
-				}else{
-					return "#3daee9";
-				}
-			}else{ 
-				return "#e4e5e7";
-			}
-		}else{
-			if (status){
-				return "#87cefa";
-			}else{
-				return "#e4e5e7";
-			}
-		}	
-	}
+    signal dayBtnClicked(bool value)
 
-	function paletteBtnText(status){
-		if (daysLayout.enabled){
-			if (status){
-				return "#ffffff";
-			}else{ 
-				return "#000000";
-			}
-		}else{
-			if (status){
-				return "#ffffff";
-			}else{
-				return "#b9babc";
-			}
-		}	
-	}
+    Button {
+        id: dayBtn
+        anchors.fill: parent
+        checkable: true
+        checked: dayBtnChecked
+        text: dayBtnText
+        focusPolicy: Qt.NoFocus
+
+        onCheckedChanged: {
+            dayBtnItem.dayBtnClicked(checked)
+        }
+
+        contentItem: Label {
+            text: dayBtn.text
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+            color: dayBtnItem.paletteBtnText(dayBtn.checked)
+        }
+
+        background: Rectangle {
+            radius: 5
+
+            color: dayBtnItem.paletteBtn(dayBtn.checked, dayBtn.hovered)
+
+            border.color: dayBtn.hovered ? "#3daee9" : "#d2d2d3"
+            border.width: 1
+        }
+    }
+
+    function paletteBtn(status, isHovered = false) {
+        if (dayBtnItem.layoutEnabled) { 
+            if (status) {
+                return isHovered ? "#add8e6" : "#3daee9";
+            } else {
+                return isHovered ? "#eeeeee" : "#ffffff";
+            }
+        } else {
+            return status ? "#87cefa" : "#e4e5e7";
+        }
+    }
+
+    function paletteBtnText(status) {
+        if (dayBtnItem.layoutEnabled) {
+            return status ? "#ffffff" : "#000000";
+        } else {
+            return status ? "#ffffff" : "#b9babc";
+        }
+    }
 }

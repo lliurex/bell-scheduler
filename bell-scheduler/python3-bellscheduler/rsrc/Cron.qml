@@ -2,261 +2,257 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
+ColumnLayout {
+    id: scheduler
+    spacing: 10
+    focus: true
 
-GridLayout{
-	id:scheduler
-	rows:2
-	flow: GridLayout.TopToBottom
+    RowLayout {
+        id: clockLayout
+        enabled: true
+        Layout.alignment: Qt.AlignHCenter
+        spacing: 5
 
-	GridLayout {
-		id:clockLayout
-		enabled:true
-		Layout.leftMargin: 5
-		Layout.rightMargin:5
-		Layout.bottomMargin: 5
-		Layout.alignment:Qt.AlignHCenter
-		columns:4
-		Component {
-			id: delegateComponent
-			Label {
-				font.pointSize: 40
-				color:"#3daee9"
-				text:formatText(Tumbler.tumbler.count,modelData)
-				horizontalAlignment: Text.AlignHCenter
-				verticalAlignment: Text.AlignVCenter
-				MouseArea {
-					id: mouseAreaHour
-					anchors.fill: parent
-					hoverEnabled: true
-					onEntered: {
-						parent.color="#add8e6"
-					}
-					onExited: {
-						parent.color="#3daee9"
-					}
-					onWheel:{
-						wheel.accepted=false
-						if (wheel.angleDelta.y>0){
-							if (modelData==0){
-								if (Tumbler.tumbler.count==24){
-									Tumbler.tumbler.currentIndex=23;
-								}else{
-									Tumbler.tumbler.currentIndex=59;
-								}
-							}else{
-								Tumbler.tumbler.currentIndex=modelData-1;
-							}
-						}else{
-							if (modelData==23){
-								if (Tumbler.tumbler.count==24){
-									Tumbler.tumbler.currentIndex=0;
-								}else{
-									Tumbler.tumbler.currentIndex=modelData+1;
-								}
-							}else{ 
-								if (modelData==59){
-									if (Tumbler.tumbler.count==60){
-										Tumbler.tumbler.currentIndex=0;
-									}else{
-										Tumbler.tumbler.currentIndex=modelData+1;
-									}
-								}else{
-									Tumbler.tumbler.currentIndex=modelData+1;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-			 
-		Rectangle {
-			anchors.topMargin: 4
-	       	Layout.alignment:Qt.AlignCenter
-		    height: 60
-		    width: 60
-		    color:"transparent"
-		    Tumbler {
-		    	id: hoursTumbler
-		    	width:60
-	            height:60
-	            model: 24
-	            currentIndex:bellStackBridge.bellCron[0]
-	            delegate:delegateComponent 
-	            visibleItemCount:1
-	            hoverEnabled:true
-	        	ToolTip.delay: 1000
-	            ToolTip.timeout: 3000
-	            ToolTip.visible: hovered
-	            ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the hour")
-	            onCurrentIndexChanged: {
-	            	bellStackBridge.updateClockValues(["H",hoursTumbler.currentIndex]);
-	            } 
-	        }       
-		}
-		Text{
-			id:clockSeparator
-	       	Layout.alignment:Qt.AlignCenter
-	       	font.pointSize:40
-			color:"#3daee9"
-			text:":"
-	    }
-	    Rectangle {
-	    	anchors.topMargin: 4
-	       	Layout.alignment:Qt.AlignCenter
-	    	height: 60
-	    	width: 60
-	    	color:"transparent"
+        property int hoursWheelAccumulator:0
+        property int minutesWheelAccumulator:59
+        readonly property int wheelThreshold:360
 
-	    	Tumbler {
-	    		id: minutesTumbler
-	    		height:60
-	    		width:60
-	    		model: 60
-	    		currentIndex:bellStackBridge.bellCron[1]
-	    		delegate: delegateComponent
-	    		visibleItemCount:1
-	    		hoverEnabled:true
-	    	 	ToolTip.delay: 1000
-	    	 	ToolTip.timeout: 3000
-	    	 	ToolTip.visible: hovered
-	    	 	ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the minutes")
-	    		onCurrentIndexChanged: {
-	    			bellStackBridge.updateClockValues(["M",minutesTumbler.currentIndex]);
-	    		}
-	    	}
-		} 
-		Button {
-			id:editHourBtn
-			display:AbstractButton.IconOnly
-			icon.name:"edit-entry.svg"
-			Layout.preferredHeight: 35
-	       	Layout.alignment:Qt.AlignCenter
-			Layout.topMargin:10
-			Layout.leftMargin:10
-			hoverEnabled:true
-			ToolTip.delay: 1000
-			ToolTip.timeout: 3000
-			ToolTip.visible: hovered
-			ToolTip.text:i18nd("bell-scheduler","Click to edit time with keyboard ")
-			onClicked:{
-				timeSelector.open()
-			}
-			TimeSelector{
-				id:timeSelector
-				hourEntry:formatEditText(hoursTumbler.currentIndex)
-				minuteEntry:formatEditText(minutesTumbler.currentIndex)
-				Connections{
-					target:timeSelector
-					function onTimeApplyClicked(hourValue,minuteValue){
-						hoursTumbler.currentIndex=hourValue
-						minutesTumbler.currentIndex=minuteValue
-					}
-				}
+        Component {
+            id: numberDelegate
+            Item {
+                width: 60
+                height: 60
 
-			}
-		} 
-	}	
+                visible:PathView.isCurrentItem
 
-	RowLayout {
-		id: daysLayout
-		enabled:true
-	    Layout.alignment:Qt.AlignHCenter
-	    Layout.fillWidth: true
-	    Layout.bottomMargin: 5
-	    spacing:8
+                Text {
+                    text: modelData.toString().padStart(2, "0")
+                    font.pointSize: 40
+                    color: "#3daee9"
+                    anchors.centerIn: parent
+                }
+            }
+        }
 
-	    DayButton {
-	      	id:mondaybtn
-			dayBtnChecked:bellStackBridge.bellDays[0]
-			dayBtnText:i18nd("bell-scheduler","Monday")
-			Connections{
-				function onDayBtnClicked(value){
-					bellStackBridge.updateWeekDaysValues(["MO",value]);	
-				}
-			}
-					
-		}
-				
-		DayButton {
-	       	id:tuesdaybtn
-			dayBtnChecked:bellStackBridge.bellDays[1]
-			dayBtnText:i18nd("bell-scheduler","Tuesday")
-			Connections{
-				function onDayBtnClicked(value){
-					bellStackBridge.updateWeekDaysValues(["TU",value]);
-				}
-			}
-		}
-		
-		DayButton {
-			id:wednesdaybtn
-			dayBtnChecked:bellStackBridge.bellDays[2]
-			dayBtnText:i18nd("bell-scheduler","Wednesday")
-			Connections{
-				function onDayBtnClicked(value){
-					bellStackBridge.updateWeekDaysValues(["WE",value]);
-				}
-			}
-			
-		}
-				
-		DayButton {
-			id:thursdaybtn
-			dayBtnChecked:bellStackBridge.bellDays[3]
-			dayBtnText:i18nd("bell-scheduler","Thursday")
-			Connections{
-				function onDayBtnClicked(value){
-					bellStackBridge.updateWeekDaysValues(["TH",value]);
-				}
-			}
-		}
-			
-		DayButton {
-			id:fridaybtn
-			dayBtnChecked:bellStackBridge.bellDays[4]
-			dayBtnText:i18nd("bell-scheduler","Friday")
-			Connections{
-				function onDayBtnClicked(value){
-					bellStackBridge.updateWeekDaysValues(["FR",value]);
-				}
-			}
-		}
-	}
+        Rectangle {
+            width: 60
+            height: 60
+            color: "transparent"
+            clip: true
 
-	
+            PathView {
+                id: hoursSelector
+                anchors.fill: parent
+                focus: true
+                model: 24
+                delegate: numberDelegate
 
-	function formatText(count, modelData) {
-        var data = count === 12 ? modelData + 1 : modelData;
-        return data.toString().length < 2 ? "0" + data : data;
-    }
-    
-    function formatEditText(value){
-    	if (value<10){
-    		return "0"+value.toString();
-    	}else{
-    		return value.toString();
-    	}
+                pathItemCount: 3
+                preferredHighlightBegin: 0.5
+                preferredHighlightEnd: 0.5
+                highlightRangeMode: PathView.StrictlyEnforceRange
 
+                currentIndex: bellStackBridge.bellCron.hour
+
+                onCurrentIndexChanged: {
+                    bellStackBridge.updateClockValues({"hour": hoursSelector.currentIndex});
+                }
+
+                WheelHandler {
+                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+
+                    onWheel: (event) => {
+
+                        let delta=event.angleDelta.y;
+
+                        if ((delta >0 && clockLayout.hoursWheelAccumulator < 0) || ( delta <0 && clockLayout.hoursWheelAccumulator > 0)){
+                            clockLayout.hoursWheelAccumulator = 0;
+                        }
+
+                        clockLayout.hoursWheelAccumulator+=delta;
+
+                        if (clockLayout.hoursWheelAccumulator >= clockLayout.wheelThreshold){
+                            hoursSelector.currentIndex = (hoursSelector.currentIndex > 0) ? hoursSelector.currentIndex - 1 : 23;
+                            clockLayout.hoursWheelAccumulator=0;
+                        } 
+                        else if (clockLayout.hoursWheelAccumulator <= -clockLayout.wheelThreshold) {
+                            hoursSelector.currentIndex = (hoursSelector.currentIndex < 23) ? hoursSelector.currentIndex + 1 : 0;
+                            clockLayout.hoursWheelAccumulator=0;
+                        }
+                            
+                    }
+                }
+
+                path: Path {
+                    startX: 30; startY: -30
+                    PathLine { x: 30; y: 90 }
+                }
+
+                HoverHandler{
+                    id:hoursHandler
+                }
+
+                ToolTip.delay:1000
+                ToolTip.timeout:1000
+                ToolTip.visible:hoursHandler.hovered
+                ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the hour")
+            }
+        }
+
+        Text {
+            text: ":"
+            font.pointSize: 30
+            color: "#3daee9"
+            Layout.alignment: Qt.AlignCenter
+        }
+
+        Rectangle {
+            width: 60
+            height: 60
+            color: "transparent"
+            clip: true
+
+            PathView {
+                id: minutesSelector
+                anchors.fill: parent
+                focus: true
+                model: 60
+                delegate: numberDelegate
+
+                pathItemCount: 3
+                preferredHighlightBegin: 0.5
+                preferredHighlightEnd: 0.5
+                highlightRangeMode: PathView.StrictlyEnforceRange
+
+                currentIndex: bellStackBridge.bellCron.minute
+
+                onCurrentIndexChanged: {
+                    bellStackBridge.updateClockValues({"minute": minutesSelector.currentIndex});
+                }
+
+                WheelHandler {
+                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                    onWheel: (event) => {
+
+                        let delta=event.angleDelta.y;
+
+                        if ((delta >0 && clockLayout.minutesWheelAccumulator < 0) || ( delta <0 && clockLayout.minutesWheelAccumulator > 0)){
+                            clockLayout.minutesWheelAccumulator = 0;
+                        }
+
+                        clockLayout.minutesWheelAccumulator+=delta;
+
+                        if (clockLayout.minutesWheelAccumulator >= clockLayout.wheelThreshold){
+                            minutesSelector.currentIndex = (minutesSelector.currentIndex > 0) ? minutesSelector.currentIndex - 1 : 59;
+                            clockLayout.minutesWheelAccumulator = 0;
+                        } else if (clockLayout.minutesWheelAccumulator <= -clockLayout.wheelThreshold) {
+                            minutesSelector.currentIndex = (minutesSelector.currentIndex < 59) ? minutesSelector.currentIndex + 1 : 0;
+                            clockLayout.minutesWheelAccumulator = 0;
+                        }
+                    }
+                }
+
+                path: Path {
+                    startX: 30; startY: -30
+                    PathLine { x: 30; y: 90 }
+                }
+
+                HoverHandler{
+                    id:minutesHandler
+                }
+
+                ToolTip.delay:1000
+                ToolTip.timeout:1000
+                ToolTip.visible:minutesHandler.hovered
+                ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the minutes")
+            }
+        }
+
+        Button {
+            id: editHourBtn
+            display: AbstractButton.IconOnly
+            icon.name: "edit-entry"
+            Layout.alignment: Qt.AlignCenter
+            Layout.topMargin: 10
+            Layout.leftMargin: 10
+            hoverEnabled: true
+
+            ToolTip.delay: 1000
+            ToolTip.timeout: 3000
+            ToolTip.visible: hovered
+            ToolTip.text: i18nd("bell-scheduler", "Click to edit time with keyboard")
+
+            onClicked: {
+                timeSelector.open()
+            }
+        }
+                
     }
 
-    function validateEntry(hour,minute){
+    RowLayout {
+        id: daysLayout
+        enabled: true
+        Layout.alignment: Qt.AlignHCenter
+        Layout.fillWidth: true
+        Layout.bottomMargin: 5
+        spacing: 8
 
-    	if ((hour =="") || (minute=="")){
-    		return false;
-    	}else{
-    		return true;
-    	}
+        ListModel {
+            id: daysModel
+            ListElement { key: "0"; name: "Monday" }
+            ListElement { key: "1"; name: "Tuesday" }
+            ListElement { key: "2"; name: "Wednesday" }
+            ListElement { key: "3"; name: "Thursday" }
+            ListElement { key: "4"; name: "Friday" }
+        }
 
+        Repeater {
+            model: daysModel
+
+            DayButton {
+                dayBtnChecked: bellStackBridge.bellDays[model.key]
+                dayBtnText: i18nd("bell-scheduler", model.name)
+
+                onDayBtnClicked: (value) => {
+                    bellStackBridge.updateWeekDaysValues({[model.key]: value});
+                }
+            }
+        }
     }
+
+    TimeSelector {
+        id: timeSelector
+        hourValue: hoursSelector.currentIndex.toString().padStart(2, "0")
+        minuteValue: minutesSelector.currentIndex.toString().padStart(2, "0")
+
+        Connections {
+            target: timeSelector
+            function onTimeApplyClicked(hourValue, minuteValue){
+                hoursSelector.currentIndex = hourValue
+                minutesSelector.currentIndex = minuteValue
+            }
+        }
+    }
+
     Timer {
-        id: timer
+        id: safetyTimer
+        property var callback: null
+        onTriggered: {
+            if (callback) {
+                callback();
+                callback = null;
+            }
+        }
     }
 
     function delay(delayTime, cb) {
-        timer.interval = delayTime;
-        timer.repeat = false;
-        timer.triggered.connect(cb);
-        timer.start();
+        safetyTimer.stop();
+        safetyTimer.interval = delayTime;
+        safetyTimer.callback = cb;
+        safetyTimer.start();
     }
-}				
+
+    function validateEntry(hour, minute) {
+        return hour !== "" && minute !== "";
+    }
+}

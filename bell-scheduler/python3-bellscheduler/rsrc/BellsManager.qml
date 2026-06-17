@@ -1,76 +1,77 @@
-import org.kde.kirigami 2.16 as Kirigami
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Dialogs 1.3
+import org.kde.kirigami 2.16 as Kirigami
 
 Rectangle{
     id:rectLayout
     color:"transparent"
-    Text{ 
-        text:i18nd("bell-scheduler","Configured bells")
-        font.pointSize: 16
-    }
 
-    property var backupAction:undefined
-
-    GridLayout{
-        id:generalBellsLayout
-        rows:2
-        flow: GridLayout.TopToBottom
-        rowSpacing:10
+    ColumnLayout{
+        id: mainContent
+        anchors.top:parent.top
         anchors.left:parent.left
-        width:parent.width-10
-        height:parent.height-90
-        enabled:true
+        anchors.right:parent.right
+        anchors.bottom:btnBox.top
+
+        anchors.leftMargin:5
+        anchors.rightMargin:15
+        anchors.bottomMargin:25
+        spacing: 10
+
+        property var backupAction:undefined
+
+        Text{ 
+            text:i18nd("bell-scheduler","Configured bells")
+            font.pointSize: 16
+        }
+
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:bellsOptionsStackBridge.showMainMessage[0]
-            text:getTextMessage(bellsOptionsStackBridge.showMainMessage[1])
-            type:getTypeMessage(bellsOptionsStackBridge.showMainMessage[2])
-            Layout.minimumWidth:650
+            visible:bellsOptionsStackBridge.showMainMessage.show
+            text:getTextMessage(bellsOptionsStackBridge.showMainMessage.msgCode)
+            type:getTypeMessage(bellsOptionsStackBridge.showMainMessage.type)
             Layout.fillWidth:true
-            Layout.topMargin: 40
         }
-        
-            
+               
         BellsList{
             id:bellsList
             bellsModel:bellsOptionsStackBridge.bellsModel
             Layout.fillHeight:true
             Layout.fillWidth:true
-            Layout.topMargin: messageLabel.visible?0:40
         }
     }
     
     RowLayout{
         id:btnBox
         anchors.bottom: parent.bottom
-        anchors.fill:parent.fill
-        anchors.bottomMargin:15
-        spacing:10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.leftMargin:5
+        anchors.topMargin:20
+        anchors.margins:15
+        spacing: 30
 
         Button {
             id:backupBtn
             visible:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"backup.svg"
+            icon.name:"backup"
             text:i18nd("bell-scheduler","Backup")
-            Layout.preferredHeight:40
             onClicked:backupMenu.open()
             
             Menu{
                 id:backupMenu
-                y: -backupBtn.height*1.7
+                y: -height - 5
                 x: backupBtn.width/2
 
                 MenuItem{
-                    icon.name:"document-export.svg"
+                    icon.name:"document-export"
                     text:i18nd("bell-scheduler","Generate bell backup")
                     enabled:bellsOptionsStackBridge.enableGlobalOptions
                     onClicked:{
-                        
-                        backupAction="export"
+                        mainContent.backupAction="export"
                         backupFileDialog.title=i18nd("bell-scheduler","Please choose a file to save bells list")
                         backupFileDialog.selectExisting=false
                         
@@ -83,11 +84,10 @@ Rectangle{
                 }
 
                 MenuItem{
-                    icon.name:"document-import.svg"
+                    icon.name:"document-import"
                     text:i18nd("bell-scheduler","Import bell backup")
                     onClicked:{
-
-                        backupAction="import"
+                        mainContent.backupAction="import"
                         backupFileDialog.title=i18nd("bell-scheduler","Please choose a file to load bells list")
                         backupFileDialog.selectExisting=true
                         importBellDialog.open()
@@ -103,75 +103,73 @@ Rectangle{
             id:actionsBtn
             visible:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"run-build.svg"
+            icon.name:"run-build"
             text:i18nd("bell-scheduler","Global Options")
-            Layout.preferredHeight:40
             enabled:bellsOptionsStackBridge.enableGlobalOptions
             onClicked:actionsMenu.open()
 
             Menu{
                 id:actionsMenu
-                y: -actionsBtn.height*4
+                y: -height - 5
                 x: actionsBtn.width/2
 
                 MenuItem{
-                    icon.name:"audio-on.svg"
+                    icon.name:"audio-on"
                     text:i18nd("bell-scheduler","Enable alls bells")
-                    enabled:!bellsOptionsStackBridge.enableChangeStatusOptions[0]
-                    onClicked:bellsOptionsStackBridge.changeBellStatus([true,true])
+                    enabled:!bellsOptionsStackBridge.enableChangeStatusOptions.allActivated
+                    onClicked:bellsOptionsStackBridge.changeBellStatus({"allBells":true,"active":true})
                 }
 
                 MenuItem{
-                    icon.name:"audio-volume-muted.svg"
+                    icon.name:"audio-volume-muted"
                     text:i18nd("bell-scheduler","Disable all bells")
-                    enabled:!bellsOptionsStackBridge.enableChangeStatusOptions[1]
-                    onClicked:bellsOptionsStackBridge.changeBellStatus([true,false])
+                    enabled:!bellsOptionsStackBridge.enableChangeStatusOptions.allDeactivated
+                    onClicked:bellsOptionsStackBridge.changeBellStatus({"allBells":true,"active":false})
                 }
 
                 MenuItem{
-                    icon.name:"document-preview-archive.svg"
+                    icon.name:"document-preview-archive"
                     text:i18nd("bell-scheduler","View playback log file")
                     onClicked:bellsOptionsStackBridge.openPlayLogFile()
                 }
 
                 MenuItem{
-                    icon.name:"document-preview-archive.svg"
+                    icon.name:"document-preview-archive"
                     text:i18nd("bell-scheduler","View error log file")
                     onClicked:bellsOptionsStackBridge.openErrorLogFile()
                 }
 
                 MenuItem{
-                    icon.name:"delete.svg"
+                    icon.name:"delete"
                     text:i18nd("bell-scheduler","Delete alls bells")
-                    onClicked:bellsOptionsStackBridge.removeBell([true])
+                    onClicked:bellsOptionsStackBridge.removeBell({"allBells":true,"bellId":""})
                 }
             }
            
         }
+
         Button {
             id:settingsBtn
             visible:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"configure.svg"
+            icon.name:"configure"
             text:i18nd("bell-scheduler","Settings")
             enabled:bellsOptionsStackBridge.enableGlobalOptions
-            Layout.preferredHeight:40
-            Layout.rightMargin:rectLayout.width-(backupBtn.width+actionsBtn.width+settingsBtn.width+newBtn.width+40)
             onClicked:settingsMenu.open()
 
             Menu{
                id:settingsMenu
-               y: -settingsBtn.height*1.7
+               y: -height - 5
                x: settingsBtn.width/2
 
                MenuItem{
-                    icon.name:bellsOptionsStackBridge.isHolidayControlActive?"kt-stop.svg":"kt-start.svg"
+                    icon.name:bellsOptionsStackBridge.isHolidayControlActive?"kt-stop":"kt-start"
                     text:bellsOptionsStackBridge.isHolidayControlActive?i18nd("bell-scheduler","Disable holiday control"):i18nd("bell-scheduler","Enable holiday control")
                     enabled:bellsOptionsStackBridge.enableHolidayControl
                     onClicked:bellsOptionsStackBridge.manageHolidayControl()
                 }
                 MenuItem{
-                    icon.name:"audio-card.svg"
+                    icon.name:"audio-card"
                     text:i18nd("bell-scheduler","Audio output configuration")
                     enabled:bellsOptionsStackBridge.enableAudioDeviceConfiguration
                     onClicked:audioDevicesSelector.open()
@@ -182,37 +180,38 @@ Rectangle{
                 id:audioDevicesSelector
             }
         }
+
+        Item{
+            Layout.fillWidth:true
+        }
+
         Button {
             id:newBtn
             visible:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"list-add.svg"
+            icon.name:"list-add"
             text:i18nd("bell-scheduler","New bell")
-            Layout.preferredHeight:40
             onClicked:bellStackBridge.addNewBell() 
         }
     }
 
     ChangesDialog{
         id:removeBellDialog
-        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
+        dialogIcon:"dialog-warning"
         dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell List")
-        dialogMsg:{
-            if (bellsOptionsStackBridge.showRemoveBellDialog[1]){
-                i18nd("bell-scheduler","All bells will be deleted.\nDo yo want to continue?")
-            }else{
-                i18nd("bell-scheduler","The bell will be deleted.\nDo yo want to continue?")
-            }
-        }
-        dialogVisible:bellsOptionsStackBridge.showRemoveBellDialog[0]
+        dialogMsg:bellsOptionsStackBridge.showRemoveBellDialog.removeAll
+                  ?i18nd("bell-scheduler","All bells will be deleted.\nDo yo want to continue?")
+                  :i18nd("bell-scheduler","The bell will be deleted.\nDo yo want to continue?")
+       
+        dialogVisible:bellsOptionsStackBridge.showRemoveBellDialog.show
         dialogWidth:300
         btnAcceptVisible:false
         btnAcceptText:""
         btnDiscardText:i18nd("bell-scheduler","Accept")
-        btnDiscardIcon:"dialog-ok.svg"
+        btnDiscardIcon:"dialog-ok"
         btnDiscardVisible:true
         btnCancelText:i18nd("bell-scheduler","Cancel")
-        btnCancelIcon:"dialog-cancel.svg"
+        btnCancelIcon:"dialog-cancel"
         Connections{
            target:removeBellDialog
            function onDiscardDialogClicked(){
@@ -227,7 +226,7 @@ Rectangle{
 
     ChangesDialog{
         id:exportBellDialog
-        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-information.svg"
+        dialogIcon:"dialog-information"
         dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell List")
         dialogMsg:i18nd("bell-scheduler","Alarms have been detected with random selection of sound files from a folder.\nRemember that this folder will not be included in the export made.\nIf the folder is not saved manually, when the export is restored, the alarms that\nuse it will be deactivated")
         dialogWidth:640
@@ -235,7 +234,7 @@ Rectangle{
         btnAcceptText:""
         btnDiscardVisible:false
         btnCancelText:i18nd("bell-scheduler","Accept")
-        btnCancelIcon:"dialog-ok.svg"
+        btnCancelIcon:"dialog-ok"
         Connections{
            target:exportBellDialog
            function onRejectDialogClicked(){
@@ -249,7 +248,7 @@ Rectangle{
 
      ChangesDialog{
         id:importBellDialog
-        dialogIcon:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
+        dialogIcon:"dialog-warning"
         dialogTitle:"Bell-Scheduler"+" - "+i18nd("bell-scheduler","Bell List")
         dialogMsg:i18nd("bell-scheduler","New bells configuration will be loaded and replace the existing configuration.\nDo you want to continue?")
         dialogWidth:600
@@ -257,9 +256,9 @@ Rectangle{
         btnAcceptText:""
         btnDiscardVisible:true
         btnDiscardText:i18nd("bell-scheduler","Accept")
-        btnDiscardIcon:"dialog-ok.svg"
+        btnDiscardIcon:"dialog-ok"
         btnCancelText:i18nd("bell-scheduler","Cancel")
-        btnCancelIcon:"dialog-cancel.svg"
+        btnCancelIcon:"dialog-cancel"
         Connections{
            target:importBellDialog
            function onDiscardDialogClicked(){
@@ -282,7 +281,7 @@ Rectangle{
             var selectedPath=""
             selectedPath=backupFileDialog.fileUrl.toString()
             selectedPath=selectedPath.replace(/^(file:\/{2})/,"")
-            switch(backupAction){
+            switch(mainContent.backupAction){
                 case "export":
                     bellsOptionsStackBridge.exportBellsConfig(selectedPath)
                     break;
@@ -298,125 +297,92 @@ Rectangle{
     function getTextMessage(msgCode){
         switch (msgCode){
             case -9:
-                var msg=i18nd("bell-scheduler","Backup has errors. Unabled to load it")
-                break;
+                return i18nd("bell-scheduler","Backup has errors. Unabled to load it")
             case -12:
-                var msg=i18nd("bell-scheduler","Unable to generate backup")
-                break
+                return i18nd("bell-scheduler","Unable to generate backup")
             case -19:
-                var msg=i18nd("bell-scheduler","Unabled to edit the Bell due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to edit the Bell due to problems with cron sync")
             case -20:
-                var msg=i18nd("bell-scheduler","Unabled to create the Bell due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to create the Bell due to problems with cron sync")
             case -21:
-                var msg=i18nd("bell-scheduler","Unabled to delete the Bell due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to delete the Bell due to problems with cron sync")
             case -22:
-                var msg=i18nd("bell-scheduler","Unabled to activate the Bell due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to activate the Bell due to problems with cron sync")
             case -23:
-                var msg=i18nd("bell-scheduler","Unabled to deactivate the Bell due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to deactivate the Bell due to problems with cron sync")
             case -24:
-                var msg=i18nd("bell-scheduler","Unabled to copy image and/or sound file to work directory")
-                break;
+                return i18nd("bell-scheduler","Unabled to copy image and/or sound file to work directory")
             case -31:
-                var msg=i18nd("bell-scheduler","Detected alarms with errors")
-                break;
+                return i18nd("bell-scheduler","Detected alarms with errors")
             case -36:
-                var msg=i18nd("bell-scheduler","Unabled to apply changes due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to apply changes due to problems with cron sync")
             case -37:
-                var msg=i18nd("bell-scheduler","Unabled to load bell list due to problems with cron sync")
-                break;
+                return i18nd("bell-scheduler","Unabled to load bell list due to problems with cron sync")
             case -48:
-                var msg=i18nd("bell-scheduler","It is not possible to activate all bells")
-                break;
+                return i18nd("bell-scheduler","It is not possible to activate all bells")
             case -49:
-                var msg=i18nd("bell-scheduler","It is not possible to deactivate all bells")
-                break;
+                return i18nd("bell-scheduler","It is not possible to deactivate all bells")
             case -52:
-                var msg=i18nd("bell-scheduler","It is not possible to remove all bells")
-                break;
+                return i18nd("bell-scheduler","It is not possible to remove all bells")
             case -53:
-                var msg=i18nd("bell-scheduler","It is not possible to changed audio output")
-                break;
+                return i18nd("bell-scheduler","It is not possible to changed audio output")
+            case -60:
+                return i18nd("bell-scheduler","Unable to activate bell. There are no scheduled days")
             case 10:
-                var msg=i18nd("bell-scheduler","Backup loaded successfully")
-                break;
+                return i18nd("bell-scheduler","Backup loaded successfully")
             case 11:
-                var msg=i18nd("bell-scheduler","Backup generated successfully")
-                break;
+                return i18nd("bell-scheduler","Backup generated successfully")
             case 14:
-                var msg=i18nd("bell-scheduler","Bell deleted successfully")
-                break;
+                return i18nd("bell-scheduler","Bell deleted successfully")
             case 15:
-                var msg=i18nd("bell-scheduler","Bell edited successfully")
-                break;
+                return i18nd("bell-scheduler","Bell edited successfully")
             case 16:
-                var msg=i18nd("bell-scheduler","Bell activated successfully")
-                break;
+                return i18nd("bell-scheduler","Bell activated successfully")
             case 17:
-                var msg=i18nd("bell-scheduler","Bell deactivated successfully")
-                break;
+                return i18nd("bell-scheduler","Bell deactivated successfully")
             case 18:
-                var msg=i18nd("bell-scheduler","Bell created successfully")
-                break
+                return i18nd("bell-scheduler","Bell created successfully")
             case 34:
-                var msg=i18nd("bell-scheduler","Holiday control deactivated successfully")
-                break
+                return i18nd("bell-scheduler","Holiday control deactivated successfully")
             case 35:
-                var msg=i18nd("bell-scheduler","Holiday control activated successfully")
-                break
+                return i18nd("bell-scheduler","Holiday control activated successfully")
             case 46:
-                var msg=i18nd("bell-scheduler","The bells have been activated successfully")
-                break;
+                return i18nd("bell-scheduler","The bells have been activated successfully")
             case 47:
-                var msg=i18nd("bell-scheduler","The bells have been deactivated successfully")
-                break;
+                return i18nd("bell-scheduler","The bells have been deactivated successfully")
             case 51:
-                var msg=i18nd("bell-scheduler","The bells have been removed successfully")
-                break;
+                return i18nd("bell-scheduler","The bells have been removed successfully")
             case 53:
-                var msg=i18nd("bell-scheduler","Bells already activated. Nothing to do")
-                break;
+                return i18nd("bell-scheduler","Bells already activated. Nothing to do")
             case 54:
-                var msg=i18nd("bell-scheduler","Bells already deactivated. Nothing to do")
-                break;
+                return i18nd("bell-scheduler","Bells already deactivated. Nothing to do")
             case 55:
-                var msg=i18nd("bell-scheduler","Bells alreday removed. Nothing to do")
-                break;
+                return i18nd("bell-scheduler","Bells alreday removed. Nothing to do")
             case 57:
-                var msg=i18nd("bell-scheduler","Audio ouput already configurated. Nothing to do")
-                break;
+                return i18nd("bell-scheduler","Audio ouput already configurated. Nothing to do")
             case 58:
-                var msg=i18nd("bell-scheduler","Audio output have been changed successfully")
-                break;
+                return i18nd("bell-scheduler","Audio output have been changed successfully")
             case 59:
-                var msg=i18nd("bell-scheduler","There is no playback log available")
-                break;
+                return i18nd("bell-scheduler","There is no playback log available")
             case 60:
-                var msg=i18nd("bell-scheduler","There is no error log available")
-                break;
+                return i18nd("bell-scheduler","There is no error log available")
             default:
-                var msg=""
-                break;
+                return ""
         }
-        return msg
     } 
 
     function getTypeMessage(msgType){
 
-        switch (msgType){
-            case "Information":
-                return Kirigami.MessageType.Information
-            case "Ok":
+        switch(msgType){
+            case 0:
                 return Kirigami.MessageType.Positive
-            case "Error":
+            case 1:
                 return Kirigami.MessageType.Error
-            case "Warning":
+            case 2:
                 return Kirigami.MessageType.Warning
+            case 3:
+            default:
+                return Kirigami.MessageType.Information
         }
     }
 

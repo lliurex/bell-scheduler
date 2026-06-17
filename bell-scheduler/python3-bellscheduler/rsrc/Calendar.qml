@@ -4,150 +4,133 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.1
 
 Rectangle {
+    id: root
     width: 325
     height: 250
-    property alias calendarLocale:calendar.calendarLocale
-    property alias startDate:calendar.startDate
-    property alias stopDate:calendar.stopDate
-    property alias initDate:calendar.initDate
-    property alias endDate:calendar.endDate
-    property alias rangeDate:calendar.rangeDate
-    property alias daysInRange:calendar.daysInRange
-    property alias selectedDate:calendar.selectedDate
+
+    property alias calendarLocale: calendar.calendarLocale
+    property alias startDate: calendar.startDate
+    property alias stopDate: calendar.stopDate
+    property alias initDate: calendar.initDate
+    property alias endDate: calendar.endDate
+    property alias rangeDate: calendar.rangeDate
+    property alias daysInRange: calendar.daysInRange
+    property alias selectedDate: calendar.selectedDate
+
     signal getSelectedDate (variant value)
 
     Calendar {
         id: calendar
         width: parent.width
         height: parent.height
-        anchors.centerIn:parent
+        anchors.centerIn: parent
         frameVisible: true
         weekNumbersVisible: false
         focus: true
-        property var calendarLocale:calendarLocale
-        property var startDate: startDate
-        property var stopDate: stopDate
-        property var initDate:initDate
-        property var endDate:endDate
-        property var daysInRange:daysInRange
-        property bool rangeDate:rangeDate
-        selectedDate:selectedDate
-        locale:Qt.locale(calendar.calendarLocale)
 
-       style: CalendarStyle {
+        property string calendarLocale: "es_ES"
+        property var startDate: undefined
+        property var stopDate: undefined
+        property string initDate: ""
+        property string endDate: ""
+        property var daysInRange: []
+        property bool rangeDate: true
+
+        locale: Qt.locale(calendar.calendarLocale)
+
+        style: CalendarStyle {
             dayDelegate: Item {
+                id: dayCell
+
                 readonly property color sameMonthDateTextColor: "#444"
                 readonly property color selectedDateColor: "#3778d0"
                 readonly property color selectedDateTextColor: "white"
                 readonly property color differentMonthDateTextColor: "#bbb"
                 readonly property color invalidDatecolor: "#dddddd"
                 property var dateOnFocus: styleData.date
-            
 
                 Rectangle {
                     anchors.fill: parent
                     border.color: "transparent"
-                    color:{
-                        if (calendar.startDate!==undefined || calendar.stopDate!== undefined){
-                            "transparent"
-                        }else{
-                            if (Qt.formatDate(styleData.date,"dd/MM/yyyy")==calendar.initDate || Qt.formatDate(styleData.date,"dd/MM/yyyy")==calendar.endDate){
-                            selectedDateColor
-                        
-                            }else{
-                                if (calendar.daysInRange.includes(Qt.formatDate(styleData.date,"dd/MM/yyyy"))){
-                                "#55555555"
-                            }else{
-                                "transparent"
+                    color: {
+                        var dateStr = Qt.formatDate(dayCell.dateOnFocus, "dd/MM/yyyy");
+
+                        if (calendar.startDate === undefined && calendar.stopDate === undefined) {
+                            if (dateStr === calendar.initDate || dateStr === calendar.endDate) {
+                                return dayCell.selectedDateColor;
+                            }
+                            if (calendar.daysInRange && calendar.daysInRange.indexOf(dateStr) !== -1) {
+                                return "#55555555";
+                            }
+                            return "transparent";
+                        }
+
+                        var currentMs = dayCell.dateOnFocus.getTime();
+                        var startMs = calendar.startDate ? calendar.startDate.getTime() : 0;
+                        var stopMs = calendar.stopDate ? calendar.stopDate.getTime() : 0;
+
+                        if (calendar.startDate && currentMs === startMs) return dayCell.selectedDateColor;
+                        if (calendar.stopDate && currentMs === stopMs) return dayCell.selectedDateColor;
+
+                        if (calendar.startDate && calendar.stopDate && currentMs > startMs && currentMs < stopMs) {
+                            return "#55555555";
+                        }
+
+                        return "transparent";
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    propagateComposedEvents: true
+                    onPressed: {
+                        var clickedDate = dayCell.dateOnFocus;
+                        var clickedStr = Qt.formatDate(clickedDate, "dd/MM/yyyy");
+
+                        if (calendar.startDate === undefined) {
+                            calendar.startDate = clickedDate;
+                            if (!calendar.rangeDate) {
+                                calendar.stopDate = clickedDate;
+                            } else {
+                                calendar.stopDate = undefined;
+                            }
+                            root.getSelectedDate([clickedStr, "start"]);
+                        }
+                        else if (calendar.stopDate === undefined) {
+                            if (clickedDate <= calendar.startDate) {
+                                calendar.startDate = clickedDate;
+                                root.getSelectedDate([clickedStr, "start"]);
+                            } else {
+                                calendar.stopDate = clickedDate;
+                                root.getSelectedDate([clickedStr, "end"]);
                             }
                         }
-                    }
-                    
-                }
-
-            }
-
-            Rectangle{
-                id:fl
-                anchors.fill: parent
-                property bool flag: false
-                color:{
-                    if ((dateOnFocus>calendar.startDate) && (dateOnFocus< calendar.stopDate)){
-                        "#55555555"
-                   }else{
-                        if (calendar.startDate !==undefined && dateOnFocus.getTime()===calendar.startDate.getTime() || calendar.stopDate !==undefined && dateOnFocus.getTime()===calendar.stopDate.getTime()){
-                           "#3778d0" 
-                        }else{
-                            "transparent"
-                        }
-                   }
-                }
-            }
-
-            MouseArea{
-                anchors.fill: parent
-                propagateComposedEvents: true
-                onPressed: {
-                    if(calendar.startDate===undefined){
-                        calendar.startDate=styleData.date
-                        if (!calendar.rangeDate){
-                            calendar.stopDate=styleData.date
-                        }else{
-                            calendar.stopDate=undefined
-                        }
-                        getSelectedDate([Qt.formatDate(styleData.date,"dd/MM/yyyy"),"start"])
-                    }
-                    else if(calendar.stopDate=== undefined){
-                        calendar.stopDate=styleData.date
-                        getSelectedDate([Qt.formatDate(styleData.date,"dd/MM/yyyy"),"end"])
-                    }
-                    else{
-                        if (calendar.rangeDate){
-                            calendar.startDate=styleData.date
-                            calendar.stopDate= undefined
-                            getSelectedDate([Qt.formatDate(styleData.date,"dd/MM/yyyy"),"start"])
-                        }else{
-                            calendar.startDate=undefined
-                            calendar.stopDate=styleData.date
-                            getSelectedDate([Qt.formatDate(styleData.date,"dd/MM/yyyy"),"end"])
-                        }
-                    }
-                    if(calendar.stopDate<=calendar.startDate){
-                        if (!calendar.rangeDate){
-                            calendar.startDate=styleData.date
-                            calendar.stopDate=styleData.date
-                        }else{
-                            calendar.startDate=styleData.date
-                            calendar.stopDate=undefined
-
-                        }
-                        getSelectedDate([Qt.formatDate(styleData.date,"dd/MM/yyyy"),"start"])
-                    }
-
-                    mouse.accepted = false
-                }
-            }
-
-
-            Label {
-                id: dayDelegateText
-                text: styleData.date.getDate()
-                anchors.centerIn: parent
-                color: {
-                    var color = invalidDatecolor;
-                    if (styleData.valid) {
-                            // Date is within the valid range.
-                            color = styleData.visibleMonth ? sameMonthDateTextColor : differentMonthDateTextColor;
-                            if (styleData.selected) {
-                                color = "selectedDateTextColor";
+                        else {
+                            if (calendar.rangeDate) {
+                                calendar.startDate = clickedDate;
+                                calendar.stopDate = undefined;
+                                root.getSelectedDate([clickedStr, "start"]);
+                            } else {
+                                calendar.startDate = undefined;
+                                calendar.stopDate = clickedDate;
+                                root.getSelectedDate([clickedStr, "end"]);
                             }
+                        }
+                        mouse.accepted = false;
                     }
-                    color;
+                }
+
+                Label {
+                    id: dayDelegateText
+                    text: dayCell.dateOnFocus.getDate()
+                    anchors.centerIn: parent
+                    color: {
+                        if (!styleData.valid) return dayCell.invalidDatecolor;
+                        if (styleData.selected) return dayCell.selectedDateTextColor;
+                        return styleData.visibleMonth ? dayCell.sameMonthDateTextColor : dayCell.differentMonthDateTextColor;
+                    }
                 }
             }
         }
     }
-
-}
-
 }
