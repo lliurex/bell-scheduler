@@ -1,9 +1,8 @@
-import org.kde.kirigami as Kirigami
 import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-
+import org.kde.kirigami as Kirigami
 
 Rectangle{
     color:"transparent"

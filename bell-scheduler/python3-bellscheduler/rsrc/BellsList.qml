@@ -1,9 +1,9 @@
-import org.kde.plasma.components as PC
-import org.kde.kirigami as Kirigami
 import QtQuick
 import QtQuick.Controls
 import QtQml.Models
 import QtQuick.Layouts
+import org.kde.plasma.components as PC
+import org.kde.kirigami as Kirigami
 
 
 Rectangle {
