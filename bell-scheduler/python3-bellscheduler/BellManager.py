@@ -318,7 +318,7 @@ class BellManager(object):
 		tmpValidityValue=validity.get("value","")
 		self.bellValidity={
 			"value":validity.get("value",""),
-			"rangeOption":False if "-" not in tmpValidityValue else True,
+			"rangeOption":not tmpValidityValue or "-" in tmpValidityValue,
 			"daysInRange": [tmpValidityValue] if "-" not in tmpValidityValue else self.getDaysInRange(tmpValidityValue)
 		}
 		tmpConfig["validity"]={"active":self.bellValidityActive,"value":self.bellValidity.get("value")}
@@ -691,7 +691,7 @@ class BellManager(object):
 		tmp=[]
 
 		for itemId,bellData in dataSource.items():
-			timeStr=f"{bellData.get("hour",0)}:{bellData.get("minute",0)}"
+			timeStr=f"{bellData.get('hour',0)}:{bellData.get('minute',0)}"
 			try:
 				timeF=datetime.strptime(timeStr,"%H:%M")
 			except ValueError:
