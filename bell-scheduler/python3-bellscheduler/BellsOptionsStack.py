@@ -508,10 +508,10 @@ class Bridge(QObject):
 
 		self.showMainMessage={"show":False,"msgCode":"","type":""}
 		if os.path.exists(self.bellSchedulerPlayerLog):
-			cmd="xdg-open %s"%self.bellSchedulerPlayerLog
-			os.system(cmd)
+			url=QUrl.fromLocalFile(self.bellSchedulerPlayerLog)
+			QDesktopServices.openUrl(url)
 		else:
-			self.showMainMessage={"show":True,"msgCode":NO_PLAY_LOG_FILE,"type":bellManager.KIRIGAMI_MSG_INFO}
+			self.showMainMessage={"show":True,"msgCode":NO_PLAY_LOG_FILE,"type":self.bellManager.KIRIGAMI_MSG_INFO}
 
 	#def openPlayLogFile
 
@@ -521,10 +521,10 @@ class Bridge(QObject):
 		self.showMainMessage={"show":False,"msgCode":"","type":""}
 		
 		if os.path.exists(self.n4dBellScedulerManagerLog):
-			cmd="xdg-open %s"%self.n4dBellScedulerManagerLog
-			os.system(cmd)
+			url=QUrl.fromLocalFile(self.n4dBellScedulerManagerLog)
+			QDesktopServices.openUrl(url)
 		else:
-			self.showMainMessage={"show":True,"msgCode":NO_ERROR_LOG_FILE,"type":bellManager.KIRIGAMI_MSG_INFO}
+			self.showMainMessage={"show":True,"msgCode":NO_ERROR_LOG_FILE,"type":self.bellManager.KIRIGAMI_MSG_INFO}
 
 	#def openErrorLogFile
 
@@ -702,8 +702,6 @@ class Bridge(QObject):
 
 	#def _changeAudioDeviceControlRet
 	
-	
-
 #class Bridge
 
 from . import Core

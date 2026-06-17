@@ -96,7 +96,7 @@ Rectangle{
                     MenuItem{
                         icon.name:"delete"
                         text:i18nd("bell-scheduler","Delete validity")
-                        enabled:bellStackBridge.bellValidityValue!==""
+                        enabled:bellStackBridge.bellValidity.value!==""
                         onClicked:removeValidityDialog.open()
                     }
                 }
