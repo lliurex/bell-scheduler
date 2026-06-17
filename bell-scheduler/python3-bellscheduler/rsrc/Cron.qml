@@ -23,8 +23,6 @@ ColumnLayout {
                 width: 60
                 height: 60
 
-                visible:PathView.isCurrentItem
-
                 Text {
                     text: modelData.toString().padStart(2, "0")
                     font.pointSize: 40
@@ -72,11 +70,11 @@ ColumnLayout {
                         clockLayout.hoursWheelAccumulator+=delta;
 
                         if (clockLayout.hoursWheelAccumulator >= clockLayout.wheelThreshold){
-                            hoursSelector.currentIndex = (hoursSelector.currentIndex > 0) ? hoursSelector.currentIndex - 1 : 23;
+                            hoursSelector.decrementCurrentIndex();
                             clockLayout.hoursWheelAccumulator=0;
                         } 
                         else if (clockLayout.hoursWheelAccumulator <= -clockLayout.wheelThreshold) {
-                            hoursSelector.currentIndex = (hoursSelector.currentIndex < 23) ? hoursSelector.currentIndex + 1 : 0;
+                            hoursSelector.incrementCurrentIndex();
                             clockLayout.hoursWheelAccumulator=0;
                         }
                             
@@ -84,8 +82,15 @@ ColumnLayout {
                 }
 
                 path: Path {
-                    startX: 30; startY: -30
-                    PathLine { x: 30; y: 90 }
+                    startX: 30; startY: -60
+                    PathPercent {value:0.0}
+
+                    PathLine { x: 30; y: 30 }
+                    PathPercent {value:0.5}
+
+                    PathLine { x: 30; y: 120 }
+                    PathPercent {value:1.0}
+
                 }
 
                 HoverHandler{
@@ -142,19 +147,25 @@ ColumnLayout {
 
                         clockLayout.minutesWheelAccumulator+=delta;
 
-                        if (clockLayout.minutesWheelAccumulator >= clockLayout.wheelThreshold){
-                            minutesSelector.currentIndex = (minutesSelector.currentIndex > 0) ? minutesSelector.currentIndex - 1 : 59;
+                        if (clockLayout.minutesWheelAccumulator >= clockLayout.wheelThreshold){ 
+                            minutesSelector.decrementCurrentIndex();
                             clockLayout.minutesWheelAccumulator = 0;
                         } else if (clockLayout.minutesWheelAccumulator <= -clockLayout.wheelThreshold) {
-                            minutesSelector.currentIndex = (minutesSelector.currentIndex < 59) ? minutesSelector.currentIndex + 1 : 0;
+                            minutesSelector.incrementCurrentIndex();
                             clockLayout.minutesWheelAccumulator = 0;
                         }
                     }
                 }
 
                 path: Path {
-                    startX: 30; startY: -30
-                    PathLine { x: 30; y: 90 }
+                    startX: 30; startY: -60
+                    PathPercent {value:0.0}
+
+                    PathLine { x: 30; y: 30 }
+                    PathPercent {value:0.5}
+
+                    PathLine { x: 30; y: 120 }
+                    PathPercent {value:1.0}
                 }
 
                 HoverHandler{

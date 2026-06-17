@@ -85,7 +85,7 @@ Popup {
                 onClicked: {
                     if (validateEntry(hourEntry.text, minuteEntry.text)) {
                         timeApplyClicked(hourEntry.text, minuteEntry.text);
-                        delay(1000, function() {
+                        delay(500, function() {
                             timePopUp.close();
                         });
                     } else {
