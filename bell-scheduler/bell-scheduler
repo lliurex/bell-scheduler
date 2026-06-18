@@ -23,7 +23,7 @@ class Tunnel(QObject):
 		bellVersionFile=os.path.join(userHome,".config/bell-scheduler.conf")
 		holidayVersionFile=os.path.join(userHome,".config/python3-holidaymanager.conf")
 		cachePath1=os.path.join(userHome,".cache/bell-scheduler")
-		cachePath2=os.path.join(userHome,".cache/bell-scheduler-gui.py")
+		cachePath2=os.path.join(userHome,".cache/bell-scheduler-gui")
 		bellInstalledVersion=self.getPackageVersion("bell")
 		holidayInstalledVersion=self.getPackageVersion("holiday")
 
