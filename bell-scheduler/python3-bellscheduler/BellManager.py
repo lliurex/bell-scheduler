@@ -319,7 +319,7 @@ class BellManager(object):
 		self.bellValidity={
 			"value":validity.get("value",""),
 			"rangeOption":not tmpValidityValue or "-" in tmpValidityValue,
-			"daysInRange": [tmpValidityValue] if "-" not in tmpValidityValue else self.getDaysInRange(tmpValidityValue)
+			"daysInRange":self.getDaysInRange(tmpValidityValue)
 		}
 		tmpConfig["validity"]={"active":self.bellValidityActive,"value":self.bellValidity.get("value")}
 

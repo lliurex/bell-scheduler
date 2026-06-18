@@ -1,4 +1,5 @@
-from PySide6.QtCore import QObject,Signal,Slot,QThread,Property,QTimer,Qt,QModelIndex
+from PySide6.QtCore import QObject,Signal,Slot,QThread,Property,QTimer,Qt,QModelIndex,QUrl
+from PySide6.QtGui import QDesktopServices
 import os 
 import sys
 import threading
