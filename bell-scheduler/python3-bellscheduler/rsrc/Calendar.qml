@@ -44,7 +44,7 @@ Rectangle {
 
                 readonly property color sameMonthDateTextColor: "#444"
                 readonly property color selectedDateColor: "#3778d0"
-                readonly property color selectedDateTextColor: "white"
+                readonly property color selectedDateTextColor: "#444"
                 readonly property color differentMonthDateTextColor: "#bbb"
                 readonly property color invalidDatecolor: "#dddddd"
                 property var dateOnFocus: styleData.date
@@ -62,7 +62,7 @@ Rectangle {
                             if (calendar.daysInRange && calendar.daysInRange.indexOf(dateStr) !== -1) {
                                 return "#55555555";
                             }
-                            return "transparent";
+                              return "transparent";
                         }
 
                         var currentMs = dayCell.dateOnFocus.getTime();
@@ -75,7 +75,7 @@ Rectangle {
                         if (calendar.startDate && calendar.stopDate && currentMs > startMs && currentMs < stopMs) {
                             return "#55555555";
                         }
-
+                        
                         return "transparent";
                     }
                 }
@@ -126,7 +126,9 @@ Rectangle {
                     anchors.centerIn: parent
                     color: {
                         if (!styleData.valid) return dayCell.invalidDatecolor;
+
                         if (styleData.selected) return dayCell.selectedDateTextColor;
+
                         return styleData.visibleMonth ? dayCell.sameMonthDateTextColor : dayCell.differentMonthDateTextColor;
                     }
                 }

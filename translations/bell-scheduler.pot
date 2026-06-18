@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-17 11:51+0200\n"
+"POT-Creation-Date: 2026-06-18 13:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -103,8 +103,8 @@ msgstr ""
 #: bell-scheduler/python3-bellscheduler/rsrc/ImageSelector.qml:147
 #: bell-scheduler/python3-bellscheduler/rsrc/SliderPopUp.qml:184
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:191
-#: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:81
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:184
+#: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:86
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:185
 msgid "Apply"
 msgstr ""
 
@@ -117,8 +117,8 @@ msgstr ""
 #: bell-scheduler/python3-bellscheduler/rsrc/ImageSelector.qml:173
 #: bell-scheduler/python3-bellscheduler/rsrc/SliderPopUp.qml:197
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:222
-#: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:103
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:205
+#: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:108
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:206
 msgid "Cancel"
 msgstr ""
 
@@ -588,15 +588,11 @@ msgstr ""
 msgid "There is no error log available"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:98
-msgid "You can use the mouse wheel to change the hour"
+#: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:40
+msgid "You can use the mouse wheel to change the value"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:167
-msgid "You can use the mouse wheel to change the minutes"
-msgstr ""
-
-#: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:183
+#: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:185
 msgid "Click to edit time with keyboard"
 msgstr ""
 
@@ -692,27 +688,27 @@ msgstr ""
 msgid "Click to select an image"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:179
+#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:177
 msgid "Click to manage this bell"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:199
+#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:197
 msgid "Disable bell"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:199
+#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:197
 msgid "Enable bell"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:213
+#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:211
 msgid "Edit bell"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:226
+#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:224
 msgid "Duplicate bell"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:242
+#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:240
 msgid "Delete the bell"
 msgstr ""
 
@@ -780,7 +776,7 @@ msgid ""
 "is recommended to mark it"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:35
+#: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:40
 msgid "Edit time for bell"
 msgstr ""
 
@@ -788,26 +784,26 @@ msgstr ""
 msgid "Edit bell validity"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:115
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:116
 msgid "Day:"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:138
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:139
 msgid "From:"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:154
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:155
 msgid "to:"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:220
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:221
 msgid "You must indicate the two dates of range"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:228
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:229
 msgid "Last date in range must be major than init date"
 msgstr ""
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:233
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:234
 msgid "You must indicate a date"
 msgstr ""

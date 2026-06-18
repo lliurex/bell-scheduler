@@ -6,8 +6,8 @@ import org.kde.kirigami 2.16 as Kirigami
 Popup {
     id: timePopUp
 
-    property alias hourValue: hourEntry.text
-    property alias minuteValue: minuteEntry.text
+    property string hourValue: "00"
+    property string minuteValue: "00"
 
     signal timeApplyClicked(string hour, string minute)
 
@@ -23,6 +23,11 @@ Popup {
         border.color: "#b8b9ba"
         border.width: 1
         radius: 5.0
+    }
+
+    onOpened:{
+        hourEntry.text=timePopUp.hourValue
+        minuteEntry.text=timePopUp.minuteValue
     }
 
     contentItem: ColumnLayout {

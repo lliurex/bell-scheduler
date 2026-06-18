@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-17 11:51+0200\n"
-"PO-Revision-Date: 2026-06-17 11:54+0200\n"
+"POT-Creation-Date: 2026-06-18 13:48+0200\n"
+"PO-Revision-Date: 2026-06-18 13:50+0200\n"
 "Last-Translator: Weblate Admin <fernandezdeybarra_jua@gva.es>\n"
 "Language-Team: Spanish <http://weblate.lliurex.net/projects/bell-scheduler/"
 "bell-scheduler/es/>\n"
@@ -106,8 +106,8 @@ msgstr "Establecer la salida de audio por defecto para reproducir las alarmas"
 #: bell-scheduler/python3-bellscheduler/rsrc/ImageSelector.qml:147
 #: bell-scheduler/python3-bellscheduler/rsrc/SliderPopUp.qml:184
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:191
-#: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:81
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:184
+#: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:86
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:185
 msgid "Apply"
 msgstr "Aplicar"
 
@@ -120,8 +120,8 @@ msgstr "Aplicar"
 #: bell-scheduler/python3-bellscheduler/rsrc/ImageSelector.qml:173
 #: bell-scheduler/python3-bellscheduler/rsrc/SliderPopUp.qml:197
 #: bell-scheduler/python3-bellscheduler/rsrc/SoundSelector.qml:222
-#: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:103
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:205
+#: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:108
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:206
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -626,15 +626,11 @@ msgstr "No hay ningún log de reproducciones disponible"
 msgid "There is no error log available"
 msgstr "No hay ningún log de errores disponible"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:98
-msgid "You can use the mouse wheel to change the hour"
-msgstr "Puede usar la rueda del ratón para cambiar la hora"
+#: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:40
+msgid "You can use the mouse wheel to change the value"
+msgstr "Puede usar la rueda del ratón para cambiar el valor"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:167
-msgid "You can use the mouse wheel to change the minutes"
-msgstr "Puede usar la rueda del ratón para cambiar los minutos"
-
-#: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:183
+#: bell-scheduler/python3-bellscheduler/rsrc/Cron.qml:185
 msgid "Click to edit time with keyboard"
 msgstr "Haga clic para editar la hora con el teclado"
 
@@ -730,27 +726,27 @@ msgstr "Imagen personalizada"
 msgid "Click to select an image"
 msgstr "Haga clic para seleccionar una imagen"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:179
+#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:177
 msgid "Click to manage this bell"
 msgstr "Haga clic para gestionar esta alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:199
+#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:197
 msgid "Disable bell"
 msgstr "Desactivar la alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:199
+#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:197
 msgid "Enable bell"
 msgstr "Activar la alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:213
+#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:211
 msgid "Edit bell"
 msgstr "Editar la alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:226
+#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:224
 msgid "Duplicate bell"
 msgstr "Duplicar la alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:242
+#: bell-scheduler/python3-bellscheduler/rsrc/ListDelegateBellItem.qml:240
 msgid "Delete the bell"
 msgstr "Borrar la alarma"
 
@@ -822,7 +818,7 @@ msgstr ""
 "si se exportan las alarmas, el fichero será incluido en la exportación. Se "
 "recomienda marcarla"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:35
+#: bell-scheduler/python3-bellscheduler/rsrc/TimeSelector.qml:40
 msgid "Edit time for bell"
 msgstr "Editar la hora para la alarma"
 
@@ -830,26 +826,26 @@ msgstr "Editar la hora para la alarma"
 msgid "Edit bell validity"
 msgstr "Editar periodo de vigencia de la alarma"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:115
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:116
 msgid "Day:"
 msgstr "Dia:"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:138
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:139
 msgid "From:"
 msgstr "Del:"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:154
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:155
 msgid "to:"
 msgstr "al:"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:220
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:221
 msgid "You must indicate the two dates of range"
 msgstr "Debe indicar las 2 fechas del rango"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:228
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:229
 msgid "Last date in range must be major than init date"
 msgstr "La última fecha del rango debe ser mayor que la fecha inicial"
 
-#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:233
+#: bell-scheduler/python3-bellscheduler/rsrc/ValiditySelector.qml:234
 msgid "You must indicate a date"
 msgstr "Debe indicar una fecha"

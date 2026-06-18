@@ -69,6 +69,7 @@ Popup {
                     stopDate:undefined
                     initDate:rangeDate.checked?day1Entry.text:dayEntry.text
                     endDate:rangeDate.checked?day2Entry.text:""
+                    selectedDate:new Date()
                     rangeDate:rangeDate.checked
                     daysInRange:bellStackBridge.bellValidity.daysInRange
    
@@ -276,6 +277,7 @@ Popup {
 
         calendar.initDate=rangeDate.checked?day1Entry.text:dayEntry.text
         calendar.endDate=rangeDate.checked?day2Entry.text:"";
+        calendar.selectedDate=newDate
      }
 
 }

@@ -30,14 +30,12 @@ ItemDelegate{
     rightPadding:10
 
     onHoveredChanged:{
-        if (hovered){
-            if (listBellItem.ListView.view && !optionsMenu.opened){
+        if (listBellItem.ListView.view){
+            if (hovered && !optionsMenu.opened){
                 listBellItem.ListView.view.currentIndex=index
             }
-        }else{
-            if (!optionsMenu.opened && listBellItem.ListView.view){
-                listBellItem.ListView.view.currentIndex=-1
-            }
+        }else if (!hovered && !optionsMenu.opened && listBellItem.ListView.view.currentIndex===index){
+            listBellItem.ListView.view.currentIndex=-1
         }
     }
 
@@ -50,7 +48,7 @@ ItemDelegate{
             if (isSoundError || isImgError){
                 Kirigami.Theme.negativeBackgroundColor
             }else{
-                if (listBellItem.hovered || listBellItem.ListView.isCurrentItem || optionsMenu.opened){
+                if (listBellItem.hovered || optionsMenu.opened){
                     Qt.hsla(Kirigami.Theme.highlightColor.hslHue, 
                     Kirigami.Theme.highlightColor.hslSaturation, 
                     Kirigami.Theme.highlightColor.hslLightness, 
@@ -63,7 +61,7 @@ ItemDelegate{
         radius:6
         border.width:1
         border.color:{
-            if (listBellItem.hovered || listBellItem.ListView.isCurrentItem || optionsMenu.opened){
+            if (listBellItem.hovered || optionsMenu.opened){
                 if (isSoundError || isImgError){
                     Kirigami.Theme.negativeTextColor
                 }else{
@@ -172,7 +170,7 @@ ItemDelegate{
             display:AbstractButton.IconOnly
             icon.name:"configure"
             Layout.alignment: Qt.AlignVCenter
-            visible:listBellItem.ListView.isCurrentItem || listBellItem.hovered || optionsMenu.opened
+            visible:listBellItem.hovered || optionsMenu.opened
             ToolTip.delay: 1000
             ToolTip.timeout: 3000
             ToolTip.visible: hovered
