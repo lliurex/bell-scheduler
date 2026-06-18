@@ -23,12 +23,21 @@ ColumnLayout {
                 width: 60
                 height: 60
 
+                HoverHandler{
+                    id:itemHoverHandler
+                }
+
                 Text {
                     text: modelData.toString().padStart(2, "0")
                     font.pointSize: 40
-                    color: "#3daee9"
+                    color: itemHoverHandler.hovered?"#add8e6":"#3daee9"
                     anchors.centerIn: parent
                 }
+
+                ToolTip.delay:1000
+                ToolTip.timeout:1000
+                ToolTip.visible:itemHoverHandler.hovered
+                ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the value")
             }
         }
 
@@ -92,15 +101,6 @@ ColumnLayout {
                     PathPercent {value:1.0}
 
                 }
-
-                HoverHandler{
-                    id:hoursHandler
-                }
-
-                ToolTip.delay:1000
-                ToolTip.timeout:1000
-                ToolTip.visible:hoursHandler.hovered
-                ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the hour")
             }
         }
 
@@ -167,15 +167,6 @@ ColumnLayout {
                     PathLine { x: 30; y: 120 }
                     PathPercent {value:1.0}
                 }
-
-                HoverHandler{
-                    id:minutesHandler
-                }
-
-                ToolTip.delay:1000
-                ToolTip.timeout:1000
-                ToolTip.visible:minutesHandler.hovered
-                ToolTip.text:i18nd("bell-scheduler","You can use the mouse wheel to change the minutes")
             }
         }
 
