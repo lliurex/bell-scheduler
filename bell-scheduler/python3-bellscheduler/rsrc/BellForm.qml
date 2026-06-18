@@ -7,6 +7,15 @@ import org.kde.kirigami as Kirigami
 Rectangle{
     color:"transparent"
 
+    Timer{
+        id:debounceTimer
+        interval:500
+        repeat:false
+        property var callback
+        onTriggered: if (callback) callback()
+
+    }
+
     ColumnLayout{
         id: mainContent
         anchors.fill:parent
@@ -129,7 +138,12 @@ Rectangle{
                     id:bellNameEntry
                     text:bellStackBridge.bellName
                     Layout.preferredWidth:400
-                    onTextChanged:bellStackBridge.updateBellNameValue(bellNameEntry.text)
+                    onTextChanged: {
+                        if (activeFocus){
+                            debounceTimer.callback= ()=>bellStackBridge.updateBellNameValue(bellNameEntry.text)
+                            debounceTimer.restart()
+                        }
+                    }
                 }
 
                 Rectangle{
