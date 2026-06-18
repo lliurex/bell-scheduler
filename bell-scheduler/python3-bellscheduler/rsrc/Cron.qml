@@ -224,8 +224,20 @@ ColumnLayout {
 
     TimeSelector {
         id: timeSelector
-        hourValue: hoursSelector.currentIndex.toString().padStart(2, "0")
-        minuteValue: minutesSelector.currentIndex.toString().padStart(2, "0")
+        
+        Binding{
+            target:timeSelector
+            property:"hourValue"
+            value:hoursSelector.currentIndex.toString().padStart(2, "0")
+
+        }
+
+        Binding{
+            target:timeSelector
+            property:"minuteValue"
+            value:minutesSelector.currentIndex.toString().padStart(2, "0")
+
+        }
 
         Connections {
             target: timeSelector
