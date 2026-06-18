@@ -422,7 +422,7 @@ Rectangle{
            target:removeValidityDialog
            function onDiscardDialogClicked(){
                 removeValidityDialog.close()
-                bellStackBridge.updateBellValidityValue({"rangeOption":true,"value":""})         
+                bellStackBridge.updateBellValidity({"rangeOption":true,"value":""})         
            }
            function onRejectDialogClicked(){
                 removeValidityDialog.close()       
