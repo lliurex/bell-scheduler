@@ -1,9 +1,8 @@
-from PySide2.QtCore import QObject,Signal,Slot,QThread,Property,QTimer,Qt,QModelIndex
+from PySide2.QtCore import QObject,Signal,Slot,QThread,Property,Qt,QModelIndex
+from PySide2.QtGui import QDesktopServices
 import os 
 import sys
-import threading
 import time
-import copy
 
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -13,18 +12,23 @@ LOADING_HOLIDAY_LIST=16
 
 class GatherInfo(QThread):
 
-	def __init__(self,*args):
+	infoGathered=Signal(dict)
+
+	def __init__(self,manager):
 		
-		QThread.__init__(self)
+		super().__init__()
+		self.manager=manager
 
 	#def _init__
 
 	def run(self,*args):
 		
-		time.sleep(1)
-		self.syncWithCron=Bridge.bellManager.syncWithCron()
-		if self.syncWithCron:
-			self.readConf=Bridge.bellManager.readConf()
+		time.sleep(0.2)
+		ret=self.manager.syncWithCron()
+		if ret.get("status"):
+			ret=self.manager.readConf()
+
+		self.infoGathered.emit(ret)
 
 	#def run
 
@@ -32,17 +36,21 @@ class GatherInfo(QThread):
 
 class LoadHoliday(QThread):
 
+	holidayLoaded=Signal()
+
 	def __init__(self,*args):
 
-		QThread.__init__(self)
+		super().__init__()
 		self.core=Core.Core.get_core()
 
 	#def __init__
 
 	def run(self,*args):
 
-		time.sleep(0.5)
+		time.sleep(0.2)
 		self.core.holidayStack.initBridge()
+
+		self.holidayLoaded.emit()
 
 	#def run
 
@@ -50,55 +58,106 @@ class LoadHoliday(QThread):
 
 class Bridge(QObject):
 
+	currentStackChanged=Signal()
+	mainCurrentOptionChanged=Signal()
+	showLoadErrorMessageChanged=Signal()
+	showPopUpChanged=Signal()
+	closeGuiChanged=Signal()
+
 	def __init__(self):
 
-		QObject.__init__(self)
+		super().__init__()
 		self.core=Core.Core.get_core()
-		Bridge.bellManager=self.core.bellManager
+		self.bellManager=self.core.bellManager
 		self._currentStack=0
 		self._mainCurrentOption=0
-		self._closePopUp=[True,""]
+		self._showPopUp={"show":False,"msgCode":""}
 		self.moveToStack=""
 		self._closeGui=True
-		self._showLoadErrorMessage=[False,""]
-		Bridge.bellManager.createN4dClient(sys.argv[1])
+		self._showLoadErrorMessage={"show":False,"msgCode":""}
+		self.bellManager.createN4dClient(sys.argv[1])
 
-	#def _init__
+	#def _init_
 
-	def initBridge(self):
+	@Property(int,notify=currentStackChanged)
+	def currentStack(self):
 
-		self.currentStack=0
-		self.closeGui=False
-		self.gatherInfo=GatherInfo()
-		self.gatherInfo.start()
-		self.gatherInfo.finished.connect(self._loadConfig)
-	
-	#def initBridge
-	
-	def _loadConfig(self):
+		return self._currentStack
 
-		self.closeGui=True
-		if self.gatherInfo.syncWithCron['status']:
-			if self.gatherInfo.readConf['status']:
-				self.core.bellsOptionsStack.loadConfig()
-				self.core.bellStack.updateImagesModel()
-				self._systemLocale=Bridge.bellManager.systemLocale
-				if len(sys.argv)<3:
-					if Bridge.bellManager.loadError:
-						self.core.bellsOptionsStack.showMainMessage=[True,Bridge.bellManager.BELLS_WITH_ERRORS,"Error"]
-					self.currentStack=1
-				else:
-					tmpFile=sys.argv[2]
-					if os.path.exists(tmpFile):
-						self.core.bellStack.addNewBell(tmpFile)
-					else:
-						self.showLoadErrorMessage=[True,CREATE_BELL_FROM_MENU_ERROR]
-			else:
-				self.showLoadErrorMessage=[True,self.gatherInfo.readConf['code']]
-		else:
-			self.showLoadErrorMessage=[True,self.gatherInfo.syncWithCron['code']]
-	
-	#def _loadConfig
+	#def currentStack	
+
+	@currentStack.setter
+	def currentStack(self,currentStack):
+
+		if self._currentStack!=currentStack:
+			self._currentStack=currentStack
+			self.currentStackChanged.emit()
+
+	#def currentStack
+
+	@Property(int,notify=mainCurrentOptionChanged)
+	def mainCurrentOption(self):
+
+		return self._mainCurrentOption
+
+	#def mainCurrentOption	
+
+	@mainCurrentOption.setter
+	def mainCurrentOption(self,mainCurrentOption):
+		
+		if self._mainCurrentOption!=mainCurrentOption:
+			self._mainCurrentOption=mainCurrentOption
+			self.mainCurrentOptionChanged.emit()
+
+	#def mainCurrentOption
+
+	@Property('QVariant',notify=showLoadErrorMessageChanged)
+	def showLoadErrorMessage(self):
+
+		return self._showLoadErrorMessage
+
+	#def _showLoadErrorMessage
+
+	@showLoadErrorMessage.setter
+	def showLoadErrorMessage(self,showLoadErrorMessage):
+
+		if self._showLoadErrorMessage!=showLoadErrorMessage:
+			self._showLoadErrorMessage=showLoadErrorMessage
+			self.showLoadErrorMessageChanged.emit()
+
+	#def showLoadErrorMessage
+
+	@Property('QVariant',notify=showPopUpChanged)
+	def showPopUp(self):
+
+		return self._showPopUp
+
+	#def showPopUp
+
+	@showPopUp.setter
+	def showPopUp(self,showPopUp):
+
+		if self._showPopUp!=showPopUp:
+			self._showPopUp=showPopUp
+			self.showPopUpChanged.emit()
+
+	#def showPopUp
+
+	@Property(bool, notify=closeGuiChanged)
+	def closeGui(self):
+
+		return self._closeGui
+
+	#def closeGui	
+
+	@closeGui.setter
+	def closeGui(self,closeGui):
+		
+		if self._closeGui!=closeGui:
+			self._closeGui=closeGui
+			self.closeGuiChanged.emit()
+
+	#def closeGui
 
 	def _getSystemLocale(self):
 
@@ -106,89 +165,56 @@ class Bridge(QObject):
 
 	#def _getSystemLocale
 
-	def _getCurrentStack(self):
+	def initBridge(self):
 
-		return self._currentStack
+		self.currentStack=0
+		self.closeGui=False
+		self.gatherInfoT=GatherInfo(self.bellManager)
+		self.gatherInfoT.start()
+		self.gatherInfoT.infoGathered.connect(self._loadConfig)
+		self.gatherInfoT.finished.connect(self.gatherInfoT.deleteLater)
+	
+	#def initBridge
+	
+	@Slot(dict)
+	def _loadConfig(self,ret):
 
-	#def _getCurrentStack	
+		self.closeGui=True
 
-	def _setCurrentStack(self,currentStack):
-		
-		if self._currentStack!=currentStack:
-			self._currentStack=currentStack
-			self.on_currentStack.emit()
-
-	#def _setCurentStack
-
-	def _getMainCurrentOption(self):
-
-		return self._mainCurrentOption
-
-	#def _getMainCurrentOption	
-
-	def _setMainCurrentOption(self,mainCurrentOption):
-		
-		if self._mainCurrentOption!=mainCurrentOption:
-			self._mainCurrentOption=mainCurrentOption
-			self.on_mainCurrentOption.emit()
-
-	#def _setMainCurrentOption
-
-	def _getClosePopUp(self):
-
-		return self._closePopUp
-
-	#def _getClosePopUp
-
-	def _setClosePopUp(self,closePopUp):
-
-		if self._closePopUp!=closePopUp:
-			self._closePopUp=closePopUp
-			self.on_closePopUp.emit()
-
-	#def _setClosePopUp
-
-	def _getShowLoadErrorMessage(self):
-
-		return self._showLoadErrorMessage
-
-	#def _getShowLoadErrorMessage
-
-	def _setShowLoadErrorMessage(self,showLoadErrorMessage):
-
-		if self._showLoadErrorMessage!=showLoadErrorMessage:
-			self._showLoadErrorMessage=showLoadErrorMessage
-			self.on_showLoadErrorMessage.emit()
-
-	#def _setShowLoadErrorMessage
-
-	def _getCloseGui(self):
-
-		return self._closeGui
-
-	#def _getCloseGui	
-
-	def _setCloseGui(self,closeGui):
-		
-		if self._closeGui!=closeGui:
-			self._closeGui=closeGui
-			self.on_closeGui.emit()
-
-	#def _setCloseGui
+		if not ret.get('status'):
+			self.showLoadErrorMessage={"show":True,"msgCode":ret.get('code')}
+		else:
+			self.core.bellsOptionsStack.loadConfig()
+			self.core.bellStack.updateImagesModel()
+			self._systemLocale=self.bellManager.systemLocale
+			
+			if len(sys.argv)<3:
+				if self.bellManager.loadError:
+					self.core.bellsOptionsStack.showMainMessage={"show":True,"msgCode":self.bellManager.BELLS_WITH_ERRORS,"type":self.bellManager.KIRIGAMI_MSG_ERROR}
+				
+				self.currentStack=1
+			else:
+				tmpFile=sys.argv[2]
+				if os.path.exists(tmpFile):
+					self.core.bellStack.addNewBell(tmpFile)
+				else:
+					self.showLoadErrorMessage={"show":True,"msgCode":CREATE_BELL_FROM_MENU_ERROR}
+			
+	#def _loadConfig
 
 	@Slot(int)
 	def moveToMainOptions(self,stack):
 
 		if self.mainCurrentOption!=stack:
 			if stack==0:
-				self.core.holidayStack.showMainMessage=[False,"","Ok"]
-				self.core.bellsOptionsStack.enableHolidayControl=Bridge.bellManager.checkIfAreHolidaysConfigured()
+				self.core.holidayStack.showMainMessage={"show":False,"msgCode":"","type":""}
+				self.core.bellsOptionsStack.enableHolidayControl=self.bellManager.checkIfAreHolidaysConfigured()
 				self.mainCurrentOption=stack
 				if not self.core.bellsOptionsStack.enableHolidayControl:
 					if self.core.bellsOptionsStack.isHolidayControlActive:
 						self.core.bellsOptionsStack.manageHolidayControl()
 			else:
-				self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
+				self.core.bellsOptionsStack.showMainMessage={"show":False,"msgCode":"","type":""}
 				self._loadHolidayStack()
 
 	#def moveToMainOptions	
@@ -196,17 +222,19 @@ class Bridge(QObject):
 	def _loadHolidayStack(self):
 
 		self.closeGui=False
-		self.closePopUp=[False,LOADING_HOLIDAY_LIST]
-		self.loadHolidayConfig=LoadHoliday()
-		self.loadHolidayConfig.start()
-		self.loadHolidayConfig.finished.connect(self._loadHolidayConfigRet)
+		self.showPopUp={"show":True,"msgCode":LOADING_HOLIDAY_LIST}
+		self.loadHolidayConfigT=LoadHoliday()
+		self.loadHolidayConfigT.start()
+		self.loadHolidayConfigT.holidayLoaded.connect(self._loadHolidayConfigRet)
+		self.loadHolidayConfigT.finished.connect(self.loadHolidayConfigT.deleteLater)
 
 	#def _loadHolidayStack
 
+	@Slot()
 	def _loadHolidayConfigRet(self):
 
 		self.closeGui=True
-		self.closePopUp=[True,""]
+		self.showPopUp={"show":False,"msgCode":""}
 		self.mainCurrentOption=1
 
 	#def _loadHolidayConfigRet
@@ -224,21 +252,13 @@ class Bridge(QObject):
 	def openHelp(self):
 		
 		if 'valencia' in self._systemLocale:
-			self.helpCmd='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Bell-Scheduler.'
+			helpUrl='https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Bell-Scheduler.'
 		else:
-			self.helpCmd='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Bell-Scheduler'
+			helpUrl='https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Bell-Scheduler'
 		
-		self.openHelpT=threading.Thread(target=self._openHelp)
-		self.openHelpT.daemon=True
-		self.openHelpT.start()
+		QDesktopServices.openUrl(helpUrl)
 
 	#def openHelp
-
-	def _openHelp(self):
-
-		os.system(self.helpCmd)
-
-	#def _openHelp
 
 	@Slot()
 	def closeBellScheduler(self):
@@ -249,21 +269,6 @@ class Bridge(QObject):
 
 	#def closeBellScheduler
 	
-	on_currentStack=Signal()
-	currentStack=Property(int,_getCurrentStack,_setCurrentStack, notify=on_currentStack)
-
-	on_mainCurrentOption=Signal()
-	mainCurrentOption=Property(int,_getMainCurrentOption,_setMainCurrentOption, notify=on_mainCurrentOption)
-
-	on_showLoadErrorMessage=Signal()
-	showLoadErrorMessage=Property('QVariantList',_getShowLoadErrorMessage,_setShowLoadErrorMessage, notify=on_showLoadErrorMessage)
-
-	on_closePopUp=Signal()
-	closePopUp=Property('QVariantList',_getClosePopUp,_setClosePopUp, notify=on_closePopUp)
-
-	on_closeGui=Signal()
-	closeGui=Property(bool,_getCloseGui,_setCloseGui, notify=on_closeGui)
-
 	systemLocale=Property(str,_getSystemLocale,constant=True)
 
 #class Bridge

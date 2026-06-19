@@ -3,125 +3,104 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Popup {
-
-    id:audioSelectorPopUp
+    id: audioSelectorPopUp
     signal applyButtonClicked
 
-    width:530
-    height:200
+    width: 530
+    height: 200
     anchors.centerIn: Overlay.overlay
-    modal:true
-    focus:true
-    closePolicy:Popup.NoAutoClose
+    modal: true
+    focus: true
+    closePolicy: Popup.NoAutoClose
 
-    onVisibleChanged:{
+    onVisibleChanged: {
         if (visible){
-            loadInitVales()
+            loadInitValues()
         }
     }
 
-     
-    background:Rectangle{
-        color:"#ebeced"
+    background: Rectangle {
+        color: "#ebeced"
+        border.color: "#b8b9ba"
+        border.width: 1
+        radius: 5.0
     }
 
-    contentItem:Rectangle{
-        id:container
-        width:audioSelectorPopUp.width
-        height:audioSelectorPopUp.height
-        color:"transparent"
-        Text{
-            id:headText 
-            text:i18nd("bell-scheduler","Set audio output")
+    contentItem: ColumnLayout {
+        id: container
+        anchors.fill: parent
+        anchors.margins: 15
+        spacing: 12
+
+        Text {
+            id: headText
+            text: i18nd("bell-scheduler", "Set audio output")
             font.pointSize: 16
-            anchors.topMargin:10
-            anchors.leftMargin:10
+            Layout.fillWidth: true
         }
-        GridLayout{
-            id:audioSelectorLayout
-            rows:2
-            flow: GridLayout.TopToBottom
-            rowSpacing:15
-            anchors.top:headText.bottom
-            anchors.left:parent.left
-            anchors.topMargin:25
-            anchors.bottomMargin:20
-            anchors.horizontalCenter:parent.horizontalCenter
-            enabled:true
-           
-              
-            GridLayout{
-                id: audioOptions
-                rows:2
-                flow: GridLayout.TopToBottom
-                rowSpacing:5
-                Layout.fillWidth:true
 
-                CheckBox {
-                    id:enableConfiguration
-                    text:i18nd("bell-scheduler","Set the default audio ouput to play the alarm")
-                    checked:bellsOptionsStackBridge.isAudioDeviceConfigurated
-                    font.pointSize: 10
-                    focusPolicy: Qt.NoFocus
-                    Layout.bottomMargin:10
-                    Layout.alignment:Qt.AlignLeft
-                }
-                ComboBox{
-                    id:audioDevicesValues
-                    textRole:"name"
-                    valueRole:"value"
-                    currentIndex:bellsOptionsStackBridge.currentAudioDevice
-                    model:bellsOptionsStackBridge.audioDevicesModel
-                    Layout.alignment:Qt.AlignHCenter
-                    Layout.preferredWidth:500
-                    enabled:enableConfiguration.checked?true:false
-                }
+        ColumnLayout {
+            id: audioOptions
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: 8
+
+            CheckBox {
+                id: enableConfiguration
+                text: i18nd("bell-scheduler", "Set the default audio ouput to play the alarm")
+                checked: bellsOptionsStackBridge.isAudioDeviceConfigurated
+                font.pointSize: 10
+                focusPolicy: Qt.NoFocus
+                Layout.alignment: Qt.AlignLeft
             }
 
+            ComboBox {
+                id: audioDevicesValues
+                textRole: "name"
+                valueRole: "value"
+                currentIndex: bellsOptionsStackBridge.currentAudioDevice
+                model: bellsOptionsStackBridge.audioDevicesModel
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredWidth: 500
+
+                enabled: enableConfiguration.checked
+            }
         }
-        RowLayout{
-            id:btnBox
-            anchors.bottom:parent.bottom
-            anchors.right:parent.right
-            anchors.topMargin:10
-            spacing:10
+
+        RowLayout {
+            id: btnBox
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignRight
+            spacing: 12
 
             Button {
-                id:applyBtn
-                visible:true
-                display:AbstractButton.TextBesideIcon
-                icon.name:"dialog-ok.svg"
-                text:i18nd("bell-scheduler","Apply")
-                Layout.preferredHeight:40
-                enabled:true
-                onClicked:{
-                    bellsOptionsStackBridge.manageAudioDeviceControl([enableConfiguration.checked,audioDevicesValues.currentIndex])
+                id: applyBtn
+                display: AbstractButton.TextBesideIcon
+                icon.name: "dialog-ok"
+                text: i18nd("bell-scheduler", "Apply")
+                onClicked: {
+                    bellsOptionsStackBridge.manageAudioDeviceControl({
+                        "active": enableConfiguration.checked,
+                        "device": audioDevicesValues.currentIndex
+                    })
                     audioSelectorPopUp.close()
                 }
             }
-            
+
             Button {
-                id:cancelBtn
-                visible:true
-                display:AbstractButton.TextBesideIcon
-                icon.name:"dialog-cancel.svg"
-                text:i18nd("bell-scheduler","Cancel")
-                Layout.preferredHeight: 40
-                enabled:true
-                onClicked:{
+                id: cancelBtn
+                display: AbstractButton.TextBesideIcon
+                icon.name: "dialog-cancel" 
+                text: i18nd("bell-scheduler", "Cancel")
+                onClicked: {
                     audioSelectorPopUp.close()
                 }
-                
             }
-
         }
     }
- 
-    function loadInitVales(){
 
-        enableConfiguration.checked=bellsOptionsStackBridge.isAudioDeviceConfigurated
-        audioDevicesValues.currentIndex=bellsOptionsStackBridge.currentAudioDevice
-     }
-
-
+    function loadInitValues() {
+        enableConfiguration.checked = bellsOptionsStackBridge.isAudioDeviceConfigurated
+        audioDevicesValues.currentIndex = bellsOptionsStackBridge.currentAudioDevice
+    }
 }

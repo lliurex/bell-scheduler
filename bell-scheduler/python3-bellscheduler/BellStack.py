@@ -1,7 +1,6 @@
 from PySide2.QtCore import QObject,Signal,Slot,QThread,Property,QTimer,Qt,QModelIndex
 import os 
 import sys
-import threading
 import time
 import copy
 
@@ -18,21 +17,26 @@ SAVE_DATA=4
 
 class LoadBell(QThread):
 
-	def __init__(self,*args):
+	bellLoaded=Signal()
 
-		QThread.__init__(self)
-		self.newBell=args[0]
-		self.bellInfo=args[1]
-		self.duplicateBell=args[2]
+	def __init__(self,manager,newBell,bellInfo,duplicateBell):
+
+		super().__init__()
+		self.manager=manager
+		self.newBell=newBell
+		self.bellInfo=bellInfo
+		self.duplicateBell=duplicateBell
 
 	#def __init__
 
 	def run(self,*args):
 
 		time.sleep(0.5)
-		ret=Bridge.bellManager.initValues()
+		ret=self.manager.initValues()
 		if not self.newBell:
-			ret=Bridge.bellManager.loadBellConfig(self.bellInfo,self.duplicateBell)
+			ret=self.manager.loadBellConfig(self.bellInfo,self.duplicateBell)
+		
+		self.bellLoaded.emit()
 
 	#def run
 
@@ -40,21 +44,24 @@ class LoadBell(QThread):
 
 class CheckData(QThread):
 
-	def __init__(self,*args):
+	dataChecked=Signal(dict)
 
-		QThread.__init__(self)
-		self.dataToCheck=args[0]
-		self.retData={}
-		self.retDuplicate={}
+	def __init__(self,manager,data):
 
+		super().__init__()
+		self.manager=manager
+		self.dataToCheck=data
+	
 	#def __init__
 
 	def run(self,*args):
 
-		time.sleep(0.5)
-		self.retData=Bridge.bellManager.checkData(self.dataToCheck)
-		if self.retData:
-			self.retDuplicate=Bridge.bellManager.checkDuplicateBellCron(self.dataToCheck)
+		time.sleep(0.2)
+		ret=self.manager.checkData(self.dataToCheck)
+		if ret.get("status"):
+			ret["checkDuplicate"]=self.manager.checkDuplicateBellCron(self.dataToCheck)
+
+		self.dataChecked.emit(ret)
 		
 	#def run
 
@@ -62,18 +69,21 @@ class CheckData(QThread):
 
 class SaveData(QThread):
 
-	def __init__(self,*args):
+	dataSaved=Signal(dict)
 
-		QThread.__init__(self)
-		self.dataToSave=args[0]
-		self.ret=[]
+	def __init__(self,manager,data):
+
+		super().__init__()
+		self.manager=manager
+		self.dataToSave=data
 
 	#def __init__
 
 	def run(self,*args):
 
-		time.sleep(0.5)
-		self.ret=Bridge.bellManager.saveData(self.dataToSave)
+		time.sleep(0.2)
+		ret=self.manager.saveData(self.dataToSave)
+		self.dataSaved.emit(ret)
 
 	#def run
 
@@ -81,283 +91,301 @@ class SaveData(QThread):
 
 class Bridge(QObject):
 
-	
+	bellCronChanged=Signal()
+	bellDaysChanged=Signal()
+	bellValidityActiveChanged=Signal()
+	bellValidityChanged=Signal()
+	enableBellValidityChanged=Signal()
+	bellNameChanged=Signal()
+	bellImageChanged=Signal()
+	bellSoundChanged=Signal()
+	bellStartInChanged=Signal()
+	bellDurationChanged=Signal()
+	showBellFormMessageChanged=Signal()
+	bellCurrentOptionChanged=Signal()
+	showChangesInBellDialogChanged=Signal()
+	changesInBellChanged=Signal()
+	actionTypeChanged=Signal()
+	showBellDuplicateDialogChanged=Signal()
+
 	def __init__(self):
 
-		QObject.__init__(self)
+		super().__init__()
 		self.core=Core.Core.get_core()
-		Bridge.bellManager=self.core.bellManager
+		self.bellManager=self.core.bellManager
 		self._imagesModel=ImagesModel.ImagesModel()
-		self._bellCron=Bridge.bellManager.bellCron
-		self._bellDays=Bridge.bellManager.bellDays
-		self._bellValidityActive=Bridge.bellManager.bellValidityActive
-		self._bellValidityValue=Bridge.bellManager.bellValidityValue
-		self._bellValidityRangeOption=True
-		self._bellValidityDaysInRange=[]
+		self._bellCron=self.bellManager.bellCron
+		self._bellDays=self.bellManager.bellDays
+		self._bellValidityActive=self.bellManager.bellValidityActive
+		self._bellValidity=self.bellManager.bellValidity
 		self._enableBellValidity=False
-		self._bellName=Bridge.bellManager.bellName
-		self._bellImage=Bridge.bellManager.bellImage
-		self._bellSound=Bridge.bellManager.bellSound
-		self._bellStartIn=Bridge.bellManager.bellStartIn
-		self._bellDuration=Bridge.bellManager.bellDuration
+		self._bellName=self.bellManager.bellName
+		self._bellImage=self.bellManager.bellImage
+		self._bellSound=self.bellManager.bellSound
+		self._bellStartIn=self.bellManager.bellStartIn
+		self._bellDuration=self.bellManager.bellDuration
 		self._bellCurrentOption=0
-		self._showBellFormMessage=[False,"","Ok"]
+		self._showBellFormMessage={"show":False,"msgCode":""}
 		self._showChangesInBellDialog=False
 		self._changesInBell=False
 		self._actionType="add"
 		self._showBellDuplicateDialog=False
 
-	#def _init__
+	#def _init_
 
-	def _getBellCron(self):
+	@Property('QVariant',notify=bellCronChanged)
+	def bellCron(self):
 
 		return self._bellCron
 
-	#def _getBellCron
+	#def bellCron
 
-	def _setBellCron(self,bellCron):
+	@bellCron.setter
+	def bellCron(self,bellCron):
 
 		if self._bellCron!=bellCron:
 			self._bellCron=bellCron
-			self.on_bellCron.emit()
+			self.bellCronChanged.emit()
 
-	#def _setBellCron
+	#def bellCron
 
-	def _getBellDays(self):
+	@Property('QVariant',notify=bellDaysChanged)
+	def bellDays(self):
 
 		return self._bellDays
 
-	#def _getBellDays
+	#def bellDays
 
-	def _setBellDays(self,bellDays):
+	@bellDays.setter
+	def bellDays(self,bellDays):
 
 		if self._bellDays!=bellDays:
 			self._bellDays=bellDays
-			self.on_bellDays.emit()
+			self.bellDaysChanged.emit()
 
-	#def _setBellDays
+	#def bellDays
 
-	def _getBellValidityActive(self):
+	@Property(bool,notify=bellValidityActiveChanged)
+	def bellValidityActive(self):
 
 		return self._bellValidityActive
 
-	#def _getBellValidityActive
+	#def bellValidityActive
 
-	def _setBellValidityActive(self,bellValidityActive):
+	@bellValidityActive.setter
+	def bellValidityActive(self,bellValidityActive):
 
 		if self._bellValidityActive!=bellValidityActive:
 			self._bellValidityActive=bellValidityActive
-			self.on_bellValidityActive.emit()
+			self.bellValidityActiveChanged.emit()
 
-	#def _setBellValidityActive
+	#def bellValidityActive
 
-	def _getBellValidityValue(self):
+	@Property('QVariant',notify=bellValidityChanged)
+	def bellValidity(self):
 
-		return self._bellValidityValue
+		return self._bellValidity
 
-	#def _getBellValidityValue
+	#def bellValidity
 
-	def _setBellValidityValue(self,bellValidityValue):
+	@bellValidity.setter
+	def bellValidity(self,bellValidity):
 
-		if self._bellValidityValue!=bellValidityValue:
-			self._bellValidityValue=bellValidityValue
-			self.on_bellValidityValue.emit()
+		if self._bellValidity!=bellValidity:
+			self._bellValidity=bellValidity
+			self.bellValidityChanged.emit()
 
-	#def _setBellValidityValue
+	#def bellValidityValue
 
-	def _getBellValidityRangeOption(self):
-
-		return self._bellValidityRangeOption
-
-	#def _getBellValidityRangeOption
-
-	def _setBellValidityRangeOption(self,bellValidityRangeOption):
-
-		if self._bellValidityRangeOption!=bellValidityRangeOption:
-			self._bellValidityRangeOption=bellValidityRangeOption
-			self.on_bellValidityRangeOption.emit()
-
-	#def _setBellValidityRangeOption
-
-	def _getBellValidityDaysInRange(self):
-
-		return self._bellValidityDaysInRange
-
-	#def _getBellValidityDaysInRange
-
-	def _setBellValidityDaysInRange(self,bellValidityDaysInRange):
-
-		if self._bellValidityDaysInRange!=bellValidityDaysInRange:
-			self._bellValidityDaysInRange=bellValidityDaysInRange
-			self.on_bellValidityDaysInRange.emit()
-
-	#def _setBellValidityDaysInRange
-
-	def _getEnableBellValidity(self):
+	@Property(bool,notify=enableBellValidityChanged)
+	def enableBellValidity(self):
 
 		return self._enableBellValidity
 
-	#def _getEnableBellValidity
+	#def enableBellValidity
 
-	def _setEnableBellValidity(self,enableBellValidity):
+	@enableBellValidity.setter
+	def enableBellValidity(self,enableBellValidity):
 
 		if self._enableBellValidity!=enableBellValidity:
 			self._enableBellValidity=enableBellValidity
-			self.on_enableBellValidity.emit()
+			self.enableBellValidityChanged.emit()
 
-	#def _setEnableBellValidity
+	#def enableBellValidity
 
-	def _getBellName(self):
+	@Property(str,notify=bellNameChanged)
+	def bellName(self):
 
 		return self._bellName
 
-	#def _getBellName
+	#def bellName
 
-	def _setBellName(self,bellName):
+	@bellName.setter
+	def bellName(self,bellName):
 
 		if self._bellName!=bellName:
 			self._bellName=bellName
-			self.on_bellName.emit()
+			self.bellNameChanged.emit()
 
 	#def _setBellName 
 
-	def _getBellImage(self):
+	@Property('QVariant',notify=bellImageChanged)
+	def bellImage(self):
 
 		return self._bellImage
 
-	#def _getBellImage
+	#def bellImage
 
-	def _setBellImage(self,bellImage):
+	@bellImage.setter
+	def bellImage(self,bellImage):
 
 		if self._bellImage!=bellImage:
 			self._bellImage=bellImage
-			self.on_bellImage.emit()
+			self.bellImageChanged.emit()
 
-	#def _setBellImage
+	#def bellImage
 
-	def _getBellSound(self):
+	@Property('QVariant',notify=bellSoundChanged)
+	def bellSound(self):
 
 		return self._bellSound
 
-	#def _getBellSound
+	#def bellSound
 
-	def _setBellSound(self,bellSound):
+	@bellSound.setter
+	def bellSound(self,bellSound):
 
 		if self._bellSound!=bellSound:
 			self._bellSound=bellSound
-			self.on_bellSound.emit()
+			self.bellSoundChanged.emit()
 
-	#def _setBellSound
+	#def bellSound
 
-	def _getBellStartIn(self):
+	@Property(int,notify=bellStartInChanged)
+	def bellStartIn(self):
 
 		return self._bellStartIn
 
-	#def _getBellStartIn
+	#def bellStartIn
 
-	def _setBellStartIn(self,bellStartIn):
+	@bellStartIn.setter
+	def bellStartIn(self,bellStartIn):
 
 		if self._bellStartIn!=bellStartIn:
 			self._bellStartIn=bellStartIn
-			self.on_bellStartIn.emit()
+			self.bellStartInChanged.emit()
 
-	#def _setBellStartIn
+	#def bellStartIn
 
-	def _getBellDuration(self):
+	@Property(int,notify=bellDurationChanged)
+	def bellDuration(self):
 
 		return self._bellDuration
 
-	#def _getBellDuration
+	#def bellDuration
 
-	def _setBellDuration(self,bellDuration):
+	@bellDuration.setter
+	def bellDuration(self,bellDuration):
 
 		if self._bellDuration!=bellDuration:
 			self._bellDuration=bellDuration
-			self.on_bellDuration.emit()
+			self.bellDurationChanged.emit()
 
 	#def _setBellDuration
 
-	def _getBellCurrentOption(self):
-
-		return self._bellCurrentOption
-
-	#def _getBellCurrentOption	
-
-	def _setBellCurrentOption(self,bellCurrentOption):
-		
-		if self._bellCurrentOption!=bellCurrentOption:
-			self._bellCurrentOption=bellCurrentOption
-			self.on_bellCurrentOption.emit()
-
-	#def _setBellCurrentOption
-
-	def _getShowChangesInBellDialog(self):
-
-		return self._showChangesInBellDialog
-
-	#def _getShowChangesInBellDialog
-
-	def _setShowChangesInBellDialog(self,showChangesInBellDialog):
-
-		if self._showChangesInBellDialog!=showChangesInBellDialog:
-			self._showChangesInBellDialog=showChangesInBellDialog
-			self.on_showChangesInBellDialog.emit()
-
-	#def _setShowChangesInBellDialog
-
-	def _getChangesInBell(self):
-
-		return self._changesInBell
-
-	#def _getChangesInBell
-
-	def _setChangesInBell(self,changesInBell):
-
-		if self._changesInBell!=changesInBell:
-			self._changesInBell=changesInBell
-			self.on_changesInBell.emit()
-
-	#def _setChangesInBell
-
-	def _getShowBellFormMessage(self):
+	@Property('QVariant',notify=showBellFormMessageChanged)
+	def showBellFormMessage(self):
 
 		return self._showBellFormMessage
 
-	#def _getShowBellFormMessage
+	#def showBellFormMessage
 
-	def _setShowBellFormMessage(self,showBellFormMessage):
+	@showBellFormMessage.setter
+	def showBellFormMessage(self,showBellFormMessage):
 
 		if self._showBellFormMessage!=showBellFormMessage:
 			self._showBellFormMessage=showBellFormMessage
-			self.on_showBellFormMessage.emit()
+			self.showBellFormMessageChanged.emit()
 
-	#def _setShowBellFormMessage
+	#def showBellFormMessage
 
-	def _getActionType(self):
+	@Property(int,notify=bellCurrentOptionChanged)
+	def bellCurrentOption(self):
+
+		return self._bellCurrentOption
+
+	#def bellCurrentOption	
+
+	@bellCurrentOption.setter
+	def bellCurrentOption(self,bellCurrentOption):
+		
+		if self._bellCurrentOption!=bellCurrentOption:
+			self._bellCurrentOption=bellCurrentOption
+			self.bellCurrentOptionChanged.emit()
+
+	#def bellCurrentOption
+
+	@Property(bool,notify=showChangesInBellDialogChanged)
+	def showChangesInBellDialog(self):
+
+		return self._showChangesInBellDialog
+
+	#def showChangesInBellDialog
+
+	@showChangesInBellDialog.setter
+	def showChangesInBellDialog(self,showChangesInBellDialog):
+
+		if self._showChangesInBellDialog!=showChangesInBellDialog:
+			self._showChangesInBellDialog=showChangesInBellDialog
+			self.showChangesInBellDialogChanged.emit()
+
+	#def showChangesInBellDialog
+
+	@Property(bool,notify=changesInBellChanged)
+	def  changesInBell(self):
+
+		return self._changesInBell
+
+	#def changesInBell
+
+	@changesInBell.setter
+	def changesInBell(self,changesInBell):
+
+		if self._changesInBell!=changesInBell:
+			self._changesInBell=changesInBell
+			self.changesInBellChanged.emit()
+
+	#def changesInBell
+	
+	@Property(str,notify=actionTypeChanged)
+	def actionType(self):
 
 		return self._actionType
 
-	#def _getActionType
+	#def actionType
 
-	def _setActionType(self,actionType):
+	@actionType.setter
+	def actionType(self,actionType):
 
 		if self._actionType!=actionType:
 			self._actionType=actionType
-			self.on_actionType.emit()
+			self.actionTypeChanged.emit()
 
-	#def _setActionType
+	#def actionType
 
-	def _getShowBellDuplicateDialog(self):
+	@Property(bool,notify=showBellDuplicateDialogChanged)
+	def showBellDuplicateDialog(self):
 
 		return self._showBellDuplicateDialog
 
-	#def _getShowBellDuplicateDialog
+	#def showBellDuplicateDialog
 
-	def _setShowBellDuplicateDialog(self,showBellDuplicateDialog):
+	@showBellDuplicateDialog.setter
+	def showBellDuplicateDialog(self,showBellDuplicateDialog):
 
 		if self._showBellDuplicateDialog!=showBellDuplicateDialog:
 			self._showBellDuplicateDialog=showBellDuplicateDialog
-			self.on_showBellDuplicateDialog.emit()
+			self.showBellDuplicateDialogChanged.emit()
 
 	#def _setShowBellDuplicateDialog
 
@@ -370,7 +398,7 @@ class Bridge(QObject):
 	def updateImagesModel(self):
 
 		ret=self._imagesModel.clear()
-		imagesEntries=Bridge.bellManager.imagesConfigData
+		imagesEntries=self.bellManager.imagesConfigData
 		for item in imagesEntries:
 			if item["imageSource"]!="":
 				self._imagesModel.appendRow(item["imageSource"])
@@ -383,27 +411,33 @@ class Bridge(QObject):
 		self.fileFromMenu=soundFile
 		duplicateBell=False
 		actionType="add"
+		
 		if self.fileFromMenu==None:
-			self.core.mainStack.closePopUp=[False,NEW_BELL_CONFIG]
-			self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
-		self.newBell=LoadBell(True,"",duplicateBell)
-		self.newBell.start()
-		self.newBell.finished.connect(self._addNewBellRet)
+			self.core.mainStack.showPopUp={"show":True,"msgCode":NEW_BELL_CONFIG}
+			self.core.bellsOptionsStack.showMainMessage={"show":False,"msgCode":"","type":""}
+		
+		self.newBellT=LoadBell(self.bellManager,True,"",duplicateBell)
+		self.newBellT.start()
+		self.newBellT.bellLoaded.connect(self._addNewBellRet)
+		self.newBellT.finished.connect(self.newBellT.deleteLater)
 
 	#def addNewBell
 
+	@Slot()
 	def _addNewBellRet(self):
 
-		self.currentBellConfig=copy.deepcopy(Bridge.bellManager.currentBellConfig)
+		self.currentBellConfig=copy.deepcopy(self.bellManager.currentBellConfig)
 		self._initializeVars()
 		if self.fileFromMenu==None:
-			self.core.mainStack.closePopUp=[True,""]
+			self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		else:
-			tmpSound=[]
-			tmpSound.append("file")
-			tmpSound.append(self.fileFromMenu)
-			tmpSound.append(True)
+			tmpSound={
+				"option":"file",
+				"path":self.fileFromMenu,
+				"defaultPath":True
+			}
 			self.updateSoundValues(tmpSound)
+		
 		self.core.mainStack.currentStack=2
 		self.bellCurrentOption=1
 
@@ -411,19 +445,17 @@ class Bridge(QObject):
 
 	def _initializeVars(self):
 
-		self.bellCron=Bridge.bellManager.bellCron
-		self.bellDays=Bridge.bellManager.bellDays
-		self.bellValidityActive=Bridge.bellManager.bellValidityActive
-		self.bellValidityValue=Bridge.bellManager.bellValidityValue
-		self.bellValidityRangeOption=Bridge.bellManager.bellValidityRangeOption
-		self.bellValidityDaysInRange=Bridge.bellManager.bellValidityDaysInRange
-		self.enableBellValidity=Bridge.bellManager.enableBellValidity
-		self.bellName=Bridge.bellManager.bellName
-		self.bellImage=Bridge.bellManager.bellImage
-		self.bellSound=Bridge.bellManager.bellSound
-		self.bellStartIn=Bridge.bellManager.bellStartIn
-		self.bellDuration=Bridge.bellManager.bellDuration
-		self.showBellFormMessage=[False,"","Ok"]
+		self.bellCron=self.bellManager.bellCron
+		self.bellDays=self.bellManager.bellDays
+		self.bellValidityActive=self.bellManager.bellValidityActive
+		self.bellValidity=self.bellManager.bellValidity
+		self.enableBellValidity=self.bellManager.enableBellValidity
+		self.bellName=self.bellManager.bellName
+		self.bellImage=self.bellManager.bellImage
+		self.bellSound=self.bellManager.bellSound
+		self.bellStartIn=self.bellManager.bellStartIn
+		self.bellDuration=self.bellManager.bellDuration
+		self.showBellFormMessage={"show":False,"msgCode":""}
 		self.changesInBell=False
 
 	#def _initializeVars
@@ -442,98 +474,91 @@ class Bridge(QObject):
 
 	#def goHome
 
-	@Slot('QVariantList')
+	@Slot('QJSValue')
 	def loadBell(self,bellToLoad):
 
-		self.core.mainStack.closePopUp=[False,LOAD_BELL_CONFIG]
-		self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
+		bellToLoad=bellToLoad.toVariant()
+
+		self.core.mainStack.showPopUp={"show":True,"msgCode":LOAD_BELL_CONFIG}
+		self.core.bellsOptionsStack.showMainMessage={"show":False,"msgCode":"","typ":""}
 		duplicateBell=False
 		self.actionType="edit"
-		self.editBell=LoadBell(False,bellToLoad,duplicateBell)
-		self.editBell.start()
-		self.editBell.finished.connect(self._loadBellRet)
+		self.editBellT=LoadBell(self.bellManager,False,bellToLoad,duplicateBell)
+		self.editBellT.start()
+		self.editBellT.bellLoaded.connect(self._loadBellRet)
+		self.editBellT.finished.connect(self.editBellT.deleteLater)
 
 	#def loadBell
 
+	@Slot()
 	def _loadBellRet(self):
 
-		self.currentBellConfig=copy.deepcopy(Bridge.bellManager.currentBellConfig)
+		self.currentBellConfig=copy.deepcopy(self.bellManager.currentBellConfig)
 		self._initializeVars()
-		self.core.mainStack.closePopUp=[True,""]
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		self.core.mainStack.currentStack=2
 		self.bellCurrentOption=1
 
 	#def _loadBellRet
 
-	@Slot('QVariantList')
+	@Slot('QJSValue')
 	def duplicateBell(self,bellToDuplicate):
 
-		self.core.mainStack.closePopUp=[False,DUPLICATE_BELL_CONFIG]
-		self.core.bellsOptionsStack.showMainMessage=[False,"","Ok"]
+		bellToDuplicate=bellToDuplicate.toVariant()
+
+		self.core.mainStack.showPopUp={"show":True,"msgCode":DUPLICATE_BELL_CONFIG}
+		self.core.bellsOptionsStack.showMainMessage={"show":False,"msgCode":"","type":""}
 		self.actionType="duplicate"
 		duplicateBell=True
-		self.cloneBell=LoadBell(False,bellToDuplicate,duplicateBell)
-		self.cloneBell.start()
-		self.cloneBell.finished.connect(self._duplicateBellRet)
+		self.cloneBellT=LoadBell(self.bellManager,False,bellToDuplicate,duplicateBell)
+		self.cloneBellT.start()
+		self.cloneBellT.bellLoaded.connect(self._cloneBellRet)
+		self.cloneBellT.finished.connect(self.cloneBellT.deleteLater)
 
 	#def duplicateBell
 
-	def _duplicateBellRet(self):
+	@Slot()
+	def _cloneBellRet(self):
 
-		self.currentBellConfig=copy.deepcopy(Bridge.bellManager.currentBellConfig)
+		self.currentBellConfig=copy.deepcopy(self.bellManager.currentBellConfig)
 		self._initializeVars()
-		self.core.mainStack.closePopUp=[True,""]
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		self.core.mainStack.currentStack=2
 		self.bellCurrentOption=1
 
-	#def _duplicateBellRet
+	#def _cloneBellRet
 
-	@Slot('QVariantList')
-	def updateClockValues(self,values):
+	@Slot('QJSValue')
+	def updateClockValues(self,data):
 
-		if values[0]=="H":
-			if values[1]!=self.bellCron[0]:
-				self.bellCron[0]=values[1]
-				self.currentBellConfig["hour"]=self.bellCron[0]
-		else:
-			if values[1]!=self.bellCron[1]:
-				self.bellCron[1]=values[1]
-				self.currentBellConfig["minute"]=self.bellCron[1]
+		data=data.toVariant()
+		changes={key:value for key,value in data.items() if self.bellCron[key]!=value}
 
-		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
+		if changes:
+			self.bellCron={**self.bellCron,**changes}
+			self.currentBellConfig["hour"]=self.bellCron["hour"]
+			self.currentBellConfig["minute"]=self.bellCron["minute"]
+		
+		if self.currentBellConfig!=self.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
 
 	#def updateClockValues
 
-	@Slot('QVariantList')
-	def updateWeekDaysValues(self,values):
+	@Slot('QJSValue')
+	def updateWeekDaysValues(self,data):
 
-		if values[0]=="MO":
-			if values[1]!=self.bellDays[0]:
-				self.bellDays[0]=values[1]
-				self.currentBellConfig["weekdays"]["0"]=self.bellDays[0]
-		elif values[0]=="TU":
-			if values[1]!=self.bellDays[1]:
-				self.bellDays[1]=values[1]
-				self.currentBellConfig["weekdays"]["1"]=self.bellDays[1]
-		elif values[0]=="WE":
-			if values[1]!=self.bellDays[2]:
-				self.bellDays[2]=values[1]
-				self.currentBellConfig["weekdays"]["2"]=self.bellDays[2]
-		elif values[0]=="TH":
-			if values[1]!=self.bellDays[3]:
-				self.bellDays[3]=values[1]
-				self.currentBellConfig["weekdays"]["3"]=self.bellDays[3]
-		elif values[0]=="FR":
-			if values[1]!=self.bellDays[4]:
-				self.bellDays[4]=values[1]
-				self.currentBellConfig["weekdays"]["4"]=self.bellDays[4]
+		data=data.toVariant()
+		changes={key:value for key,value in data.items() if self.bellDays[key]!=value}
 
-		self.enableBellValidity=Bridge.bellManager.areDaysChecked(self.currentBellConfig["weekdays"])
+		if changes:
+			self.bellDays={**self.bellDays,**changes}
+			self.currentBellConfig["weekdays"]=self.bellDays
 		
-		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
+		self.enableBellValidity=self.bellManager.areDaysChecked(self.currentBellConfig["weekdays"])
+		
+		if self.currentBellConfig!=self.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
@@ -553,31 +578,33 @@ class Bridge(QObject):
 			self.bellValidityActive=value
 			self.currentBellConfig["validity"]["active"]=self.bellValidityActive
 
-		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
+		if self.currentBellConfig!=self.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
 
 	#def _updateBellValidityActive
 
-	@Slot('QVariantList')
-	def updateBellValidityValue(self,value):
+	@Slot('QJSValue')
+	def updateBellValidity(self,data):
 
-		if value[0]!=self.bellValidityValue:
-			self.bellValidityValue=value[0]
-			self.currentBellConfig["validity"]["value"]=self.bellValidityValue
-			self.bellValidityRangeOption=value[1]
-			self.bellValidityDaysInRange=Bridge.bellManager.getDaysInRange(self.bellValidityValue)
+		data=data.toVariant()
+		changes={key:value for key,value in data.items() if self.bellValidity[key]!=value}
 
-		if value[0]!="":
-			if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
+		if changes:
+			changes["daysInRange"]=self.bellManager.getDaysInRange(changes.get("value"))
+			self.bellValidity={**self.bellValidity,**changes}
+			self.currentBellConfig["validity"]["value"]=self.bellValidity.get("value")
+
+		if data.get("value")!="":
+			if self.currentBellConfig!=self.bellManager.currentBellConfig:
 				self.changesInBell=True
 			else:
 				self.changesInBell=False
 		else:
 			self._updateBellValidityActive(False)
 
-	#def updateBellValidityValue
+	#def updateBellValidity
 
 	@Slot(str)
 	def updateBellNameValue(self,value):
@@ -586,7 +613,7 @@ class Bridge(QObject):
 			self.bellName=value
 			self.currentBellConfig["name"]=self.bellName
 
-		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
+		if self.currentBellConfig!=self.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
@@ -596,34 +623,26 @@ class Bridge(QObject):
 	@Slot(str,result=bool)
 	def checkMimetypeImage(self,imagePath):
 
-		return Bridge.bellManager.checkMimetypes(imagePath,"image")["result"]
+		return self.bellManager.checkMimetypes(imagePath,"image").get("status")
 
 	#def checkMimetypeImage
 
-	@Slot('QVariantList')
-	def updateImageValues(self,values):
+	@Slot('QJSValue')
+	def updateImageValues(self,data):
 
-		tmpImage=[]
-		tmpImage.append(values[0])
-		tmpImage.append(values[1])
+		data=data.toVariant()
 
-		if values[0]=="stock":
-			tmpPath=Bridge.bellManager.imagesConfigData[values[1]]["imageSource"]
-		else:
-			tmpPath=values[2]
-		tmpImage.append(tmpPath)
+		if data.get("option")=="stock":
+			data["path"]=self.bellManager.imagesConfigData[data.get("index")]["imageSource"]
+		
+		data["error"]=False if os.path.exists(data.get("path")) else True
 
-		if os.path.exists(tmpPath):
-			tmpImage.append(False)
-		else:
-			tmpImage.append(True)
-
-		if tmpImage!=self.bellImage[0]:
-			self.bellImage=tmpImage
-			self.currentBellConfig["image"]["option"]=self.bellImage[0]
-			self.currentBellConfig["image"]["path"]=self.bellImage[2]
+		if self.bellImage!=data:
+			self.bellImage=data
+			self.currentBellConfig["image"]["option"]=self.bellImage.get("option")
+			self.currentBellConfig["image"]["path"]=self.bellImage.get("path")
 	
-		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
+		if self.currentBellConfig!=self.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
@@ -633,30 +652,23 @@ class Bridge(QObject):
 	@Slot(str,result=bool)
 	def checkMimetypeSound(self,soundPath):
 
-		return Bridge.bellManager.checkMimetypes(soundPath,"audio")["result"]
+		return self.bellManager.checkMimetypes(soundPath,"audio").get("status")
 
 	#def checkMimetypeSound
 
-	@Slot('QVariantList')
-	def updateSoundValues(self,values):
+	@Slot('QJSValue')
+	def updateSoundValues(self,data):
 
-		tmpSound=[]
-		tmpSound.append(values[0])
-		tmpSound.append(values[1])
-		if os.path.exists(values[1]):
-			tmpSound.append(False)
-		else:
-			tmpSound.append(True)
+		data=data.toVariant()
+		data["error"]=False if os.path.exists(data.get("path")) else True
 
-		tmpSound.append(values[2])
-	
-		if tmpSound!=self.bellSound:
-			self.bellSound=tmpSound
-			self.currentBellConfig["sound"]["option"]=self.bellSound[0]
-			self.currentBellConfig["sound"]["path"]=self.bellSound[1]
-			self.currentBellConfig["soundDefaultPath"]=self.bellSound[3]
+		if self.bellSound!=data:
+			self.bellSound=data
+			self.currentBellConfig["sound"]["option"]=self.bellSound.get("option")
+			self.currentBellConfig["sound"]["path"]=self.bellSound.get("path")
+			self.currentBellConfig["soundDefaultPath"]=self.bellSound.get("defaultPath")
 
-		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
+		if self.currentBellConfig!=self.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
@@ -670,7 +682,7 @@ class Bridge(QObject):
 			self.bellStartIn=value
 			self.currentBellConfig["play"]["start"]=self.bellStartIn
 
-		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
+		if self.currentBellConfig!=self.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
@@ -684,7 +696,7 @@ class Bridge(QObject):
 			self.bellDuration=value
 			self.currentBellConfig["play"]["duration"]=self.bellDuration
 
-		if self.currentBellConfig!=Bridge.bellManager.currentBellConfig:
+		if self.currentBellConfig!=self.bellManager.currentBellConfig:
 			self.changesInBell=True
 		else:
 			self.changesInBell=False
@@ -714,25 +726,27 @@ class Bridge(QObject):
 
 	def _applyBellChanges(self):
 
-		self.core.mainStack.closePopUp=[False,CHECK_DATA]
+		self.core.mainStack.showPopUp={"show":True,"msgCode":CHECK_DATA}
 		self.core.mainStack.closeGui=False
-		self.checkData=CheckData(self.currentBellConfig)
-		self.checkData.start()
-		self.checkData.finished.connect(self._checkDataRet)
+		self.checkDataT=CheckData(self.bellManager,self.currentBellConfig)
+		self.checkDataT.start()
+		self.checkDataT.dataChecked.connect(self._checkDataRet)
+		self.checkDataT.finished.connect(self.checkDataT.deleteLater)
 
 	#def _applyBellChanges
 
-	def _checkDataRet(self):
+	@Slot(dict)
+	def _checkDataRet(self,ret):
 
-		if self.checkData.retData["result"]:
-			if self.checkData.retDuplicate["result"]:
+		if ret.get("status"):
+			if ret.get("checkDuplicate"):
 				self.saveDataChanges()
 			else:
-				self.core.mainStack.closePopUp=[True,""]
+				self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 				self.showBellDuplicateDialog=True
 		else:
-			self.core.mainStack.closePopUp=[True,""]
-			self.showBellFormMessage=[True,self.checkData.retData["code"],"Error"]
+			self.core.mainStack.showPopUp={"show":False,"msgCode":""}
+			self.showBellFormMessage={"show":True,"msgCode":ret.get("code")}
 
 	#def _checkDataRet
 
@@ -748,29 +762,30 @@ class Bridge(QObject):
 
 	def saveDataChanges(self):
 
-		self.core.mainStack.closePopUp=[False,SAVE_DATA]
-		self.saveData=SaveData(self.currentBellConfig)
-		self.saveData.start()
-		self.saveData.finished.connect(self._saveDataRet)
+		self.core.mainStack.showPopUp={"show":True,"msgCode":SAVE_DATA}
+		self.saveDataT=SaveData(self.bellManager,self.currentBellConfig)
+		self.saveDataT.start()
+		self.saveDataT.dataSaved.connect(self._saveDataRet)
+		self.saveDataT.finished.connect(self.saveDataT.deleteLater)
 
 	#def saveData
 
-	def _saveDataRet(self):
+	@Slot(dict)
+	def _saveDataRet(self,ret):
 
-		if self.saveData.ret[0]:
+		if ret.get("status"):
 			self.core.bellsOptionsStack._updateBellsModel()
-			self.core.bellsOptionsStack.showMainMessage=[True,self.saveData.ret[1],"Ok"]
-		else:
-			self.core.bellsOptionsStack.showMainMessage=[True,self.saveData.ret[1],"Error"]	
-
-		self.core.bellsOptionsStack.enableGlobalOptions=Bridge.bellManager.checkGlobalOptionStatus()
-		self.core.bellsOptionsStack.enableChangeStatusOptions=Bridge.bellManager.checkChangeStatusBellsOption()
-		self.core.bellsOptionsStack.showExportBellsWarning=Bridge.bellManager.checkIfAreBellsWithDirectory()
+		
+		self.core.bellsOptionsStack.showMainMessage={"show":True,"msgCode":ret.get("code"),"type":ret.get("type")}
+	
+		self.core.bellsOptionsStack.enableGlobalOptions=self.bellManager.checkGlobalOptionStatus()
+		self.core.bellsOptionsStack.enableChangeStatusOptions=self.bellManager.checkChangeStatusBellsOption()
+		self.core.bellsOptionsStack.showExportBellsWarning=self.bellManager.checkIfAreBellsWithDirectory()
 		self.changesInBell=False
 		self.core.mainStack.closeGui=True
 		self.core.mainStack.moveToStack=1
 		self.core.mainStack.manageGoToStack()
-		self.core.mainStack.closePopUp=[True,""]
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 
 	#def _saveDataRet
 
@@ -789,60 +804,6 @@ class Bridge(QObject):
 		self.core.mainStack.manageGoToStack()
 
 	#def _cancelBellChanges
-
-	on_bellCron=Signal()
-	bellCron=Property('QVariantList',_getBellCron,_setBellCron,notify=on_bellCron)
-
-	on_bellDays=Signal()
-	bellDays=Property('QVariantList',_getBellDays,_setBellDays,notify=on_bellDays)
-
-	on_bellValidityActive=Signal()
-	bellValidityActive=Property(bool,_getBellValidityActive,_setBellValidityActive,notify=on_bellValidityActive)
-
-	on_bellValidityValue=Signal()
-	bellValidityValue=Property(str,_getBellValidityValue,_setBellValidityValue,notify=on_bellValidityValue)
-	
-	on_bellValidityRangeOption=Signal()
-	bellValidityRangeOption=Property(bool,_getBellValidityRangeOption,_setBellValidityRangeOption,notify=on_bellValidityRangeOption)
-
-	on_bellValidityDaysInRange=Signal()
-	bellValidityDaysInRange=Property('QVariantList',_getBellValidityDaysInRange,_setBellValidityDaysInRange,notify=on_bellValidityDaysInRange)
-
-	on_enableBellValidity=Signal()
-	enableBellValidity=Property(bool,_getEnableBellValidity,_setEnableBellValidity,notify=on_enableBellValidity)
-
-	on_bellName=Signal()
-	bellName=Property(str,_getBellName,_setBellName,notify=on_bellName)
-
-	on_bellImage=Signal()
-	bellImage=Property('QVariantList',_getBellImage,_setBellImage,notify=on_bellImage)
-
-	on_bellSound=Signal()
-	bellSound=Property('QVariantList',_getBellSound,_setBellSound,notify=on_bellSound)
-
-	on_bellStartIn=Signal()
-	bellStartIn=Property(int,_getBellStartIn,_setBellStartIn,notify=on_bellStartIn)
-
-	on_bellDuration=Signal()
-	bellDuration=Property(int,_getBellDuration,_setBellDuration,notify=on_bellDuration)
-
-	on_showBellFormMessage=Signal()
-	showBellFormMessage=Property('QVariantList',_getShowBellFormMessage,_setShowBellFormMessage, notify=on_showBellFormMessage)
-
-	on_bellCurrentOption=Signal()
-	bellCurrentOption=Property(int,_getBellCurrentOption,_setBellCurrentOption, notify=on_bellCurrentOption)
-
-	on_showChangesInBellDialog=Signal()
-	showChangesInBellDialog=Property(bool,_getShowChangesInBellDialog,_setShowChangesInBellDialog,notify=on_showChangesInBellDialog)
-
-	on_changesInBell=Signal()
-	changesInBell=Property(bool,_getChangesInBell,_setChangesInBell,notify=on_changesInBell)
-
-	on_actionType=Signal()
-	actionType=Property(str,_getActionType,_setActionType,notify=on_actionType)
-
-	on_showBellDuplicateDialog=Signal()
-	showBellDuplicateDialog=Property(bool,_getShowBellDuplicateDialog,_setShowBellDuplicateDialog,notify=on_showBellDuplicateDialog)
 
 	imagesModel=Property(QObject,_getImagesModel,constant=True)
 

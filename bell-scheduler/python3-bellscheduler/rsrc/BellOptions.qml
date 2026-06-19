@@ -3,43 +3,39 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 
-GridLayout{
+RowLayout{
     id: bellGrid
-    columns: 2
-    flow: GridLayout.LeftToRight
-    columnSpacing:10
+    spacing:10
 
-    GridLayout{
-        rows:2
-        flow: GridLayout.TopToBottom
+    ColumnLayout{
+        Layout.fillHeight:true
+        spacing:5
 
         MenuOptionBtn {
             id:goBackBtn
             optionText:i18nd("bell-scheduler","Bells")
-            optionFontSize:14
-            optionIcon:"/usr/share/icons/breeze/actions/24/arrow-left.svg"
-            Connections{
-                function onMenuOptionClicked(){
-                    bellStackBridge.goHome();
-                }
-            }
-        }  
+            optionPointSize:14
+            optionIcon:"go-previous"
+            onMenuOptionClicked:bellStackBridge.goHome()
+        }
+
         Rectangle{
             width:120
-            Layout.minimumHeight:475
             Layout.fillHeight:true
-            border.color: "#d3d3d3"
-            GridLayout{
-                id: menuGrid
-                rows:1 
-                flow: GridLayout.TopToBottom
-                rowSpacing:0
+            border.color: palette.mid
+            ColumnLayout{
+                anchors.fill:parent
+                spacing:0
 
                 MenuOptionBtn {
                     id:infoItem
                     optionText:i18nd("bell-scheduler","Bell")
-                    optionIcon:"/usr/share/icons/breeze/status/22/appointment-reminder.svg"
-                 }
+                    optionIcon:"appointment-reminder"
+                }
+
+                Item{
+                    Layout.fillHeight:true
+                }
 
             }
         }
@@ -47,17 +43,21 @@ GridLayout{
 
     StackView {
         id: manageView
-        property int currentOption:bellStackBridge.bellCurrentOption
         Layout.fillWidth:true
         Layout.fillHeight: true
+
+        property int currentOption:bellStackBridge.bellCurrentOption
+
         initialItem:emptyView
 
         onCurrentOptionChanged:{
             switch(currentOption){
                 case 0:
                     manageView.replace(emptyView)
+                    break
                 case 1:
                     manageView.replace(bellView)
+                    break
             }
 
         }
