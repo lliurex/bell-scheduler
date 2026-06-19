@@ -1,3 +1,10 @@
+bell-scheduler (0.15.8) jammy; urgency=medium
+
+  * Refactorized code
+  * Improved general performance
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 19 Jun 2026 08:44:26 +0200
+
 bell-scheduler (0.15.7) jammy; urgency=medium
 
   * Changed bell token to improve interaction with widget
