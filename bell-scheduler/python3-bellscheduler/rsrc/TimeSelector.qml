@@ -1,155 +1,147 @@
-import org.kde.kirigami as Kirigami
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import org.kde.kirigami as Kirigami
 
 Popup {
-    id:timePopUp
-    property alias hourEntry:hourEntry.text
-    property alias minuteEntry:minuteEntry.text
-    signal timeApplyClicked (hour:string,minute:string)
+    id: timePopUp
 
-    width:320
-    height:200
+    property string hourValue: "00"
+    property string minuteValue: "00"
+
+    signal timeApplyClicked(string hour, string minute)
+
+    width: 320
+    height: 200
     anchors.centerIn: Overlay.overlay
-    modal:true
-    focus:true
-    closePolicy:Popup.NoAutoClose
+    modal: true
+    focus: true
+    closePolicy: Popup.NoAutoClose
 
-    background:Rectangle{
-	color:"#ebeced"
-	border.color:"#b8b9ba"
-        border.width:1
-        radius:5.0
+    background: Rectangle {
+        color: "#ebeced"
+        border.color: "#b8b9ba"
+        border.width: 1
+        radius: 5.0
     }
 
+    onOpened:{
+        hourEntry.text=timePopUp.hourValue
+        minuteEntry.text=timePopUp.minuteValue
+    }
 
-    contentItem:Rectangle{
-        id:container
-        width:timePopUp.width
-        height:timePopUp.height
-        color:"transparent"
-        Text{ 
-            text:i18nd("bell-scheduler","Edit time for bell")
+    contentItem: ColumnLayout {
+        id: container
+        anchors.fill: parent
+        anchors.margins: 15
+        spacing: 15
+
+        Text {
+            text: i18nd("bell-scheduler", "Edit time for bell")
             font.pointSize: 16
+            Layout.fillWidth: true
         }
-        GridLayout{
-            id:imageSelectorLayout
-            rows:1
-            flow: GridLayout.TopToBottom
-            rowSpacing:10
-            anchors.horizontalCenter:parent.horizontalCenter
-            enabled:true
 
-            RowLayout {
-                id: popupTimerLayout
-                Layout.topMargin:40
-                spacing:4
-                TextField{
-                    id: hourEntry
-                    validator: RegularExpressionValidator { regularExpression: /([0-1][0-9]|2[0-3])/ }
-                    implicitWidth: 70
-                    horizontalAlignment: TextInput.AlignHCenter
-                    color:"#3daee9"
-                    font.pointSize: 35
-                }
+        RowLayout {
+            id: popupTimerLayout
+            Layout.alignment: Qt.AlignHCenter
+            Layout.fillHeight: true
+            spacing: 4
 
-                Text{
-                    font.pointSize:35
-                    color:"#3daee9"
-                    text:":"
-                }
-                        
-                TextField{
-                    id: minuteEntry
-                    validator: RegularExpressionValidator { regularExpression: /[0-5][0-9]/ }
-                    implicitWidth: 70
-                    horizontalAlignment: TextInput.AlignHCenter
-                    color:"#3daee9"
-                    font.pointSize: 35
-                }
+            TextField {
+                id: hourEntry
+                validator: RegularExpressionValidator { regularExpression: /([0-1][0-9]|2[0-3])/ }
+                implicitWidth: 70
+                horizontalAlignment: TextInput.AlignHCenter
+                color: "#3daee9"
+                font.pointSize: 35
+            }
+
+            Text {
+                font.pointSize: 35
+                color: "#3daee9"
+                text: ":"
+            }
+
+            TextField {
+                id: minuteEntry
+                validator: RegularExpressionValidator { regularExpression: /[0-5][0-9]/ }
+                implicitWidth: 70
+                horizontalAlignment: TextInput.AlignHCenter
+                color: "#3daee9"
+                font.pointSize: 35
             }
         }
-        RowLayout{
-            id:btnBox
-            anchors.bottom:parent.bottom
-            anchors.right:parent.right
-            spacing:10
+
+        RowLayout {
+            id: btnBox
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignRight
+            spacing: 10
 
             Button {
-                id:applyBtn
-                visible:true
-                display:AbstractButton.TextBesideIcon
-                icon.name:"dialog-ok.svg"
-                text:i18nd("bell-scheduler","Apply")
-                Layout.preferredHeight:40
-                enabled:!bellStackBridge.bellImage[3]
-                onClicked:{
-                    if (validateEntry(hourEntry.text,minuteEntry.text)){
-                        timeApplyClicked(hourEntry.text,minuteEntry.text)
-                        delay(1000, function() {
+                id: applyBtn
+                display: AbstractButton.TextBesideIcon
+                icon.name: "dialog-ok"
+                text: i18nd("bell-scheduler", "Apply")
+
+                enabled: true
+
+                onClicked: {
+                    if (validateEntry(hourEntry.text, minuteEntry.text)) {
+                        timeApplyClicked(hourEntry.text, minuteEntry.text);
+                        delay(500, function() {
                             timePopUp.close();
-                        })
-                    }else{
+                        });
+                    } else {
+                        restoreInitValues();
                         timePopUp.close();
+
                     }
-                    
-                }
-            }
-            
-            Button {
-                id:cancelBtn
-                visible:true
-                display:AbstractButton.TextBesideIcon
-                icon.name:"dialog-cancel.svg"
-                text:i18nd("bell-scheduler","Cancel")
-                Layout.preferredHeight: 40
-                enabled:true
-                onClicked:{
-                    restoreInitValues()
-                    timePopUp.close()
                 }
             }
 
+            Button {
+                id: cancelBtn
+                display: AbstractButton.TextBesideIcon
+                icon.name: "dialog-cancel"
+                text: i18nd("bell-scheduler", "Cancel")
+                onClicked: {
+                    restoreInitValues();
+                    timePopUp.close();
+                }
+            }
         }
     }
 
-
-    function validateEntry(hour,minute){
-
-        if ((hour =="") || (minute=="")){
-            return false;
-        }else{
-            return true;
-        }
-
+    function validateEntry(hour, minute) {
+        return hour !== "" && minute !== "";
     }
 
     Timer {
-        id: timer
+        id: safetyTimer
+        property var callback: null
+        onTriggered: {
+            if (callback) {
+                callback();
+                callback = null;
+            }
+        }
     }
 
     function delay(delayTime, cb) {
-        timer.interval = delayTime;
-        timer.repeat = false;
-        timer.triggered.connect(cb);
-        timer.start();
+        safetyTimer.stop();
+        safetyTimer.interval = delayTime;
+        safetyTimer.callback = cb;
+        safetyTimer.start();
     }
 
-    function restoreInitValues(){
-
-        hourEntry.text=formatEditText(bellStackBridge.bellCron[0])
-        minuteEntry.text=formatEditText(bellStackBridge.bellCron[1])
-
+    function restoreInitValues() {
+        hourEntry.text = formatEditText(bellStackBridge.bellCron.hour);
+        minuteEntry.text = formatEditText(bellStackBridge.bellCron.minute);
     }
 
-    function formatEditText(value){
-        if (value<10){
-            return "0"+value.toString();
-        }else{
-            return value.toString();
-        }
-
+    function formatEditText(value) {
+        return value.toString().padStart(2, "0");
     }
-  
 }

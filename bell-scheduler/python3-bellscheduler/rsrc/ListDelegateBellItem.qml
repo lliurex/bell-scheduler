@@ -1,18 +1,14 @@
-import org.kde.plasma.components as Components
 import QtQuick
 import QtQuick.Controls
-import QtQml.Models
+import QtQuick.Layouts
+import org.kde.kirigami as Kirigami
 
-Components.ItemDelegate{
+ItemDelegate{
 
     id: listBellItem
     property string bellId
     property string bellCron
-    property bool bellMo
-    property bool bellTu
-    property bool bellWe
-    property bool bellTh
-    property bool bellFr
+    property var bellDays:[]
     property string bellValidity
     property bool bellValidityActivated
     property string bellImg
@@ -24,216 +20,200 @@ Components.ItemDelegate{
     property bool isImgError
 
     enabled:true
-    height:125
+    height:130
 
-    Rectangle {
-        id:containerItem
-        height:visible?120:0
-        width:parent.width
-        color:{
+    width: listBellItem.ListView.view?listBellItem.ListView.view.width -10 : 0
+    hoverEnabled:true
+
+    leftPadding:5
+    rightPadding:10
+
+    onHoveredChanged:{
+        if (listBellItem.ListView.view){
+            if (hovered && !optionsMenu.opened){
+                listBellItem.ListView.view.currentIndex=index
+            }
+        }else if (!hovered && !optionsMenu.opened && listBellItem.ListView.view.currentIndex===index){
+            listBellItem.ListView.view.currentIndex=-1
+        }
+    }
+
+    background:Rectangle {
+        x:5
+        y:5
+        width:parent.width-5
+        height:parent.height-5
+        color: {
             if (isSoundError || isImgError){
-                "#ffa64c"
+                Kirigami.Theme.negativeBackgroundColor
             }else{
+                if (listBellItem.hovered || optionsMenu.opened){
+                    Qt.alpha(Kirigami.Theme.highlightColor,0.15)
+                }else{
+                    "transparent"
+                }
+            }
+        }
+        radius:6
+        border.width:1
+        border.color:{
+            if (listBellItem.hovered || optionsMenu.opened){
+                if (isSoundError || isImgError){
+                    Kirigami.Theme.negativeTextColor
+                }else{
+                    Kirigami.Theme.highlightColor
+                }
+            }else{            
                 "transparent"
             }
         }
-        border.color: "transparent"
-        Item{
-            id: menuItem
-            height:visible?120:0
-            width:listBellItem.width-manageBellBtn.width
+    }
+ 
+    contentItem:RowLayout {
+        spacing:20
 
-            MouseArea {
-                id: mouseAreaOption
-                width: containerItem.width
-                height: menuItem.height
-                hoverEnabled:true
-                propagateComposedEvents:true
+        ColumnLayout{
+            id:cronRow
+            Layout.preferredWidth:190
+            Layout.fillHeight:true
+            Layout.alignment:Qt.AlignVCenter
+            spacing:0
 
-                onEntered: {
-                    if (!optionsMenu.activeFocus){
-                        listBells.currentIndex=filterModel.visibleElements.indexOf(index)
+            Text{
+                id:timeText
+                text:bellCron
+                color:"#3366cc"
+                font.pointSize: 35
+                Layout.alignment:Qt.AlignHCenter
+            }
+            RowLayout{
+                id:dayRow
+                Layout.alignment:Qt.AlignHCenter
+                spacing:5
+                Repeater {
+                    model: [
+                        { text: "M", idx: 0 },
+                        { text: "T", idx: 1 },
+                        { text: "W", idx: 2 },
+                        { text: "R", idx: 3 },
+                        { text: "F", idx: 4 }
+                    ]
+                    Text{
+                        id:dayText
+                        text:i18nd("bell-scheduler",modelData.text)
+                        color:bellDays[modelData.idx]? "#3366cc":"#A0A0A0"
+                        font.pointSize:18
                     }
                 }
-		
+                   
             }
             
-            Column{
-                id:cronRow
-                anchors.verticalCenter: parent.verticalCenter
-                width:190
-                anchors.leftMargin:5
-                Text{
-                    id:timeText
-                    text:bellCron
-                    font.family: "Quattrocento Sans Bold"
-                    color:"#3366cc"
-                    font.pointSize: 35
-                    anchors.horizontalCenter:parent.horizontalCenter
-                }
-                Row{
-                    id:dayRow
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    spacing:5
-                    Text{
-                        id:moText
-                        text:i18nd("bell-scheduler","M")
-                        font.family:"Quattrocento Sans Bold"
-                        color:bellMo? "#3366cc":"#A0A0A0"
-                        font.pointSize:18
-                    }
-                    Text{
-                        id:tuText
-                        text:i18nd("bell-scheduler","T")
-                        font.family:"Quattrocento Sans Bold"
-                        color:bellTu? "#3366cc":"#A0A0A0"
-                        font.pointSize:18
-                    }
-                    Text{
-                        id:weText
-                        text:i18nd("bell-scheduler","W")
-                        font.family:"Quattrocento Sans Bold"
-                        color:bellWe? "#3366cc":"#A0A0A0"
-                        font.pointSize:18
-                    }
-                    Text{
-                        id:thText
-                        text:i18nd("bell-scheduler","R")
-                        font.family:"Quattrocento Sans Bold"
-                        color:bellTh? "#3366cc":"#A0A0A0"
-                        font.pointSize:18
-                    }
-                    Text{
-                        id:frText
-                        text:i18nd("bell-scheduler","F")
-                        font.family:"Quattrocento Sans Bold"
-                        color:bellFr? "#3366cc":"#A0A0A0"
-                        font.pointSize:18
-                    }
-                }
-                Text{
-                    id:validityText
-                    text:bellValidity
-                    font.family:"Quattrocento Sans Bold"
-                    color:bellValidityActivated?"#3366cc":"#A0A0A0"
-                    font.pointSize:11
-                    visible:{
-                        if (bellValidity!=""){
-                            true
-                        }else{
-                            false
-                        }
-                    }
-                    anchors.horizontalCenter:parent.horizontalCenter
-                }
+            Text{
+                id:validityText
+                text:bellValidity
+                color:bellValidityActivated?"#3366cc":"#A0A0A0"
+                font.pointSize:11
+                visible:bellValidity!==""
+                Layout.alignment:Qt.AlignHCenter
             }
-            Image{
-                id:bellImage
-                width:70
-                height:70
-                fillMode:Image.PreserveAspectFit
-                source:bellImg
-                anchors.verticalCenter:parent.verticalCenter
-                anchors.left:cronRow.right
-                anchors.leftMargin:30
-            }
-            Column{
-                id:bellDescription
-                anchors.verticalCenter:parent.verticalCenter
-                anchors.left:bellImage.right
-                anchors.leftMargin:30
-                spacing:10
-                width:{
-                    if (listBellItem.ListView.isCurrentItem){
-                        parent.width-(bellState.width+manageBellBtn.width+380)
-                    }else{
-                        parent.width-(bellState.width+360)
-                    }
-                }
-               
-                Text{
-                    id:nameText
-                    text:bellName
-                    font.family: "Quattrocento Sans Bold"
-                    font.pointSize: 18
-                    horizontalAlignment:Text.AlignLeft
-                    elide:Text.ElideMiddle
-                    width:parent.width
-                }
-
-                Text{
-                    id:soundText
-                    text:bellSound
-                    font.family:isSoundError?"Quattrocento Sans Italic":"Quattrocento Sans Bold"
-                    font.pointSize: 11
-                    horizontalAlignment:Text.AlignLeft
-                    elide:Text.ElideMiddle
-                    width:parent.width
-                }
-
-            }
-
-            Image{
-                id:bellState
-                source:bellActivated?"/usr/share/icons/breeze/status/24/audio-on.svg":"/usr/share/icons/breeze/status/24/audio-volume-muted.svg"
-                sourceSize.width:32
-                sourceSize.height:32
-                anchors.left:bellDescription.right
-                anchors.verticalCenter:parent.verticalCenter
-                anchors.leftMargin:30
-            }
+        }
+        
+        Image{
+            id:bellImage
+            Layout.preferredWidth:70
+            Layout.preferredHeight:70
+            fillMode:Image.PreserveAspectFit
+            source:bellImg
+        }
+        
+        ColumnLayout{
+            id:bellDescription
+            spacing:10
+            Layout.fillWidth:true
+            Layout.alignment:Qt.AlignVCenter
             
-            Button{
-                id:manageBellBtn
-                display:AbstractButton.IconOnly
-                icon.name:"configure.svg"
-                anchors.leftMargin:15
-                anchors.left:bellState.right
-                anchors.verticalCenter:parent.verticalCenter
-                visible:listBellItem.ListView.isCurrentItem
-                ToolTip.delay: 1000
-                ToolTip.timeout: 3000
-                ToolTip.visible: hovered
-                ToolTip.text:i18nd("bell-scheduler","Click to manage this bell")
-                onClicked:optionsMenu.open();
-                onVisibleChanged:{
-                    optionsMenu.close()
+            Text{
+                id:nameText
+                text:bellName
+                font.pointSize: 18
+                horizontalAlignment:Text.AlignLeft
+                elide:Text.ElideMiddle
+                Layout.fillWidth:true
+            }
+
+            Text{
+                id:soundText
+                text:bellSound
+                font.italic:isSoundError
+                font.pointSize: 11
+                horizontalAlignment:Text.AlignLeft
+                elide:Text.ElideMiddle
+                Layout.fillWidth:true
+            }
+
+        }
+
+        Kirigami.Icon {
+            id:bellState
+            source:bellActivated?"audio-on":"audio-volume-muted"
+            Layout.preferredWidth: 32
+            Layout.preferredHeight: 32
+            Layout.alignment: Qt.AlignVCenter
+        }
+            
+        Button{
+            id:manageBellBtn
+            display:AbstractButton.IconOnly
+            icon.name:"configure"
+            Layout.alignment: Qt.AlignVCenter
+            visible:listBellItem.hovered || optionsMenu.opened
+            ToolTip.delay: 1000
+            ToolTip.timeout: 3000
+            ToolTip.visible: hovered
+            ToolTip.text:i18nd("bell-scheduler","Click to manage this bell")
+            onClicked:optionsMenu.open();
+  
+            Connections{
+                target:listBells
+                function onCurrentIndexChanged(){
+                    if (!listBellItem.ListView.isCurrentItem && optionsMenu.opened){
+                        optionsMenu.close()
+                    }
+
+                }
+            }
+
+            Menu{
+                id:optionsMenu
+                y: manageBellBtn.height
+                x:-(optionsMenu.width-manageBellBtn.width/2)
+
+                MenuItem{
+                    icon.name:bellActivated?"audio-volume-muted":"audio-on"
+                    text:bellActivated?i18nd("bell-scheduler","Disable bell"):i18nd("bell-scheduler","Enable bell")
+                    enabled:isSoundError?false:true
+                    onClicked:bellsOptionsStackBridge.changeBellStatus({"allBells":false,"active":!bellActivated,"bellId":bellId})
                 }
 
-                Menu{
-                    id:optionsMenu
-                    y: manageBellBtn.height
-                    x:-(optionsMenu.width-manageBellBtn.width/2)
-
-                    MenuItem{
-                        icon.name:bellActivated?"audio-volume-muted.svg":"audio-on.svg"
-                        text:bellActivated?i18nd("bell-scheduler","Disable bell"):i18nd("bell-scheduler","Enable bell")
-                        enabled:isSoundError?false:true
-                        onClicked:bellsOptionsStackBridge.changeBellStatus([false,!bellActivated,bellId])
-                    }
-
-                    MenuItem{
-                        icon.name:"document-edit.svg"
-                        text:i18nd("bell-scheduler","Edit bell")
-                        onClicked:bellStackBridge.loadBell([bellId,isImgError,isSoundError])
-                    }
-                    MenuItem{
-                        icon.name:"xml-node-duplicate.svg"
-                        text:i18nd("bell-scheduler","Duplicate bell")
-                        enabled:{
-                            if ((isSoundError) || (isImgError)) {
-                                false
-                            }else{
-                                true
-                            }
-                        }
-                        onClicked:bellStackBridge.duplicateBell([bellId,isImgError,isSoundError])
-                    }
-                    MenuItem{
-                        icon.name:"delete.svg"
-                        text:i18nd("bell-scheduler","Delete the bell")
-                        onClicked:bellsOptionsStackBridge.removeBell([false,bellId])
-                    }
+                MenuItem{
+                    icon.name:"document-edit"
+                    text:i18nd("bell-scheduler","Edit bell")
+                    onClicked:bellStackBridge.loadBell({"bellId":bellId,"isImgError":isImgError,"isSoundError":isSoundError})
+                }
+                
+                MenuItem{
+                    icon.name:"xml-node-duplicate"
+                    text:i18nd("bell-scheduler","Duplicate bell")
+                    enabled:((isSoundError) || (isImgError))
+                            ?false
+                            :true
+                    onClicked:bellStackBridge.duplicateBell({"bellId":bellId,"isImgError":isImgError,"isSoundError":isSoundError})
+                }
+                
+                MenuItem{
+                    icon.name:"delete"
+                    text:i18nd("bell-scheduler","Delete the bell")
+                    onClicked:bellsOptionsStackBridge.removeBell({"allBells":false,"bellId":bellId})
                 }
             }
         }

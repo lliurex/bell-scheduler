@@ -2,66 +2,59 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-
-GridLayout{
+RowLayout{
     id: mainGrid
-    columns: 2
-    flow: GridLayout.LeftToRight
-    columnSpacing:10
+    spacing:10
 
     Rectangle{
+        id:sideBar
         width:120
         Layout.fillHeight:true
-        border.color: "#d3d3d3"
+        border.color:palette.mid
 
-        GridLayout{
+        ColumnLayout{
             id: menuGrid
-            rows:3 
-            flow: GridLayout.TopToBottom
-            rowSpacing:0
+            Layout.fillWidth:true
+            Layout.fillHeight:true
+            spacing:0
 
             MenuOptionBtn {
                 id:listItem
+                Layout.fillWidth:true
                 optionText:i18nd("bell-scheduler","Bells")
-                optionIcon:"/usr/share/icons/breeze/status/22/appointment-reminder.svg"
-               
-                Connections{
-                    function onMenuOptionClicked(){
-                        mainStackBridge.moveToMainOptions(0)
-                    }
-                }
-                
+                optionIcon:"appointment-reminder"
+                onMenuOptionClicked:mainStackBridge.moveToMainOptions(0)                
             }
+
             MenuOptionBtn {
                 id:holidayItem
+                Layout.fillWidth:true
                 optionText:i18nd("bell-scheduler","Holidays")
-                optionIcon:"/usr/share/icons/breeze/actions/22/view-calendar.svg"
-                
-                Connections{
-                    function onMenuOptionClicked(){
-                        mainStackBridge.moveToMainOptions(1)
-                    }
-                }
-                
+                optionIcon:"view-calendar"
+                onMenuOptionClicked:mainStackBridge.moveToMainOptions(1)
             }
+
             MenuOptionBtn {
                 id:helpItem
+                Layout.fillWidth:true
                 optionText:i18nd("bell-scheduler","Help")
-                optionIcon:"/usr/share/icons/breeze/actions/22/help-contents.svg"
-                Connections{
-                    function onMenuOptionClicked(){
-                        mainStackBridge.openHelp();
-                    }
-                }
+                optionIcon:"help-contents"
+                onMenuOptionClicked:mainStackBridge.openHelp()
+            }
+
+            Item {
+                Layout.fillHeight:true
             }
         }
     }
 
     StackView {
         id: optionsView
-        property int currentIndex:mainStackBridge.mainCurrentOption
         Layout.fillWidth:true
         Layout.fillHeight:true
+
+        property int currentIndex:mainStackBridge.mainCurrentOption
+
         initialItem:bellsView
 
         onCurrentIndexChanged:{
@@ -75,21 +68,22 @@ GridLayout{
             }
         }
         replaceEnter: Transition {
-            PropertyAnimation {
+            NumberAnimation {
                 property: "opacity"
                 from: 0
-                to:1
+                to: 1
                 duration: 60
             }
         }
         replaceExit: Transition {
-            PropertyAnimation {
+            NumberAnimation {
                 property: "opacity"
                 from: 1
-                to:0
+                to: 0
                 duration: 60
             }
         }
+
         Component{
             id:bellsView
             BellsManager{
@@ -103,8 +97,6 @@ GridLayout{
                 id:holidayManager
             }
         }
-        
-       
     }
 }
 
