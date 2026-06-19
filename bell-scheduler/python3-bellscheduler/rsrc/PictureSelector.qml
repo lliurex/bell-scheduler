@@ -1,9 +1,9 @@
-import org.kde.kirigami as Kirigami
 import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
+import org.kde.kirigami as Kirigami
 
 Popup {
 
@@ -13,7 +13,7 @@ Popup {
     property bool imageFileError:false
 
     width:500
-    height:350
+    height:355
     anchors.centerIn: Overlay.overlay
     modal:true
     focus:true
@@ -26,152 +26,127 @@ Popup {
         radius:5.0
     }
 
-    contentItem:Rectangle{
+    contentItem:ColumnLayout{
         id:container
-        width:imagePopUp.width
-        height:imagePopUp.height
-        color:"transparent"
+        anchors.fill:parent
+        anchors.margins:15
+        spacing:12
+
         Text{ 
             text:i18nd("bell-scheduler","Edit image for bell")
             font.pointSize: 16
         }
-        GridLayout{
+
+        Kirigami.InlineMessage {
+            id: messageLabel
+            visible:false
+            text:i18nd("bell-scheduler","Image file is not correct")
+            type: Kirigami.MessageType.Error
+            Layout.fillWidth:true
+        }
+        
+        ColumnLayout{
             id:imageSelectorLayout
-            rows:2
-            flow: GridLayout.TopToBottom
-            rowSpacing:10
-            anchors.left:parent.left
-            enabled:true
-            Kirigami.InlineMessage {
-                id: messageLabel
-                visible:false
-                text:i18nd("bell-scheduler","Image file is not correct")
-                type: Kirigami.MessageType.Error
-                Layout.minimumWidth:480
-                Layout.fillWidth:true
-                Layout.topMargin: 40
+            Layout.fillHeight:true
+            Layout.topMargin:messageLabel.visible?0:10         
+            spacing:15
+
+            ButtonGroup{
+                id:imageOptionsGroup
             }
 
-            GridLayout{
-                id: imageOptions
-                rows: 2
-                flow: GridLayout.TopToBottom
-                rowSpacing:10
-                Layout.topMargin: messageLabel.visible?0:50
-                ButtonGroup{
-                    id:imageOptionsGroup
-                }
-                RowLayout{
-                    id:stockRow
-                    spacing:10
-                    Layout.alignment:Qt.AlignLeft
-                    Layout.bottomMargin:10
-                    RadioButton{
-                        id:stockOption
-                        checked:{
-                            if (bellStackBridge.bellImage[0]=="stock"){
-                                true
-                            }else{
-                                false
-                            }
-                        }
-                        text:i18nd("bell-scheduler","From stock")
-                        onToggled:{
-                            if (checked){
-                                messageLabel.visible=false
-                                applyBtn.enabled=true
-                            }
-                        }
-                        ButtonGroup.group:imageOptionsGroup
-                        
-                    }
-                    ImageList{
-                        id:imageList
-                        currentImgIndex:bellStackBridge.bellImage[1]
-                        listEnabled:stockOption.checked
-                    }
-                }
+            RowLayout{
+                id:stockRow
+                spacing:10
+                Layout.fillWidth:true
 
-                RowLayout{
-                    id:customRow
-                    spacing:10
-                    Layout.alignment:Qt.AlignLeft|Qt.AlignVCenter
-                    Layout.bottomMargin:10
-                    RadioButton{
-                        id:customOption
-                        checked:{
-                            if (bellStackBridge.bellImage[0]=="custom"){
-                                true
-                            }else{
-                                false
-                            }
+                RadioButton{
+                    id:stockOption
+                    ButtonGroup.group:imageOptionsGroup
+                    checked:bellStackBridge.bellImage.option==="stock"
+                    text:i18nd("bell-scheduler","From stock")
+                    onToggled:{
+                        if (checked){
+                            messageLabel.visible=false
+                            applyBtn.enabled=true
                         }
-                        text:i18nd("bell-scheduler","Custom image")
-                        onToggled:{
-                            if (checked){
-                                if (imageFileError){
-                                    messageLabel.visible=true
+                    }
+                        
+                }
+                
+                ImageList{
+                    id:imageList
+                    listEnabled:stockOption.checked
+                }
+            }
+
+             RowLayout{
+                 id:customRow
+                 spacing:10
+                 Layout.fillWidth:true
+
+                 RadioButton{
+                    id:customOption
+                    ButtonGroup.group:imageOptionsGroup
+                    checked:bellStackBridge.bellImage.option==="custom"
+                    text:i18nd("bell-scheduler","Custom image")
+                    onToggled:{
+                        if (checked){
+                            if (imageFileError){
+                                messageLabel.visible=true
+                                applyBtn.enabled=false
+                            }else{
+                                if ((customImagePath.text=="")||(bellStackBridge.bellImage.error)){
                                     applyBtn.enabled=false
                                 }else{
-                                    if ((customImagePath.text=="")||(bellStackBridge.bellImage[3])){
-                                        applyBtn.enabled=false
-                                    }else{
-                                        applyBtn.enabled=true
-                                    }
+                                    applyBtn.enabled=true
                                 }
                             }
                         }
-                        ButtonGroup.group:imageOptionsGroup
                     }
-                    TextField{
-                        id:customImagePath
-                        text:{
-                            if (bellStackBridge.bellImage[0]=="custom"){
-                                if (!bellStackBridge.bellImage[3]){
-                                    bellStackBridge.bellImage[2].substring(bellStackBridge.bellImage[2].lastIndexOf('/')+1)
-                                }else{
-                                    ""
-                                }
-                            }else{
-                                ""
-                            }
-                        }
-                        Layout.preferredWidth:250
-                        maximumLength:500
-                        readOnly:true
-                        enabled:customOption.checked?true:false
-                    }
+                }
+                
+                TextField{
+                    id:customImagePath
+                    text: (bellStackBridge.bellImage.option==="custom" && !bellStackBridge.bellImage.error)
+                          ?bellStackBridge.bellImage.path.substring(bellStackBridge.bellImage.path.lastIndexOf('/')+1)
+                          :""
+                    Layout.preferredWidth:250
+                    maximumLength:500
+                    readOnly:true
+                    enabled:customOption.checked
+                }
 
-                    Button{
-                        id:fileSelectorBtn
-                        display:AbstractButton.IconOnly
-                        icon.name:"insert-image.svg"
-                        enabled:customOption.checked?true:false
-                        height: 35
-                        ToolTip.delay: 1000
-                        ToolTip.timeout: 3000
-                        ToolTip.visible: hovered
-                        ToolTip.text:i18nd("bell-scheduler","Click to select an image")
-                        onClicked:imgDialog.open()
-                    }
+                Button{
+                    id:fileSelectorBtn
+                    display:AbstractButton.IconOnly
+                    icon.name:"insert-image"
+                    enabled:customOption.checked
+                    ToolTip.delay: 1000
+                    ToolTip.timeout: 3000
+                    ToolTip.visible: hovered
+                    ToolTip.text:i18nd("bell-scheduler","Click to select an image")
+                    onClicked:imgDialog.open()
                 }
             }
         }
+
+        Item {
+            Layout.fillHeight:true
+        }
+
         RowLayout{
             id:btnBox
-            anchors.bottom:parent.bottom
-            anchors.right:parent.right
-            anchors.topMargin:10
-            spacing:10
+            Layout.alignment:Qt.AlignRight
+            spacing:12
 
             Button {
                 id:applyBtn
                 visible:true
                 display:AbstractButton.TextBesideIcon
-                icon.name:"dialog-ok.svg"
+                icon.name:"dialog-ok"
                 text:i18nd("bell-scheduler","Apply")
-                Layout.preferredHeight:40
-                enabled:!bellStackBridge.bellImage[3]
+                enabled:!bellStackBridge.bellImage.error
                 onClicked:{
                     var option=""
                     var tmpPath=""
@@ -183,9 +158,9 @@ Popup {
                     if (selectedImageFile!=""){
                         tmpPath=selectedImageFile
                     }else{
-                        tmpPath=bellStackBridge.bellImage[2]
+                        tmpPath=bellStackBridge.bellImage.path
                     }
-                    bellStackBridge.updateImageValues([option,imageList.currentImgIndex,tmpPath])
+                    bellStackBridge.updateImageValues({"option":option,"index":imageList.currentImgIndex,"path":tmpPath})
                     restoreInitValues()
                     imageSelector.close()
                 }
@@ -195,9 +170,8 @@ Popup {
                 id:cancelBtn
                 visible:true
                 display:AbstractButton.TextBesideIcon
-                icon.name:"dialog-cancel.svg"
+                icon.name:"dialog-cancel"
                 text:i18nd("bell-scheduler","Cancel")
-                Layout.preferredHeight: 40
                 enabled:true
                 onClicked:{
                     restoreInitValues()
@@ -213,10 +187,10 @@ Popup {
         id:imgDialog
         title: "Select and image file"
         currentFolder:{
-            if (selectedImageFile!=""){
-                selectedImageFile.substring(0,selectedImageFile.lastIndexOf("/"))
+            if (selectedImageFile!==""){
+                return Qt.resolvedUrl(selectedImageFile.substring(0,selectedImageFile.lastIndexOf("/")))
             }else{
-                StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
+                return StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
             }
 
         }
@@ -239,21 +213,25 @@ Popup {
       
     }
 
+    onOpened:{
+        imageList.currentImgIndex=bellStackBridge.bellImage.index
+    }
+
     function restoreInitValues(){
 
-        imageList.currentImgIndex=bellStackBridge.bellImage[1]
+        imageList.currentImgIndex=bellStackBridge.bellImage.index
         imageFileError=false
         selectedImageFile=""
-        messageLabel.visible=""
-        applyBtn.enabled=!bellStackBridge.bellImage[3]
+        messageLabel.visible=false
+        applyBtn.enabled=!bellStackBridge.bellImage.error
         
-        if (bellStackBridge.bellImage[0]=="stock"){
+        if (bellStackBridge.bellImage.option==="stock"){
             stockOption.checked=true
             customImagePath.text=""
         }else{
             customOption.checked=true
-            if (!bellStackBridge.bellImage[3]){
-                customImagePath.text=bellStackBridge.bellImage[2].substring(bellStackBridge.bellImage[2].lastIndexOf('/')+1)
+            if (!bellStackBridge.bellImage.error){
+                customImagePath.text=bellStackBridge.bellImage.path.substring(bellStackBridge.bellImage.path.lastIndexOf('/')+1)
             }else{
                 customImagePath.text=""
             }
