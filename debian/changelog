@@ -1,3 +1,10 @@
+bell-scheduler (0.25.8) noble; urgency=medium
+
+  * Refactorized code
+  * Improved general performance
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 19 Jun 2026 10:19:40 +0200
+
 bell-scheduler (0.25.7) noble; urgency=medium
 
   * Changed bell token to improve interactin with widget
