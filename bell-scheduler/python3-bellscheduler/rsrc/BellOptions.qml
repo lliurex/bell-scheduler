@@ -54,8 +54,10 @@ RowLayout{
             switch(currentOption){
                 case 0:
                     manageView.replace(emptyView)
+                    break
                 case 1:
                     manageView.replace(bellView)
+                    break
             }
 
         }

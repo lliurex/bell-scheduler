@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
-import org.kde.kirigami as Kirigami
 
 ApplicationWindow {
 
@@ -13,8 +12,8 @@ ApplicationWindow {
     property int margin: 1
     width: mainLayout.implicitWidth + 2 * margin
     height: mainLayout.implicitHeight + 2 * margin
-    minimumWidth: mainLayout.Layout.minimumWidth + 2 * margin
-    minimumHeight: mainLayout.Layout.minimumHeight + 2 * margin
+    minimumWidth: 980 + 2 * margin
+    minimumHeight: 670 + 2 * margin
     Component.onCompleted: {
         x = Screen.width / 2  - minimumWidth/2
         y = Screen.height / 2 - minimumHeight/2
@@ -44,9 +43,7 @@ ApplicationWindow {
     ColumnLayout {
         id: mainLayout
         anchors.fill: parent
-        Layout.minimumWidth:980
-        Layout.minimumHeight:670
-
+ 
         Rectangle{
             color: "#0049ab"
             Layout.fillWidth: true
