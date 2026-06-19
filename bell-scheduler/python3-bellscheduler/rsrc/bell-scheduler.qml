@@ -2,8 +2,6 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Window 2.15
-import org.kde.plasma.core 2.1 as PlasmaCore
-import org.kde.kirigami 2.16 as Kirigami
 
 ApplicationWindow {
 
@@ -14,8 +12,8 @@ ApplicationWindow {
     property int margin: 1
     width: mainLayout.implicitWidth + 2 * margin
     height: mainLayout.implicitHeight + 2 * margin
-    minimumWidth: mainLayout.Layout.minimumWidth + 2 * margin
-    minimumHeight: mainLayout.Layout.minimumHeight + 2 * margin
+    minimumWidth: 980 + 2 * margin
+    minimumHeight: 670 + 2 * margin
     Component.onCompleted: {
         x = Screen.width / 2  - minimumWidth/2
         y = Screen.height / 2 - minimumHeight/2
@@ -44,9 +42,7 @@ ApplicationWindow {
 
     ColumnLayout {
         id: mainLayout
-        anchors.fill: parent
-        Layout.minimumWidth:980
-        Layout.minimumHeight:670
+        anchors.fill:parent
 
         Rectangle{
             color: "#0049ab"
