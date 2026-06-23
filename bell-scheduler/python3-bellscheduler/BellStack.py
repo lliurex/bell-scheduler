@@ -477,7 +477,8 @@ class Bridge(QObject):
 	@Slot('QJSValue')
 	def loadBell(self,bellToLoad):
 
-		bellToLoad=bellToLoad.toVariant()
+		if hasattr(bellToLoad,'toVariant'):
+			bellToLoad=bellToLoad.toVariant()
 
 		self.core.mainStack.showPopUp={"show":True,"msgCode":LOAD_BELL_CONFIG}
 		self.core.bellsOptionsStack.showMainMessage={"show":False,"msgCode":"","typ":""}
@@ -504,7 +505,8 @@ class Bridge(QObject):
 	@Slot('QJSValue')
 	def duplicateBell(self,bellToDuplicate):
 
-		bellToDuplicate=bellToDuplicate.toVariant()
+		if hasattr(bellToDuplicate,'toVariant'):
+			bellToDuplicate=bellToDuplicate.toVariant()
 
 		self.core.mainStack.showPopUp={"show":True,"msgCode":DUPLICATE_BELL_CONFIG}
 		self.core.bellsOptionsStack.showMainMessage={"show":False,"msgCode":"","type":""}
@@ -531,7 +533,9 @@ class Bridge(QObject):
 	@Slot('QJSValue')
 	def updateClockValues(self,data):
 
-		data=data.toVariant()
+		if hasattr(data,'toVariant'):
+			data=data.toVariant()
+		
 		changes={key:value for key,value in data.items() if self.bellCron[key]!=value}
 
 		if changes:
@@ -549,7 +553,9 @@ class Bridge(QObject):
 	@Slot('QJSValue')
 	def updateWeekDaysValues(self,data):
 
-		data=data.toVariant()
+		if hasattr(data,'toVariant'):
+			data=data.toVariant()
+		
 		changes={key:value for key,value in data.items() if self.bellDays[key]!=value}
 
 		if changes:
@@ -588,7 +594,9 @@ class Bridge(QObject):
 	@Slot('QJSValue')
 	def updateBellValidity(self,data):
 
-		data=data.toVariant()
+		if hasattr(data,'toVariant'):
+			data=data.toVariant()
+		
 		changes={key:value for key,value in data.items() if self.bellValidity[key]!=value}
 
 		if changes:
@@ -630,7 +638,8 @@ class Bridge(QObject):
 	@Slot('QJSValue')
 	def updateImageValues(self,data):
 
-		data=data.toVariant()
+		if hasattr(data,'toVariant'):
+			data=data.toVariant()
 
 		if data.get("option")=="stock":
 			data["path"]=self.bellManager.imagesConfigData[data.get("index")]["imageSource"]
@@ -659,7 +668,9 @@ class Bridge(QObject):
 	@Slot('QJSValue')
 	def updateSoundValues(self,data):
 
-		data=data.toVariant()
+		if hasattr(data,'toVariant'):
+			data=data.toVariant()
+		
 		data["error"]=False if os.path.exists(data.get("path")) else True
 
 		if self.bellSound!=data:

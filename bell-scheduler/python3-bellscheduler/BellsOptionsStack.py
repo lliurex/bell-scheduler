@@ -461,7 +461,9 @@ class Bridge(QObject):
 	@Slot('QJSValue')
 	def changeBellStatus(self,data):
 
-		data=data.toVariant()
+		if hasattr(data,'toVariant'):
+			data=data.toVariant()
+		
 		self.core.mainStack.closeGui=False
 		self.showMainMessage={"show":False,"msgCode":"","type":""}
 		self.changeAllBells=data.get("allBells")
@@ -528,7 +530,9 @@ class Bridge(QObject):
 	@Slot('QJSValue')
 	def removeBell(self,data):
 
-		data=data.toVariant()
+		if hasattr(data,'toVariant'):
+			data=data.toVariant()
+		
 		self.showMainMessage={"show":False,"msgCode":"","type":""}
 		self.removeAllBells=data.get("allBells")
 		self.bellToRemove=None if self.removeAllBells else data.get("bellId")
