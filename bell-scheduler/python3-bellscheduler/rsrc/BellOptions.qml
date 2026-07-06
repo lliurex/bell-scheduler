@@ -15,7 +15,7 @@ RowLayout{
             id:goBackBtn
             optionText:i18nd("bell-scheduler","Bells")
             optionPointSize:14
-            optionIcon:"go-previous"
+            optionIcon:"actions/24/go-previous.svg"
             onMenuOptionClicked:bellStackBridge.goHome()
         }
 
@@ -30,7 +30,7 @@ RowLayout{
                 MenuOptionBtn {
                     id:infoItem
                     optionText:i18nd("bell-scheduler","Bell")
-                    optionIcon:"appointment-reminder"
+                    optionIcon:"status/24/appointment-reminder.svg"
                 }
 
                 Item{
