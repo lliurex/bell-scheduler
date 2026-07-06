@@ -1,3 +1,9 @@
+bell-scheduler (0.25.9) noble; urgency=medium
+
+  * Fixed session language retrieval
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 06 Jul 2026 14:00:32 +0200
+
 bell-scheduler (0.25.8) noble; urgency=medium
 
   * Refactorized code
