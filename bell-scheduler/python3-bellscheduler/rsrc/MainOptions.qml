@@ -22,7 +22,7 @@ RowLayout{
                 id:listItem
                 Layout.fillWidth:true
                 optionText:i18nd("bell-scheduler","Bells")
-                optionIcon:"appointment-reminder"
+                optionIcon:"status/24/appointment-reminder.svg"
                 onMenuOptionClicked:mainStackBridge.moveToMainOptions(0)                
             }
 
@@ -30,7 +30,7 @@ RowLayout{
                 id:holidayItem
                 Layout.fillWidth:true
                 optionText:i18nd("bell-scheduler","Holidays")
-                optionIcon:"view-calendar"
+                optionIcon:"actions/24/view-calendar.svg"
                 onMenuOptionClicked:mainStackBridge.moveToMainOptions(1)
             }
 
@@ -38,7 +38,7 @@ RowLayout{
                 id:helpItem
                 Layout.fillWidth:true
                 optionText:i18nd("bell-scheduler","Help")
-                optionIcon:"help-contents"
+                optionIcon:"actions/24/help-contents.svg"
                 onMenuOptionClicked:mainStackBridge.openHelp()
             }
 

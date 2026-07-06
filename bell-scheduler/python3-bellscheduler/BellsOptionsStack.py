@@ -445,9 +445,9 @@ class Bridge(QObject):
 
 		updatedInfo=self.bellManager.bellsConfigData
 		if len(updatedInfo)>0:
-			for i in range(len(updatedInfo)):
+			for i,bellItem in enumerate(updatedInfo):
 				index=self._bellsModel.index(i)
-				self._bellsModel.setData(index,param,updatedInfo[i][param])
+				self._bellsModel.setData(index,param,bellItem[param])
 
 	#def _updateBellsModelInfo
 
