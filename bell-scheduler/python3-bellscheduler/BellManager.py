@@ -90,13 +90,13 @@ class BellManager(object):
 
 	def _getSystemLocale(self):
 
-		language=os.environ["LANGUAGE"]
+		language=os.environ.get("LANGUAGE","")
 
 		if language!="":
 			tmpLang=language.split(":")
 			self.systemLocale=tmpLang[0]
 		else:
-			self.systemLocale=os.environ["LANG"]
+			self.systemLocale=os.environ.get("LANG","")
 
 	#def _getSystemLocale	
 
