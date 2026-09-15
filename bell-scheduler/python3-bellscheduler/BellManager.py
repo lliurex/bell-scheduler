@@ -778,6 +778,7 @@ class BellManager(object):
 
 	def recoveryBellBackup(self,origFile):
 
+		backup=False
 		resultRecovery=self._recoveryBellsConfig(origFile,backup)
 		
 		if not resultRecovery.get("status"):
