@@ -627,13 +627,11 @@ class Bridge(QObject):
 			self._manageOptions()
 			self.filterStatusValue="all"
 		else:
-			if ret.get("data") is not None:
-				self.core.mainStack.showPopUp={"show":True,"msgCode":RECOVERY_BELLS_CONFIG}
-				print(ret.get("data"))
-				self.recoveryConfigT=RecoveryConfig(self.bellManager,ret.get("data"))
-				self.recoveryConfigT.start()
-				self.recoveryConfigT.configRecovered.connect(self._recoveryConfigRet)
-				self.recoveryConfigT.finished.connect(self.recoveryConfigT.deleteLater)	
+			self.core.mainStack.showPopUp={"show":True,"msgCode":RECOVERY_BELLS_CONFIG}
+			self.recoveryConfigT=RecoveryConfig(self.bellManager,ret.get("data"))
+			self.recoveryConfigT.start()
+			self.recoveryConfigT.configRecovered.connect(self._recoveryConfigRet)
+			self.recoveryConfigT.finished.connect(self.recoveryConfigT.deleteLater)	
 		
 	#def _importBackupRet
 
