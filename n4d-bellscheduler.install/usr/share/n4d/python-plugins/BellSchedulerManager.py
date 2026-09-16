@@ -40,7 +40,7 @@ class BellSchedulerManager:
 
     def __init__(self):
 
-        self.config_dir = os.path.expanduser("/etc/bellScheduler/")
+        self.config_dir = "/etc/bellScheduler/"
         self.config_file = os.path.join(self.config_dir, "bell_list")
         self.holiday_token = os.path.join(self.config_dir, "enabled_holiday_token")
         self.images_folder = "/usr/local/share/bellScheduler/images"
