@@ -5,6 +5,7 @@ import shutil
 import tempfile
 import zipfile
 import syslog
+import pwd
 import n4d.server.core as n4dcore
 import n4d.responses
 
@@ -384,13 +385,13 @@ class BellSchedulerManager:
                     shutil.copy2(log_file, os.path.join(tmp_export, os.path.basename(log_file)))
 
             dest_file_base = os.path.splitext(dest_file)[0]
-            shutil.make_archive(dest_file_base, 'zip', tmp_export)
+            zip_full_path=shutil.make_archive(dest_file_base, 'zip', tmp_export)
 
             if arg != True:
                 shutil.rmtree(tmp_export)
 
-            zip_full_path = f"{dest_file_base}.zip"
-            subprocess.run(["chown", "-R", f"{user}:{user}", zip_full_path], check=True)
+            uid=pwd.getpwnam(user).pw_uid
+            os.chown(zip_full_path,uid,-1)
 
             return n4d.responses.build_successful_call_response({"status": True, "msg": "Bells exported successfully", "code": self.BELL_EXPORT_SUCCESSFUL, "data": ""})
         
