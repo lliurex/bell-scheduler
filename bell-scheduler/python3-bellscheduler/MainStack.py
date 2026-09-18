@@ -27,7 +27,7 @@ class GatherInfo(QThread):
 		ret=self.manager.syncWithCron()
 		if ret.get("status"):
 			ret=self.manager.readConf()
-
+		time.sleep(0.2)
 		self.infoGathered.emit(ret)
 
 	#def run
