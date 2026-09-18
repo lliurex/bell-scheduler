@@ -1,3 +1,10 @@
+bell-scheduler (0.15.11) jammy; urgency=medium
+
+  * Changed the function that assigns permissions to the alarma backup
+  * Fixed an issue when attempting to recover the configuration after a backup import failure
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 18 Sep 2026 10:30:30 +0200
+
 bell-scheduler (0.15.10) jammy; urgency=medium
 
   * Fixed icon size in main menu
