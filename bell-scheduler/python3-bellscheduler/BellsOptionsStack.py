@@ -616,7 +616,7 @@ class Bridge(QObject):
 	@Slot(dict)
 	def _importBackupRet(self,ret):
 
-		if ret.get("status"):
+		if ret.get("status") or ret.get("data") is None:
 			self._updateBellsModel()
 			self.core.mainStack.closeGui=True
 			self.core.mainStack.showPopUp={"show":False,"msgCode":""}
@@ -631,8 +631,8 @@ class Bridge(QObject):
 			self.recoveryConfigT=RecoveryConfig(self.bellManager,ret.get("data"))
 			self.recoveryConfigT.start()
 			self.recoveryConfigT.configRecovered.connect(self._recoveryConfigRet)
-			self.recoveryConfigT.finished.connect(self.removeBellProcessT.deleteLater)		
-
+			self.recoveryConfigT.finished.connect(self.recoveryConfigT.deleteLater)	
+		
 	#def _importBackupRet
 
 	@Slot(dict)
